@@ -65,7 +65,17 @@ end
 local function CreateGroup(unitID, unitDefID, teamID, builderID, groupDef)
 
 	if groupDef == nil then
-		groupDef = { members = {}, name = "", description = "", buildPic = "", delay = 7, }
+
+        local unitDef = UnitDefs[unitDefID]
+		local name = unitDef.name
+		Spring.Echo("Trying to find uDef of: "..name)
+        Spring.Echo("UnitDefs customparams: "..(unitDef.customParams and "yes" or "no"))
+        Spring.Echo("customParams: "..tostringplus(unitDef.customParams))
+        --Spring.Echo("UnitDefs groupdef: "..(unitDef.customParams.groupdef__size ~= nil and "yes" or "no"))
+        --Spring.Echo("UnitDefs morphdef: "..(unitDef.customParams.morphdef__into ~= nil and "yes" or "no"))
+
+		groupDef = { members = {}, name = "", description = "", buildPic = "",
+                     delay = (tonumber(unitDef.customParams.groupdef__delay) or 7), }
 		--[[	{
 				members = {
 					"armpw",
@@ -77,16 +87,8 @@ local function CreateGroup(unitID, unitDefID, teamID, builderID, groupDef)
 				--buildCostMetal = 150, --2500
 				buildPic = "ARMPW.DDS",
 		} ]]
-
-        local unitDef = UnitDefs[unitDefID]
-		local name = unitDef.name
-		Spring.Echo("Trying to find uDef of: "..name)
-        Spring.Echo("UnitDefs customparams: "..(unitDef.customParams and "yes" or "no"))
-        Spring.Echo("UnitDefs groupdef: "..(unitDef.customParams.groupdef__size ~= nil and "yes" or "no"))
-        Spring.Echo("UnitDefs morphdef: "..(unitDef.customParams.morphdef__into ~= nil and "yes" or "no"))
-
-        if unitDef.customParams.groupdef then
-            local groupSize = tonumber(unitDef.customParams.groupdef__size) or 1
+        if unitDef.customParams.groupdefsize then
+            local groupSize = tonumber(unitDef.customParams.groupdefsize) or 1
             if groupSize >= 2 then
                 -- One is the first guy, always spawned, so deduct 1
                 for i = 1, groupSize-1 do
@@ -95,7 +97,7 @@ local function CreateGroup(unitID, unitDefID, teamID, builderID, groupDef)
                 groupDef.name = unitDefID.." Group"
                 groupDef.description = groupSize.."x "..name.."s"
                 groupDef.buildPic = unitDef.buildpic
-                local groupDelay = tonumber(groupDef.delay) or 7    -- 7 is the default
+                local groupDelay = groupDef.delay    -- 7 is the default
                 groupDef.delay = groupDelay
             end
         end
