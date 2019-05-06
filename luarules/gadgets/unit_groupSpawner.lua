@@ -80,10 +80,10 @@ local function CreateGroup(unitID, unitDefID, teamID, builderID, groupDef)
 
         local unitDef = UnitDefs[unitDefID]
 		local name = unitDef.name
-		Spring.Echo("Trying to find uDef of: "..name)
-        Spring.Echo("UnitDefs customparams: "..(unitDef.customParams and "yes" or "no"))
-        Spring.Echo("UnitDefs groupdef: "..(unitDef.customParams.groupdef__size ~= nil and "yes" or "no"))
-        Spring.Echo("UnitDefs morphdef: "..(unitDef.customParams.morphdef__into ~= nil and "yes" or "no"))
+        --Spring.Echo("Trying to find uDef of: "..name)
+        --Spring.Echo("UnitDefs customparams: "..(unitDef.customParams and "yes" or "no"))
+        --Spring.Echo("UnitDefs groupdef: "..(unitDef.customParams.groupdef__size ~= nil and "yes" or "no"))
+        --Spring.Echo("UnitDefs morphdef: "..(unitDef.customParams.morphdef__into ~= nil and "yes" or "no"))
 
         if unitDef.customParams.groupdef__size then
             local groupSize = tonumber(unitDef.customParams.groupdef__size) or 1
@@ -137,7 +137,7 @@ local function CreateGroup(unitID, unitDefID, teamID, builderID, groupDef)
         ---- Min spawn delay is 5 frames (for speeds up to 1), max is 30 frames - or 1s - for speeds 5 and above
         --local relSpeed = inverselerp(10.0,80.0, minmax(UnitDefNames[memberUnitName].speed, 10, 80))
         --local spawnDelay = lerp(45,7, relSpeed) -- eg.: 0.5 => 17.x
-        Spring.Echo("member: "..(memberUnitName or "nil").." size: "..(groupDef.size or "nil").." spawn delay: "..(groupDef.delay or "nil"))
+        --Spring.Echo("member: "..(memberUnitName or "nil").." size: "..(groupDef.size or "nil").." spawn delay: "..(groupDef.delay or "nil"))
         for i, unitName in ipairs(groupDef.members) do
             local thisDelay = i * groupDef.delay
             -- local newUnitID = DelayCall(CreateUnit, {unitName, px+xSpace, py, pz+zSpace, unitHeading, teamID}, thisDelay)
