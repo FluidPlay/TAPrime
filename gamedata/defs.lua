@@ -67,11 +67,11 @@ Spring.TimeCheck('[defs.lua] loading all *Defs tables: ', function()
         if (VFS.FileExists('gamedata/alldefs_post_post.lua')) then
             VFS.Include('gamedata/alldefs_post_post.lua')
         end
-        UnitDefs = nil
-        FeatureDefs = nil
-        WeaponDefs = nil
-        ArmorDefs = nil
-        MoveDefs = nil
+        --UnitDefs = nil
+        --FeatureDefs = nil
+        --WeaponDefs = nil
+        --ArmorDefs = nil
+        --MoveDefs = nil
     end
 end)
 
