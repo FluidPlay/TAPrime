@@ -46,6 +46,7 @@ local tips = {
 	"armrad.dds ".."Radars are cheap and their detection range is much larger than their vision range. In the beginning, Commanders and Outposts are your best options for true vision range.",
     "armgeo.dds ".."Abandoned/Neutral Geothermals might be scattered around the map and provide plenty of energy. You can capture them with commanders or with builders, after you research the 'capture' upgrade in the Tech Center.",
     "cormort.dds ".."Powerful artillery units are available after you upgrade your Tech Center to Level 1. Core's Morty is built from the kbot lab, Arm Luger from the Vehicle Plant.",
+    "armpship.dds ".."Position your naval units properly during engagements. Missile ships are stronger at their rear area, while other ships are stronger at the front. Submarines are up to twice stronger at the front.",
 	--"To see detailed info about each unit in-game switch on \"Extensive unit info\" via Options menu",
 	--"In general, vehicles are a good choice for flat and open battlefields. Kbots are better on hills.",
 	--"For wind generators to be worth building, the average wind speed should be over 7. Current, minimum, and maximum wind speeds are shown to the right of the energy bar.",

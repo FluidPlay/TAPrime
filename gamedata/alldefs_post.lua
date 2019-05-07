@@ -50,7 +50,7 @@ local function ApplyGroupCosts(name, uDef)
         return end
 
 	local groupSize = groupSize or 1
-    Spring.Echo(uDef.name .." Group Size: "..groupSize)
+    --Spring.Echo(uDef.name .." Group Size: "..groupSize)
 	if (uDef.buildcostmetal ~= nil) then
 		uDef.buildcostmetal = uDef.buildcostmetal * groupSize
 		--Spring.Echo(uDef.name.." group size = "..groupSize..", final metal cost: "..uDef.buildcostmetal)
@@ -144,12 +144,12 @@ function ApplyUnitDefs_Data(name, uDef)
                         newDefVal = {}
                         for cparmkey, cparmvalue in pairs (v) do
                             if type(cparmvalue) == "table" then
-                                Spring.Echo("Parsed unit: "..name.." table key: "..cparmkey or "nil")
+                                --Spring.Echo("Parsed unit: "..name.." table key: "..cparmkey or "nil")
                                 --newDefVal[cparmkey] = nil                       -- We won't keep the original table
                                 for cparmsubk, cparmsubv in pairs(cparmvalue) do       -- eg.: { groupDef = { size = 1, .. } }
                                     local newKeyName = cparmkey.."__"..cparmsubk
                                     newDefVal[newKeyName] = cparmsubv -- => [groupDef__size] = 1
-                                    Spring.Echo("New cParm for "..name..": "..(tostring(newKeyName) or "nil").." = "..(tostring(cparmsubv) or "nil"))
+                                    --Spring.Echo("New cParm for "..name..": "..(tostring(newKeyName) or "nil").." = "..(tostring(cparmsubv) or "nil"))
                                 end
                             else
                                 newDefVal[cparmkey] = cparmvalue                -- Not a table, just assign it

@@ -1443,6 +1443,7 @@ function gadget:GameFrame(n)
   --end
 
   -- We do a next-frame destroy to prevent upgraded last-commanders inadvertently finishing the game
+    -- TODO: Add delay library
   for uID, frame in pairs(unitsToDestroy) do
     if n >= frame then
       --Remark: This will fire up UnitDestroyed > checkQueue > StartQueue if/when needed
