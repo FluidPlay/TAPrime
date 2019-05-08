@@ -10,10 +10,29 @@ function gadget:GetInfo()
     }
 end
 
+CMD.UPG_DGUN = 41999
+CMD_UPG_DGUN = 41999
+
 if gadgetHandler:IsSyncedCode() then
 
-    CMD.UPG_DGUN = 41999
-    CMD_UPG_DGUN = 41999
+    local spSetUnitRulesParam = Spring.SetUnitRulesParam
+    local upgradingUnits = {}
+
+    function gadget:AllowCommand(unitID,_,unitTeam,cmdID,cmdParams)
+        -- Require Tech1 for Upgrade
+        -- TODO: Progress, progress percentage (check unit_morph.lua)
+        if cmdID == CMD_UPG_DGUN and GG.TechCheck("Tech1", unitTeam) then
+            Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
+            upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0 }
+            spSetUnitRulesParam(unitID,"upgrade", 0)
+        end
+        return true
+    end
+--------------------------------------------------------------------------------
+--region  UNSYNCED
+--------------------------------------------------------------------------------
+else
+
     local CMD_MANUALFIRE = CMD.MANUALFIRE
 
     local startFrame
@@ -22,13 +41,17 @@ if gadgetHandler:IsSyncedCode() then
     local upgradeTime = 5 * 30 --5 seconds, in frames
     local upgradingUnits = {}
 
-    local spGetGameFrame = Spring.GetGameFrame
-    local spUseUnitResource = Spring.UseUnitResource
+    local SYNCED = SYNCED
+    local spairs = spairs
+    local oldFrame = 0        --// used to save bandwidth between unsynced->LuaUI
+
+
     local spGetUnitDefID = Spring.GetUnitDefID
     local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
     local spInsertUnitCmdDesc = Spring.InsertUnitCmdDesc
     local spEditUnitCmdDesc = Spring.EditUnitCmdDesc
     local spSetUnitRulesParam = Spring.SetUnitRulesParam
+    local spGetGameFrame      = Spring.GetGameFrame
 
     local UpgDgunDesc = {
         id      = CMD_UPG_DGUN,
@@ -47,61 +70,29 @@ if gadgetHandler:IsSyncedCode() then
     end
 
     function gadget:UnitCreated(unitID, unitDefID, unitTeam)
+        Spring.Echo("created: "..unitID)
         if UnitDefs[spGetUnitDefID(unitID)].customParams.iscommander then
             spInsertUnitCmdDesc(unitID, CMD_UPG_DGUN, UpgDgunDesc)
             local cmdDescID = spFindUnitCmdDesc(unitID, CMD_MANUALFIRE)
             spEditUnitCmdDesc(unitID, cmdDescID, { disabled=true })--, queueing=false,
         end
     end
-
-    function gadget:AllowCommand(unitID,_,unitTeam,cmdID,cmdParams)
-        -- Require Tech1 for Upgrade
-        -- TODO: Progress, progress percentage (check unit_morph.lua)
-        if cmdID == CMD_UPG_DGUN and GG.TechCheck("Tech1", unitTeam) then
-            Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
-            upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0 }
-            spSetUnitRulesParam(unitID,"upgrade", 0)
-        end
-        return true
-    end
-
-    --- Update methods are not useful on synced gadgets it seems
-    function gadget:GameFrame() --Update() --gameFrame(n)
-        --if not n == startFrame then
-        --    return end
-    end
-
-else
-    --------------------------------------------------------------------------------
-    --region  UNSYNCED
-    --------------------------------------------------------------------------------
-    local gameFrame;
-    local SYNCED = SYNCED
-    local CallAsTeam = CallAsTeam
-    local spairs = spairs
-    local snext = snext
-    local oldFrame = 0        --// used to save bandwidth between unsynced->LuaUI
-
-
-    local spGetGameFrame = Spring.GetGameFrame
-    local spUseUnitResource = Spring.UseUnitResource
-    local spGetUnitDefID = Spring.GetUnitDefID
-    local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
-    local spInsertUnitCmdDesc = Spring.InsertUnitCmdDesc
-    local spEditUnitCmdDesc = Spring.EditUnitCmdDesc
-    local spSetUnitRulesParam = Spring.SetUnitRulesParam
-    local spGetGameFrame      = Spring.GetGameFrame
+    --
+    ----- Update methods are not useful on synced gadgets it seems
+    --function gadget:GameFrame() --Update() --gameFrame(n)
+    --    --if not n == startFrame then
+    --    --    return end
+    --end
 
     function gadget:Update()
         local frame = spGetGameFrame()
         if (frame<=oldFrame) then
             return end
         oldFrame = frame
-        if not SYNCED.upgradingUnits then    -- If table empty, return
+        if not upgradingUnits then    -- If table empty, return
             return end
 
-
-        for idx, unitID in spairs(SYNCED.upgradingUnits) do
+        for idx, unitID in spairs(upgradingUnits) do
             local function finishUpgrade(unitID)
                 local cmdDescId = spFindUnitCmdDesc(unitID, CMD_UPG_DGUN)
                 spEditUnitCmdDesc(unitID, cmdDescId, { disabled=true })
