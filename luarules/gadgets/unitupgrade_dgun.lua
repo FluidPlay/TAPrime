@@ -10,28 +10,11 @@ function gadget:GetInfo()
     }
 end
 
-CMD.UPG_DGUN = 41999
-CMD_UPG_DGUN = 41999
 
 if gadgetHandler:IsSyncedCode() then
 
-    local spSetUnitRulesParam = Spring.SetUnitRulesParam
-    local upgradingUnits = {}
-
-    function gadget:AllowCommand(unitID,_,unitTeam,cmdID,cmdParams)
-        -- Require Tech1 for Upgrade
-        -- TODO: Progress, progress percentage (check unit_morph.lua)
-        if cmdID == CMD_UPG_DGUN and GG.TechCheck("Tech1", unitTeam) then
-            Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
-            upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0 }
-            spSetUnitRulesParam(unitID,"upgrade", 0)
-        end
-        return true
-    end
---------------------------------------------------------------------------------
---region  UNSYNCED
---------------------------------------------------------------------------------
-else
+    CMD.UPG_DGUN = 41999
+    CMD_UPG_DGUN = 41999
 
     local CMD_MANUALFIRE = CMD.MANUALFIRE
 
@@ -47,9 +30,9 @@ else
 
 
     local spGetUnitDefID = Spring.GetUnitDefID
-    local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
-    local spInsertUnitCmdDesc = Spring.InsertUnitCmdDesc
-    local spEditUnitCmdDesc = Spring.EditUnitCmdDesc
+    local spFindUnitCmdDesc = Spring.FindUnitCmdDesc        -- UNSYNCED
+    local spInsertUnitCmdDesc = Spring.InsertUnitCmdDesc    -- UNSYNCED
+    local spEditUnitCmdDesc = Spring.EditUnitCmdDesc        -- UNSYNCED
     local spSetUnitRulesParam = Spring.SetUnitRulesParam
     local spGetGameFrame      = Spring.GetGameFrame
 
@@ -61,6 +44,17 @@ else
         action  = 'dgunupgrade',
         tooltip = 'Enables D-gun ability / command',
     }
+
+    function gadget:AllowCommand(unitID,_,unitTeam,cmdID,cmdParams)
+        -- Require Tech1 for Upgrade
+        -- TODO: Progress, progress percentage (check unit_morph.lua)
+        if cmdID == CMD_UPG_DGUN and GG.TechCheck("Tech1", unitTeam) then
+            Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
+            upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0 }
+            spSetUnitRulesParam(unitID,"upgrade", 0)
+        end
+        return true
+    end
 
     function gadget:Initialize()
         startFrame = spGetGameFrame()
@@ -84,15 +78,16 @@ else
     --    --    return end
     --end
 
-    function gadget:Update()
+    function gadget:GameFrame()
         local frame = spGetGameFrame()
         if (frame<=oldFrame) then
             return end
+        --Spring.Echo("New frame: "..frame)
         oldFrame = frame
-        if not upgradingUnits then    -- If table empty, return
+        if not upgradingUnits or #upgradingUnits == 0 then    -- If table empty, return
             return end
 
-        for idx, unitID in spairs(upgradingUnits) do
+        for _, unitID in ipairs(upgradingUnits) do
             local function finishUpgrade(unitID)
                 local cmdDescId = spFindUnitCmdDesc(unitID, CMD_UPG_DGUN)
                 spEditUnitCmdDesc(unitID, cmdDescId, { disabled=true })
@@ -106,6 +101,7 @@ else
             Spring.Echo("Count: "..#upgradingUnits)
             finishUpgrade(unitID)
         end
+
         --for _,data in ipairs(upgradingUnits) do
         --    local unitID = data.unitID
         --    local progress = data.progress
@@ -120,4 +116,39 @@ else
         --    end
         --end
     end
+--------------------------------------------------------------------------------
+--region  UNSYNCED
+--------------------------------------------------------------------------------
+else
+
+    --local CMD_MANUALFIRE = CMD.MANUALFIRE
+    --
+    --local startFrame
+    --local metalCost = 200
+    --local energyCost = 1200
+    --local upgradeTime = 5 * 30 --5 seconds, in frames
+    --local upgradingUnits = {}
+    --
+    --local SYNCED = SYNCED
+    --local spairs = spairs
+    --local oldFrame = 0        --// used to save bandwidth between unsynced->LuaUI
+    --
+    --
+    --local spGetUnitDefID = Spring.GetUnitDefID
+    --local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
+    --local spInsertUnitCmdDesc = Spring.InsertUnitCmdDesc
+    --local spEditUnitCmdDesc = Spring.EditUnitCmdDesc
+    --local spSetUnitRulesParam = Spring.SetUnitRulesParam
+    --local spGetGameFrame      = Spring.GetGameFrame
+    --
+    --local UpgDgunDesc = {
+    --    id      = CMD_UPG_DGUN,
+    --    type    = CMDTYPE.ICON,
+    --    name    = 'Upg D-Gun',
+    --    cursor = 'Morph',
+    --    action  = 'dgunupgrade',
+    --    tooltip = 'Enables D-gun ability / command',
+    --}
+
+
 end
