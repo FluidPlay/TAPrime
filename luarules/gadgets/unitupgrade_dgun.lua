@@ -17,41 +17,52 @@ if gadgetHandler:IsSyncedCode() then
     CMD_UPG_DGUN = 41999
 
     local CMD_MANUALFIRE = CMD.MANUALFIRE
+    local unitRulesParamName = "upgrade"
 
     local startFrame
     local metalCost = 200
     local energyCost = 1200
     local upgradeTime = 5 * 30 --5 seconds, in frames
     local upgradingUnits = {}
+    local RedStr = "\255\255\001\001"
+    local Prereq = "Tech1"
+    local UpgradeTooltip = 'Enables D-gun ability / command'
+    local tooltipRequirement = "\n"..RedStr.."Requires ".. Prereq
 
     local SYNCED = SYNCED
     local spairs = spairs
     local oldFrame = 0        --// used to save bandwidth between unsynced->LuaUI
 
+    local spGetUnitDefID        = Spring.GetUnitDefID
+    local spGetUnitTeam         = Spring.GetUnitTeam
+    local spFindUnitCmdDesc     = Spring.FindUnitCmdDesc
+    local spInsertUnitCmdDesc   = Spring.InsertUnitCmdDesc
+    local spEditUnitCmdDesc     = Spring.EditUnitCmdDesc
+    local spSetUnitRulesParam   = Spring.SetUnitRulesParam
+    local spGetGameFrame        = Spring.GetGameFrame
+    local spUseUnitResource     = Spring.UseUnitResource
 
-    local spGetUnitDefID = Spring.GetUnitDefID
-    local spFindUnitCmdDesc = Spring.FindUnitCmdDesc        -- UNSYNCED
-    local spInsertUnitCmdDesc = Spring.InsertUnitCmdDesc    -- UNSYNCED
-    local spEditUnitCmdDesc = Spring.EditUnitCmdDesc        -- UNSYNCED
-    local spSetUnitRulesParam = Spring.SetUnitRulesParam
-    local spGetGameFrame      = Spring.GetGameFrame
-
-    local UpgDgunDesc = {
+    local UpgradeBtnDesc = {
         id      = CMD_UPG_DGUN,
         type    = CMDTYPE.ICON,
         name    = 'Upg D-Gun',
-        cursor = 'Morph',
+        cursor  = 'Morph',
         action  = 'dgunupgrade',
-        tooltip = 'Enables D-gun ability / command',
+        tooltip = UpgradeTooltip,
     }
+
+    local function hasPrereq(unitTeam)
+        return GG.TechCheck(Prereq, unitTeam)
+    end
 
     function gadget:AllowCommand(unitID,_,unitTeam,cmdID,cmdParams)
         -- Require Tech1 for Upgrade
-        -- TODO: Progress, progress percentage (check unit_morph.lua)
-        if cmdID == CMD_UPG_DGUN and GG.TechCheck("Tech1", unitTeam) then
+        if cmdID == CMD_UPG_DGUN and hasPrereq(unitTeam) then
             Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
             upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0 }
-            spSetUnitRulesParam(unitID,"upgrade", 0)
+            spSetUnitRulesParam(unitID,unitRulesParamName, 0)
+        else
+            --TODO: Add local warning that pre-req is not met
         end
         return true
     end
@@ -63,58 +74,81 @@ if gadgetHandler:IsSyncedCode() then
         end
     end
 
-    function gadget:UnitCreated(unitID, unitDefID, unitTeam)
-        Spring.Echo("created: "..unitID)
-        if UnitDefs[spGetUnitDefID(unitID)].customParams.iscommander then
-            spInsertUnitCmdDesc(unitID, CMD_UPG_DGUN, UpgDgunDesc)
-            local cmdDescID = spFindUnitCmdDesc(unitID, CMD_MANUALFIRE)
-            spEditUnitCmdDesc(unitID, cmdDescID, { disabled=true })--, queueing=false,
+    --    local UpgradeTooltip = 'Enables D-gun ability / command'
+    --    local tooltipRequirement = "\n"..RedStr.."Requires "..TechRequirement
+    local function getUpgradeTooltip(unitTeam)
+        return UpgradeTooltip..(hasPrereq(unitTeam) and "" or tooltipRequirement)
+    end
+
+    ---TODO: prereq = { req = "tech1" | "perunit",
+    ---                 missingPrereqTooltip = "req this" }
+    local function AddButton (unitID, CMDID, defCmdDesc, disabled, prereq)
+        local cmdDescID = spFindUnitCmdDesc(unitID, CMDID)
+        if not cmdDescID then
+            local newCmdDesc = defCmdDesc
+            if prereq then
+                newCmdDesc.tooltip = getUpgradeTooltip(spGetUnitTeam(unitID))
+            end
+            spInsertUnitCmdDesc(unitID, newCmdDesc, { disabled=disabled } )
+        --else
+        --    spEditUnitCmdDesc(unitID, cmdDescID, { disabled=disabled })
         end
     end
-    --
-    ----- Update methods are not useful on synced gadgets it seems
-    --function gadget:GameFrame() --Update() --gameFrame(n)
-    --    --if not n == startFrame then
-    --    --    return end
-    --end
+
+    -- TODO: Add manualfire edited tooltip
+    local function EditButton (unitID, CMDID, disabled, prereq)
+        local cmdDescID = spFindUnitCmdDesc(unitID, CMD_MANUALFIRE)
+        spEditUnitCmdDesc(unitID, cmdDescID, { disabled=disabled })
+    end
+
+    function gadget:UnitCreated(unitID, unitDefID, unitTeam)
+        --Spring.Echo("created: "..unitID)
+        if UnitDefs[spGetUnitDefID(unitID)].customParams.iscommander then
+            AddButton (unitID, CMD_UPG_DGUN, UpgradeBtnDesc, false, true)
+
+            --for debug purposes, so /unitrules reload works fine
+            spSetUnitRulesParam(unitID, unitRulesParamName, nil)
+
+            EditButton (unitID, CMD_MANUALFIRE, true)
+        end
+    end
+
+    local function finishUpgrade(idx, unitID)
+
+        EditButton (unitID, CMD_UPG_DGUN, true)
+
+        EditButton (unitID, CMD_MANUALFIRE, false)
+
+        upgradingUnits[idx] = nil
+        spSetUnitRulesParam(unitID, unitRulesParamName, nil)
+    end
 
     function gadget:GameFrame()
         local frame = spGetGameFrame()
-        if (frame<=oldFrame) then
+        if (frame <= oldFrame) then
             return end
         --Spring.Echo("New frame: "..frame)
         oldFrame = frame
         if not upgradingUnits or #upgradingUnits == 0 then    -- If table empty, return
             return end
 
-        for _, unitID in ipairs(upgradingUnits) do
-            local function finishUpgrade(unitID)
-                local cmdDescId = spFindUnitCmdDesc(unitID, CMD_UPG_DGUN)
-                spEditUnitCmdDesc(unitID, cmdDescId, { disabled=true })
+        Spring.Echo("Count: "..#upgradingUnits)
 
-                local cmdDescId = spFindUnitCmdDesc(unitID, CMD_MANUALFIRE)
-                spEditUnitCmdDesc(unitID, cmdDescId, { disabled=false })
-
-                ---TODO : Remove unit from upgradingUnits
-                spSetUnitRulesParam(unitID,"upgrade", nil)
+         --{ unitID = unitID, progress = 0 }
+        for idx,data in ipairs(upgradingUnits) do
+            local unitID = data.unitID
+            local progress = data.progress
+            Spring.Echo("Unit: "..unitID.." progress: "..progress.." m req: "..metalCost/upgradeTime.." e req: "..energyCost/upgradeTime )
+            if spUseUnitResource(unitID, { ["m"] = metalCost/upgradeTime, ["e"] = energyCost/upgradeTime }) then
+                local progress = progress + 1 / upgradeTime -- TODO: Add "Morph speedup" bonus maybe?
+                --Spring.Echo("Progress: "..progress)
+                upgradingUnits[idx] = { unitID = unitID, progress = progress }
+                spSetUnitRulesParam(unitID,unitRulesParamName, progress)
+                if progress >= 1.0 then
+                    finishUpgrade(idx, unitID)
+                end
             end
-            Spring.Echo("Count: "..#upgradingUnits)
-            finishUpgrade(unitID)
         end
-
-        --for _,data in ipairs(upgradingUnits) do
-        --    local unitID = data.unitID
-        --    local progress = data.progress
-        --    Spring.Echo("Unit: "..unitID.." progress: "..progress)
-        --    if spUseUnitResource(unitID, { ["m"] = metalCost/upgradeTime, ["e"] = energyCost/upgradeTime }) then
-        --        local progress = progress + 1 / upgradeTime -- TODO: Add "Morph speedup" bonus maybe?
-        --        upgradingUnits[unitID] = progress
-        --        spSetUnitRulesParam(unitID,"upgrade", progress)
-        --        if progress >= 1.0 then
-        --            finishUpgrade(unitID)
-        --        end
-        --    end
-        --end
     end
 --------------------------------------------------------------------------------
 --region  UNSYNCED
@@ -149,6 +183,5 @@ else
     --    action  = 'dgunupgrade',
     --    tooltip = 'Enables D-gun ability / command',
     --}
-
 
 end

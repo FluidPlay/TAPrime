@@ -605,7 +605,7 @@ local function GetMorphTooltip(unitID, unitDefID, teamID, morphDef, teamTech, un
      (morphDef.rank > unitRank) or
      (unreachedTechs and #unreachedTechs >= 1)
   then
-    tt = tt .. RedStr .. 'needs'
+    tt = tt .. RedStr .. 'requires'
     if (morphDef.tech>teamTech) then tt = tt .. ' level: ' .. morphDef.tech end
     if (morphDef.xp>unitXP)     then tt = tt .. ' xp: '    .. string.format('%.2f',morphDef.xp) end
     if (morphDef.rank>unitRank) then tt = tt .. ' rank: '  .. morphDef.rank .. ' (' .. string.format('%.2f',RankToXp(unitDefID,morphDef.rank)) .. 'xp)' end
