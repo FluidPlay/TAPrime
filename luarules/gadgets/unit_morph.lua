@@ -65,7 +65,7 @@ local spSetUnitResourcing = Spring.SetUnitResourcing
 local spAddUnitResource   = Spring.AddUnitResource
 local SpGiveOrderToUnit = Spring.GiveOrderToUnit
 
-local unitDefsData = VFS.Include("gamedata/configs/unitdefs_data.lua")  -- TA Prime all-inclusive unitDefs file format
+--local unitDefsData = VFS.Include("gamedata/configs/unitdefs_data.lua")  -- TA Prime all-inclusive unitDefs file format
 VFS.Include("gamedata/taptools.lua")
 
 -- Changes for "The Cursed"

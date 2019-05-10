@@ -114,11 +114,12 @@ assert(type(message) == "string","Argument message is of invalid type - expected
 return  stringMock
  end
 
-function Spring.MarkerAddPoint    (  x, y, z, text)
+function Spring.MarkerAddPoint    (  x, y, z, text, localOnly)
 assert(type(x) == "number","Argument x is of invalid type - expected number");
 assert(type(y) == "number","Argument y is of invalid type - expected number");
 assert(type(z) == "number","Argument z is of invalid type - expected number");
 assert(type(text) == "string","Argument text is of invalid type - expected string");
+assert(type(localOnly) == "bool","Argument text is of invalid type - expected string");
 return  numberMock
  end
 
