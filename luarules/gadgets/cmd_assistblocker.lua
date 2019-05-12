@@ -64,7 +64,7 @@ local CMD_GUARD		= CMD.GUARD
 
 -- These are the builders DefIDs to be assist-blocked
 local builderDefIDs = {
-    UnitDefNames.armck.id, UnitDefNames.corcv.id, UnitDefNames.armca.id, UnitDefNames.corca.id,
+    UnitDefNames.armck.id, UnitDefNames.armcv.id, UnitDefNames.corck.id, UnitDefNames.corcv.id, UnitDefNames.armca.id, UnitDefNames.corca.id,
 }
 local mobileUnitsBeingBuilt = {}     -- { unitID, ... }
 local basicBuilderUnits     = {}     -- { unitID, ... }
