@@ -175,7 +175,7 @@ local function RequestState(requestedstate, currentstate)
     statechg_StateChanging = true
     currentstate = statechg_DesiredState
     statechg_DesiredState = requestedstate
-    while  statechg_DesiredState ~= currentstate  do
+    while statechg_DesiredState ~= currentstate  do
         if  statechg_DesiredState == 1  then
             deactivatescr()
             currentstate = 1

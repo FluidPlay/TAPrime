@@ -53,12 +53,12 @@ local function ApplyGroupCosts(name, uDef)
     --Spring.Echo(uDef.name .." Group Size: "..groupSize)
 	if (uDef.buildcostmetal ~= nil) then
 		uDef.buildcostmetal = uDef.buildcostmetal * groupSize
-		--Spring.Echo(uDef.name.." group size = "..groupSize..", final metal cost: "..uDef.buildcostmetal)
 	end
 	if (uDef.buildcostenergy ~= nil) then
 		uDef.buildcostenergy = uDef.buildcostenergy * groupSize end
 	if (uDef.buildtime ~= nil) then
 		uDef.buildtime = uDef.buildtime * groupSize end
+	Spring.Echo(uDef.name.." group size = "..groupSize..", total m: "..uDef.buildcostmetal..", total e: "..uDef.buildcostenergy..", total buildtime: "..uDef.buildtime)
 end
 
 -- process unitdefs

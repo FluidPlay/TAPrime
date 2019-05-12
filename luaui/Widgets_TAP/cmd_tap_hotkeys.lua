@@ -75,20 +75,25 @@ function MakeBindsTable (swapYZ)
 
         -- building hotkeys
 
+        --- Metal extractors
         "bind "..Z.." buildunit_armmex",
         "bind shift+"..Z.." buildunit_armmex",
-        "bind "..Z.." buildunit_armamex",
-        "bind shift+"..Z.." buildunit_armamex",
         "bind "..Z.." buildunit_cormex",
         "bind shift+"..Z.." buildunit_cormex",
-        "bind "..Z.." buildunit_corexp",
-        "bind shift+"..Z.." buildunit_corexp",
         "bind "..Z.." buildunit_armmoho",
         "bind shift+"..Z.." buildunit_armmoho",
         "bind "..Z.." buildunit_cormoho",
         "bind shift+"..Z.." buildunit_cormoho",
-        "bind "..Z.." buildunit_cormexp",
-        "bind shift+"..Z.." buildunit_cormexp",
+        --- FARK-class units
+        "bind "..Z.." buildunit_armfark",
+        "bind shift+"..Z.." buildunit_armfark",
+        "bind "..Z.." buildunit_cormuskrat",
+        "bind shift+"..Z.." buildunit_cormuskrat",
+        --"bind "..Z.." buildunit_corfast",
+        --"bind shift+"..Z.." buildunit_corfast",
+        --"bind "..Z.." buildunit_armconsul",
+        --"bind shift+"..Z.." buildunit_armconsul",
+        --- Underwater Metal extractors
         "bind "..Z.." buildunit_coruwmex",
         "bind shift+"..Z.." buildunit_coruwmex",
         "bind "..Z.." buildunit_armuwmex",
@@ -97,15 +102,6 @@ function MakeBindsTable (swapYZ)
         "bind shift+"..Z.." buildunit_coruwmme",
         "bind "..Z.." buildunit_armuwmme",
         "bind shift+"..Z.." buildunit_armuwmme",
-        --- FARK-class units
-        "bind "..Z.." buildunit_armfark",
-        "bind shift+"..Z.." buildunit_armfark",
-        "bind "..Z.." buildunit_cormuskrat",
-        "bind shift+"..Z.." buildunit_cormuskrat",
-        "bind "..Z.." buildunit_corfast",
-        "bind shift+"..Z.." buildunit_corfast",
-        "bind "..Z.." buildunit_armconsul",
-        "bind shift+"..Z.." buildunit_armconsul",
         --- Arm Poker / Commando Mines
         "bind "..Z.." buildunit_armmine1",
         "bind shift+"..Z.." buildunit_armmine1",

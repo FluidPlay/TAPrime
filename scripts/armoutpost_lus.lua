@@ -117,7 +117,7 @@ local function Stop()
   Signal(SIG_STATECHG)
   SetSignalMask(SIG_STATECHG)  
 	SetUnitValue(COB.INBUILDSTANCE, 0)	--set INBUILDSTANCE to 0
-	DisableTowers()
+	--DisableTowers() :: Removed to prevent 'bouncing towers' after building etc
 	WaitOneFrame()
 	StartThread(RestoreAfterDelay)
 end
@@ -161,6 +161,7 @@ local function InitState()
 	end
 	EnableTowers()
 end
+
 function script.StartBuilding(heading, pitch)
 	HeadingAngle = heading
 	StartThread(RequestState, 0)
@@ -174,8 +175,6 @@ function script.QueryNanoPiece(piecenum)
 	piecenum = emitnano
 	return piecenum
 end
-
-
 
 local function SweetSpot(piecenum)
 	piecenum = aim
