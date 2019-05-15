@@ -27,12 +27,13 @@ if gadgetHandler:IsSyncedCode() then
     ---- SYNCED
     -----------------
 
-    local spGetUnitDefID = Spring.GetUnitDefID
     --local spGetAllUnits	= Spring.GetAllUnits
     --local spGetUnitIsCloaked = Spring.GetUnitIsCloaked
     --local spSetUnitStealth = Spring.SetUnitStealth --spSetUnitStealth(unitID, iscloaked)
-    local spGetUnitTeam = Spring.GetUnitTeam
-    local spGetCommandQueue = Spring.GetCommandQueue
+    local spGetPlayerList = Spring.GetPlayerList
+    local spGetPlayerInfo = Spring.GetPlayerInfo
+    local spGetUnitHealth = Spring.GetUnitHealth
+    local spSetUnitRulesParam = Spring.SetUnitRulesParam
     local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
     local spEditUnitCmdDesc = Spring.EditUnitCmdDesc
     local spGetGameFrame = Spring.GetGameFrame
@@ -139,6 +140,7 @@ if gadgetHandler:IsSyncedCode() then
 
     local function startUpgrade(techProxyID, techCenterID, teamID)
         techCenters[teamID][techCenterID] = true
+        spSetUnitRulesParam(techCenterID,"upgrade", 0)
         --Spring.Echo("starting upgrade; techCenter ID: "..(techCenterID or "nil").." techProxy ID: "..(techProxyID or "nil"))
         setUpgradeState(teamID, "upgrading", techCenterID, techProxyID)
         --WG.upgrades = {} -- { techID = { techCenter = unitID, status = "nonupgraded"|"upgrading"|"upgraded", ...},..}
@@ -191,6 +193,25 @@ if gadgetHandler:IsSyncedCode() then
         SendToUnsynced("upgradeEvent", upgradeName, nil, nil, unitTeam, "nonupgraded")
     end
 
+    function gadget:GameFrame()
+        local frame = spGetGameFrame()
+        if frame % 5 > 0.001 then
+            return end
+        --- Check for all team tech proxies progresses (health)
+        for _,playerID in ipairs(spGetPlayerList()) do
+            --name,active,spectator,teamID,allyTeamID,ping
+            local teamID = select(4, spGetPlayerInfo(playerID))
+            --upgradestate { [unitTeam] = { techCenterID = unitID, techProxyID = unitID,
+            --                 status = "nonupgraded"|"upgrading"|"upgraded" }, ... }
+            if upgradeState[teamID] and upgradeState[teamID].status == "upgrading" then
+                local techProxyID = upgradeState[teamID].techProxyID
+                -- health, maxHealth, paralyzeDamage, captureProgress, buildProgress
+                local buildProgress = select(5, spGetUnitHealth(techProxyID))
+                spSetUnitRulesParam(upgradeState[teamID].techCenterID,"upgrade", buildProgress)
+            end
+        end
+    end
+
     function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions)
         ----Below returns a given cmdID index in the command queue
         ----local cmdIndex = Spring.GetCmdDescIndex(-UnitDefNames.peewee.id)
@@ -225,7 +246,8 @@ if gadgetHandler:IsSyncedCode() then
         end
 
         SendToUnsynced("upgradeEvent", upgradeName, nil, nil, unitTeam, "upgraded")
-
+        -- disable upgrade progress bar
+        spSetUnitRulesParam(upgradeState[unitTeam].techCenterID,"upgrade", nil)
         setUpgradeState(unitTeam, "upgraded", nil, nil)
         spDestroyUnit(unitID,false,true)    -- Remove the proxy unit instantly (won't deadlock since TechProxyId was set to nil)
 

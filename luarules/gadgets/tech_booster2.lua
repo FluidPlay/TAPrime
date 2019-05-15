@@ -19,17 +19,20 @@ if gadgetHandler:IsSyncedCode() then
     ---- SYNCED
     -----------------
 
-    local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
-    local spEditUnitCmdDesc = Spring.EditUnitCmdDesc
     local spGetGameFrame = Spring.GetGameFrame
+    local spGetPlayerList = Spring.GetPlayerList
+    local spGetPlayerInfo = Spring.GetPlayerInfo
+    local spGetUnitHealth = Spring.GetUnitHealth
     local spDestroyUnit = Spring.DestroyUnit
     local spMarkerAddPoint = Spring.MarkerAddPoint--(x,y,z,"text",local? (1 or 0))
     local spGetUnitPosition = Spring.GetUnitPosition
     local spSendMessageToTeam = Spring.SendMessageToTeam
+    local spSetUnitRulesParam = Spring.SetUnitRulesParam
 
     local techCenters = {}      -- techCenters[ownerTeam][unitID]
     local upgradeState = {}     -- { [unitTeam] = { techCenterID = unitID, techProxyID = unitID,
-                                --                  status = "nonupgraded","upgrading","upgraded" }, ... }
+    --                  status = "nonupgraded"|"upgrading"|"upgraded" }, ... }
+
     --local CMD_CAPTURE = CMD.CAPTURE
     local internalMsg = "upgradeEvent"
     local upgradeName = "booster2"
@@ -49,7 +52,7 @@ if gadgetHandler:IsSyncedCode() then
         [UnitDefNames["cortech4"].id] = true,
     }
 
-    local techProxycmdID = -UnitDefNames["techcapture"].id  -- This is the proxy unit's build CmdID
+    local techProxycmdID = -UnitDefNames["techbooster2"].id  -- This is the proxy unit's build CmdID
 
     local function setUpgradeState(teamID, status, techCenterID, techProxyID)
         upgradeState[teamID] = { status = status, techCenterID = techCenterID, techProxyID = techProxyID }
@@ -76,6 +79,7 @@ if gadgetHandler:IsSyncedCode() then
 
     local function startUpgrade(techProxyID, techCenterID, teamID)
         techCenters[teamID][techCenterID] = true
+        spSetUnitRulesParam(techCenterID,"upgrade", 0)
         setUpgradeState(teamID, "upgrading", techCenterID, techProxyID)
     end
 
@@ -96,7 +100,7 @@ if gadgetHandler:IsSyncedCode() then
     end
 
     function gadget:UnitCreated(unitID, unitDefID, unitTeam, builderID)
-        --- If upgrade is already completely, we have nothing to do here
+        --- If upgrade is already completed, we have nothing to do here
         if not isUpgradedTeam(unitTeam) then
             --- Check for tech proxies being built, to set upgrade state accordingly
             if isTechProxy(unitDefID) then
@@ -109,6 +113,25 @@ if gadgetHandler:IsSyncedCode() then
     local function cancelUpgrade(unitTeam)
         setUpgradeState(unitTeam,"nonupgraded", nil, nil)
         SendToUnsynced(internalMsg, upgradeName, nil, nil, unitTeam, "nonupgraded")
+    end
+
+    function gadget:GameFrame()
+        local frame = spGetGameFrame()
+        if frame % 5 > 0.001 then
+            return end
+        --- Check for all team tech proxies progresses (health)
+        for _,playerID in ipairs(spGetPlayerList()) do
+            --name,active,spectator,teamID,allyTeamID,ping
+            local teamID = select(4, spGetPlayerInfo(playerID))
+            --upgradestate { [unitTeam] = { techCenterID = unitID, techProxyID = unitID,
+            --                 status = "nonupgraded"|"upgrading"|"upgraded" }, ... }
+            if upgradeState[teamID] and upgradeState[teamID].status == "upgrading" then
+                local techProxyID = upgradeState[teamID].techProxyID
+                -- health, maxHealth, paralyzeDamage, captureProgress, buildProgress
+                local buildProgress = select(5, spGetUnitHealth(techProxyID))
+                spSetUnitRulesParam(upgradeState[teamID].techCenterID,"upgrade", buildProgress)
+            end
+        end
     end
 
     function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions)
@@ -135,16 +158,17 @@ if gadgetHandler:IsSyncedCode() then
         local x,y,z = spGetUnitPosition(unitID)
         if x and y and z then
             spMarkerAddPoint(x,y,z,"", true) -- local message/marker
-            spSendMessageToTeam(unitTeam, color_yellow.."Upgrade Finished: ".. upgradeName)
+            spSendMessageToTeam(unitTeam, color_yellow.."Upgrade Complete: ".. upgradeName)
         end
 
         SendToUnsynced(internalMsg, upgradeName, nil, nil, unitTeam, "upgraded")
+        -- disable upgrade progress bar
+        spSetUnitRulesParam(upgradeState[unitTeam].techCenterID,"upgrade", nil)
         setUpgradeState(unitTeam, "upgraded", nil, nil)
         spDestroyUnit(unitID,false,true)    -- Remove the proxy unit instantly (won't deadlock since TechProxyId was set to nil)
 
         --- Actually provides Tech (@ cmd_multi_tech) here
         GG.TechGrant(upgradeName, unitTeam, true)   -- Init = non-unit provided
-        --Spring.Echo("Tech Granted: "..upgradeName)
         -- This is of no interest anymore, clean it up
         techCenters[unitTeam] = nil
     end
@@ -157,7 +181,7 @@ if gadgetHandler:IsSyncedCode() then
         if isTeamTechProxy(unitID, unitTeam) then
             --Spring.Echo("WIP tech proxy destroyed, team: "..unitTeam)
             cancelUpgrade(unitTeam)
-        -- Below is never happening, probably because the techProxy is destroyed first
+            -- Below is never happening, probably because the techProxy is destroyed first
         elseif upgradeState[unitTeam].techCenterID == unitID then
             --Spring.Echo("WIP upgrade's tech center destroyed")
             cancelUpgrade(unitTeam)
@@ -171,9 +195,9 @@ if gadgetHandler:IsSyncedCode() then
     end
 
 else
------------------
----- UNSYNCED
------------------
+    -----------------
+    ---- UNSYNCED
+    -----------------
 
     local internalMsg = "upgradeEvent"
     local externalMsg = "upgradeUIEvent3"
