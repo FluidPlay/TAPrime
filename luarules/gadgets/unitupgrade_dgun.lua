@@ -14,7 +14,6 @@ VFS.Include("gamedata/taptools.lua")
 
 if gadgetHandler:IsSyncedCode() then
 
-
     CMD.UPG_DGUN = 41999
     CMD_UPG_DGUN = 41999
 
@@ -72,7 +71,7 @@ if gadgetHandler:IsSyncedCode() then
         -- Require Tech1 for Upgrade
         if cmdID == CMD_UPG_DGUN and (not upgradedUnits[unitID]) then
             if hasPrereq(unitTeam) then
-                Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
+                --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
                 upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0 }
                 spSetUnitRulesParam(unitID,unitRulesParamName, 0)
             else

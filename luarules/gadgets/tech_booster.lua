@@ -22,10 +22,12 @@ if gadgetHandler:IsSyncedCode() then
     local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
     local spEditUnitCmdDesc = Spring.EditUnitCmdDesc
     local spGetGameFrame = Spring.GetGameFrame
+    local spGetUnitHealth = Spring.GetUnitHealth
     local spDestroyUnit = Spring.DestroyUnit
     local spMarkerAddPoint = Spring.MarkerAddPoint--(x,y,z,"text",local? (1 or 0))
     local spGetUnitPosition = Spring.GetUnitPosition
     local spSendMessageToTeam = Spring.SendMessageToTeam
+    local spSetUnitRulesParam = Spring.SetUnitRulesParam
 
     local techCenters = {}      -- techCenters[ownerTeam][unitID]
     local upgradeState = {}     -- { [unitTeam] = { techCenterID = unitID, techProxyID = unitID,
@@ -76,6 +78,7 @@ if gadgetHandler:IsSyncedCode() then
 
     local function startUpgrade(techProxyID, techCenterID, teamID)
         techCenters[teamID][techCenterID] = true
+        spSetUnitRulesParam(techCenterID,"upgrade", 0)
         setUpgradeState(teamID, "upgrading", techCenterID, techProxyID)
     end
 
@@ -96,7 +99,7 @@ if gadgetHandler:IsSyncedCode() then
     end
 
     function gadget:UnitCreated(unitID, unitDefID, unitTeam, builderID)
-        --- If upgrade is already completely, we have nothing to do here
+        --- If upgrade is already completed, we have nothing to do here
         if not isUpgradedTeam(unitTeam) then
             --- Check for tech proxies being built, to set upgrade state accordingly
             if isTechProxy(unitDefID) then
@@ -109,6 +112,18 @@ if gadgetHandler:IsSyncedCode() then
     local function cancelUpgrade(unitTeam)
         setUpgradeState(unitTeam,"nonupgraded", nil, nil)
         SendToUnsynced(internalMsg, upgradeName, nil, nil, unitTeam, "nonupgraded")
+    end
+
+    function gadget:GameFrame()
+        local frame = spGetGameFrame()
+        if frame % 15 > 0.001 then
+            return end
+        --- Check for all team tech proxies progresses (health)
+        --local _, _, _, _, buildProgress = spGetUnitHealth(unitID)
+
+        --isTeamTechProxy(unitID, unitTeam)
+        --( number unitID ) -> nil | number health, number maxHealth, number paralyzeDamage,
+        --number captureProgress, number buildProgress
     end
 
     function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions)
