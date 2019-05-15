@@ -34,6 +34,7 @@ local UnitTeam = Spring.GetUnitTeam
 
 
 local COM_BLAST = WeaponDefNames['commanderexplosion'].id
+local COM_BLAST2 = WeaponDefNames['commanderexplosion2'].id
 
 local DGUN = {
 	[WeaponDefNames['armcom_disintegrator'].id] = true,
@@ -94,7 +95,8 @@ weaponID, projectileID, attackerID, attackerDefID, attackerTeam)
 			DestroyUnit(attackerID,false,false,unitID)
 			return combombDamage, 0
 		end
-	elseif (weaponID == COM_BLAST and COMMANDER[unitDefID]) and ((CommCount(UnitTeam(unitID)) <= 1) and (CommCount(UnitTeam(attackerID)) <= 1)) then
+	elseif ((weaponID == COM_BLAST or weaponID == COM_BLAST2) and COMMANDER[unitDefID])
+            and ((CommCount(UnitTeam(unitID)) <= 1) and (CommCount(UnitTeam(attackerID)) <= 1)) then
 		if unitID ~= attackerID then
 			-- make unitID immune to DGun
 			immuneDgunList[unitID] = GetGameFrame() + 45

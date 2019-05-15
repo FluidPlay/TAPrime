@@ -45,7 +45,15 @@ local commanderExplosionEMPparams = {weaponDef = WeaponDefNames['commanderexplos
                                      craterAreaOfEffect = 50,
                                      damageAreaOfEffect = 720,
                                      edgeEffectiveness = 1,
-                                     explosionSpeed = 450,}
+                                     explosionSpeed = 900,}
+
+--local commanderExplosionparams = {weaponDef = WeaponDefNames['commanderexplosion'].id,
+--                                     hitUnit = 999999,
+--                                     hitFeature = 1,
+--                                     craterAreaOfEffect = 50,
+--                                     damageAreaOfEffect = 720,
+--                                     edgeEffectiveness = 1,
+--                                     explosionSpeed = 900,}
 
 local teamCEG = {} --teamCEG[tID] = cegID of commander blast for that team
 
@@ -90,7 +98,9 @@ function gadget:UnitDestroyed(unitID, unitDefID, teamID, attackerID, attackerDef
     -- If it was actually killed/selfD-ed, spawn CEG and EMP explosion
     Spring.SpawnCEG(teamCEG[teamID], x,y,z, 0,0,0, 0, 0)
     --Spring.SpawnExplosion(firex, firey, firez, 0, 0, 0, treefireExplosion[featureinfo.size])
+    --Spring.SpawnExplosion (x,y,z, 0, 0, 0, commanderExplosionparams)
     Spring.SpawnExplosion (x,y,z, 0, 0, 0, commanderExplosionEMPparams)
+    Spring.UnitWeaponFire(unitID, WeaponDefNames['commanderexplosionemp'].id)
 end
 
 

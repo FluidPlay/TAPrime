@@ -10,7 +10,7 @@
 local damageMultipliers = {
 
 	bullet={ 	peon = 1,		rpg = 1.5,		stalwart = 0.45,aiv = 0.45,			tank = 0.3,		artillery = 0.5,
-				fighter = 0.4,	gunship = 2,	bomber = 1.5, 	structure = 0.75, 	defense = 0.263,defenseaa = 0.35, 	commander = 0.35,
+				fighter = 0.4,	gunship = 2,	bomber = 1.5, 	structure = 0.75, 	defense = 0.263,defenseaa = 0.35, 	commander = 0.3,
 				invader = 0.75,	heavybot = 0.6,	assault = 0.25,	heavyveh = 1,	    resource = 0.25,
 	}
 ,
@@ -79,7 +79,7 @@ local damageMultipliers = {
 				invader = 0.4, 	heavybot = 0.25,assault = 1.25,	heavyveh = 1.75,    resource = 0.75,
 	}
 ,
-	omni={ 	    peon = 1.01, 	    rpg = 1, 		stalwart = 1, 	aiv = 1, 			tank = 2, 	artillery = 1.5,
+	omni={ 	    peon = 1.01, 	    rpg = 1, 	stalwart = 1, 	aiv = 1, 			tank = 2, 	artillery = 1.5,
 				fighter = 2, 	gunship = 2, 	bomber = 2, 	structure = 1, 		defense = 1, 	defenseaa = 1, 		commander = 1.5,
 				invader = 1, 	heavybot = 1, 	assault = 1,	heavyveh = 1,		resource = 1,
 	}
