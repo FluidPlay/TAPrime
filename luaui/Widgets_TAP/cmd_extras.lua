@@ -87,8 +87,8 @@ function Costmatch(command)
 	if udef1 ~= nil and udef2 ~= nil then
 		local udef1mcost, udef2mcost = udef1.metalCost, udef2.metalCost
 		local function checkGroupSize(udef, mcost)
-			if udef.customParams and udef.customParams.groupsize then
-				local udefgroupSize = tonumber(udef.customParams.groupsize)
+			if udef.customParams and udef.customParams.groupdef__size then
+				local udefgroupSize = tonumber(udef.customParams.groupdef__size)
 				if udefgroupSize and udefgroupSize > 1 then
 					mcost = mcost / udefgroupSize
 				end
