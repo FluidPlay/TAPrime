@@ -245,7 +245,11 @@ local function removeUnseenTarget(targetData,attackerAllyTeam)
 end
 
 local function distance(posA,posB)
-	diag(posA[1]-posB[1],posA[2]-posB[2],posA[3]-posB[3])
+    if posA[1] and posB[1] and posA[2] and posB[2] and posA[3] and posB[3] then
+        return diag(posA[1]-posB[1],posA[2]-posB[2],posA[3]-posB[3])
+    else
+        return 0
+    end
 end
 
 --------------------------------------------------------------------------------
