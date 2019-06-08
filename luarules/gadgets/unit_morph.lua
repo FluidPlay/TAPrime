@@ -974,8 +974,9 @@ local function FinishMorph(unitID, morphData)
   else
 	newUnit = spCreateUnit(defName, px, py, pz, face, unitTeam)
 	--Spring.SetUnitRotation(newUnit, 0, -h * math.pi / 32768, 0)
-	spSetUnitPosition(newUnit, px, py, pz)
-  end  
+    if newUnit then
+        spSetUnitPosition(newUnit, px, py, pz) end
+  end
   
   if (extraUnitMorphDefs[unitID] ~= nil) then
     -- nothing here for now
