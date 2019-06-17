@@ -2,7 +2,7 @@ function gadget:GetInfo()
     return {
         name = "ReverseMovementHandler",
         desc = "Sets reverse speeds/angles/distances",
-        author = "[Fx]Doo",
+        author = "[Fx]Doo, modified by MaDDoX to support slowdown_when_damaged.lua",
         date = "27 of July 2017",
         license = "Free",
         layer = 0,
@@ -10,6 +10,7 @@ function gadget:GetInfo()
     }
 end
 
+local spGetUnitRulesParam = Spring.GetUnitRulesParam
 
 if (gadgetHandler:IsSyncedCode()) then
     reverseUnit = {}
@@ -37,13 +38,13 @@ if (gadgetHandler:IsSyncedCode()) then
 
     function gadget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions, cmdTag, synced)
         if reverseUnit[unitID] then
-            refreshList[unitID] = unitDefID
+           refreshList[unitID] = unitDefID
         end
     end
 
     function gadget:UnitIdle(unitID, unitDefID)
         if reverseUnit[unitID] then
-            refreshList[unitID] = unitDefID
+           refreshList[unitID] = unitDefID
         end
     end
 
@@ -56,11 +57,13 @@ if (gadgetHandler:IsSyncedCode()) then
     function gadget:GameFrame(f)
         for unitID, unitDefID in pairs(refreshList) do
             local cmd = Spring.GetUnitCommands(unitID, 1)
+            local damagedSpeed = spGetUnitRulesParam(unitID, "damagedSpeed")
+            local damagedrSpeed = spGetUnitRulesParam(unitID, "damagedrSpeed")
             if cmd and cmd[1] and cmd[1]["options"] and cmd[1]["options"].ctrl then
-                Spring.MoveCtrl.SetGroundMoveTypeData(unitID, "maxSpeed", UnitDefs[unitDefID].rSpeed)
-                Spring.MoveCtrl.SetGroundMoveTypeData(unitID, "maxReverseSpeed", UnitDefs[unitDefID].rSpeed)
+                Spring.MoveCtrl.SetGroundMoveTypeData(unitID, "maxSpeed", damagedrSpeed or UnitDefs[unitDefID].rSpeed)
+                Spring.MoveCtrl.SetGroundMoveTypeData(unitID, "maxReverseSpeed", damagedrSpeed or UnitDefs[unitDefID].rSpeed)
             else
-                Spring.MoveCtrl.SetGroundMoveTypeData(unitID, "maxSpeed", UnitDefs[unitDefID].speed)
+                Spring.MoveCtrl.SetGroundMoveTypeData(unitID, "maxSpeed", damagedSpeed or UnitDefs[unitDefID].speed)
                 Spring.MoveCtrl.SetGroundMoveTypeData(unitID, "maxReverseSpeed", 0)
             end
             refreshList[unitID] = nil

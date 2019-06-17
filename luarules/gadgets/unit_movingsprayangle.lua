@@ -3,6 +3,7 @@
 ---
 --- file: unit_movingsprayangle.lua
 --- brief: Reads 'customParams.movingsprayangle' and applies it when unit is moving
+---        also "flattens" the height of some high movingaccuracy weapons
 --- author: Breno 'MaDDoX' Azevedo
 --- DateTime: 4/11/2018 1:42 AM
 ---
@@ -33,6 +34,20 @@ local spGetUnitVelocity     = Spring.GetUnitVelocity
 local spGetUnitDefID        = Spring.GetUnitDefID
 local updateRate = 5    -- how Often, in frames, to update the value
 local minMoveSpeed = 1  -- move speed above which the custom sprayangle will kick in
+local spGetProjectileDefID = Spring.GetProjectileDefID
+local spSetProjectileVelocity = Spring.SetProjectileVelocity
+local spGetProjectileVelocity = Spring.GetProjectileVelocity
+
+local armfavweapID = WeaponDefNames["armfav_janus_rocket"].id
+
+
+local trackedWeapIDs = {
+    armfav_janus_rocket = true,
+    corlevlr_corlevlr_weapon = true,
+    armyork_mobileflak = true,
+    corsent_mobileflak = true,
+    armflash_emgx = true,
+}
 
 -- Synced only
 if not gadgetHandler:IsSyncedCode() then
@@ -75,6 +90,23 @@ function gadget:GameFrame(f)
 --        else -- restore to unitDef (default) sprayangle
 --            spSetUnitWeaponState (unitID, 1, "sprayAngle", sprayangleData.sprayangle)
 --        end
+    end
+end
+
+local function isTrackedWeapon(wDefID)
+    for weapID, _ in pairs(trackedWeapIDs) do
+        if WeaponDefNames[weapID].id == wDefID then
+            return true
+        end
+    end
+    return false
+end
+
+function gadget:ProjectileCreated(projID, proOwnerID, weaponDefID)
+    local wDefID = spGetProjectileDefID(projID)
+    if isTrackedWeapon(wDefID) then
+        local velx, vely, velz = spGetProjectileVelocity( projID )
+        spSetProjectileVelocity(projID, velx, 0, velz)
     end
 end
 
