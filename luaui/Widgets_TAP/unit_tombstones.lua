@@ -19,18 +19,14 @@ end
 
 local tombstones = {}
 local commanders = {}
+local spGetUnitRulesParam = Spring.GetUnitRulesParam
+
 for udefID,def in ipairs(UnitDefs) do
   if def.name == 'armstone' then
     armstoneUdefID = udefID
   end
   if def.name == 'corstone' then
     corstoneUdefID = udefID
-  end
-  if def.name == 'armstone_bar' then
-    armstone_barUdefID = udefID
-  end
-  if def.name == 'corstone_bar' then
-    corstone_barUdefID = udefID
   end
   if def.customParams.iscommander ~= nil then
     commanders[def.name] = true
@@ -46,21 +42,15 @@ end
 
 function widget:UnitDestroyed(unitID, unitDefID, unitTeam)
   local ud = UnitDefs[unitDefID]
-  if (ud ~= nil and commanders[ud.name] ~= nil) then
-    local x,y,z = Spring.GetUnitPosition(unitID)
-    local tombstoneUdefID = armstoneUdefID
-    if ud.name == 'corcom' then
-      tombstoneUdefID = corstoneUdefID
-    elseif ud.name == 'corcom_bar' then
-      tombstoneUdefID = corstone_barUdefID
-    elseif ud.name == 'armcom_bar' then
-      tombstoneUdefID = armstone_barUdefID
-    end
-    --if Spring.GetModOptions ~= nil and (tonumber(Spring.GetModOptions().barmodels) or 0) == 1 then
-    --  z = z - 50
-    --end
-    tombstones[#tombstones+1] = {tombstoneUdefID, unitTeam, x,Spring.GetGroundHeight(x,z),z, ((math.random()-0.5)*25), (14 + (math.random()*14)), ((math.random()-0.5)*18)}
+  -- Only deal with destroyed commanders which weren't morphed into
+  if ud == nil or commanders[ud.name] == nil or spGetUnitRulesParam(unitID, "wasmorphed") == 1 then
+    return end
+  local x,y,z = Spring.GetUnitPosition(unitID)
+  local tombstoneUdefID = armstoneUdefID
+  if ud.name == 'corcom' then
+    tombstoneUdefID = corstoneUdefID
   end
+  tombstones[#tombstones+1] = {tombstoneUdefID, unitTeam, x, Spring.GetGroundHeight(x,z),z, ((math.random()-0.5)*25), (14 + (math.random()*14)), ((math.random()-0.5)*18)}
 end
 
 

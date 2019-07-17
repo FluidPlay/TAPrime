@@ -48,6 +48,15 @@ if gadgetHandler:IsSyncedCode() then
     local spUseUnitResource     = Spring.UseUnitResource
     local spGetUnitPosition     = Spring.GetUnitPosition
 
+    local ADVCOMMANDER = {
+        [UnitDefNames["corcom2"].id] = true,
+        [UnitDefNames["corcom3"].id] = true,
+        [UnitDefNames["corcom4"].id] = true,
+        [UnitDefNames["armcom2"].id] = true,
+        [UnitDefNames["armcom3"].id] = true,
+        [UnitDefNames["armcom4"].id] = true,
+    }
+
     local UpgradeCmdDesc = {
         id      = CMD_UPG_DGUN,
         name    = 'Upg D-Gun',
@@ -156,11 +165,14 @@ if gadgetHandler:IsSyncedCode() then
     --end
 
     function gadget:UnitCreated(unitID, unitDefID, unitTeam)
+        if ADVCOMMANDER[unitDefID] then
+            return end
         --Spring.Echo("created: "..unitID)
         if UnitDefs[spGetUnitDefID(unitID)].customParams.iscommander then
             --AddButton (unitID, CMD_UPG_DGUN, UpgradeBtnDesc, false, true)
 
             --spInsertUnitCmdDesc(unitID, CMD_UPG_DGUN, UpgradeBtnDesc ) --, { disabled=false } )
+            --- TODO: If it's commander2, 3 or 4, don't add the upgrade button and don't disable the manualfire button
 
             addUpdateCommand(unitID, CMD_UPG_DGUN, UpgradeCmdDesc, { req="Tech1", defCmdDesc=UpgradeCmdDesc})
             --TODO: Fix 'options' not working properly
