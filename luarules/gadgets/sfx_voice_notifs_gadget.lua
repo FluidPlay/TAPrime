@@ -13,7 +13,6 @@ function gadget:GetInfo()
     }
 end
 
-
 function GetAllyTeamID(teamID)
 	local _,_,_,_,_,allyTeamID = Spring.GetTeamInfo(teamID)
 	return allyTeamID
@@ -60,7 +59,6 @@ function PlayersInTeamID(teamID)
 	local players = Spring.GetPlayerList(teamID)
 	return players
 end
-
 
 if gadgetHandler:IsSyncedCode() then
 

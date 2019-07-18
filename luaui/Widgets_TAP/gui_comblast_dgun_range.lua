@@ -400,9 +400,9 @@ function widget:DrawWorldPreUnit()
 						--glColor(1, 0, 1, .13*lineOpacityMultiplier*opacityMultiplier)
 						--glBeginEnd(GL.LINE_LOOP, drawBlast, center[1], center[2], center[3], dgunRange+((blastRadius-dgunRange)*0.83))-- comblast > 1k
 
+                        glColor(0.75, 0, 0.3, 0.5*lineOpacityMultiplier*opacityMultiplier) --1,0,0
                         glLineWidth(2.7-lineWidthMinus)
-                        glColor(1, 0, 0, 0.5*lineOpacityMultiplier*opacityMultiplier)
-
+                        -- Blast radius color
 						glBeginEnd(GL.LINE_LOOP, drawBlast, center[1], center[2], center[3], blastRadius)-- comblast = 0k
 					end)
 				end

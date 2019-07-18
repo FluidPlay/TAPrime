@@ -46,6 +46,7 @@ local spGetUnitDefID 	= Spring.GetUnitDefID
 local spValidUnitID		= Spring.ValidUnitID
 local spDestroyUnit		= Spring.DestroyUnit 
 local spGetGameFrame	= Spring.GetGameFrame
+local spGetUnitRulesParam = Spring.GetUnitRulesParam
 
 local numX = Game.mapX-1
 local numZ = Game.mapY-1
@@ -201,7 +202,8 @@ end
 
 
 function gadget:UnitFinished(unitID, unitDefID, teamID, builderID)
-	if hadArmageddon and unitDefID~=meteorDefID then
+    -- Just morphed-into units shouldn't be destroyed
+	if hadArmageddon and unitDefID~=meteorDefID and spGetUnitRulesParam(unitID, "wasmorphed") ~= 1 then
 		local n = spGetGameFrame()
 		if not toKill[n+1] then toKill[n+1] = {} end
 		local k = #(toKill[n+1])+1

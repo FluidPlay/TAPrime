@@ -59,8 +59,6 @@ local spInsertUnitCmdDesc = Spring.InsertUnitCmdDesc
 local spGetTeamColor = Spring.GetTeamColor
 local spGetUnitViewPosition = Spring.GetUnitViewPosition
 local spIsUnitInView = Spring.IsUnitInView
-local spGetUnitRulesParam   = Spring.GetUnitRulesParam
-local spSetUnitRulesParam   = Spring.SetUnitRulesParam
 local spSetUnitResourcing = Spring.SetUnitResourcing
 local spAddUnitResource   = Spring.AddUnitResource
 local SpGiveOrderToUnit = Spring.GiveOrderToUnit
@@ -974,8 +972,9 @@ local function FinishMorph(unitID, morphData)
   else
 	newUnit = spCreateUnit(defName, px, py, pz, face, unitTeam)
 	--Spring.SetUnitRotation(newUnit, 0, -h * math.pi / 32768, 0)
-	spSetUnitPosition(newUnit, px, py, pz)
-  end  
+    if newUnit then
+        spSetUnitPosition(newUnit, px, py, pz) end
+  end
   
   if (extraUnitMorphDefs[unitID] ~= nil) then
     -- nothing here for now
@@ -1671,7 +1670,7 @@ local GL_ONE_MINUS_SRC_ALPHA = GL.ONE_MINUS_SRC_ALPHA
 local GL_COLOR_BUFFER_BIT = GL.COLOR_BUFFER_BIT
 
 local UItextColor = {1.0, 1.0, 0.6, 1.0}
-local UItextSize = 14.0
+local UItextSize = 12.0
 
 local headingToDegree = (360 / 65535)
 
@@ -1950,7 +1949,7 @@ function gadget:DrawWorld()
       glTranslate(ux, uy, uz)
       glBillboard()
       glColor(UItextColor)
-      glText("[" .. i.."]", 20.0, -15.0, UItextSize, "cno")
+      glText("[" .. i.."]", 20.0, -25.0, UItextSize, "cno")
       glPopMatrix()
     end
   end
