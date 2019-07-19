@@ -64,9 +64,9 @@ local damageMultipliers = {
 				invader = 1.5,	heavybot = 0.5, assault = 0.75,	heavyveh = 1.2,		resource = 1.25,
 	}
 ,
-	flak={ 		peon = 0.75, 	rpg = 0.4, 		stalwart = 0.3, aiv = 0.75,			tank = 0.275, 	artillery = 0.75,
-				  fighter = 1, 	gunship = 0.75, bomber = 0.3, 	structure = 1, 		defense = 0.3, 	defenseaa = 0.8,	commander = 0.5,
-				  invader = 1, 	heavybot = 1.25,assault = 0.5,	heavyveh = 0.3,		resource = 0.25,
+	flak={ 		peon = 0.75, 	rpg = 0.4, 		stalwart = 0.2, aiv = 0.75,			tank = 0.275, 	artillery = 0.75,
+				fighter = 1, 	gunship = 0.75, bomber = 0.3, 	structure = 1, 		defense = 0.3, 	defenseaa = 0.8,	commander = 0.15,
+				invader = 1, 	heavybot = 1.25,assault = 0.5,	heavyveh = 0.3,		resource = 0.25,
 	}
 ,
 	rail={ 		peon = 1,		rpg = 1.4,		stalwart = 0.8,	aiv = 0.15,			tank = 1.2,		artillery = 0.35,
