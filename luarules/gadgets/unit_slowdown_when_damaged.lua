@@ -31,10 +31,10 @@ local spSetUnitRulesParam = Spring.SetUnitRulesParam
 local trackedUnits = {} -- Ground vehicles
 local damagedUnits = {} -- Ground vehicles
 
-local slowdownHealthThreshold = 0.35
+local slowdownHealthThreshold = 0.3  -- 0.35
 
 local turnrateReductionFactor = 0.75
-local maxspeedReductionFactor = 0.6
+local maxspeedReductionFactor = 0.7  -- 0.6
 
 local updateCheckRate = 7
 
