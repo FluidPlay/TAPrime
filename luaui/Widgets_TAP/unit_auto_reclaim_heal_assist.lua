@@ -77,7 +77,8 @@ function widget:GameFrame(n)
                    --Spring.Echo("Necroing")
                    orderUnit(unitID, CMD_FIGHT, { x, y, z }, {"alt"})   --'alt' autoressurects if available
                 else
-                   orderUnit(unitID, CMD_FIGHT, { x, y, z }, {})   --command unit to reclaim
+					orderUnit(unitID, CMD_PATROL, { x, y, z }, {"meta"} ) --shift and {"meta", "shift"} or
+                   --orderUnit(unitID, CMD_FIGHT, { x, y, z }, {})   --command unit to reclaim
                 end
             end
         end
