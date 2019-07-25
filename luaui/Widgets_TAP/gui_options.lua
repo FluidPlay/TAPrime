@@ -2647,7 +2647,7 @@ function widget:GetConfigData(data)
 		sndvolbattle = {'snd_volbattle', tonumber(Spring.GetConfigInt("snd_volbattle",40) or 40)},
 		sndvolunitreply = {'snd_volunitreply', tonumber(Spring.GetConfigInt("snd_volunitreply",40) or 40)},
 		sndvolmusic = {'snd_volmusic', tonumber(Spring.GetConfigInt("snd_volmusic",40) or 40)},
-		guiopacity = {'ui_opacity', tonumber(Spring.GetConfigFloat("ui_opacity",0.66) or 0.66)},
+		guiopacity = {'ui_opacity', tonumber(Spring.GetConfigFloat and (Spring.GetConfigFloat("ui_opacity",0.66) or 0.66) or 0.66)},
 	}
 	return savedTable
 end
