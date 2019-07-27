@@ -34,7 +34,7 @@ function widget:GetInfo()
 		date = "Nov 21, 2010", --Nov 7, 2013
 		license = "GPLv3",
 		layer = 0,
-		enabled = true,
+		enabled = false,
 	}
 end
 
@@ -60,7 +60,7 @@ local necros = {
 }
 
 
-myTeamID=-1;
+local myTeamID=-1;
 --------------------------------------------------------------------------------------
 
 
@@ -78,29 +78,30 @@ end
 
 --Give reclaimers the FIGHT command every second
 function widget:GameFrame(n)
-	if not (n%30 < 0.001) then
+	if not (n%7 < 0.001) then
         return end
     if WG.Cutscene and WG.Cutscene.IsInCutscene() then
         return end
     for unitID in pairs(idleReclaimers) do
         --Spring.Echo("unitID: "..unitID)
-        if not isUnitSelected(unitID) then              --if unit is not selected
+        --if not isUnitSelected(unitID) then              --if unit is not selected
             local x, y, z = getUnitPos(unitID)                --get unit's position
             local unitDef = UnitDefs[spGetUnitDefID(unitID)]
             if unitDef ~= nil then
                 --Spring.Echo("unitDef.name: "..unitDef.name)
                 if farks[unitDef.name] then
-                   --Spring.Echo("Farking")
+                   Spring.Echo("Farking")
                    orderUnit(unitID, CMD_REPAIR, { x, y, z }, {}) --, {"alt"}
                 elseif necros[unitDef.name] then
-                   --Spring.Echo("Necroing")
+                   Spring.Echo("Necroing")
                    orderUnit(unitID, CMD_FIGHT, { x, y, z }, {"alt"})   --'alt' autoressurects if available
                 else
-					orderUnit(unitID, CMD_PATROL, { x, y, z }, {"meta"} ) --shift and {"meta", "shift"} or
+					orderUnit(unitID, CMD_PATROL, { x, y, z }, {"meta", "shift"} ) --shift and {"meta", "shift"} or
                    --orderUnit(unitID, CMD_FIGHT, { x, y, z }, {})   --command unit to reclaim
+                    Spring.Echo("Elsing")
                 end
             end
-        end
+        --end
     end
 end
 
@@ -113,7 +114,7 @@ function widget:UnitIdle(unitID, unitDefID, unitTeam)
         --Spring.Echo("unitDef.name: "..UnitDefs[unitDefID].name.." can reclaim: "..tostring(UnitDefs[unitDefID]["canReclaim"]))
         if UnitDefs[unitDefID]["canReclaim"] then		--check if unit can reclaim
             idleReclaimers[unitID]=true					--add unit to register
-            --Spring.Echo("<auto_reclaim_heal_assist>: registering unit "..unitID.." as idle "..UnitDefs[unitDefID].name)
+            Spring.Echo("<auto_reclaim_heal_assist>: registering unit "..unitID.." as idle "..UnitDefs[unitDefID].name)
 		end
 	end
 end
@@ -124,7 +125,7 @@ function widget:UnitCommand(unitID)
 	for reclaimerID in pairs(idleReclaimers) do
 		if (reclaimerID == unitID) then
 			idleReclaimers[reclaimerID]=nil
-			--Spring.Echo("<auto_reclaim_heal_assist>: unregistering unit "..reclaimerID.." as idle")
+			Spring.Echo("<auto_reclaim_heal_assist>: unregistering unit "..reclaimerID.." as idle")
 		end
 	end
 end

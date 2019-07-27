@@ -162,7 +162,7 @@ function widget:UnitIdle(unitID, unitDefID, unitTeam)
   if unitTeam ~= Spring.GetMyTeamID() or trackedUnits[unitID] == nil or trackedUnits[unitID] == "stop" then
     return end
   --TODO: Check if player is in critical-resources mode. Don't patrol if so (cancels build queue/assist)
-  local buildQueueSize = spGetCommandQueue(unitID,100)
+  local buildQueueSize = spGetCommandQueue(unitID,0) --0 == cmdqueuesize
     --Spring.Echo("Command queue size: "..buildQueueSize)
   if #buildQueueSize==0 then
     SetToPatrol(unitID, unitDefID, unitTeam, true)

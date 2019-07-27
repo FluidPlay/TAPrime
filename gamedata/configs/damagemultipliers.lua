@@ -9,12 +9,12 @@
 --
 local damageMultipliers = {
 
-	bullet={ 	peon = 1,		rpg = 1.5,		stalwart = 0.45,aiv = 0.45,			tank = 0.3,		artillery = 0.5,
+	bullet={ 	peon = 1,		rpg = 1.5,		stalwart = 0.5, aiv = 0.45,			tank = 0.3,		artillery = 0.5,
 				fighter = 0.4,	gunship = 2,	bomber = 1.5, 	structure = 0.75, 	defense = 0.263,defenseaa = 0.35, 	commander = 0.3,
 				invader = 0.75,	heavybot = 0.6,	assault = 0.25,	heavyveh = 0.5,	    resource = 0.25,
 	}
 ,
-	rocket={ 	peon = 0.2, 	rpg = 0.5, 		stalwart = 0.65,aiv = 0.6, 			tank = 3.78, 	artillery = 0.85,
+	rocket={ 	peon = 0.2, 	rpg = 0.5, 		stalwart = 0.5, aiv = 0.6, 			tank = 3.78, 	artillery = 0.85,
 				fighter = 0.3, 	gunship = 2.55, bomber = 0.5, 	structure = 0.8, 	defense = 0.6, 	defenseaa = 0.5, 	commander = 0.4,
 				invader = 0.3,	heavybot = 0.25,assault = 0.8,	heavyveh = 1.5,		resource = 0.8,
 	}
