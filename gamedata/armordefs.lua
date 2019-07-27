@@ -20,7 +20,7 @@ local armorDefs = {
 
 	defenseaa={"armrl","armatl","armcir","armdeva","armfflak","armflak","armfrt","coratl","corenaa","corerad","corflak","corfrt","corrl","madsam","armmercury","packo","corscreamer",},
 
-	heavybot={"corkrog","armmav","corcan","armsptk","armsnipe", "armmark", "armzeus", "armfboy", "cortermite", "corsumo",},
+	heavybot={"corkrog","armmav","armsptk","armsnipe", "armmark", "armzeus", "armfboy", "cortermite", "corsumo",},
 
 	heavyveh={"armsam", "cormist", "armmanni", "armjam", "corban","armpship","corpship",},
 
@@ -30,7 +30,7 @@ local armorDefs = {
 
 	rpg={"armaak","armaas","armah","armjeth","armmh","armrock","armsub","coraak","corah","corarch","corcrash","corstorm",},
 
-	stalwart={"armbanth","armbats","armcarry","armham","armorco","armraz","armvader","armwar","armepoch","corbats","corcarry","corkarg","corroach","corssub","corthud","corthovr","krogtaar","meteor","tawf009",},
+	stalwart={"armbanth","armbats","armcarry","armham","armorco","armraz","armvader","armwar","armepoch","corcan","corbats","corcarry","corkarg","corroach","corssub","corthud","corthovr","krogtaar","meteor","tawf009",},
 
 	resource={ "armsolar", "corsolar", "armmex", "cormex", "armmoho", "cormoho","armfus","corfus","armafus","corafus","armuber","coruber","armgeo","armgmm","armageo",
         "armuwmex","armuwmme","armtide","coruwmex","coruwmme","cortide",},

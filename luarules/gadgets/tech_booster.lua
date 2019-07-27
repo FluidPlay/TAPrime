@@ -52,7 +52,7 @@ if gadgetHandler:IsSyncedCode() then
         [UnitDefNames["cortech4"].id] = true,
     }
 
-    local techProxycmdID = -UnitDefNames["techbooster"].id  -- This is the proxy unit's build CmdID
+    local techProxycmdID = -UnitDefNames["techbooster1"].id  -- This is the proxy unit's build CmdID
 
     local function setUpgradeState(teamID, status, techCenterID, techProxyID)
         upgradeState[teamID] = { status = status, techCenterID = techCenterID, techProxyID = techProxyID }

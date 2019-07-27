@@ -45,10 +45,12 @@ function widget:UnitGiven(unitID, unitDefID, unitTeam, oldTeam)
 end
 
 function switchToFlyMode(unitID, unitDefID)
-    if (unitDefID == UnitDefNames["armfig"].id  or unitDefID == UnitDefNames["armsfig"].id or unitDefID == UnitDefNames["armhawk"].id or
-        unitDefID == UnitDefNames["corveng"].id or unitDefID == UnitDefNames["corsfig"].id or unitDefID == UnitDefNames["corvamp"].id) then
-        spGiveOrderToUnit(unitID, cmdFly, { 0 }, {})
-    end
+    if unitDefID == UnitDefNames["armfig"].id  or unitDefID == UnitDefNames["armsfig"].id or unitDefID == UnitDefNames["armhawk"].id or
+       unitDefID == UnitDefNames["corveng"].id or unitDefID == UnitDefNames["corsfig"].id or unitDefID == UnitDefNames["corvamp"].id or
+       unitDefID == UnitDefNames["armca"].id or unitDefID == UnitDefNames["corca"].id or
+       unitDefID == UnitDefNames["armaca"].id or unitDefID == UnitDefNames["coraca"].id
+    then
+        spGiveOrderToUnit(unitID, cmdFly, { 0 }, {}) end
 end
 
 

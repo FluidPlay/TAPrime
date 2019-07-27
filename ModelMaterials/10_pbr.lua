@@ -15,6 +15,8 @@ local function DrawUnit(unitID, material, drawMode)
 	if drawMode == normalDraw and material.customStandardUniforms then
 		gl.BlendFuncSeparate(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA, GL.ZERO, GL.ZERO)
 		local curShader = material.standardShader
+		if not curShader then
+			return end
 		for _, uniformData in pairs(material.customStandardUniforms) do
 			if not uniformData.location then
 				uniformData.location = gl.GetUniformLocation(curShader, uniformData.name)
