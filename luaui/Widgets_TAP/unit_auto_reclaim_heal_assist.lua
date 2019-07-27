@@ -7,6 +7,25 @@
 --
 -------------------------------------------------------------------------------------
 
+-- TODO: Rewrite this P-O-S like so:
+--builders = {}
+--farks = {}
+--necros = {}
+--trackedUnits = {}
+--
+--create / destroy <=> add, remove from trackedUnits
+--
+--update {
+    --if not (every n seconds) then
+    --return end
+    --
+    --for (unitID) in trackedUnits {
+        --if UnitNotMoving(unitID) and UnitHasNoOrders(unitID) then
+    --AutoAssist(unitID)
+--end
+--}
+--}
+
 function widget:GetInfo()
 	return {
 		name = "Auto Reclaim/Heal/Assist",
