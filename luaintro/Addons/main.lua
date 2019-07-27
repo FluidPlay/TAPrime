@@ -29,11 +29,13 @@ end
 
 -- Random tips we can show
 local tips = {
+    "armcom.dds ".."The D-Gun is the Commander's directed-fire ability and the most powerful weapon in the game. Upgrade it in the commander menu after your Tech Center is on level 1, then use it with the 'D' keyboard shortcut.",
 	"outpost.dds ".."To build unit factories you need an Outpost. Outposts can morph up to Tier4, with increasingly better build range and LOS.",
-    "cormuskrat.dds ".."FARKs and Muskrats are units built directly by the Outpost. They have great line of sight, can build dragon eyes (stealth remote cameras) and accelerate constructions and units being built.",
+    "cormuskrat.dds ".."FARKs and Muskrats are units built directly by the Outpost. They have good line of sight, can build dragon eyes (stealth remote cameras) and accelerate constructions and units being built.",
     "outpost.dds ".."Outposts can speed up any construction, but they're less cost effective for that than FARKs (built by the outpost) and they spend energy continuously.",
 	"armtech.dds ".."To tech up, build a Tech Center, then upgrade it progressively until Tech Tier4. This unlocks high-tier upgrades in factories and outposts as well.",
 	"armtech.dds ".."When under attack, Tech Centers can become 70% more resistant if disabled (ON/OFF button or Ctrl+X shortcut)",
+    "corraid.dds ".."Vehicles become sensibly slower when they drop below 30% health. Use that for your advantage, to prevent them from using hit-and-run tactics effectively.",
 	"corgat.dds ".."Gatlings and Flashes are terrific anti-kbot vehicles, very EMP-resistant and moderately effective against lighter gunships. When facing tanks or combos of plasma and missile kbots, don't expect them to last long.",
     "corlevlr.dds ".."Core Levelers and Arm Pokers are early game assault units. One of their unique abilities is the capacity to dodge kbot missiles when properly microed and kept moving at their top speed. Levelers can also transport kbots, including builders",
 	"armrl.dds ".."Missile towers can shoot both ground and air units, but their anti-air range and damage is much higher than when firing on land units. Nevertheless, they're the best early static response to assault vehicles and tanks.",
@@ -47,6 +49,7 @@ local tips = {
     "armgeo.dds ".."Abandoned/Neutral Geothermals might be scattered around the map and provide plenty of energy. You can capture them with commanders or with builders, after you research the 'capture' upgrade in the Tech Center.",
     "cormort.dds ".."Powerful artillery units are available after you upgrade your Tech Center to Level 1. Core's Morty is built from the kbot lab, Arm Luger from the Vehicle Plant.",
     "armpship.dds ".."Position your naval units properly during engagements. Missile ships are stronger at their rear area, while other ships are stronger at the front. Submarines are up to twice stronger at the front.",
+    "corbw.dds ".."Bladewings and Banshees are Core and Arm's drones respectively. They're available on Tier 0 air plants and in spite of their mobility, don't have a great line of sight and fly low, meaning they can be hit by any ground unit.",
 	--"To see detailed info about each unit in-game switch on \"Extensive unit info\" via Options menu",
 	--"In general, vehicles are a good choice for flat and open battlefields. Kbots are better on hills.",
 	--"For wind generators to be worth building, the average wind speed should be over 7. Current, minimum, and maximum wind speeds are shown to the right of the energy bar.",
@@ -136,7 +139,7 @@ local unit_descs = {
 	--"corshad.dds "..titleColor.."Shadow (CORE T1 Aircraft)\n"..contentColor.."A bomber designed mainly for destroying buildings. A little bit stronger than its ARM counterpart (Thunder). It can strike every 9 seconds. Press 'A' for attack and drag your RMB to execute carpet bombing.",
 	--"corvalk.dds "..titleColor.."Valkyrie (CORE T1 Aircraft)\n"..contentColor.."Airborne transportation unit. It can pick up all T1 land based units and smaller T2 units. Used for unexpected unit drops bypassing enemy's defense line.",
 	--"corfink.dds "..titleColor.."Fink (CORE T1 Aircraft)\n"..contentColor.."A cheap and fast moving air scout. Its weapon is a huge line of sight. It is used to gain intelligence on what your enemy is planning, and where he keeps his most important units.",
-	--"corbw.dds "..titleColor.."Bladewing (CORE T1 Aircraft)\n"..contentColor.."Small, fast drones armed with EMP lasers. They serve as a great support for your attacks and can quickly turn the tide of war.",
+	--"corbw.dds "..titleColor.."Bladewing (CORE T0 Drone)\n"..contentColor.."Small, fast drones armed with regular and EMP lasers.",
 	--"corveng.dds "..titleColor.."Avenger(CORE T1 Aircraft)\n"..contentColor.."A fighter jet that is designed for eliminating aircraft. Always put your fighters on patrol in front of your base, so they attack any incoming aircraft.",
 }
 

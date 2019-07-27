@@ -19,31 +19,30 @@ local spGetTeamUnits	= Spring.GetTeamUnits
 local spGetCameraState = Spring.GetCameraState
 local spSetCameraState = Spring.SetCameraState
 local spGetPlayerInfo = Spring.GetPlayerInfo
-local myPlayerID = Spring.GetMyPlayerID()
+local myPlayerID = 0
 local spGetGameFrame = Spring.GetGameFrame
 local spGetUnitPosition = Spring.GetUnitPosition
 local spSetCameraTarget = Spring.SetCameraTarget
+local spec = false
 
 function widget:Initialize()
+    myPlayerID = Spring.GetMyPlayerID()
 	local camState = spGetCameraState()
 	camState.mode = 2
 	spSetCameraState(camState,0)
-            --"luaui enablewidget Spy move/reclaim defaults"
-    local _, _, spec = spGetPlayerInfo(myPlayerID)
-    -- Only enable MMB-hold scroll-lock if it's in spec mode
-    if not spec then
-        Spring.SendCommands("/set MouseDragScrollThreshold -1")
-    else
-        Spring.SendCommands("/set MouseDragScrollThreshold 0.3")
-    end
+    --"luaui enablewidget Spy move/reclaim defaults"
+    spec = select(3, spGetPlayerInfo(myPlayerID))
 end
 
 function widget:GameFrame(n)
-	local _, _, spec = spGetPlayerInfo(myPlayerID)
 	if spec or initialized then
+        -- Only enable MMB-hold scroll-lock if it's in spec mode
+        Spring.SendCommands("/set MouseDragScrollThreshold 0.3")
 		widgetHandler:RemoveWidget()
 		return
 	end
+    Spring.SendCommands("/set MouseDragScrollThreshold -1")
+    Spring.SendCommands("/set CamTimeExponent 100") -- Instant zoom-in / zoom-out with TAB
     local myUnits = spGetTeamUnits(spGetMyTeamID())
 	if #myUnits > 0 then
 		local commID = myUnits[1]
