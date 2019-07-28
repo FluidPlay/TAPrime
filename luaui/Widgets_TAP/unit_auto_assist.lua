@@ -45,7 +45,7 @@ local necros = {
     cornecro = true, armrectr = true,
 }
 local builders = {}
---local idleBuilders ={}
+local guardingUnits = {}    -- TODO: Commanders guarding factories, we use it to stop guarding when we're out of resources
 
 -- Disable widget if I'm spec
 function widget:Initialize()
@@ -64,7 +64,7 @@ function widget:Initialize()
     end
 end
 
-local function nearestFactoryAround(unitID, pos)
+local function nearestFactoryAround(unitID, pos, unitDef)
     --local nx = math.max(math.min(mx,xmax),xmin)
     --local nz = math.max(math.min(mz,zmax),zmin)
     local function distance (pos1, pos2)
@@ -74,8 +74,7 @@ local function nearestFactoryAround(unitID, pos)
     --Spring.GetUnitsInSphere ( number x, number y, number z, number radius [,number teamID] )
     ---> nil | unitTable = { [1] = number unitID, etc... }
 
-    local radius = 140 -- commander build range. TODO: Read from unitDef
-    local unitTeam = spGetUnitTeam(unitID)
+    local radius = unitDef.buildDistance -- commander build range
     local nearestDistance = 999999
     local nearestUnitID = nil
     for _,targetID in pairs(spGetUnitsInSphere(pos.x, pos.y, pos.z, radius, unitTeam)) do
@@ -105,11 +104,12 @@ local function AutoAssist(unitID, unitDef)
         spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, { "alt"})   --'alt' autoressurects if available
     else
         -- TODO: Commanders have weapons, so 'fight' won't work here. Need to find nearest factory, if any, and guard it
-        if unitDef.isCommander then
+        if unitDef.customParams and unitDef.customParams.iscommander then
             local unitPos = { x = x, y = y, z = z }
-            local nearestFactoryAround = nearestFactoryAround(unitID, unitPos)
+            local nearestFactoryAround = nearestFactoryAround(unitID, unitPos, unitDef)
             --TODO: Check if there are enough available resources to warrant a factory guard
             if nearestFactoryAround then
+                Spring.Echo("Found nearest Factory around comm")
                 --OrderUnit(unitID, CMD_GUARD, { factID },            { "shift" })
                 spGiveOrderToUnit(unitID, CMD_GUARD, { nearestFactoryAround }, {} )
             else
