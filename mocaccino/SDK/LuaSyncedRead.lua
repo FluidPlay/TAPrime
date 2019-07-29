@@ -156,41 +156,41 @@ assert(type(teamID) == "number","Argument teamID is of invalid type - expected n
 return  numberMock
  end
 
-function Spring.GetAllyTeamInfo   (  allyteamID)
+function Spring.GetAllyTeamInfo   (allyteamID)
 assert(type(allyteamID) == "number","Argument allyteamID is of invalid type - expected number");
 return  tableMock
  end
 
-function Spring.GetTeamInfo   (  teamID)
+function Spring.GetTeamInfo   (teamID)
 assert(type(teamID) == "number","Argument teamID is of invalid type - expected number");
 return  numberMock
  end
 
-function Spring.GetTeamResources   (  metal, teamID)
-assert(type(metal) == "string","Argument 'metal' is of invalid type - expected string");
-assert(type(teamID) == "number","Argument teamID, is of invalid type - expected number");
-return
+function Spring.GetTeamResources   (teamID, resourceType)
+    assert(type(teamID) == "number","Argument teamID, is of invalid type - expected number");
+    assert(type(resourceType) == "string","Argument 'resourceType' is of invalid type - expected string");
+    return numberMock
 end
 
-function Spring.GetTeamUnitStats   (  teamID)
+function Spring.GetTeamUnitStats   (teamID)
 assert(type(teamID) == "number","Argument teamID is of invalid type - expected number");
 return  numberMock
  end
 
-function Spring.GetTeamResourceStats    (  metal, teamID)
+function Spring.GetTeamResourceStats    (metal, teamID)
 assert(type(metal) == "string","Argument metal is of invalid type - expected string");
 assert(type(teamID) == "number","Argument teamID, is of invalid type - expected number");
 return
  end
 
-function Spring.GetTeamStatsHistory   (  teamID, endIndex, startIndex)
+function Spring.GetTeamStatsHistory   (teamID, endIndex, startIndex)
 assert(type(teamID) == "number","Argument teamID is of invalid type - expected number");
 assert(type(endIndex) == "number","Argument endIndex is of invalid type - expected number");
 assert(type(startIndex) == "number","Argument startIndex is of invalid type - expected number");
 return  numberMock
  end
 
-function Spring.GetTeamLuaAI   (  teamID)
+function Spring.GetTeamLuaAI   (teamID)
 assert(type(teamID) == "number","Argument teamID is of invalid type - expected number");
 return  numberMock
  end

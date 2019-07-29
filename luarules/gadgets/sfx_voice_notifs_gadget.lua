@@ -190,30 +190,30 @@ else
 	end
 
 	-- Idle Builder send to all in team
-	function gadget:UnitIdle(unitID)
-		local defs = UnitDefs[Spring.GetUnitDefID(unitID)]
-		if defs.isBuilder then
-			local broadcast = false
-			if not Spring.IsUnitInView(unitID) then
-				broadcast = true
-			else
-				local cx,cy,cz = Spring.GetCameraPosition(unitID)
-				local ux,uy,uz = Spring.GetUnitPosition(unitID)
-				if math.diag(cx-ux, cy-uy, cz-uz) > 1650 then	-- broadcast sound anyway when its further away from camera
-					broadcast = true
-				end
-			end
-			if broadcast then
-				local event = "IdleBuilder"
-				local players = PlayersInTeamID(Spring.GetUnitTeam(unitID))
-				for ct, player in pairs (players) do
-					if tostring(player) then
-						BroadcastEvent("EventBroadcast", event, tostring(player))
-					end
-				end
-			end
-		end
-	end
+	--function gadget:UnitIdle(unitID)
+	--	local defs = UnitDefs[Spring.GetUnitDefID(unitID)]
+	--	if defs.isBuilder then
+	--		local broadcast = false
+	--		if not Spring.IsUnitInView(unitID) then
+	--			broadcast = true
+	--		else
+	--			local cx,cy,cz = Spring.GetCameraPosition(unitID)
+	--			local ux,uy,uz = Spring.GetUnitPosition(unitID)
+	--			if math.diag(cx-ux, cy-uy, cz-uz) > 1650 then	-- broadcast sound anyway when its further away from camera
+	--				broadcast = true
+	--			end
+	--		end
+	--		if broadcast then
+	--			local event = "IdleBuilder"
+	--			local players = PlayersInTeamID(Spring.GetUnitTeam(unitID))
+	--			for ct, player in pairs (players) do
+	--				if tostring(player) then
+	--					BroadcastEvent("EventBroadcast", event, tostring(player))
+	--				end
+	--			end
+	--		end
+	--	end
+	--end
 
 	-- Unit Lost send to all in team
 	function gadget:UnitDestroyed(unitID, unitDefID, unitTeam, attackerID, attackerDefID, attackerTeam)

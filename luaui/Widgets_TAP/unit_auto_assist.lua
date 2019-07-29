@@ -25,6 +25,7 @@ local spGetUnitPosition = Spring.GetUnitPosition
 local spGetUnitVelocity = Spring.GetUnitVelocity
 local spGetCommandQueue = Spring.GetCommandQueue
 local spGiveOrderToUnit = Spring.GiveOrderToUnit
+local spGetTeamResources = Spring.GetTeamResources
 local spGetUnitTeam    = Spring.GetUnitTeam
 local spGetUnitsInSphere = Spring.GetUnitsInSphere
 local myTeamID = -1;
@@ -33,22 +34,34 @@ local updateRate = 7;
 local mapsizehalfwidth = Game.mapSizeX/2
 local mapsizehalfheight = Game.mapSizeZ/2
 
-CMD_FIGHT = CMD.FIGHT
-CMD_PATROL = CMD.PATROL
-CMD_REPAIR = CMD.REPAIR
-CMD_GUARD = CMD.GUARD
+local CMD_FIGHT = CMD.FIGHT
+local CMD_PATROL = CMD.PATROL
+local CMD_REPAIR = CMD.REPAIR
+local CMD_GUARD = CMD.GUARD
+local CMD_RECLAIM = CMD.RECLAIM
+local CMD_REMOVE = CMD.REMOVE
+local CMD_STOP = CMD.STOP
+
 -- These guys will use a 'less aggressive' reclaim, favoring ressurects or assistance vs reclaiming
-local farks = {
+local farkDefs = {
     armfark = true, cormuskrat = true, corfast = true, armconsul = true,
 }
-local necros = {
+local necroDefs = {
     cornecro = true, armrectr = true,
 }
 local builders = {}
-local guardingUnits = {}    -- TODO: Commanders guarding factories, we use it to stop guarding when we're out of resources
+local idleBuilders = {}
+local cancelReclaimForUIDs = {} -- { frame = unitID }
+local internalCommandUIDs = {}
+local guardingUnits = {}    -- TODO: Commanders guarding factories, we('ll) use it to stop guarding when we're out of resources
+
+--local
 
 -- Disable widget if I'm spec
 function widget:Initialize()
+    if Spring.IsReplay() or Spring.GetGameFrame() > 0 then
+        widget:PlayerChanged()
+    end
     local _, _, spec = Spring.GetPlayerInfo(Spring.GetMyPlayerID(), false)
     if spec then
         widgetHandler:RemoveWidget()
@@ -65,60 +78,77 @@ function widget:Initialize()
 end
 
 local function nearestFactoryAround(unitID, pos, unitDef)
-    --local nx = math.max(math.min(mx,xmax),xmin)
-    --local nz = math.max(math.min(mz,zmax),zmin)
-    local function distance (pos1, pos2)
-        return math.sqrt((pos2.x - pos1.x)^2 + (pos2.z - pos1.z)^2)
+    local function sqrDistance (pos1, pos2)
+        return (pos2.x - pos1.x)^2 + (pos2.z - pos1.z)^2
     end
-
     --Spring.GetUnitsInSphere ( number x, number y, number z, number radius [,number teamID] )
     ---> nil | unitTable = { [1] = number unitID, etc... }
 
-    local radius = unitDef.buildDistance -- commander build range
-    local nearestDistance = 999999
+    local radius = unitDef.buildDistance
+    --local sqrRadius = radius ^ 2 -- commander build range (squared, to ease calculation)
+    local nearestSqrDistance = 999999
     local nearestUnitID = nil
-    for _,targetID in pairs(spGetUnitsInSphere(pos.x, pos.y, pos.z, radius, unitTeam)) do
+    for _,targetID in pairs(spGetUnitsInSphere(pos.x, pos.y, pos.z, radius, myTeamID)) do
         local targetDefID = spGetUnitDefID(targetID)
         local targetDef = targetDefID and UnitDefs[targetDefID] or nil
         if targetDef and targetDef.isFactory then
             local x, y, z = spGetUnitPosition(unitID)
             local targetPos = { x = x, y = y, z = z }
-            if distance(pos, targetPos) < nearestDistance then
+            if sqrDistance(pos, targetPos) < nearestSqrDistance then
                 nearestUnitID = targetID
-                nearestDistance = distance
+                nearestSqrDistance = sqrDistance
             end
         end
     end
     return nearestUnitID
 end
 
-local function AutoAssist(unitID, unitDef)
-    local x, y, z = spGetUnitPosition(unitID)
-    --Spring.Echo("unitDef.name: "..unitDef.name)
-    if farks[unitDef.name] then
-        Spring.Echo("Farking")
-        --spGiveOrderToUnit(unitID, CMD_REPAIR, { x, y, z }, {}) --, {"alt"}
-        spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, {}) --"alt" favors reclaiming
-    elseif necros[unitDef.name] then
-        Spring.Echo("Necroing")
-        spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, { "alt"})   --'alt' autoressurects if available
+local function enoughEconomy()
+    -- Validate for resources. If it's above 70% metal or energy, abort
+    local currentM, currentMstorage = spGetTeamResources(myTeamID, "metal") --currentLevel, storage, pull, income, expense
+    local currentE, currentEstorage = spGetTeamResources(myTeamID, "energy")
+    if currentM > currentMstorage * 0.3 and currentE > currentEstorage * 0.3 then
+        Spring.Echo("Enough Eco!")
     else
-        -- TODO: Commanders have weapons, so 'fight' won't work here. Need to find nearest factory, if any, and guard it
+        Spring.Echo("NOPS eco!")
+    end
+    return currentM > currentMstorage * 0.3 and currentE > currentEstorage * 0.3
+end
+
+local function patrolOffset (x, y, z)
+    local ofs = 50
+    x = (x > mapsizehalfwidth ) and x-ofs or x+ofs   -- x ? a : b, in lua notation
+    z = (z > mapsizehalfheight) and z-ofs or z+ofs
+
+    return { x = x, y = y, z = z }
+end
+
+local function AutoAssist(unitID, unitDef)
+    internalCommandUIDs[unitID] = true  -- Flag auto-assisting unit for further command event processing
+    local x, y, z = spGetUnitPosition(unitID)
+
+    if farkDefs[unitDef.name] then
+        local offsetPos = patrolOffset(x, y, z)
+        spGiveOrderToUnit(unitID, CMD_PATROL, { offsetPos.x, y, offsetPos.z }, {"meta"} )
+        --spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, {}) --"alt" favors reclaiming --Spring.Echo("Farking")
+    elseif necroDefs[unitDef.name] then
+        spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, { "alt"})   --'alt' autoressurects if available --Spring.Echo("Necroing")
+    else
+        -- Commanders have weapons, so 'fight' won't work here. Need to find nearest factory, if any, and guard it
         if unitDef.customParams and unitDef.customParams.iscommander then
             local unitPos = { x = x, y = y, z = z }
             local nearestFactoryAround = nearestFactoryAround(unitID, unitPos, unitDef)
-            --TODO: Check if there are enough available resources to warrant a factory guard
-            if nearestFactoryAround then
-                Spring.Echo("Found nearest Factory around comm")
-                --OrderUnit(unitID, CMD_GUARD, { factID },            { "shift" })
+            if nearestFactoryAround and enoughEconomy() then
                 spGiveOrderToUnit(unitID, CMD_GUARD, { nearestFactoryAround }, {} )
+                guardingUnits[unitID] = true
             else
-                spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, {"meta"} ) --shift and {"meta", "shift"} or
+                local offsetPos = patrolOffset(x, y, z)
+                spGiveOrderToUnit(unitID, CMD_PATROL, { offsetPos.x, y, offsetPos.z }, {"meta"} )
             end
-        else
+        else    -- Usually outposts down here. Since it's static, let's have it reclaim aggressively.
             spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, {"meta"} ) --shift and {"meta", "shift"} or
         end
-        Spring.Echo("Elsing")
+        --Spring.Echo("Else-ing")
     end
 end
 
@@ -134,8 +164,24 @@ local function UnitHasNoOrders(unitID)
     return buildQueueSize == 0
 end
 
+function widget:CommandNotify(cmdID, cmdParams, cmdOpts)
+    if (cmdID == CMD_RECLAIM) then --and (cmdParams[1] == 0)
+        --spGiveOrder(CMD_INSERT, {0, CMD_STOP, 0}, {"alt"})
+        Spring.Echo("Reclaim found")
+    end
+end
+
 --Give idle reclaimers the FIGHT command every 7 frames
+--We'll implement our own "IDLE" logic, 'coz Spring's Idle also includes guard..
 function widget:GameFrame(n)
+    for frame, uID in pairs(cancelReclaimForUIDs) do
+        if frame >= n then
+            Spring.Echo("Removing reclaim from "..uID)
+            spGiveOrderToUnit(uID, CMD_REMOVE, {CMD_RECLAIM}, {"alt"})
+            cancelReclaimForUIDs[frame] = nil
+        end
+    end
+
     if WG.Cutscene and WG.Cutscene.IsInCutscene() then
         return end
 
@@ -144,10 +190,17 @@ function widget:GameFrame(n)
 
     for unitID in pairs(builders) do
         --Spring.Echo("idle Builder unitID: "..unitID)
-        local unitDef = UnitDefs[spGetUnitDefID(unitID)]
-        if unitDef then
-            if UnitNotMoving(unitID) and UnitHasNoOrders(unitID) then
-                AutoAssist(unitID, unitDef)
+        if guardingUnits[unitID] and not enoughEconomy() then
+            Spring.Echo("Stopping auto-guard")
+            spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )  --spGiveOrder(CMD_INSERT, {0, CMD_STOP, 0}, {"alt"})
+            guardingUnits[unitID] = false
+        else
+            local unitDef = UnitDefs[spGetUnitDefID(unitID)]
+            if unitDef then
+                if UnitNotMoving(unitID) and UnitHasNoOrders(unitID) then
+                    idleBuilders[unitID] = true
+                    AutoAssist(unitID, unitDef)
+                end
             end
         end
     end
@@ -160,7 +213,7 @@ function widget:UnitFinished(unitID, unitDefID, unitTeam)
         --Spring.Echo("unitDef.name: "..UnitDefs[unitDefID].name.." can reclaim: "..tostring(UnitDefs[unitDefID]["canReclaim"]))
         if UnitDefs[unitDefID].canReclaim then
             builders[unitID] = true
-            Spring.Echo("Registering unit "..unitID.." as builder "..UnitDefs[unitDefID].name)
+            --Spring.Echo("Registering unit "..unitID.." as builder "..UnitDefs[unitDefID].name)
         end
     end
 end
@@ -174,6 +227,12 @@ function widget:UnitDestroyed(unitID)
     builders[unitID] = nil
 end
 
+function widget:PlayerChanged(playerID)
+    if Spring.GetSpectatingState() and Spring.GetGameFrame() > 0 then
+        widgetHandler:RemoveWidget(self)
+    end
+end
+
 --Patrol snippet:
 ------ keeps commands within map boundaries
 ----local x, y, z = spGetUnitPosition(unitID)
@@ -185,3 +244,39 @@ end
 --
 -----TODO: Outpost should take 'meta' (reclaim enemy units), commanders shouldn't
 ---- meta enables reclaim enemy units, alt autoresurrect ( if available )
+
+
+-- Fired after AllowCommand, but works in unsynced. We can intercept and prevent commands here
+-- ATTENTION: at widget:UnitCommand() the queue isnt updated yet
+--function widget:UnitCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOptions)
+--    if not unitID or teamID ~= myTeamID then
+--        return end
+--    if cmdID == CMD_RECLAIM then
+--        Spring.Echo("Unit reclaim: "..unitID)
+--    end
+--    if idleBuilders[unitID] then
+--        if cmdID == CMD_RECLAIM then
+--            Spring.Echo("Auto-reclaim found")
+--            -- If it's a feature or enemy unit allow auto-reclaim
+--            local targetID = cmdParams[1]
+--            --// If Params #2 or #5 don't exist, it's an invalid command or area-reclaim (ie., ignore)
+--            if (not cmdParams[2]) or (cmdParams[5]) then
+--                targetID = cmdParams[1]
+--                local featureID = targetID - Game.maxUnits
+--
+--                if ((featureID >= 0) and Spring.ValidFeatureID(featureID)) or Spring.ValidUnitID(targetID) then
+--                    Spring.Echo("Auto-reclaim validated")
+--                    return
+--                end
+--                cancelReclaimForUIDs[Spring.GetGameFrame()+1] = unitID
+--                Spring.Echo("Auto-reclaim cancelled")
+--            end
+--        else
+--            -- If Command is from the player, remove from idleBuilders
+--            if not internalCommandUIDs[unitID]  then
+--                idleBuilders[unitID] = false
+--            end
+--        end
+--    end
+--    internalCommandUIDs[unitID] = nil -- internal assist-command was just processed
+--end

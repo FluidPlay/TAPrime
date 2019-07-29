@@ -49,6 +49,7 @@ local spGetSpectatingState = Spring.GetSpectatingState
 local spGetMouseState = Spring.GetMouseState
 local spTraceScreenRay = Spring.TraceScreenRay
 local spGetUnitDefID = Spring.GetUnitDefID
+local spGetTeamResources = Spring.GetTeamResources
 
 local CMD_FIGHT    	= CMD.FIGHT
 local CMD_ATTACK    = CMD.ATTACK
@@ -58,7 +59,7 @@ local CMD_PATROL  	= CMD.PATROL
 local CMD_REPAIR    = CMD.REPAIR
 --local CMD_INSERT    = CMD.INSERT
 local CMD_REMOVE    = CMD.REMOVE
---local CMD_RECLAIM	= CMD.RECLAIM
+local CMD_RECLAIM	= CMD.RECLAIM
 local CMD_GUARD		= CMD.GUARD
 --local CMD_STOP		= CMD.STOP
 
@@ -215,14 +216,43 @@ if gadgetHandler:IsSyncedCode() then
 
     -- Here's where we truly block orders
     function gadget:AllowCommand(unitID, unitDefID, teamID, cmd, params, options, tag, synced)
-        -- Only basic builders and Pokers interest us here
+        --
+        --if cmd == CMD_RECLAIM then
+        --    Spring.Echo("Reclaim found")
+        --    -- If it's a feature or enemy unit allow auto-reclaim
+        --    local targetID = params[1]
+        --    --// If Params #2 doesn't exist = invalid command; Param #5 exists = area-reclaim (ie., ignore)
+        --    if (not params[2]) or (params[5]) then
+        --        targetID = params[1]
+        --        --// If it's an enemy unit, let it be reclaimed no matter what
+        --        if Spring.ValidUnitID(targetID) then
+        --            return true end
+        --
+        --        local featureID = targetID - Game.maxUnits
+        --        if ((featureID >= 0) and Spring.ValidFeatureID(featureID))  then
+        --            -- Validate for resources. If it's above 70% metal or energy, abort
+        --            local currentM, currentMstorage = spGetTeamResources(teamID, "metal") --currentLevel, storage, pull, income, expense
+        --            local currentE, currentEstorage = spGetTeamResources(teamID, "energy")
+        --            if currentM <= currentMstorage * 0.7 and currentE <= currentEstorage * 0.7 then
+        --                Spring.Echo("Reclaim validated")
+        --                return true
+        --            else
+        --                Spring.Echo("Auto-reclaim cancelled")
+        --                return false
+        --            end
+        --        end
+        --    end
+        --end
+
+
+        -- [[Assist blocking]] Only basic builders and Pokers interest us here
         if not IsBasicBuilder(unitDefID) and not IsArmFav(unitDefID) then
-            return true end
-        -- The following are always blocked for basic builders
-        if cmd == CMD_FIGHT then   -- cmd == CMD_ATTACK or cmd == CMD.GUARD or --cmd == CMD.PATROL or --cmd == CMD.RESTORE)
-            return false end
-        -- Repair orders during pause should be ignored, period (we can't track mousepos during pause)
-        if cmd == CMD_REPAIR then
+            return true
+            -- The following are always blocked for basic builders
+        elseif cmd == CMD_FIGHT then   -- cmd == CMD_ATTACK or cmd == CMD.GUARD or --cmd == CMD.PATROL or --cmd == CMD.RESTORE)
+            return false
+            -- Repair orders during pause should be ignored, period (we can't track mousepos during pause)
+        elseif cmd == CMD_REPAIR then
             --1 parameter in return (unitid) or 4 parameters in return (mappos+radius) | area repair
             if #params ~= 1 or PausedPlayers[teamID] then    -- Area Repair
                 return false end
@@ -231,8 +261,7 @@ if gadgetHandler:IsSyncedCode() then
                 return targetuDef.isImmobile  -- Can't repair mobile units
             end -- It's a basic builder
             return not IsWIPMobileUnit(params[1])
-        end
-        if cmd == CMD_GUARD then
+        elseif cmd == CMD_GUARD then
             -- Area guard not allowed (also doesn't exist?)
             if #params ~= 1 or PausedPlayers[teamID] then
                 return false end
@@ -255,8 +284,8 @@ if gadgetHandler:IsSyncedCode() then
             --        return false end
             --else
             --    return true end
+            return true
         end
-        return true
     end
 
 --    -- Fired after allow command. We can intercept and filter repair and prevent assist-build here
@@ -266,7 +295,7 @@ if gadgetHandler:IsSyncedCode() then
 --            --local targetuDef = UnitDefs[spGetUnitDefID(targetuID)]
 --            if IsWIPMobileUnit(targetuID) then
 --                Spring.Echo("WIP Mobile unit detected")
---                -- Can't make below code work, no matter what..
+--                -- Below won't work 'coz during UnitCommand the command is not yet in the unit queue..
 --                spGiveOrderToUnit(unitID, CMD_REMOVE, {CMD.REPAIR}, {"alt"})
 --            end
 --        end
