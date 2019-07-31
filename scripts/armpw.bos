@@ -496,6 +496,51 @@ AimPrimary(heading, pitch)
 	return (1);
 }
 
+//--- Grenade
+
+AimFromSecondary(piecenum)
+{
+	piecenum = ruparm;
+}
+
+QuerySecondary(piecenum)
+{
+	piecenum = rfire;
+}
+
+FireSecondary()
+{
+	show rfire;
+	sleep 100;
+	hide rfire;
+}
+
+AimSecondary(heading, pitch)
+{
+	signal SIG_AIM;
+	set-signal-mask SIG_AIM;
+	bAiming = TRUE;
+	//while( !Static_Var_3 )
+	//{
+	//	sleep 65;
+	//}
+	turn torso to y-axis heading speed <300.000000>;
+	turn lloarm to x-axis <0.000000> speed <300.000000>;
+	turn rloarm to x-axis <0.000000> speed <300.000000>;
+	turn luparm to x-axis <0.000000> - pitch speed <300.000000>;
+	turn ruparm to x-axis <0.000000> - pitch speed <300.000000>;
+	wait-for-turn torso around y-axis;
+	wait-for-turn lloarm around x-axis;
+	wait-for-turn rloarm around x-axis;
+	wait-for-turn luparm around x-axis;
+	wait-for-turn ruparm around x-axis;
+	start-script RestoreAfterDelay();
+	return (1);
+}
+
+
+//---
+
 Killed(severity, corpsetype)
 {
 	hide rfire;
