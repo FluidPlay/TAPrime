@@ -30,6 +30,7 @@ function widget:GetInfo()
   }
 end
 
+--[[
 local CMD_MOVE = CMD.MOVE
 local CMD_FIGHT	= CMD.FIGHT
 local CMD_GUARD = CMD.GUARD
@@ -351,5 +352,6 @@ function widget:DrawWorld()
     end
   end
 end
+]]
 
 --------------------------------------------------------------------------------
