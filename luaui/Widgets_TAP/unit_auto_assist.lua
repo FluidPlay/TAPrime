@@ -138,12 +138,13 @@ local function AutoAssist(unitID, unitDef)
         if unitDef.customParams and unitDef.customParams.iscommander then
             local unitPos = { x = x, y = y, z = z }
             local nearestFactoryAround = nearestFactoryAround(unitID, unitPos, unitDef)
+            --Spring.Echo("Try Guard")
             if nearestFactoryAround and enoughEconomy() then
                 spGiveOrderToUnit(unitID, CMD_GUARD, { nearestFactoryAround }, {} )
                 guardingUnits[unitID] = true
             else
                 local offsetPos = patrolOffset(x, y, z)
-                spGiveOrderToUnit(unitID, CMD_PATROL, { offsetPos.x, y, offsetPos.z }, {"meta", "shift"} )
+                spGiveOrderToUnit(unitID, CMD_PATROL, { offsetPos.x, y, offsetPos.z }, {"meta"} ) --shift
             end
         else    -- Usually outposts down here. Since it's static, let's have it reclaim aggressively.
             spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, {"meta", "shift"} ) --shift and {"meta", "shift"} or

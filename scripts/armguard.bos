@@ -80,8 +80,8 @@ AimWeapon1(heading, pitch)
 	{
 		return (0);
 	}
-	turn turret to y-axis heading speed <30.00549>;
-	turn sleeves to x-axis <0.00000> - pitch speed <45.00549>;
+	turn turret to y-axis heading speed <60.00549>; //30.xx
+	turn sleeves to x-axis <0.00000> - pitch speed <55.00549>; //45.0055
 	wait-for-turn turret around y-axis;
 	wait-for-turn sleeves around x-axis;
 	return (1);
@@ -131,8 +131,8 @@ AimWeapon2(heading, pitch)
 	{
 		return (0);
 	}
-	turn turret to y-axis heading speed <30.00549>;
-	turn sleeves to x-axis <0.00000> - pitch speed <45.00549>;
+	turn turret to y-axis heading speed <60.00549>; //30.xx
+	turn sleeves to x-axis <0.00000> - pitch speed <55.00549>; //45.0055
 	wait-for-turn turret around y-axis;
 	wait-for-turn sleeves around x-axis;
 	return (1);
