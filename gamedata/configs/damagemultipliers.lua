@@ -39,7 +39,7 @@ local damageMultipliers = {
 				invader = 1.1,	heavybot = 1,	assault = 1.5,	heavyveh = 0.65,	resource = 1,
 	}
 ,
-	cannon={ 	peon = 0.65, 	rpg = 0.25, 	stalwart = 0.9, aiv = 2, 			tank = 1.1, 	artillery = 2,
+	cannon={ 	peon = 0.65, 	rpg = 0.25, 	stalwart = 0.65,aiv = 2, 			tank = 1.1, 	artillery = 2,
 				fighter = 1.5, 	gunship = 2, 	bomber = 1.25, 	structure = 1, 		defense = 1.2, 	defenseaa = 0.3, 	commander = 0.75,
 				invader = 0.3, 	heavybot = 0.2,	assault = 0.4,	heavyveh = 0.75,	resource = 1,
 	}

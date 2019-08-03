@@ -149,7 +149,10 @@ local landAtSpecificAirbaseCmd = {
 --- Returns ammo, maxAmmo
 local function getAmmo(unitID)
     local ud = UnitDefs[spGetUnitDefID(unitID)]
-    local maxammo = (ud.customParams and ud.customParams.maxAmmo) and ud.customParams.maxAmmo
+    local maxammo = 1
+    if ud.customParams ~= nil and ud.customParams.maxAmmo ~= nil then
+        maxammo = ud.customParams.maxAmmo
+    end
     return spGetUnitRulesParam(unitID, "ammo"), maxammo
 end
 
@@ -386,30 +389,30 @@ local CMD_REMOVE = CMD.REMOVE
 
 -- TODO: Set restoreState appropriately
 function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions)
-   ----if cmdIgnoreSelf then  --don't re-read rewritten bomber's command
-   ----   return true
-   ----end
-   --local restoreState = spGetUnitRulesParam(unitID, "restorestate")     -- "noammo" in ZeroK's source
-   --
-   ---- don't rearm unless damaged or need ammo
-   --if not restoreState or restoreState == Restore.Done then
-   --   local health, maxHealth = Spring.GetUnitHealth(unitID)
-   --   if (cmdID == CMD_REARM or cmdID == CMD_FIND_PAD) and not cmdOptions.shift and health > maxHealth - 1 then
-   --      return false
-   --   end
-   ---- don't find new pad if already on the pad currently refueling or repairing.
-   --elseif restoreState == Restore.Rearming or restoreState == Restore.Repairing then
-   --   if (cmdID == CMD_REARM or cmdID == CMD_FIND_PAD) and not cmdOptions.shift then
-   --      return false
-   --   end
-   --   if restoreState == Restore.Rearming then              -- don't leave in the middle of rearming, allow command and skip CancelAirpadReservation
-   --      return true
-   --   end
-   --elseif restoreState == Restore.OutOfAmmo then            -- don't fight without ammo, go get ammo first!
-   --if not restoreState or restoreState == Restore.Done then
-   -- TODO: Check if there are no available landing pads and deal damage along time if that's the case
-   -- If out of ammo, ignore the combat command
-   local ammo, maxAmmo = getAmmo(unitID)
+    ----if cmdIgnoreSelf then  --don't re-read rewritten bomber's command
+    ----   return true
+    ----end
+    --local restoreState = spGetUnitRulesParam(unitID, "restorestate")     -- "noammo" in ZeroK's source
+    --
+    ---- don't rearm unless damaged or need ammo
+    --if not restoreState or restoreState == Restore.Done then
+    --   local health, maxHealth = Spring.GetUnitHealth(unitID)
+    --   if (cmdID == CMD_REARM or cmdID == CMD_FIND_PAD) and not cmdOptions.shift and health > maxHealth - 1 then
+    --      return false
+    --   end
+    ---- don't find new pad if already on the pad currently refueling or repairing.
+    --elseif restoreState == Restore.Rearming or restoreState == Restore.Repairing then
+    --   if (cmdID == CMD_REARM or cmdID == CMD_FIND_PAD) and not cmdOptions.shift then
+    --      return false
+    --   end
+    --   if restoreState == Restore.Rearming then              -- don't leave in the middle of rearming, allow command and skip CancelAirpadReservation
+    --      return true
+    --   end
+    --elseif restoreState == Restore.OutOfAmmo then            -- don't fight without ammo, go get ammo first!
+    --if not restoreState or restoreState == Restore.Done then
+    -- TODO: Check if there are no available landing pads and deal damage along time if that's the case
+    -- If out of ammo, ignore the combat command
+    local ammo, maxAmmo = getAmmo(unitID)
 
     if ammo and combatCommands[cmdID] and ammo < 1 then --or cmdID == CMD.STOP
         return false

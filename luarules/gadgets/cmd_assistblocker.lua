@@ -266,13 +266,12 @@ if gadgetHandler:IsSyncedCode() then
             if #params ~= 1 or PausedPlayers[teamID] then
                 return false end
             local targetuID = params[1]
-            local targetuDef = UnitDefs[spGetUnitDefID(targetuID)]
-            local unitDef = UnitDefs[unitDefID]
+            local targetuDef = UnitDefs[spGetUnitDefID(targetuID)]      --local unitDef = UnitDefs[unitDefID]
             if IsArmFav(unitDefID) then
                 return targetuDef and targetuDef.isImmobile or false -- Can't guard mobile units
             end
             local advBuilder = targetuDef.isBuilder and not IsBasicBuilder(targetuDef.id)
-            return not IsWIPMobileUnit(targetuID) and not targetuDef.isFactory and not advBuilder
+            return (not IsWIPMobileUnit(targetuID) and not targetuDef.isFactory and not advBuilder)
             --elseif pointedUid then
             --    -- If pointedUid is a WIP mobile unit block it
             --    if IsWIPMobileUnit(pointedUid) then
@@ -284,7 +283,7 @@ if gadgetHandler:IsSyncedCode() then
             --        return false end
             --else
             --    return true end
-            return true
+            --return true
         end
     end
 
