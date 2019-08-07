@@ -42,6 +42,10 @@ CMD.UPG_DGUN = 41999
 CMD_UPG_DGUN = CMD.UPG_DGUN
 CMD.UPG_GRENADE = 41998
 CMD_UPG_GRENADE = CMD.UPG_GRENADE
+CMD.UPG_FIRERAIN = 41997
+CMD_UPG_FIRERAIN = CMD.UPG_FIRERAIN
+CMD.UPG_FIRERAIN = 41996
+CMD_UPG_BARRAGE = CMD.UPG_BARRAGE
 PUU = {
     dgun = {
         UpgradeCmdDesc = {
@@ -68,10 +72,39 @@ PUU = {
         },
         Prereq = "Tech",
         metalCost = 80,
-        energyCost = 480,
+        energyCost = 480,     --6x metalCost
+        upgradeTime = 5 * 30, --5 seconds, in frames
+    },
+    firerain = {     -- >> Arm Samson's Missile Shower (Per Unit)
+        UpgradeCmdDesc = {
+            id      = CMD_UPG_FIRERAIN,
+            name    = 'Upg FireRain',
+            action  = 'firerainupgrade',
+            cursor  = 'Morph',
+            type    = CMDTYPE.ICON,
+            tooltip = 'Enables Fire Rain weapon',
+        },
+        Prereq = "Tech1",
+        metalCost = 160,
+        energyCost = 960,
+        upgradeTime = 5 * 30, --5 seconds, in frames
+    },
+    barrage = {     -- >> Arm Samson's Missile Shower (Per Unit)
+        UpgradeCmdDesc = {
+            id      = CMD_UPG_BARRAGE,
+            name    = 'Upg Barrage',
+            action  = 'barrageupgrade',
+            cursor  = 'Morph',
+            type    = CMDTYPE.ICON,
+            tooltip = 'Enables Barrage weapon',
+        },
+        Prereq = "Tech1",
+        metalCost = 160,
+        energyCost = 960,
         upgradeTime = 5 * 30, --5 seconds, in frames
     },
 }
+-- Value is used as key of PUU (Per-unit upgrade table)
 LocalUpgradeUnits = {
     [UnitDefNames["corcom"].id] = "dgun",
     --[UnitDefNames["corcom2"].id] = "dgun",
@@ -82,6 +115,8 @@ LocalUpgradeUnits = {
     --[UnitDefNames["armcom3"].id] = "dgun",
     --[UnitDefNames["armcom4"].id] = "dgun",
     [UnitDefNames["armpw"].id] = "grenade",
+    [UnitDefNames["armsam"].id] = "firerain",
+    [UnitDefNames["corvrad"].id] = "plasmabarrage",
 }
 Upgrades = {} -- Auto-completed from PUU @ Initialize
 
