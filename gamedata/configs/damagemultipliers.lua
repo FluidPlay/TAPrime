@@ -49,14 +49,14 @@ local damageMultipliers = {
 				invader = 0.65,	heavybot = 1.2, assault = 0.6,	heavyveh = 1,		resource = 0.45,
 	}
 ,
-	siege={ 	peon = 0.4, 	rpg = 0.85, 	stalwart = 1.2,	aiv = 0.75, 		tank = 0.25, 	artillery = 0.6,
-			   fighter = 2, 	gunship = 1, 	bomber = 2.5, 	structure = 1.2, 	defense = 1.8, 	defenseaa = 1.6, 	commander = 0.25,
-			   invader = 0.5, 	heavybot = 0.3, assault = 1.5,	heavyveh = 0.2,		resource = 1.2,
+	siege={ 	peon = 0.4, 	rpg = 0.85, 	stalwart = 1.2,	aiv = 0.85, 		tank = 0.25, 	artillery = 0.6,
+			    fighter = 2, 	gunship = 1, 	bomber = 2.5, 	structure = 1.2, 	defense = 1.8, 	defenseaa = 1.6, 	commander = 0.25,
+			    invader = 0.5, 	heavybot = 0.3, assault = 1.5,	heavyveh = 0.2,		resource = 1.2,
 	}
 ,
-	emp={ 		peon = 1, 		rpg = 1, 		stalwart = 1, 	aiv = 0.125, 		tank = 2, 		artillery = 2,
-				 fighter = 1, 	gunship = 1, 	bomber = 1, 	structure = 1, 		defense = 1, 	defenseaa = 0.75, 	commander = 0.1,
-				 invader = 1, 	heavybot = 0.5, assault = 0.5,	heavyveh = 2,		resource = 1,
+	emp={ 	    peon = 1, 		rpg = 1, 		stalwart = 1, 	aiv = 0.125, 		tank = 2, 		artillery = 2,
+				fighter = 1, 	gunship = 1, 	bomber = 1, 	structure = 1, 		defense = 1, 	defenseaa = 0.75, 	commander = 0.1,
+				invader = 1, 	heavybot = 0.5, assault = 0.5,	heavyveh = 2,		resource = 1,
 	}
 ,
 	explosive={ peon = 1, 		rpg = 0.75, 	stalwart = 1,   aiv = 1, 			tank = 1, 		artillery = 1,

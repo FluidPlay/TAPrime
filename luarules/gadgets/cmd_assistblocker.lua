@@ -285,6 +285,7 @@ if gadgetHandler:IsSyncedCode() then
             --    return true end
             --return true
         end
+        return true --- <=== All other builder commands (DON'T REMOVE this!)
     end
 
 --    -- Fired after allow command. We can intercept and filter repair and prevent assist-build here
