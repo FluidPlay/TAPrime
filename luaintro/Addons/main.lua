@@ -31,6 +31,10 @@ end
 local tips = {
     "armcom.dds ".."The D-Gun is the Commander's directed-fire ability and the most powerful weapon in the game. Upgrade it in the commander menu after your Tech Center is on level 1, then use it with the 'D' keyboard shortcut.",
 	"outpost.dds ".."To build unit factories you need an Outpost. Outposts can morph up to Tier4, with increasingly better build range and LOS.",
+    "armsilo.dds ".."It's not just about upgrading the Tech Center! Keep upgrading your outpost. Building structures from it is much cheaper than morphing, and it'll build exclusive structures like Annihilators, Nukes and EMP Launchers.",
+    "armshltx ".."To build experimental units like the Krogoth and Bantha, you need an Experimental Gantry, built exclusively by a Level 4 outpost",
+    "corafus ".."The 'AFUS' or Advanced Fusion Reactor has the best energy output in your army. You can get AFUSes by morphing a regular Fusion, once you're Tech Level 4",
+    "armawin ".."When the wind is blowing in your favor, Advanced Wind Generators are available on Tier 2, as morphs from the regular Wind Generator",
     "cormuskrat.dds ".."FARKs and Muskrats are units built directly by the Outpost. They have good line of sight, can build dragon eyes (stealth remote cameras) and accelerate constructions and units being built.",
     "outpost.dds ".."Outposts can speed up any construction, but they're less cost effective for that than FARKs (built by the outpost) and they spend energy continuously.",
 	"armtech.dds ".."To tech up, build a Tech Center, then upgrade it progressively until Tech Tier4. This unlocks high-tier upgrades in factories and outposts as well.",
