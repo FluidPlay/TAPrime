@@ -419,6 +419,9 @@ function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdO
     end
     -- If command == return to airbase (any) and the unit is at full health & armed, ignore
     local health, maxHealth = Spring.GetUnitHealth(unitID)
+    if not health or not maxHealth or not ammo or not maxAmmo then
+        return false
+    end
     if not cmdOptions.shift and cmdID == CMD_LAND_AT_AIRBASE and health > maxHealth - 1 and ammo > maxAmmo - 1 then
         return false
     end
