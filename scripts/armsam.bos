@@ -161,7 +161,7 @@ AimTertiary(heading, pitch)
 	signal SIG_AIM;
 	set-signal-mask SIG_AIM;
 	turn turret to y-axis heading speed <250.060440>;
-	turn launcher to x-axis <-35.000000> - pitch speed <250.032967>; //150
+	turn launcher to x-axis <0.000000> - pitch speed <250.032967>; //angle -35; speed 150
 	wait-for-turn turret around y-axis;
 	wait-for-turn launcher around x-axis;
 	start-script RestoreAfterDelay();

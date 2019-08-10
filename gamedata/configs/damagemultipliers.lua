@@ -16,7 +16,7 @@ local damageMultipliers = {
 ,
 	rocket={ 	peon = 0.2, 	rpg = 0.5, 		stalwart = 0.5, aiv = 0.6, 			tank = 4.5, 	artillery = 0.85,
 				fighter = 0.3, 	gunship = 2.55, bomber = 0.5, 	structure = 0.8, 	defense = 0.6, 	defenseaa = 0.5, 	commander = 0.4,
-				invader = 0.3,	heavybot = 0.25,assault = 0.8,	heavyveh = 1.5,		resource = 0.8,
+				invader = 0.3,	heavybot = 0.25,assault = 0.8,	heavyveh = 1.75,	resource = 0.8,
 	}
 ,
 	homing={ 	peon = 0.1, 	rpg = 0.25, 	stalwart = 0.5, aiv = 0.75, 		tank = 3.2, 	artillery = 1.25,
@@ -44,7 +44,7 @@ local damageMultipliers = {
 				invader = 0.3, 	heavybot = 0.2,	assault = 0.3,	heavyveh = 0.75,	resource = 1,
 	}
 ,
-	thermo={ 	peon = 0.4, 	rpg = 1.25, 	stalwart = 0.5, aiv = 0.2, 			tank = 1.2, 	artillery = 1.25,
+	thermo={ 	peon = 0.4, 	rpg = 1, 		stalwart = 0.5, aiv = 0.2, 			tank = 1.2, 	artillery = 1.25,
 				fighter = 1.3, 	gunship = 1.0, 	bomber = 1.25, 	structure = 0.75, 	defense = 1.25, defenseaa = 0.5, 	commander = 0.5,
 				invader = 0.65,	heavybot = 1.2, assault = 0.6,	heavyveh = 1,		resource = 0.45,
 	}

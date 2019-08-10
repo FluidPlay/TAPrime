@@ -123,11 +123,20 @@ Upgrades = {} -- Auto-completed from PUU @ Initialize
 --local tooltipRequirement = "\n"..RedStr.."Requires ".. Prereq,
 --local UpgradeTooltip = 'Enables D-gun ability / command'
 --local tooltipRequirement = "\n"..RedStr.."Requires ".. PUU.dgun.Prereq
-local upgradingUnits = {}
+local upgradingUnits = {}   --{ unitID = unitID, progress = 0, puu = puu, }
 local upgradedUnits = {}
 
 if not gadgetHandler:IsSyncedCode() then
     return end
+
+local function isUpgrading(unitID)
+    for idx = 1, #upgradingUnits do
+        if upgradingUnits[idx].unitID == unitID then
+            return idx
+        end
+    end
+    return nil
+end
 
 local function editCommand (unitID, CMDID, options)
     local cmdDescID = spFindUnitCmdDesc(unitID, CMDID)
@@ -210,6 +219,14 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
     --},
     --Spring.Echo("Expected puu id: "..puu.UpgradeCmdDesc.id.." cmdID: "..cmdID)
     if cmdID == puu.UpgradeCmdDesc.id and (not upgradedUnits[unitID]) then
+        -- If currently upgrading, cancel upgrade
+        local upgradingIdx = isUpgrading(unitID)
+        if upgradingIdx then
+            upgradingUnits[upgradingIdx] = nil
+            spSetUnitRulesParam(unitID, unitRulesParamName, nil)
+            return true
+        end
+        -- Otherwise, check for requirements
         if hasPrereq(puu.Prereq, unitTeam) then
             --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
             upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0, puu = puu, }
@@ -217,8 +234,6 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
         else
             localAlert(unitID, "Requires: "..puu.Prereq)
         end
-    else
-        --TODO: Add local warning that pre-req is not met
     end
     return true
 end
@@ -245,18 +260,19 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
 end
 
 local function finishUpgrade(idx, unitID, puu)
-    editCommand (unitID, puu.UpgradeCmdDesc.id, {disabled=true}) --TODO: Remove?
+    editCommand (unitID, puu.UpgradeCmdDesc.id, {disabled=true})
 
     -- Enable action & remove "Requires" red alert at bottom
     editCommand (unitID, CMD_MANUALFIRE, {disabled=false, req="", defCmdDesc = puu.UpgradeCmdDesc})
 
-    upgradingUnits[idx] = nil
+    ipairs_remove(upgradingUnits, unitID)   -- setting it to nil won't remove the element, affecting the # operator
     upgradedUnits[unitID] = true
     spSetUnitRulesParam(unitID, unitRulesParamName, nil)
 end
 
 function gadget:UnitDestroyed(unitID)
     upgradedUnits[unitID] = nil
+    ipairs_remove(upgradingUnits, unitID)
 end
 
 function gadget:GameFrame()
