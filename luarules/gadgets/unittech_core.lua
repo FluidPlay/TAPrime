@@ -5,14 +5,14 @@
 ---
 function gadget:GetInfo()
     return {
-        name 	= "Unit Upgrade Core",
+        name 	= "Unit Tech Core",
         desc	= "Enables upgrades for units",
         author	= "MaDDoX",
         date	= "Sept 24th 2019",
         license	= "GNU GPL, v2 or later",
         layer	= -1,
         enabled = true,
-        -- TODO: Currently only supports blocking/unblocking command fire weapons
+        -- The only thing this guy does is to award the given tech to the Team and/or unlock a given button. --TODO
     }
 end
 
@@ -34,111 +34,44 @@ local spGetUnitPosition     = Spring.GetUnitPosition
 local RedStr = "\255\255\001\001"
 local unitRulesParamName = "upgrade"
 local oldFrame = 0
-local CMD_MANUALFIRE = CMD.MANUALFIRE
+--local CMD_MANUALFIRE = CMD.MANUALFIRE
+local CMD_CAPTURE = CMD.CAPTURE
 
--- Per-unit upgrade settings (TODO: Move to a separate file for better organization)
 
-CMD.UPG_DGUN = 41999
-CMD_UPG_DGUN = CMD.UPG_DGUN
-CMD.UPG_GRENADE = 41998
-CMD_UPG_GRENADE = CMD.UPG_GRENADE
-CMD.UPG_FIRERAIN = 41997
-CMD_UPG_FIRERAIN = CMD.UPG_FIRERAIN
-CMD.UPG_FIRERAIN = 41996
-CMD_UPG_BARRAGE = CMD.UPG_BARRAGE
--- Unit Upgrades (as shown in a certain unit's command list)
-UU = {
-    --capture = {
-    --    UpgradeCmdDesc = {
-    --        id      = CMD_UPG_DGUN,
-    --        name    = 'Upg D-Gun',
-    --        action  = 'dgunupgrade',
-    --        cursor  = 'Morph',
-    --        type    = CMDTYPE.ICON,
-    --        tooltip = 'Enables D-gun weapon',
-    --    },
-    --    prereq = "Tech1",
-    --    metalCost = 200,
-    --    energyCost = 1200,
-    --    upgradeTime = 5 * 30, --5 seconds, in frames
-    --    type = "tech",
-    --},
-    dgun = {
+CMD.UPG_CAPTURE = 42999
+CMD_UPG_CAPTURE = CMD.UPG_CAPTURE
+
+-- Unit / Tech settings (as shown in a given unit's command list) (TODO: Move to a separate file for better organization)
+UT = {
+    capture = {
         UpgradeCmdDesc = {
-            id      = CMD_UPG_DGUN,
+            id      = CMD_UPG_CAPTURE,
             name    = 'Upg D-Gun',
-            action  = 'dgunupgrade',
+            action  = 'upgradecapture',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Enables D-gun weapon',
+            tooltip = 'Enables Capture',
         },
-        prereq = "Tech1",
+        prereq = "",
         metalCost = 200,
         energyCost = 1200,
         upgradeTime = 5 * 30, --5 seconds, in frames
         type = "tech",
-    },
-    grenade = {     -- >> Peewee's Laser Grenade (Per Unit)
-        UpgradeCmdDesc = {
-            id      = CMD_UPG_GRENADE,
-            name    = 'Upg Grenade',
-            action  = 'grenadeupgrade',
-            cursor  = 'Morph',
-            type    = CMDTYPE.ICON,
-            tooltip = 'Enables Laser Grenade weapon',
-        },
-        prereq = "Tech",
-        metalCost = 80,
-        energyCost = 480,     --6x metalCost
-        upgradeTime = 5 * 30, --5 seconds, in frames
-        type = "perunit",
-    },
-    firerain = {     -- >> Arm Samson's Missile Shower (Per Unit)
-        UpgradeCmdDesc = {
-            id      = CMD_UPG_FIRERAIN,
-            name    = 'Upg FireRain',
-            action  = 'firerainupgrade',
-            cursor  = 'Morph',
-            type    = CMDTYPE.ICON,
-            tooltip = 'Enables Fire Rain weapon',
-        },
-        prereq = "Tech1",
-        metalCost = 160,
-        energyCost = 960,
-        upgradeTime = 5 * 30, --5 seconds, in frames
-        type = "perunit",
-    },
-    barrage = {     -- >> Core Informer comet rain (Per Unit)
-        UpgradeCmdDesc = {
-            id      = CMD_UPG_BARRAGE,
-            name    = 'Upg Barrage',
-            action  = 'barrageupgrade',
-            cursor  = 'Morph',
-            type    = CMDTYPE.ICON,
-            tooltip = 'Enables Barrage weapon',
-        },
-        prereq = "Tech1",
-        metalCost = 160,
-        energyCost = 960,
-        upgradeTime = 5 * 30, --5 seconds, in frames
-        type = "perunit",
+        buttonToUnlock = CMD_CAPTURE,
+        affectedUnits = { [UnitDefNames["armck"].id] = true, [UnitDefNames["armcv"].id] = true, [UnitDefNames["armca"].id] = true,
+                          [UnitDefNames["corck"].id] = true, [UnitDefNames["corcv"].id] = true, [UnitDefNames["corca"].id] = true,
+                          [UnitDefNames["armack"].id] = true,[UnitDefNames["armacv"].id] = true,[UnitDefNames["armaca"].id] = true,
+                          [UnitDefNames["corack"].id] = true,[UnitDefNames["coracv"].id] = true,[UnitDefNames["coraca"].id] = true,
+                          [UnitDefNames["cormando"].id] = true,
+        }
     },
 }
--- Value is used as key of PUU (Per-unit upgrade table)
+-- Value is used as key of the UT (Unit Tech) table
 UpgradableUnits = {
-    [UnitDefNames["corcom"].id] = "dgun",
-    --[UnitDefNames["corcom2"].id] = "dgun",
-    --[UnitDefNames["corcom3"].id] = "dgun",
-    --[UnitDefNames["corcom4"].id] = "dgun",
-    [UnitDefNames["armcom"].id] = "dgun",
-    --[UnitDefNames["armcom2"].id] = "dgun",
-    --[UnitDefNames["armcom3"].id] = "dgun",
-    --[UnitDefNames["armcom4"].id] = "dgun",
-    [UnitDefNames["armpw"].id] = "grenade",
-    [UnitDefNames["armsam"].id] = "firerain",
-    [UnitDefNames["corvrad"].id] = "plasmabarrage",
+    [UnitDefNames["armoutpost"].id] = {"capture","techbooster1"},
+    [UnitDefNames["coroutpost"].id] = {"capture","techbooster1"},
 }
-Upgrades = {} -- Auto-completed from PUU @ Initialize
+TechUpgrades = {} -- Auto-completed from UT @ Initialize
 
 --local tooltipRequirement = "\n"..RedStr.."Requires ".. prereq,
 --local UpgradeTooltip = 'Enables D-gun ability / command'
@@ -193,10 +126,10 @@ end
 
 -- TODO: Add manualfire edited tooltip
 --addUpdateCommand(unitID, puuItem.UpgradeCmdDesc.id, puuItem.UpgradeCmdDesc, { req=puuItem.Prereq, defCmdDesc=puuItem.UpgradeCmdDesc })
-local function addUpdateCommand(unitID, puuItem)
-    local insertID = puuItem.UpgradeCmdDesc.id
-    local cmdDesc = puuItem.UpgradeCmdDesc
-    local options = { req=puuItem.prereq, defCmdDesc=puuItem.UpgradeCmdDesc }
+local function addUpdateCommand(unitID, utItem)
+    local insertID = utItem.UpgradeCmdDesc.id
+    local cmdDesc = utItem.UpgradeCmdDesc
+    local options = { req= utItem.prereq, defCmdDesc= utItem.UpgradeCmdDesc }
 
     local cmdDescId = spFindUnitCmdDesc(unitID, cmdDesc.id)
     if not cmdDescId then
@@ -219,71 +152,74 @@ local function hasPrereq(prereq, unitTeam)
     return GG.TechCheck(prereq, unitTeam)
 end
 
+local function getTechUpg(unitDefID, cmdID)
+    --[UnitDefNames["armoutpost"].id] = {"capture","techbooster1"},
+    local upgradeList = UpgradableUnits[unitDefID]
+    for i, upgrade in ipairs(upgradeList) do
+        local upgData = UT[upgrade]
+        if upgData and cmdID == upgData.UpgradeCmdDesc.id then
+            return upgData
+        end
+    end
+    return nil
+end
+
 function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
-    local upgrade = UpgradableUnits[unitDefID]
-    if not upgrade then
+    if upgradedUnits[unitID] then
         return true
     end
-    local puu = UU[upgrade]
 
-    --grenade = {     -- >> Peewee's Laser Grenade (Per Unit)
-    --    UpgradeCmdDesc = {
-    --        id      = CMD_UPG_GRENADE,
-    --        name    = 'Upg Grenade',
-    --        action  = 'grenadeupgrade',
-    --        cursor  = 'Morph',
-    --        type    = CMDTYPE.ICON,
-    --        tooltip = 'Enables Laser Grenade weapon',
-    --    },
-    --    Prereq = "Tech0",
-    --},
+    local techUpg = getTechUpg(unitDefID, cmdID)
+
     --Spring.Echo("Expected puu id: "..puu.UpgradeCmdDesc.id.." cmdID: "..cmdID)
-    if cmdID == puu.UpgradeCmdDesc.id and (not upgradedUnits[unitID]) then
+    if techUpg then
         -- If currently upgrading, cancel upgrade
         local upgradingIdx = isUpgrading(unitID)
         if upgradingIdx then
             upgradingUnits[upgradingIdx] = nil
-            spSetUnitRulesParam(unitID, unitRulesParamName, nil)
+            spSetUnitRulesParam(unitID, unitRulesParamName, nil)    -- Default, for UI purposes
             return true
         end
         -- Otherwise, check for requirements
-        if hasPrereq(puu.prereq, unitTeam) then
+        if hasPrereq(techUpg.prereq, unitTeam) then
             --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
-            upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0, puu = puu, }
+            upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0, ut = techUpg, }
             spSetUnitRulesParam(unitID, unitRulesParamName, 0)
         else
-            localAlert(unitID, "Requires: "..puu.prereq)
+            localAlert(unitID, "Requires: ".. techUpg.prereq)
         end
     end
     return true
 end
 
 function gadget:Initialize()
-    for _,upgrade in pairs(UU) do
-        Upgrades[upgrade] = true
+    for _,upgrade in pairs(UT) do
+        TechUpgrades[upgrade] = true
     end
 end
 
 function gadget:UnitCreated(unitID, unitDefID, unitTeam)
-    local upgrade = UpgradableUnits[unitDefID]
-    if not upgrade then
+    local upgradeList = UpgradableUnits[unitDefID]
+    if not upgradeList then
         return end
-    --Spring.Echo("Found locally available upgrade: "..upgrade)
 
-    local puuItem = UU[upgrade]
-    if puuItem then
-        addUpdateCommand(unitID, puuItem)
-        editCommand(unitID, CMD_MANUALFIRE, {disabled=true, req="perunit", defCmdDesc=UpgradeCmdDesc})
-    else
-        --Spring.Echo ("Defined upgrade not found in Settings: "..upgrade)
+    -- Add all upgrade command buttons, disabled
+    for _, upgrade in ipairs(upgradeList) do
+        local utItem = UT[upgrade]
+        if utItem then
+            addUpdateCommand(unitID, utItem)
+            editCommand(unitID, utItem.buttonToUnlock, { disabled=true, req="perunit", defCmdDesc=utItem.UpgradeCmdDesc})
+        end
     end
+
 end
 
-local function finishUpgrade(idx, unitID, puu)
-    editCommand (unitID, puu.UpgradeCmdDesc.id, {disabled=true})
+-- Upgrade is complete, unlock relevant button
+local function finishUpgrade(idx, unitID, utItem)
+    editCommand (unitID, utItem.UpgradeCmdDesc.id, { disabled=true})
 
     -- Enable action & remove "Requires" red alert at bottom
-    editCommand (unitID, CMD_MANUALFIRE, {disabled=false, req="", defCmdDesc = puu.UpgradeCmdDesc})
+    editCommand (unitID, utItem.buttonToUnlock, { disabled=false, req="", defCmdDesc = utItem.UpgradeCmdDesc})
 
     ipairs_remove(upgradingUnits, unitID)   -- setting it to nil won't remove the element, affecting the # operator
     upgradedUnits[unitID] = true
@@ -305,17 +241,17 @@ function gadget:GameFrame()
 
     --Spring.Echo("Count: "..#upgradingUnits)
 
-    --{ unitID = unitID, progress = 0, puu = puu, }
+    --{ unitID = unitID, progress = 0, ut = ut, }
     for idx,data in ipairs(upgradingUnits) do
         local unitID = data.unitID
         local progress = data.progress
-        local puu = data.puu
-        if spUseUnitResource(unitID, { ["m"] = puu.metalCost / puu.upgradeTime, ["e"] = puu.energyCost / puu.upgradeTime }) then
-            local progress = progress + 1 / puu.upgradeTime -- TODO: Add "Morph speedup" bonus maybe?
+        local ut = data.ut
+        if spUseUnitResource(unitID, { ["m"] = ut.metalCost / ut.upgradeTime, ["e"] = ut.energyCost / ut.upgradeTime }) then
+            local progress = progress + 1 / ut.upgradeTime -- TODO: Add "Morph speedup" bonus maybe?
             upgradingUnits[idx].progress = progress
             spSetUnitRulesParam(unitID, unitRulesParamName, progress)
             if progress >= 1.0 then
-                finishUpgrade(idx, unitID, puu)
+                finishUpgrade(idx, unitID, ut)
             end
         end
     end

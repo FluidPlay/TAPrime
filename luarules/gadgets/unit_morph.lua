@@ -229,9 +229,7 @@ local PWUnits = {}            -- planetwars units
 local morphingUnits = {}    --// make it global in Initialize()
 
 local reqTechs = {}         --// all possible techs which are used as a requirement for a morph
-local techbooster1_id = "booster1"
-local techbooster2_id = "booster2"
-local techbooster3_id = "booster3"
+local techboosters = { {id="booster1",bonus=1.25}, {id="booster2",bonus=1.33}, {id="booster3",bonus=1.5},}
 local techboosterIds = { "booster1", "booster2", "booster3" }
 local techboosterbonus = { 1.25, 1.33, 1.5 }
 
@@ -563,16 +561,12 @@ local function GetMorphTimeBonus(unitTeam)
       break
     end
   end
-  -- Check for Tech Booster 1
-    -- TODO: Add a proper loop below :p
-  if GG.TechCheck(techboosterIds[1], unitTeam) then
-    bonus = bonus * techboosterbonus[1] --1.25
-  end
-  if GG.TechCheck(techboosterIds[2], unitTeam) then
-    bonus = bonus * techboosterbonus[2] --1.33
-  end
-  if GG.TechCheck(techboosterIds[3], unitTeam) then
-    bonus = bonus * techboosterbonus[3] --1.5
+  -- Check for Tech Boosters
+  local techboosters = { {id="booster1",bonus=1.25}, {id="booster2",bonus=1.33}, {id="booster3",bonus=1.5},}
+  for i = 1, 3 do
+    if GG.TechCheck(techboosters[i].id, unitTeam) then
+      bonus = bonus * techboosters[i].bonus --1.25, 1.33, 1.5
+    end
   end
   --if bonus ~= 1 then
     --spEcho("bonus: "..bonus) --end
@@ -1096,28 +1090,7 @@ local function UpdateMorph(unitID, morphData, bonus)
       local deficit = currentM < pullM and pullM - currentM or pullE - currentE
       -- Calculate sum of metal and energy increments for this unit team's morphing units
       local deficitFactor = lerp(1, 0.25, inverselerp(0, 3000, minmax(deficit, 0, 3000)))
-      --Spring.Echo("deficit: "..minmax(deficit, 0, 3000).." invlerp: "..inverselerp(0, 3000, minmax(deficit, 0, 3000)).." factor: ".. deficitFactor)
-      --for unitID, thisMorphData in pairs(morphingUnits) do
-      --    local thisMorphDef = thisMorphData.def
-      --    if thisMorphDef and thisMorphData.teamID == teamID and thisMorphDef.resTable then
-      --        metalincsum = metalincsum + thisMorphDef.resTable.m * bonus
-      --        energyincsum = energyincsum + thisMorphDef.resTable.e * bonus
-      --    end
-      --end
-      -- eg.: curremtM = 50, metalincsum = 100; metalFactor = 50/100 = 0.5;
       bonus = deficitFactor * bonus
-      --Spring.Echo("ResTableM: "..morphData.def.resTable.m.." MetalIncSum: "..metalincsum.." MetalFactor: "..metalfactor)
-      --if spUseUnitResource(unitID, { ["m"] = morphData.def.resTable.m * mult,
-      --                               ["e"] = morphData.def.resTable.e * mult }) then
-      --    morphData.progress = morphData.progress + (morphData.increment * mult)
-      --end
-  --else
-  --    -- We have sufficient resources, increment the morph using the time step
-  --    if spUseUnitResource(unitID, { ["m"] = morphData.def.resTable.m * bonus,
-  --                                   ["e"] = morphData.def.resTable.e * bonus }) then
-  --        --if (Spring.UseUnitResource(unitID, morphData.def.resTable)) then
-  --        morphData.progress = morphData.progress + (morphData.increment * bonus)
-  --    end
   end
   if bonus > 0 and spUseUnitResource(unitID, { ["m"] = morphData.def.resTable.m * bonus,
                                              ["e"] = morphData.def.resTable.e * bonus }) then
