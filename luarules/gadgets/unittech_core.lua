@@ -11,7 +11,7 @@ function gadget:GetInfo()
         date	= "Sept 24th 2019",
         license	= "GNU GPL, v2 or later",
         layer	= -1,
-        enabled = true,
+        enabled = false, --true, (WIP)
         -- The only thing this guy does is to award the given tech to the Team and/or unlock a given button. --TODO
     }
 end
@@ -46,7 +46,7 @@ UT = {
     capture = {
         UpgradeCmdDesc = {
             id      = CMD_UPG_CAPTURE,
-            name    = 'Upg D-Gun',
+            name    = '^ Capture',
             action  = 'upgradecapture',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
@@ -58,18 +58,22 @@ UT = {
         upgradeTime = 5 * 30, --5 seconds, in frames
         type = "tech",
         buttonToUnlock = CMD_CAPTURE,
-        affectedUnits = { [UnitDefNames["armck"].id] = true, [UnitDefNames["armcv"].id] = true, [UnitDefNames["armca"].id] = true,
-                          [UnitDefNames["corck"].id] = true, [UnitDefNames["corcv"].id] = true, [UnitDefNames["corca"].id] = true,
-                          [UnitDefNames["armack"].id] = true,[UnitDefNames["armacv"].id] = true,[UnitDefNames["armaca"].id] = true,
-                          [UnitDefNames["corack"].id] = true,[UnitDefNames["coracv"].id] = true,[UnitDefNames["coraca"].id] = true,
-                          [UnitDefNames["cormando"].id] = true,
-        }
+        techToGrant = "capture",
     },
 }
 -- Value is used as key of the UT (Unit Tech) table
 UpgradableUnits = {
-    [UnitDefNames["armoutpost"].id] = {"capture","techbooster1"},
-    [UnitDefNames["coroutpost"].id] = {"capture","techbooster1"},
+    [UnitDefNames["armtech"].id] = {"capture","techbooster1"},
+    [UnitDefNames["cortech"].id] = {"capture","techbooster1"},
+}
+-- Which units get a button locked by each upgrade (CMDID is found @ UT)
+LockedUnits = {
+    capture = { [UnitDefNames["armck"].id] = true, [UnitDefNames["armcv"].id] = true, [UnitDefNames["armca"].id] = true,
+                [UnitDefNames["corck"].id] = true, [UnitDefNames["corcv"].id] = true, [UnitDefNames["corca"].id] = true,
+                [UnitDefNames["armack"].id] = true,[UnitDefNames["armacv"].id] = true,[UnitDefNames["armaca"].id] = true,
+                [UnitDefNames["corack"].id] = true,[UnitDefNames["coracv"].id] = true,[UnitDefNames["coraca"].id] = true,
+                [UnitDefNames["cormando"].id] = true,
+    }
 }
 TechUpgrades = {} -- Auto-completed from UT @ Initialize
 
@@ -77,7 +81,7 @@ TechUpgrades = {} -- Auto-completed from UT @ Initialize
 --local UpgradeTooltip = 'Enables D-gun ability / command'
 --local tooltipRequirement = "\n"..RedStr.."Requires ".. PUU.dgun.prereq
 local upgradingUnits = {}   --{ unitID = unitID, progress = 0, puu = puu, }
-local upgradedUnits = {}
+local upgradedUnits = {}    --TODO: Refactor, need to take [unit]=upgradeID
 
 if not gadgetHandler:IsSyncedCode() then
     return end
@@ -124,7 +128,7 @@ local function editCommand (unitID, CMDID, options)
     -- Spring.Echo("New tooltip: "..newCmdDesc.tooltip.." disabled: "..tostring(disabled))
 end
 
--- TODO: Add manualfire edited tooltip
+-- TODO: Add edited cmddescid tooltip
 --addUpdateCommand(unitID, puuItem.UpgradeCmdDesc.id, puuItem.UpgradeCmdDesc, { req=puuItem.Prereq, defCmdDesc=puuItem.UpgradeCmdDesc })
 local function addUpdateCommand(unitID, utItem)
     local insertID = utItem.UpgradeCmdDesc.id
@@ -155,6 +159,8 @@ end
 local function getTechUpg(unitDefID, cmdID)
     --[UnitDefNames["armoutpost"].id] = {"capture","techbooster1"},
     local upgradeList = UpgradableUnits[unitDefID]
+    if upgradeList == nil then
+        return nil end
     for i, upgrade in ipairs(upgradeList) do
         local upgData = UT[upgrade]
         if upgData and cmdID == upgData.UpgradeCmdDesc.id then
@@ -181,12 +187,17 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
             return true
         end
         -- Otherwise, check for requirements
-        if hasPrereq(techUpg.prereq, unitTeam) then
-            --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
+        if techUpg.prereq ~= "" then
+            if hasPrereq(techUpg.prereq, unitTeam) then
+                --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
+                upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0, ut = techUpg, }
+                spSetUnitRulesParam(unitID, unitRulesParamName, 0)
+            else
+                localAlert(unitID, "Requires: ".. techUpg.prereq)
+            end
+        else
             upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0, ut = techUpg, }
             spSetUnitRulesParam(unitID, unitRulesParamName, 0)
-        else
-            localAlert(unitID, "Requires: ".. techUpg.prereq)
         end
     end
     return true
@@ -207,8 +218,9 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
     for _, upgrade in ipairs(upgradeList) do
         local utItem = UT[upgrade]
         if utItem then
+            Spring.Echo("Adding Command")
             addUpdateCommand(unitID, utItem)
-            editCommand(unitID, utItem.buttonToUnlock, { disabled=true, req="perunit", defCmdDesc=utItem.UpgradeCmdDesc})
+            editCommand(unitID, utItem.buttonToUnlock, { disabled=true, req=utItem.prereq, defCmdDesc=utItem.UpgradeCmdDesc}) --"peritem"
         end
     end
 
@@ -224,6 +236,10 @@ local function finishUpgrade(idx, unitID, utItem)
     ipairs_remove(upgradingUnits, unitID)   -- setting it to nil won't remove the element, affecting the # operator
     upgradedUnits[unitID] = true
     spSetUnitRulesParam(unitID, unitRulesParamName, nil)
+
+    local techToGrant = utItem.techToGrant
+    if techToGrant then
+        GG.GrantTech(techToGrant, spGetUnitTeam(unitID), true) end
 end
 
 function gadget:UnitDestroyed(unitID)

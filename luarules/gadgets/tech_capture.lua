@@ -11,7 +11,7 @@ function gadget:GetInfo()
         date      = "21 November 2018",
         license   = "GNU GPL, v2 or later",
         layer     = -100,
-        enabled   = true,
+        enabled   = false, --true,
     }
 end
 
@@ -169,7 +169,7 @@ if gadgetHandler:IsSyncedCode() then
     end
 
     function gadget:UnitCreated(unitID, unitDefID, unitTeam, builderID)
-        --- If upgrade is already completely, we have nothing to do here
+        --- If upgrade is already completed, we have nothing to do here
         if not isUpgradedTeam(unitTeam) then
             --- Check for tech proxies being built, to set upgrade state accordingly
             if isTechProxy(unitDefID) then
