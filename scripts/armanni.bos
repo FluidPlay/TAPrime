@@ -45,7 +45,7 @@ activatescr()
 	}
 	if( TRUE )
 	{
-		move plate1 to y-axis [6.300000] speed [12.000000];
+		move plate1 to y-axis [26.950000] speed [12.000000]; //6.3
 		sleep 150;
 	}
 	if( TRUE )
@@ -116,7 +116,7 @@ deactivatescr()
 		stop-spin gun around x-axis;
 		turn turret to y-axis <0.000000> speed <100.000000>;
 		turn gun to x-axis <0.000000> speed <100.000000>;
-		move plate1 to y-axis [6.300000] now;
+		move plate1 to y-axis [26.950000] now; //6.3
 		move case5 to y-axis [-7.300000] now;
 		move case6 to y-axis [-7.350000] now;
 		move arm to y-axis [5.600000] now;
@@ -196,7 +196,7 @@ deactivatescr()
 	if( TRUE )
 	{
 		move plate1 to y-axis [0.000000] speed [24.000000];
-		sleep 100;
+		sleep 200; //100
 	}
 	if( TRUE )
 	{
