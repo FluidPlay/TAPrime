@@ -199,7 +199,7 @@ local weaponDamageTypes = {
 	corpt = { ["Laser"] = "laser", ["Missiles"] = "homing", },
 	corcrus = { ["HighEnergyLaser"] = "cannon", ["L2DeckLaser"] = "cannon", ["CruiserDepthCharge"] = "cannon", },
 	cortrem = { ["RapidArtillery"] = "plasma", },
-	cordoom = { ["HighEnergyLaser"] = "neutron", ["LightLaser"] = "laser", ["ATAD"] = "plasma", },
+	cordoom = { ["HighEnergyLaser"] = "neutron", ["PlasmaBeam"] = "plasma", ["ATAD"] = "neutron", },
 	armhawk = { ["HawkBeamer"] = "thermo", ["HawkBeamerA2G"] = "homing", },
 	corsfig = { ["GuidedMissiles"] = "homing", },
 	corthud = { ["PlasmaCannon"] = "plasma", },
