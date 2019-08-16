@@ -196,7 +196,7 @@ deactivatescr()
 	if( TRUE )
 	{
 		move plate1 to y-axis [0.000000] speed [24.000000];
-		sleep 200; //100
+		sleep 600; //100
 	}
 	if( TRUE )
 	{

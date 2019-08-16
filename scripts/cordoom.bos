@@ -38,19 +38,19 @@ activatescr()
 	move shell4a to z-axis [5.000000] speed [10.000000];
 	sleep 250;
 
-	move shell1a to y-axis [-20.250000] speed [42.500000];
+	move shell1a to y-axis [-20.250000] speed [42.500000];	//-20.25 (...)
 	move shell2a to y-axis [-20.250000] speed [42.500000];
 	move shell3a to y-axis [-20.250000] speed [40.000000];
 	move shell4a to y-axis [-20.250000] speed [40.000000];
 	sleep 250;
 
-	move turreta to y-axis [9.062500] speed [15.000000];
-	move turretb to y-axis [5.000000] speed [15.000000];
+	move turreta to y-axis [9.062500] speed [15.000000];	//9.0626
+	move turretb to y-axis [5.000000] speed [15.000000];	//5
 	sleep 300;
 
-	move turreta to y-axis [11.000000] speed [10.000000];
-	move turretb to y-axis [8.625000] speed [7.500000];
-	move turretc to y-axis [3.312500] speed [7.500000];
+	move turreta to y-axis [11.000000] speed [10.000000]; //11
+	move turretb to y-axis [8.625000] speed [7.500000];		//8.625
+	move turretc to y-axis [3.312500] speed [7.500000];		//3.3125
 	sleep 150;
 
 	move hatchc to y-axis [2.125000] speed [5.000000];
@@ -90,12 +90,12 @@ deactivatescr()
 	move hatchc to z-axis [0.000000] speed [2.500000];
 	sleep 150;
 
-	move turreta to y-axis [11.062500] speed [10.000000];
-	move turretb to y-axis [5.562500] speed [10.000000];
+	move turreta to y-axis [11.062500] speed [10.000000]; //11.0625
+	move turretb to y-axis [5.562500] speed [10.000000];  //5.5625
 	move turretc to y-axis [0.000000] speed [10.000000];
 	sleep 150;
 
-	move turreta to y-axis [0.000000] speed [15.000000];
+	move turreta to y-axis [0.000000] speed [15.000000]; //0 (...)
 	move turretb to y-axis [0.000000] speed [15.000000];
 	sleep 400;
 
