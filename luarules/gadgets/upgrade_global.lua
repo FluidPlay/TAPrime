@@ -52,7 +52,7 @@ local spUseUnitResource     = Spring.UseUnitResource
 local spGetUnitPosition     = Spring.GetUnitPosition
 
 local RedStr = "\255\255\001\001"
-local baseParamName = "upgrade" -- This will be added to an underscore and the upgradeID
+local upgParamName = "upgrade" -- Param Name to be read by unit_healthbars2 (lua UI)
 local oldFrame = 0
 --local CMD_MANUALFIRE = CMD.MANUALFIRE
 local CMD_CAPTURE = CMD.CAPTURE
@@ -151,7 +151,7 @@ local function addUpdateCommand(unitID, cmdDesc)
     if not cmdDescId then
         spInsertUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
     else
-        spEditUnitCmdDesc(unitID, cmdDesc.Id, cmdDesc)
+        spEditUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
     end
 end
 
@@ -162,45 +162,47 @@ local function localAlert(unitID, msg)
 end
 
 --- Returns UpgradeID (from GlobalUpgrades)
-local function getTechUpg(unitDefID, cmdID)
+local function getUpgradeID (unitDefID, cmdID)
     --[UnitDefNames["armoutpost"].id] = {"capture","techbooster1"},
     local upgradeList = TechResearchers[unitDefID]
     if upgradeList == nil then
         return nil end
-    for i, upgrade in ipairs(upgradeList) do
-        local upgData = GlobalUpgrades[upgrade]
+    for _, upgradeID in ipairs(upgradeList) do
+        --Spring.Echo(upgradeID)
+        local upgData = GlobalUpgrades[upgradeID]
         if upgData and cmdID == upgData.UpgradeCmdDesc.id then
-            return upgrade
+            return upgradeID
         end
     end
     return nil
 end
 
 --- Formats Upgrade Param Name (to be used in unitRulesParam)
-local function getUpgParamName(upgradeID)
-    return baseParamName.."_"..upgradeID
-end
+--local function getUpgParamName(upgradeID)
+--    return baseParamName.."_"..upgradeID
+--end
 
-local function SetUpgrade(unitID, upgradeID, unitUpgParamName, progress, globalUpgrade)
+local function SetUpgrade(unitID, upgradeID, progress, globalUpgrade)
     upgradingUnits[unitID] = (globalUpgrade == nil)
             and nil
             or { upgradeID = upgradeID, progress = progress, globalUpgrade = globalUpgrade, }
-    spSetUnitRulesParam(unitID, unitUpgParamName, progress)
+    spSetUnitRulesParam(unitID, upgParamName, progress)
 end
 
 function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
-    local upgradeID = getTechUpg(unitDefID, cmdID)
-    if upgradedUnits[unitID][upgradeID] then
+    local upgradeID = getUpgradeID(unitDefID, cmdID)
+    if not upgradeID then
+        return true
+    end
+    if upgradedUnits[unitID] and upgradedUnits[unitID][upgradeID] then
         localAlert(unitID, "Upgrade Already researched: "..upgradeID)
         return false
     end
 
-    --Spring.Echo("Expected puu id: "..puu.UpgradeCmdDesc.id.." cmdID: "..cmdID)
     if upgradeID then
-        local unitUpgParamName = getUpgParamName(upgradeID)
         -- If currently upgrading, cancel upgrade
         if isUpgrading(unitID) then
-            SetUpgrade(unitID, upgradeID, unitUpgParamName, nil, nil)
+            SetUpgrade(unitID, upgradeID, nil, nil)
             return true
         end
         local globalUpgrade = GlobalUpgrades[upgradeID]
@@ -208,15 +210,15 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
             return false end
 
         -- Otherwise, check for requirements
-        if upgradeID ~= "" then
+        if globalUpgrade.prereq ~= "" then
             --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
             if hasPrereq(globalUpgrade.prereq, unitTeam) then
-                SetUpgrade(unitID, upgradeID, unitUpgParamName, 0, globalUpgrade)
+                SetUpgrade(unitID, upgradeID, 0, globalUpgrade)
             else
                 localAlert(unitID, "Requires: "..globalUpgrade.prereq)
             end
         else
-            SetUpgrade(unitID, upgradeID, unitUpgParamName, 0, globalUpgrade)
+            SetUpgrade(unitID, upgradeID, 0, globalUpgrade)
         end
     end
     return true
@@ -268,13 +270,17 @@ local function finishUpgrade(unitID, gUpg, upgradeID)
     addUpdateCommand(unitID, cmdDesc)
 
     upgradingUnits[unitID] = nil
+    if not upgradedUnits[unitID] then
+        upgradedUnits[unitID] = {} end
     upgradedUnits[unitID][upgradeID] = true
 
-    spSetUnitRulesParam(unitID, getUpgParamName(upgradeID), nil)
+    spSetUnitRulesParam(unitID, upgParamName, nil)  -- Used by UI (healthbars2)
 
     local techToGrant = gUpg.techToGrant
     if techToGrant then
-        GG.GrantTech(techToGrant, spGetUnitTeam(unitID), true) end
+        GG.TechGrant(techToGrant, spGetUnitTeam(unitID), true) end
+
+    localAlert(unitID, "Upgrade Finished: "..upgradeID)
 end
 
 function gadget:GameFrame()
@@ -294,7 +300,6 @@ function gadget:GameFrame()
                                             ["e"] = gUpg.energyCost / gUpg.upgradeTime }) then
             progress = progress + 1 / gUpg.upgradeTime -- TODO: Add "Morph speedup" bonus maybe?
             upgradingUnits[unitID].progress = progress
-            local upgParamName = getUpgParamName(data.upgradeID)
             spSetUnitRulesParam(unitID, upgParamName, progress)
             if progress >= 1.0 then
                 finishUpgrade(unitID, gUpg, data.upgradeID)
