@@ -5,8 +5,8 @@
 ---
 function gadget:GetInfo()
     return {
-        name 	= "Unit Upgrade Core",
-        desc	= "Enables upgrades for units",
+        name 	= "Upgrade - Per Unit",
+        desc	= "Enables per-unit upgrades",
         author	= "MaDDoX",
         date	= "Sept 24th 2019",
         license	= "GNU GPL, v2 or later",
@@ -15,6 +15,26 @@ function gadget:GetInfo()
         -- TODO: Currently only supports blocking/unblocking command fire weapons
     }
 end
+
+--[[    Full Upgrading Structure:
+
+GlobalUpgrades [made by techcenter]
+	=> Multiple upgrades per unit
+	=> Provide / may require a team tech
+	=> "Consumed" by other gadgets (GUHandler)
+		* Morph Speedup (unit_morph.lua)
+		* Button-unlock (update from capture)
+
+PerUnitUpgrades [made by unit]
+	=> One upgrade per unit (max)
+	=> May require a team tech
+	=> PUU Handlers: <rely on the global PUUunits table>
+		* Button-unlock
+		* Healing Pulse (Aura, increases health)
+		* Overclock Pulse (Aura, increases speed + firerate)
+		* Motor Hack (Weapon - reduces speed by 40%)
+		* Weapon Switcher (disables primary, enables secondary weapon)
+]]
 
 VFS.Include("gamedata/taptools.lua")
 
@@ -125,7 +145,7 @@ UU = {
     },
 }
 -- Value is used as key of PUU (Per-unit upgrade table)
-UpgradableUnits = {
+TechResearchers = {
     [UnitDefNames["corcom"].id] = "dgun",
     --[UnitDefNames["corcom2"].id] = "dgun",
     --[UnitDefNames["corcom3"].id] = "dgun",
@@ -220,7 +240,7 @@ local function hasPrereq(prereq, unitTeam)
 end
 
 function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
-    local upgrade = UpgradableUnits[unitDefID]
+    local upgrade = TechResearchers[unitDefID]
     if not upgrade then
         return true
     end
@@ -265,7 +285,7 @@ function gadget:Initialize()
 end
 
 function gadget:UnitCreated(unitID, unitDefID, unitTeam)
-    local upgrade = UpgradableUnits[unitDefID]
+    local upgrade = TechResearchers[unitDefID]
     if not upgrade then
         return end
     --Spring.Echo("Found locally available upgrade: "..upgrade)

@@ -29,12 +29,14 @@ end
 
 -- Random tips we can show
 local tips = {
+    "armwin.dds ".."You may order your builder or outpost to build structures in an array-like pattern by holding SHIFT+ALT and dragging with the left mouse button. Spread them up by hitting 'T' on keyboard while the Shift key is held. Ctrl+Shift+T brings them closer.",
+    "cordt.dds ".."Arm and Core's Dragon Teeth (DTs) are great to surround perimeters, preventing lower-tech units movement. They also block incoming direct-fire and missiles from going through, so improve your defenses resistance by surrounding them with DTs.",
     "armcom.dds ".."The D-Gun is the Commander's directed-fire ability and the most powerful weapon in the game. Upgrade it in the commander menu after your Tech Center is on level 1, then use it with the 'D' keyboard shortcut.",
 	"outpost.dds ".."To build unit factories you need an Outpost. Outposts can morph up to Tier4, with increasingly better build range and LOS.",
     "armsilo.dds ".."It's not just about upgrading the Tech Center! Keep upgrading your outpost. Building structures from it is much cheaper than morphing, and it'll build exclusive structures like Annihilators, Nukes and EMP Launchers.",
     "armshltx ".."To build experimental units like the Krogoth and Bantha, you need an Experimental Gantry, built exclusively by a Level 4 outpost",
     "corafus ".."The 'AFUS' or Advanced Fusion Reactor has the best energy output in your army. You can get AFUSes by morphing a regular Fusion, once you're Tech Level 4",
-    "armawin ".."When the wind is blowing in your favor, Advanced Wind Generators are available on Tier 2, as morphs from the regular Wind Generator",
+    "armawin ".."When the wind is blowing in your favor, Advanced Wind Generators are available on Tier 2 as morphs from the regular Wind Generator.",
     "cormuskrat.dds ".."FARKs and Muskrats are units built directly by the Outpost. They have good line of sight, can build dragon eyes (stealth remote cameras) and accelerate constructions and units being built.",
     "outpost.dds ".."Outposts can speed up any construction, but they're less cost effective for that than FARKs (built by the outpost) and they spend energy continuously.",
 	"armtech.dds ".."To tech up, build a Tech Center, then upgrade it progressively until Tech Tier4. This unlocks high-tier upgrades in factories and outposts as well.",
@@ -43,6 +45,8 @@ local tips = {
 	"corgat.dds ".."Gatlings and Flashes are terrific anti-kbot vehicles, very EMP-resistant and moderately effective against lighter gunships. When facing tanks or combos of plasma and missile kbots, don't expect them to last long.",
     "corlevlr.dds ".."Core Levelers and Arm Pokers are early game assault units. One of their unique abilities is the capacity to dodge kbot missiles when properly microed and kept moving at their top speed. Levelers can also transport kbots, including builders",
 	"armrl.dds ".."Missile towers can shoot at both ground and air units, but their anti-air range and damage is much higher than when firing on land units. Nevertheless, they're the best early static response to assault vehicles and tanks.",
+    "armsam.dds ".."The Arm Samson has a special ability, the Fire Rain. It's researched per-unit (requires Tier1 Tech) and lobs multiple fire shells, damaging kbots and vehicles in a wide area. Hit 'D' and left-click on target to use it.",
+    "armpw.dds ".."Peewees may acquire a special ability once you get to Tier 1, the laser grenade. It's researched per-unit and lobs a mid-range bouncing projectile, quite effective vs kbots and defenses. To use it, Hit 'D' and left-click on target.",
 	"armmex.dds ".."Metal Extractors can be morphed into Adv. Metal Extractors at Tier 1, Moho Mexes at Tier 2 and Uber Mexes at Tier 3, with increasingly higher metal output",
 	--"Have trouble finding metal spots?\nPress F4 to switch to the metal map.",
 	--"Queue-up multiple consecutive unit actions by holding SHIFT.",
