@@ -29,15 +29,18 @@ end
 
 -- Random tips we can show
 local tips = {
-    "armwin.dds ".."You may order your builder or outpost to build structures in an array-like pattern by holding SHIFT+ALT and dragging with the left mouse button. Spread them up by hitting 'T' on keyboard while the Shift key is held. Ctrl+Shift+T brings them closer.",
+    "armsolar.dds ".."You may order your builder or outpost to build structures in an array-like pattern by holding SHIFT+ALT and dragging with the left mouse button. Spread them up by hitting 'T' on keyboard while the Shift key is held. Ctrl+Shift+T brings them closer.",
+    "armwin.dds ".."Wind Generators built on high ground have a bonus compared to units built closer to the sea level. Isn't nature beautiful?",
     "cordt.dds ".."Arm and Core's Dragon Teeth (DTs) are great to surround perimeters, preventing lower-tech units movement. They also block incoming direct-fire and missiles from going through, so improve your defenses resistance by surrounding them with DTs.",
     "armcom.dds ".."The D-Gun is the Commander's directed-fire ability and the most powerful weapon in the game. Upgrade it in the commander menu after your Tech Center is on level 1, then use it with the 'D' keyboard shortcut.",
+    "armyork.dds ".."Flak-weaponry units, like the Phalanx, fire scattered projectiles. Flak is excellent at taking out fighters and heavy infantry, but will barely scratch tanks, commanders and plasma kbots.",
+    "armaak.dds ".."The Arm Archangel (Tier 2) and the Core Manticore (T3) fire long range missiles. Like all AA (anti-air) missiles, it's great vs bombers but not so much against fighters.",
 	"outpost.dds ".."To build unit factories you need an Outpost. Outposts can morph up to Tier4, with increasingly better build range and LOS.",
     "armsilo.dds ".."It's not just about upgrading the Tech Center! Keep upgrading your outpost. Building structures from it is much cheaper than morphing, and it'll build exclusive structures like Annihilators, Nukes and EMP Launchers.",
     "armshltx ".."To build experimental units like the Krogoth and Bantha, you need an Experimental Gantry, built exclusively by a Level 4 outpost",
     "corafus ".."The 'AFUS' or Advanced Fusion Reactor has the best energy output in your army. You can get AFUSes by morphing a regular Fusion, once you're Tech Level 4",
     "armawin ".."When the wind is blowing in your favor, Advanced Wind Generators are available on Tier 2 as morphs from the regular Wind Generator.",
-    "cormuskrat.dds ".."FARKs and Muskrats are units built directly by the Outpost. They have good line of sight, can build dragon eyes (stealth remote cameras) and accelerate constructions and units being built.",
+    "cormuskrat.dds ".."FARKs and Muskrats are units built directly by the Outpost. They're great for early scout, can build dragon eyes (stealth remote cameras) and may assist factories (faster unit production speed).",
     "outpost.dds ".."Outposts can speed up any construction, but they're less cost effective for that than FARKs (built by the outpost) and they spend energy continuously.",
 	"armtech.dds ".."To tech up, build a Tech Center, then upgrade it progressively until Tech Tier4. This unlocks high-tier upgrades in factories and outposts as well.",
 	"armtech.dds ".."When under attack, Tech Centers can become 70% more resistant if disabled (ON/OFF button or Ctrl+X shortcut)",
@@ -60,7 +63,7 @@ local tips = {
     "corbw.dds ".."Bladewings and Banshees are Core and Arm's drones respectively. They're available on Tier 0 air plants and in spite of their mobility, don't have a great line of sight and fly low, meaning they can be hit by any ground unit.",
     "cormist.dds ".."Missile Trucks (Arm Samson & Core Slasher) are very expensive but a) never miss, b) outrange some defenses and d) are the best early-game mobile counters to air units.",
     "cormist.dds ".."Missile Trucks (Arm Samson & Core Slasher) are very expensive but a) never miss, b) outrange some defenses and d) are the best early-game mobile counters to air units.",
-    "corrad.dds ".."To know what enemy units are vulnerable to a certain unit you have, point to your unit and hold SHIFT. Green means vulnerable to it, Red means resistant to the pointed unit, and so on.",
+    "corrad.dds ".."To know what enemy units are vulnerable to a certain unit you have, point to that unit and hold SHIFT. Colored circles will show up below units on screen. Green means vulnerable to the pointed unit, Red means resistant to it, and so on.",
     "armmark.dds ".."The highest relatively to the ground a unit is, the further it can see (LOS). The T1 Marky is one of the best scouts in the game, able to climb steep hills and easily acquire a nice vantage point.",
 	--"To see detailed info about each unit in-game switch on \"Extensive unit info\" via Options menu",
 	--"In general, vehicles are a good choice for flat and open battlefields. Kbots are better on hills.",
@@ -81,7 +84,7 @@ local tips = {
 	--"Select all units of the same type by pressing CTRL+Z.",
 	--"Press CTRL+C to quickly select and center the camera on your Commander.",
 	--"Think ahead and include anti-air and support units in your army.",
-	--"Mastering hotkeys is the key to proficiency in BA.\nUse Z,X,C to quickly cycle between most frequently built structures.",
+	--"Mastering hotkeys is the key to proficiency in TAP.\nUse Z,X,C to quickly cycle between most frequently built structures.",
 	--"To share resources with teammates:\n - Double-click tank icon next to the player's name to share units\n - Click-drag metal/energy bar next to player's name to send resources.\n - Press H to share an exact amount.",
 	--"It is efficient to support your lab with constructors increasing its build-power.\nRight click on the factory with a constructor selected to guard (assist) with construction",
 	--"Remember to separate your highly explosive buildings (like metal makers) from the rest of your base.",
@@ -96,18 +99,23 @@ local tips = {
 	--"When performing a bombing run fly your fighters first to eliminate enemy's fighter-wall.\nUse FIGHT or PATROL command for more effective engagement.",
 	--"You can disable enemy's anti-nukes using EMP missiles (built by ARM T2 cons)",
 	--"Don't build too much stuff around Moho-geothermal powerplants or everything will go boom!",
-	--"Build long range T2 anti-air defenses on an advanced front line to slowly dismantle enemy's fighter-wall.",
+	"Missile Towers may morph into Adv. Missile Towers, both firing at air and ground targets. Their third morph is the Adv. AA tower, which sport long range missiles able to take down most aircraft with one shot. Bear in mind those have limited load and take some time to recharge.",
 	--"Your commander's Dgun can be used to insta-kill T3 units. Don't forget to cloak it first.\nFor quickly cloaking press K.",
 	--"If you are certain of losing some unit in enemy territory, self-destruct it to prevent him from getting the metal. \nPress CTRL+D to initiate the self-destruct countdown.",
 	--"Mines are super-cheap and quick to build. Remember to make them away from enemy's line of sight.",
 	--"Enemy's mines, radars, and jammers may be disabled using the Juno - built by both factions with T1 constructors.",
-    "Use Alt+0-9 sets autogroup# for selected unit type(s). Newly built units get added to group# equal to their autogroup#. Alt BACKQUOTE (~) remove units.",
+    --"Use Alt+0-9 sets the autogroup number (1 .. 9, 0) for selected unit type(s). Newly built units get automatically added to their autogroup number. Alt+Tilde (~) remove units from that autogroup.",
+    "Tier 0 (starting) builder units can not assist the production of factories, unlike their advanced (Tier 2) counterparts. Morph the into Adv. builders as soon as you can.",
+    "Before you start building a ton of Outposts, please notice they spend +50e per tick. Super-effective Nano Towers won't exist for 2000 more years.",
 }
 
 -- Random unit descriptions we can show
 local titleColor = "\255\215\255\215"
 local contentColor = "\255\255\255\255"
 local unit_descs = {
+    "coroutpost.dds "..titleColor.."Pro Tip:\n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
+    "armack.dds "..titleColor.."Adv. Builder (ARM T2):\n"..contentColor.."Advanced Builders can assist factory production, just like outposts, commanders and FARKs. Building (or morphing) a couple beforehand might save you from total disaster if you lose your T2 Tech Center.",
+    "corca.dds "..titleColor.."Construction Plane (CORE T1):\n"..contentColor.."Differently from their ground counterparts, basic Construction Planes can build both missile and laser defenses.",
 	"armck.dds "..titleColor.."Builder (ARM T1)\n"..contentColor.."Slightly slower and weaker than the Dozer, this kbot builder can climb steeper hills, effective for expansion especially in mountainous terrain.",
 	--"armflea.dds "..titleColor.."Flea (ARM T1 Kbot)\n"..contentColor.."Supercheap and fast, used for scouting and raiding enemy structures in early-game stages. Avoid laser towers and destroy metal extractors to slow down your foe’s expansion!",
 	"armham.dds "..titleColor.."Hammer (ARM T1 Kbot)\n"..contentColor.."Plasma kbots are the sturdiest basic kbots, extremely resistant to defenses and excellent at taking out commanders. They have a minimum attack range, but their mid-ranged arced projectiles can fly over dragon teeth.",

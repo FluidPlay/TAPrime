@@ -5,31 +5,21 @@
 
 function gadget:GetInfo()
     return {
-        name      = "Tech Capture",
-        desc      = "Enables an upgradable capture button in builders & commandos",
+        name      = "Upgrade Handler - Button",
+        desc      = "Enables a command button in a set of units, once a global upgrade is available",
         author    = "MaDDoX",
         date      = "21 November 2018",
         license   = "GNU GPL, v2 or later",
         layer     = -100,
-        enabled   = false, --true,
+        enabled   = true,
     }
 end
-
---GG.RMBclicked = false
---function GG.SetRMBclicked(value)
---    GG.RMBclicked = value
---    --Spring.Echo(value)
---end
---_G.upgradelockedUnits = {}
 
 if gadgetHandler:IsSyncedCode() then
     -----------------
     ---- SYNCED
     -----------------
 
-    --local spGetAllUnits	= Spring.GetAllUnits
-    --local spGetUnitIsCloaked = Spring.GetUnitIsCloaked
-    --local spSetUnitStealth = Spring.SetUnitStealth --spSetUnitStealth(unitID, iscloaked)
     local spGetPlayerList = Spring.GetPlayerList
     local spGetPlayerInfo = Spring.GetPlayerInfo
     local spGetUnitHealth = Spring.GetUnitHealth
@@ -41,46 +31,40 @@ if gadgetHandler:IsSyncedCode() then
     local spMarkerAddPoint = Spring.MarkerAddPoint--(x,y,z,"text",local? (1 or 0))
     local spGetUnitPosition = Spring.GetUnitPosition
     local spSendMessageToTeam = Spring.SendMessageToTeam
-    --local spSetUnitRulesParam = Spring.SetUnitRulesParam    -- To be used by gui_chili_buildordermenu
-    --local spGetUnitRulesParam = Spring.GetUnitRulesParam
 
     local builderUnits = {}     -- [unitTeam] = { unitID, ... } :: who'll unlock the button when upgrade done
     local techCenters = {}      -- techCenters[ownerTeam][unitID]
     local upgradeState = {}     -- { [unitTeam] = { techCenterID = unitID, techProxyID = unitID,
                                 --                  status = "nonupgraded","upgrading","upgraded" }, ... }
     local CMD_CAPTURE = CMD.CAPTURE
-    local upgradeName = "capture"
+    --local upgradeName = "capture"
 
     local color_yellow = "\255\255\255\1"   --yellow
 
-    local builderDefIDs = {
-        [UnitDefNames["armck"].id] = true,
-        [UnitDefNames["armcv"].id] = true,
-        [UnitDefNames["armca"].id] = true,
-        [UnitDefNames["corck"].id] = true,
-        [UnitDefNames["corcv"].id] = true,
-        [UnitDefNames["corca"].id] = true,
-        [UnitDefNames["armack"].id] = true,
-        [UnitDefNames["armacv"].id] = true,
-        [UnitDefNames["armaca"].id] = true,
-        [UnitDefNames["corack"].id] = true,
-        [UnitDefNames["coracv"].id] = true,
-        [UnitDefNames["coraca"].id] = true,
-        [UnitDefNames["cormando"].id] = true,
-    }
+    --local builderDefIDs = {
+    --    [UnitDefNames["armck"].id] = true,
+    --    [UnitDefNames["armcv"].id] = true,
+    --    [UnitDefNames["armca"].id] = true,
+    --    [UnitDefNames["corck"].id] = true,
+    --    [UnitDefNames["corcv"].id] = true,
+    --    [UnitDefNames["corca"].id] = true,
+    --    [UnitDefNames["armack"].id] = true,
+    --    [UnitDefNames["armacv"].id] = true,
+    --    [UnitDefNames["armaca"].id] = true,
+    --    [UnitDefNames["corack"].id] = true,
+    --    [UnitDefNames["coracv"].id] = true,
+    --    [UnitDefNames["coraca"].id] = true,
+    --    [UnitDefNames["cormando"].id] = true,
+    --}
 
-    local techCentersDefIDs = {
-        [UnitDefNames["armtech"].id] = true,
-        [UnitDefNames["armtech1"].id] = true,
-        [UnitDefNames["armtech2"].id] = true,
-        [UnitDefNames["armtech3"].id] = true,
-        [UnitDefNames["armtech4"].id] = true,
-        [UnitDefNames["cortech"].id] = true,
-        [UnitDefNames["cortech1"].id] = true,
-        [UnitDefNames["cortech2"].id] = true,
-        [UnitDefNames["cortech3"].id] = true,
-        [UnitDefNames["cortech4"].id] = true,
-    }
+    -- Which units get a button locked by each upgrade (CMDID is found @ UT)
+    local upgradeLockedUnits = {
+        capture = { [UnitDefNames["armck"].id] = true, [UnitDefNames["armcv"].id] = true, [UnitDefNames["armca"].id] = true,
+                    [UnitDefNames["corck"].id] = true, [UnitDefNames["corcv"].id] = true, [UnitDefNames["corca"].id] = true,
+                    [UnitDefNames["armack"].id] = true,[UnitDefNames["armacv"].id] = true,[UnitDefNames["armaca"].id] = true,
+                    [UnitDefNames["corack"].id] = true,[UnitDefNames["coracv"].id] = true,[UnitDefNames["coraca"].id] = true,
+                    [UnitDefNames["cormando"].id] = true, }
+    }    -- TODO: Refactor, it has to be [upgrade][unitDefID]
 
     local techProxycmdID = -UnitDefNames["techcapture"].id  -- This is the proxy unit's build CmdID
 
@@ -93,13 +77,13 @@ if gadgetHandler:IsSyncedCode() then
         return upgradeState[teamID].status == "upgraded"
     end
 
-    local function isTechProxy(unitDefID)
-        local uDef = UnitDefs[unitDefID]
-        if not uDef then
-            return false end
-        local techToGrant = uDef.customParams and uDef.customParams.granttech
-        return techToGrant == upgradeName
-    end
+    --local function isTechProxy(unitDefID)
+    --    local uDef = UnitDefs[unitDefID]
+    --    if not uDef then
+    --        return false end
+    --    local techToGrant = uDef.customParams and uDef.customParams.granttech
+    --    return techToGrant == upgradeName
+    --end
 
     local function disableTargetUnitsCmd(unitTeam, status)
         if builderUnits[unitTeam] then
@@ -133,10 +117,10 @@ if gadgetHandler:IsSyncedCode() then
     --end
 
     --- checks if a given techProxy is this team's in-progress upgrade
-    local function isTeamTechProxy(unitID, teamID)
-        --Spring.Echo(" Unit: "..(unitID or "nil").." compared to: "..(upgradeState[teamID].techProxyID or "nil"))
-        return upgradeState[teamID].techProxyID == unitID
-    end
+    --local function isTeamTechProxy(unitID, teamID)
+    --    --Spring.Echo(" Unit: "..(unitID or "nil").." compared to: "..(upgradeState[teamID].techProxyID or "nil"))
+    --    return upgradeState[teamID].techProxyID == unitID
+    --end
 
     local function startUpgrade(techProxyID, techCenterID, teamID)
         techCenters[teamID][techCenterID] = true
@@ -177,10 +161,10 @@ if gadgetHandler:IsSyncedCode() then
                 blockUnit(unitID)
             end
             --- Disable capture button of builders being constructed, if upgrade is not available
-            if builderDefIDs[unitDefID] then
-                local cmdDescID = spFindUnitCmdDesc(unitID, CMD_CAPTURE)
-                if cmdDescID then
-                    spEditUnitCmdDesc(unitID, cmdDescID, { disabled=true })
+            if upgradeLockedUnits[unitDefID] then
+                local cmdDesc = spFindUnitCmdDesc(unitID, CMD_CAPTURE)
+                if cmdDesc then
+                    spEditUnitCmdDesc(unitID, cmdDesc, { disabled=true })
                     builderUnits[unitTeam][unitID] = true
                 end
             end
@@ -285,98 +269,21 @@ else
 ---- UNSYNCED
 -----------------
 
-    local function handleUpgradeEvent(cmd, techID, techCenterID, techProxyID, unitTeam, status)
-        ---- Now we create an event at unsynced space
-        if Script.LuaUI('UpgradeUIEvent') then
-            Script.LuaUI.UpgradeUIEvent(techID, techCenterID, techProxyID, unitTeam, status)
-            --Spring.Echo("Sent event about "..unitID)
-        end
-    end
-
-    ---- Wiring SendToUnsync message "upgradeEvent" to the unsync'd "handle..." method
-    function gadget:Initialize()
-        gadgetHandler:AddSyncAction("upgradeEvent", handleUpgradeEvent)
-    end
-
-    function gadget:Shutdown()
-        gadgetHandler:RemoveSyncAction("upgradeEvent")
-    end
-
-    --local spGetMouseState = Spring.GetMouseState
-    --local spTraceScreenRay = Spring.TraceScreenRay
-    --local spAreTeamsAllied = Spring.AreTeamsAllied
-    --local spGetUnitTeam = Spring.GetUnitTeam
-    --local spGetUnitDefID = Spring.GetUnitDefID
-    --local spGetSelectedUnits = Spring.GetSelectedUnits
-    --local CMD_CAPTURE = CMD.CAPTURE
-
-    --local setRMBclicked = GG.SetRMBclicked
-
-    --function gadget:MousePress(x, y, button)
-    --    GG.SetRMBclicked(button == 3)
-    --    return false
-    --end
-
-    -- button parameter values: left - 1, middle - 2, right - 3
-    --function gadget:MouseRelease(x, y, button)
-    --    --GG.SetRMBclicked(button == 3)
-    --end
-
-    --local techProxycmdID = -UnitDefNames["techcapture"].id  -- This is the proxy unit's build CmdID
-    --
-    --local function isTechProxy(unitDefID)
-    --    local uDef = UnitDefs[unitDefID]
-    --    if not uDef then
-    --        return false end
-    --    local techToGrant = uDef.customParams and uDef.customParams.granttech
-    --    return techToGrant == checkedTech
-    --end
-    --
-    --function gadget:UnitFinished(unitID, unitDefID, unitTeam)
-    --    if not unitTeam then
-    --        return end
-    --
-    --    if isTechProxy(unitDefID) then
-    --        UpgradingTechCenter[unitTeam] = nil
+    --local function handleUpgradeEvent(cmd, techID, techCenterID, techProxyID, unitTeam, status)
+    --    ---- Now we create an event at unsynced space
+    --    if Script.LuaUI('UpgradeUIEvent') then
+    --        Script.LuaUI.UpgradeUIEvent(techID, techCenterID, techProxyID, unitTeam, status)
+    --        --Spring.Echo("Sent event about "..unitID)
     --    end
     --end
     --
-    --local strUnit = "unit"
+    ------ Wiring SendToUnsync message "upgradeEvent" to the unsync'd "handle..." method
+    --function gadget:Initialize()
+    --    gadgetHandler:AddSyncAction("upgradeEvent", handleUpgradeEvent)
+    --end
     --
-    --local geothermalsDefIDs = {
-    --    [UnitDefNames["armgeo"].id] = true,
-    --    [UnitDefNames["amgeo"].id] = true,
-    --    [UnitDefNames["armgmm"].id] = true,
-    --}
-    --
-    --function gadget:DefaultCommand()
-    --    local function isGeothermal(unitDefID)
-    --        return geothermalsDefIDs[unitDefID]
-    --    end
-    --    local mx, my = spGetMouseState()
-    --    local s, targetID = spTraceScreenRay(mx, my)
-    --    if s ~= strUnit then
-    --        return false end
-    --
-    --    --if not spAreTeamsAllied(myTeamID, spGetUnitTeam(targetID)) then
-    --    --    return false
-    --    --end
-    --
-    --    -- Only proceed if target is one of the geothermal variations
-    --    local targetDefID = spGetUnitDefID(targetID)
-    --    if not isGeothermal(targetDefID) then
-    --        return false end
-    --
-    --    -- If any of the selected units is a commander, default to 'capture'
-    --    local sUnits = spGetSelectedUnits()
-    --    for i=1,#sUnits do
-    --        local unitID = sUnits[i]
-    --        --TODO: Should become `all capture-enabled units` (with the upgrade)
-    --        if UnitDefs[spGetUnitDefID(unitID)].customParams.iscommander then
-    --            return CMD_CAPTURE
-    --        end
-    --    end
-    --    return false
+    --function gadget:Shutdown()
+    --    gadgetHandler:RemoveSyncAction("upgradeEvent")
     --end
 
 end

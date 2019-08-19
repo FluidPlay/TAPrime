@@ -37,10 +37,10 @@ PerUnitUpgrades [made by unit]
 ]]
 
 VFS.Include("gamedata/taptools.lua")
+VFS.Include("luarules/configs/global_upgradedata.lua")
 
 --local spGetUnitDefID        = Spring.GetUnitDefID
 local spGetUnitTeam         = Spring.GetUnitTeam
-local spFindUnitCmdDesc     = Spring.FindUnitCmdDesc
 --local spGetUnitCmdDescs     = Spring.GetUnitCmdDescs
 local spInsertUnitCmdDesc   = Spring.InsertUnitCmdDesc
 local spEditUnitCmdDesc     = Spring.EditUnitCmdDesc
@@ -52,44 +52,10 @@ local spUseUnitResource     = Spring.UseUnitResource
 local spGetUnitPosition     = Spring.GetUnitPosition
 
 local RedStr = "\255\255\001\001"
-local upgParamName = "upgrade" -- Param Name to be read by unit_healthbars2 (lua UI)
+local upgParamName = "upgrade" -- Param Name to be read by unit_healthbars2.lua (lua UI)
 local oldFrame = 0
---local CMD_MANUALFIRE = CMD.MANUALFIRE
-local CMD_CAPTURE = CMD.CAPTURE
 
-
-CMD.UPG_CAPTURE = 42999
-CMD_UPG_CAPTURE = CMD.UPG_CAPTURE
-
--- TODO: Move to a separate file for better organization
--- Settings + Button options (as shown in a given unit's command list)
-GlobalUpgrades = {
-    -- key = upgrade id
-    capture = {
-        UpgradeCmdDesc = {
-            id      = CMD_UPG_CAPTURE,
-            name    = '^ Capture',
-            action  = 'upgradecapture',
-            cursor  = 'Morph',
-            type    = CMDTYPE.ICON,
-            tooltip = 'Enables Capture',
-        },
-        prereq = "",
-        metalCost = 200,
-        energyCost = 1200,
-        upgradeTime = 5 * 30, --5 seconds, in frames
-        type = "tech",
-        buttonToUnlock = CMD_CAPTURE,
-        techToGrant = "capture",
-    },
-}
--- Value is used as key of the UT (Unit Tech) table
-TechResearchers = {
-    [UnitDefNames["armtech"].id] = {"capture","techbooster1"},
-    [UnitDefNames["cortech"].id] = {"capture","techbooster1"},
-}
-
-TechUpgrades = {} -- Auto-completed from UT @ Initialize
+--TechUpgrades = {} -- Auto-completed from UT @ Initialize
 
 --local tooltipRequirement = "\n"..RedStr.."Requires ".. prereq,
 --local UpgradeTooltip = 'Enables D-gun ability / command'
@@ -144,22 +110,6 @@ end
 --    -- getUpgradeTooltip(spGetUnitTeam(unitID))
 --    -- Spring.Echo("New tooltip: "..newCmdDesc.tooltip.." disabled: "..tostring(disabled))
 --end
-
---Adds or updates the command-button
-local function addUpdateCommand(unitID, cmdDesc)
-    local cmdDescId = spFindUnitCmdDesc(unitID, cmdDesc.id)
-    if not cmdDescId then
-        spInsertUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
-    else
-        spEditUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
-    end
-end
-
-local function localAlert(unitID, msg)
-    local x, y, z = spGetUnitPosition(unitID)  --x and z on map floor, y is height
-    spMarkerAddPoint(x,y,z,msg,true)
-    spMarkerErasePosition(x,y,z)
-end
 
 --- Returns UpgradeID (from GlobalUpgrades)
 local function getUpgradeID (unitDefID, cmdID)
@@ -225,9 +175,9 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
 end
 
 function gadget:Initialize()
-    for _,upgrade in pairs(GlobalUpgrades) do
-        TechUpgrades[upgrade] = true
-    end
+    --for _,upgrade in pairs(GlobalUpgrades) do
+    --    TechUpgrades[upgrade] = true
+    --end
 end
 
 function gadget:UnitCreated(unitID, unitDefID, unitTeam)

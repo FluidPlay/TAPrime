@@ -179,8 +179,8 @@ local function isUpgrading(unitID)
 end
 
 local function editCommand (unitID, CMDID, options)
-    local cmdDescID = spFindUnitCmdDesc(unitID, CMDID)
-    if not cmdDescID or not options then --or not options.defCmdDesc then
+    local cmdDesc = spFindUnitCmdDesc(unitID, CMDID)
+    if not cmdDesc or not options then --or not options.defCmdDesc then
         return end
 
     if options.req and options.defCmdDesc then
@@ -198,13 +198,13 @@ local function editCommand (unitID, CMDID, options)
         options.tooltip = ((options.tooltip == nil) and options.defCmdDesc.tooltip or options.tooltip) .. append
     end
 
-    local currentCmdDesc = spGetUnitCmdDescs(unitID, cmdDescID, cmdDescID)[1]
+    local currentCmdDesc = spGetUnitCmdDescs(unitID, cmdDesc, cmdDesc)[1]
 
     currentCmdDesc.tooltip = options.tooltip and options.tooltip or currentCmdDesc.tooltip
     currentCmdDesc.hidden = (options.hidden == nil) and currentCmdDesc.hidden or options.hidden
     currentCmdDesc.disabled = (options.disabled == nil) and currentCmdDesc.disabled or options.disabled
 
-    spEditUnitCmdDesc (unitID, cmdDescID, currentCmdDesc)
+    spEditUnitCmdDesc (unitID, cmdDesc, currentCmdDesc)
     --Spring.Echo(tostringplus(currentCmdDesc))
 
     -- getUpgradeTooltip(spGetUnitTeam(unitID))

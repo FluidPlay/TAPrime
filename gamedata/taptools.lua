@@ -7,7 +7,9 @@
 --== TAPrime HELPER FUNCTIONS ==
 --==============================
 --shard_include("luarules/gadgets/ai/ba/commonfunctions.lua") 	-- doesn' work here
-
+local spFindUnitCmdDesc     = Spring.FindUnitCmdDesc
+local spInsertUnitCmdDesc     = Spring.InsertUnitCmdDesc
+local spInsertUnitCmdDesc     = Spring.EditUnitCmdDesc
 
 function isbool(x)   return (type(x) == 'boolean') end
 function istable(x)  return (type(x) == 'table')   end
@@ -376,6 +378,27 @@ function minmax(n, min, max)
 		n = min end
 	return n
 end
+
+--////////////////////////
+--// LUA UI FUNCTIONS
+--////////////////////////
+
+--Adds or updates the command-button
+function addUpdateCommand(unitID, cmdDesc)
+    local cmdDescId = spFindUnitCmdDesc(unitID, cmdDesc.id)
+    if not cmdDescId then
+        spInsertUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
+    else
+        spEditUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
+    end
+end
+
+function localAlert(unitID, msg)
+    local x, y, z = spGetUnitPosition(unitID)  --x and z on map floor, y is height
+    spMarkerAddPoint(x,y,z,msg,true)
+    spMarkerErasePosition(x,y,z)
+end
+
 
 --function indent(i, str)
 --	local result = ""
