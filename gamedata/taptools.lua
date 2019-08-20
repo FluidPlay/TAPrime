@@ -9,7 +9,10 @@
 --shard_include("luarules/gadgets/ai/ba/commonfunctions.lua") 	-- doesn' work here
 local spFindUnitCmdDesc     = Spring.FindUnitCmdDesc
 local spInsertUnitCmdDesc     = Spring.InsertUnitCmdDesc
-local spInsertUnitCmdDesc     = Spring.EditUnitCmdDesc
+local spEditUnitCmdDesc     = Spring.EditUnitCmdDesc
+local spGetUnitPosition = Spring.GetUnitPosition
+local spMarkerAddPoint = Spring.MarkerAddPoint
+local spMarkerErasePosition = Spring.MarkerErasePosition
 
 function isbool(x)   return (type(x) == 'boolean') end
 function istable(x)  return (type(x) == 'table')   end
@@ -377,6 +380,14 @@ function minmax(n, min, max)
 	if n < min then
 		n = min end
 	return n
+end
+
+--////////////////////////
+--// UPGRADE FUNCTIONS
+--////////////////////////
+
+function HasTech(prereq, teamID)
+	GG.TechCheck(prereq, teamID)
 end
 
 --////////////////////////

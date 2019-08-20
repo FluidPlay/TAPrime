@@ -29,6 +29,7 @@ GlobalUpgrades = {
         type = "tech",
         buttonToUnlock = CMD_CAPTURE,
         techToGrant = "capture",
+        --UnlockedCmdDescTootip = "" (to be added/used by handlers)
     },
 }
 

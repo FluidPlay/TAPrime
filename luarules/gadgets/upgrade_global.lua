@@ -40,7 +40,6 @@ VFS.Include("gamedata/taptools.lua")
 VFS.Include("luarules/configs/global_upgradedata.lua")
 
 --local spGetUnitDefID        = Spring.GetUnitDefID
-local spGetUnitTeam         = Spring.GetUnitTeam
 --local spGetUnitCmdDescs     = Spring.GetUnitCmdDescs
 local spInsertUnitCmdDesc   = Spring.InsertUnitCmdDesc
 local spEditUnitCmdDesc     = Spring.EditUnitCmdDesc
@@ -70,14 +69,6 @@ if not gadgetHandler:IsSyncedCode() then
 
 local function isUpgrading(unitID)
     return upgradingUnits[unitID]
-end
-
-local function HasTech(prereq, teamID)
-    GG.TechCheck(prereq, teamID)
-end
-
-local function hasPrereq(prereq, unitTeam)
-    return GG.TechCheck(prereq, unitTeam)
 end
 
 -- [Deprecated] TODO: Move logic to Handlers
@@ -127,11 +118,6 @@ local function getUpgradeID (unitDefID, cmdID)
     return nil
 end
 
---- Formats Upgrade Param Name (to be used in unitRulesParam)
---local function getUpgParamName(upgradeID)
---    return baseParamName.."_"..upgradeID
---end
-
 local function SetUpgrade(unitID, upgradeID, progress, globalUpgrade)
     upgradingUnits[unitID] = (globalUpgrade == nil)
             and nil
@@ -162,7 +148,7 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
         -- Otherwise, check for requirements
         if globalUpgrade.prereq ~= "" then
             --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
-            if hasPrereq(globalUpgrade.prereq, unitTeam) then
+            if HasTech(globalUpgrade.prereq, unitTeam) then
                 SetUpgrade(unitID, upgradeID, 0, globalUpgrade)
             else
                 localAlert(unitID, "Requires: "..globalUpgrade.prereq)

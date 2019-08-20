@@ -16,74 +16,33 @@ function gadget:GetInfo()
 end
 
 if gadgetHandler:IsSyncedCode() then
+
+    VFS.Include("gamedata/taptools.lua")
+    VFS.Include("luarules/configs/global_upgradedata.lua")
+    VFS.Include("LuaRules/colors.h.lua")
     -----------------
     ---- SYNCED
     -----------------
 
-    local spGetPlayerList = Spring.GetPlayerList
-    local spGetPlayerInfo = Spring.GetPlayerInfo
-    local spGetUnitHealth = Spring.GetUnitHealth
+    local spGetPlayerList     = Spring.GetPlayerList
+    local spGetPlayerInfo     = Spring.GetPlayerInfo
+    local spGetUnitHealth     = Spring.GetUnitHealth
     local spSetUnitRulesParam = Spring.SetUnitRulesParam
-    local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
-    local spEditUnitCmdDesc = Spring.EditUnitCmdDesc
-    local spGetGameFrame = Spring.GetGameFrame
-    local spDestroyUnit = Spring.DestroyUnit
-    local spMarkerAddPoint = Spring.MarkerAddPoint--(x,y,z,"text",local? (1 or 0))
-    local spGetUnitPosition = Spring.GetUnitPosition
+    local spFindUnitCmdDesc   = Spring.FindUnitCmdDesc
+    local spEditUnitCmdDesc   = Spring.EditUnitCmdDesc
+    local spGetGameFrame      = Spring.GetGameFrame
+    local spDestroyUnit       = Spring.DestroyUnit
+    local spMarkerAddPoint    = Spring.MarkerAddPoint--(x,y,z,"text",local? (1 or 0))
+    local spGetUnitPosition   = Spring.GetUnitPosition
     local spSendMessageToTeam = Spring.SendMessageToTeam
+    local spGetUnitTeam       = Spring.GetUnitTeam
 
     local builderUnits = {}     -- [unitTeam] = { unitID, ... } :: who'll unlock the button when upgrade done
     local techCenters = {}      -- techCenters[ownerTeam][unitID]
     local upgradeState = {}     -- { [unitTeam] = { techCenterID = unitID, techProxyID = unitID,
                                 --                  status = "nonupgraded","upgrading","upgraded" }, ... }
-    local CMD_CAPTURE = CMD.CAPTURE
-    --local upgradeName = "capture"
 
     local color_yellow = "\255\255\255\1"   --yellow
-
-    --local builderDefIDs = {
-    --    [UnitDefNames["armck"].id] = true,
-    --    [UnitDefNames["armcv"].id] = true,
-    --    [UnitDefNames["armca"].id] = true,
-    --    [UnitDefNames["corck"].id] = true,
-    --    [UnitDefNames["corcv"].id] = true,
-    --    [UnitDefNames["corca"].id] = true,
-    --    [UnitDefNames["armack"].id] = true,
-    --    [UnitDefNames["armacv"].id] = true,
-    --    [UnitDefNames["armaca"].id] = true,
-    --    [UnitDefNames["corack"].id] = true,
-    --    [UnitDefNames["coracv"].id] = true,
-    --    [UnitDefNames["coraca"].id] = true,
-    --    [UnitDefNames["cormando"].id] = true,
-    --}
-
-    -- Which units get a button locked by each upgrade (CMDID is found @ UT)
-    local upgradeLockedUnits = {
-        capture = { [UnitDefNames["armck"].id] = true, [UnitDefNames["armcv"].id] = true, [UnitDefNames["armca"].id] = true,
-                    [UnitDefNames["corck"].id] = true, [UnitDefNames["corcv"].id] = true, [UnitDefNames["corca"].id] = true,
-                    [UnitDefNames["armack"].id] = true,[UnitDefNames["armacv"].id] = true,[UnitDefNames["armaca"].id] = true,
-                    [UnitDefNames["corack"].id] = true,[UnitDefNames["coracv"].id] = true,[UnitDefNames["coraca"].id] = true,
-                    [UnitDefNames["cormando"].id] = true, }
-    }    -- TODO: Refactor, it has to be [upgrade][unitDefID]
-
-    local techProxycmdID = -UnitDefNames["techcapture"].id  -- This is the proxy unit's build CmdID
-
-    local function setUpgradeState(teamID, status, techCenterID, techProxyID)
-        upgradeState[teamID] = { status = status, techCenterID = techCenterID, techProxyID = techProxyID }
-        --Spring.Echo("New State: "..status.." TechProxyID: "..(techProxyID or "nil"))
-    end
-
-    local function isUpgradedTeam(teamID)
-        return upgradeState[teamID].status == "upgraded"
-    end
-
-    --local function isTechProxy(unitDefID)
-    --    local uDef = UnitDefs[unitDefID]
-    --    if not uDef then
-    --        return false end
-    --    local techToGrant = uDef.customParams and uDef.customParams.granttech
-    --    return techToGrant == upgradeName
-    --end
 
     local function disableTargetUnitsCmd(unitTeam, status)
         if builderUnits[unitTeam] then
@@ -94,6 +53,39 @@ if gadgetHandler:IsSyncedCode() then
                 end
             end
         end
+    end
+
+    -- Assures locked commands are disabled when a new unit is created and prereq is not already researched
+    function gadget:UnitCreated(unitID, unitDefID, unitTeam)
+        local upgradeList = TechResearchers[unitDefID]
+        if not upgradeList then
+            return end
+        -- Add all upgrade command buttons, disabled/enabled
+        for _, upgradeID in ipairs(upgradeList) do
+            local upgData = GlobalUpgrades[upgradeID]
+            if upgData then
+                local cmdDesc = spFindUnitCmdDesc(unitID, upgData.buttonToUnlock)
+                if not cmdDesc then
+                    Spring.Echo("Warning: button To Unlock upgrade entry value invalid: "..upgData.buttonToUnlock)
+                    return true
+                end
+                local alreadyResearched = HasTech(upgData.prereq, spGetUnitTeam(unitID))
+                cmdDesc.disabled = not alreadyResearched
+                --If not already Researched, check for requirements and edit tooltip if needed
+                if not alreadyResearched then
+                    if upgData.prereq and upgData.prereq ~= "" and not HasTech(upgData.prereq, spGetUnitTeam(unitID)) then
+                        upgData.UnlockedCmdDescTootip = cmdDesc.tooltip     -- Store this for future 'unlock' use
+                        cmdDesc.tooltip = tooltip .. "\n\n"..RedStr.."Requires Tech: "..upgData.prereq
+                    end
+                end
+                addUpdateCommand(unitID, cmdDesc)           --Spring.Echo("Adding Command")
+            end
+        end
+    end
+
+    function gadget:UnitDestroyed(unitID)
+        upgradedUnits[unitID] = nil     -- Revoke awarded techs? Currently it doesn't.
+        upgradingUnits[unitID] = nil
     end
 
     -- TODO: This should become an spEditUnitCmdDesc to add a red alert to buttons: "Upgrade already in progress"
