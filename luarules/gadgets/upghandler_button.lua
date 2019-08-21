@@ -15,267 +15,112 @@ function gadget:GetInfo()
     }
 end
 
-if gadgetHandler:IsSyncedCode() then
+if not gadgetHandler:IsSyncedCode() then
+    return end
 
-    VFS.Include("gamedata/taptools.lua")
-    VFS.Include("luarules/configs/global_upgradedata.lua")
-    VFS.Include("LuaRules/colors.h.lua")
-    -----------------
-    ---- SYNCED
-    -----------------
+VFS.Include("gamedata/taptools.lua")
+VFS.Include("LuaRules/configs/global_upgradedata.lua")
+VFS.Include("LuaRules/colors.h.lua")
+-----------------
+---- SYNCED
+-----------------
 
-    local spGetPlayerList     = Spring.GetPlayerList
-    local spGetPlayerInfo     = Spring.GetPlayerInfo
-    local spGetUnitHealth     = Spring.GetUnitHealth
-    local spSetUnitRulesParam = Spring.SetUnitRulesParam
-    local spFindUnitCmdDesc   = Spring.FindUnitCmdDesc
-    local spEditUnitCmdDesc   = Spring.EditUnitCmdDesc
-    local spGetGameFrame      = Spring.GetGameFrame
-    local spDestroyUnit       = Spring.DestroyUnit
-    local spMarkerAddPoint    = Spring.MarkerAddPoint--(x,y,z,"text",local? (1 or 0))
-    local spGetUnitPosition   = Spring.GetUnitPosition
-    local spSendMessageToTeam = Spring.SendMessageToTeam
-    local spGetUnitTeam       = Spring.GetUnitTeam
+local spGetGameFrame = Spring.GetGameFrame
+local spGetUnitTeam  = Spring.GetUnitTeam
 
-    local builderUnits = {}     -- [unitTeam] = { unitID, ... } :: who'll unlock the button when upgrade done
-    local techCenters = {}      -- techCenters[ownerTeam][unitID]
-    local upgradeState = {}     -- { [unitTeam] = { techCenterID = unitID, techProxyID = unitID,
-                                --                  status = "nonupgraded","upgrading","upgraded" }, ... }
+local trackedUnits = {}   -- { unitID = true, ...} | who'll get the button unlocked once upgrade done
 
-    local color_yellow = "\255\255\255\1"   --yellow
+local upgradeLockedUnitDefs = {} -- { UnitDefID = {}, ..} | Reverse table built in Initialize()
 
-    local function disableTargetUnitsCmd(unitTeam, status)
-        if builderUnits[unitTeam] then
-            for uID,_ in pairs(builderUnits[unitTeam]) do
-                local cmdDescID = spFindUnitCmdDesc(uID, CMD_CAPTURE)
-                if cmdDescID then
-                    spEditUnitCmdDesc(uID, cmdDescID, {disabled=status}) --, queueing=not status
-                end
+local updateRate = 5      -- How often to check for pending-research techs
+
+function gadget:Initialize()
+    upgradeLockedUnitDefs = {}     -- { unitDefID = { capture = true, scan = true, .. } }
+    -- Build reverse table from GlobalUpgrades
+    for upgID, upgData in pairs(GlobalUpgrades) do
+        for lockedUnitDefID in pairs(upgData.lockedUnitDefIds) do
+            if upgradeLockedUnitDefs[lockedUnitDefID] == nil then
+                upgradeLockedUnitDefs[lockedUnitDefID] = {}
+            end
+            upgradeLockedUnitDefs[lockedUnitDefID][upgID] = true
+        end
+    end
+end
+
+-- Assures locked commands are disabled when a new unit is created and prereq is not already researched
+function gadget:UnitCreated(unitID, unitDefID, unitTeam)
+    local lockedUpgradeIds = upgradeLockedUnitDefs[unitDefID]
+    if not lockedUpgradeIds then
+        return end
+    for lockedUpgID in pairs(lockedUpgradeIds) do
+        for upgID, upgData in pairs(GlobalUpgrades) do
+            --Spring.Echo("Locked upgID: "..lockedUpgID.." upgID: "..upgID)
+            if lockedUpgID == upgID and not HasTech(upgID, unitTeam) then
+                BlockCmdID(unitID, upgData.buttonToUnlock)
+                trackedUnits[unitID] = unitDefID
             end
         end
     end
+end
 
-    -- Assures locked commands are disabled when a new unit is created and prereq is not already researched
-    function gadget:UnitCreated(unitID, unitDefID, unitTeam)
-        local upgradeList = TechResearchers[unitDefID]
-        if not upgradeList then
-            return end
-        -- Add all upgrade command buttons, disabled/enabled
-        for _, upgradeID in ipairs(upgradeList) do
-            local upgData = GlobalUpgrades[upgradeID]
-            if upgData then
-                local cmdDesc = spFindUnitCmdDesc(unitID, upgData.buttonToUnlock)
-                if not cmdDesc then
-                    Spring.Echo("Warning: button To Unlock upgrade entry value invalid: "..upgData.buttonToUnlock)
-                    return true
-                end
-                local alreadyResearched = HasTech(upgData.prereq, spGetUnitTeam(unitID))
-                cmdDesc.disabled = not alreadyResearched
-                --If not already Researched, check for requirements and edit tooltip if needed
-                if not alreadyResearched then
-                    if upgData.prereq and upgData.prereq ~= "" and not HasTech(upgData.prereq, spGetUnitTeam(unitID)) then
-                        upgData.UnlockedCmdDescTootip = cmdDesc.tooltip     -- Store this for future 'unlock' use
-                        cmdDesc.tooltip = tooltip .. "\n\n"..RedStr.."Requires Tech: "..upgData.prereq
+local function Update()
+    --- Check for tracked Units, verify if any of their lockedCMDs is done and unlock it/them
+    for unitID, unitDefID in pairs(trackedUnits) do
+        local lockedUpgradeIds = upgradeLockedUnitDefs[unitDefID] -- { unitDefID = { capture = true, scan = true, .. } }
+        if lockedUpgradeIds then
+            --Spring.Echo("# Locked UnitDefs: "..pairs_len(upgradeLockedUnitDefs))
+            for lockedUpgID in pairs(lockedUpgradeIds) do
+                for upgID, upgData in pairs(GlobalUpgrades) do
+                    if lockedUpgID == upgID and HasTech(upgID, spGetUnitTeam(unitID)) then
+                        BlockCmdID(unitID, upgData.buttonToUnlock, false)
+                        trackedUnits[unitID] = nil
                     end
                 end
-                addUpdateCommand(unitID, cmdDesc)           --Spring.Echo("Adding Command")
             end
         end
     end
-
-    function gadget:UnitDestroyed(unitID)
-        upgradedUnits[unitID] = nil     -- Revoke awarded techs? Currently it doesn't.
-        upgradingUnits[unitID] = nil
-    end
-
-    -- TODO: This should become an spEditUnitCmdDesc to add a red alert to buttons: "Upgrade already in progress"
-    --- Actual blocking should be done in gui_multi_tech, since it's realtime (prevents quick double-clicking from adding)
-    --local function disableAllUpgradeButtons(unitTeam, status, uIDexception)
-        --if uIDexception then
-        --    Spring.Echo("Setting upgrade buttons 'disable' to "..tostring(status).." except "..uIDexception)
-        --else
-        --    Spring.Echo("Setting upgrade buttons 'disable' to "..tostring(status))
-        --end
-        --if techCenters[unitTeam] then
-        --    for uID, _ in pairs(techCenters[unitTeam]) do
-        --        if uIDexception == nil then
-        --            disableUpgradeButton(uID, status)
-        --        elseif not uID == uIDexception then
-        --            disableUpgradeButton(uID, status)
-        --        end
-        --        --Spring.Echo("Processed: "..uID)
-        --    end
-        --end
-    --end
-
-    --- checks if a given techProxy is this team's in-progress upgrade
-    --local function isTeamTechProxy(unitID, teamID)
-    --    --Spring.Echo(" Unit: "..(unitID or "nil").." compared to: "..(upgradeState[teamID].techProxyID or "nil"))
-    --    return upgradeState[teamID].techProxyID == unitID
-    --end
-
-    local function startUpgrade(techProxyID, techCenterID, teamID)
-        techCenters[teamID][techCenterID] = true
-        spSetUnitRulesParam(techCenterID,"upgrade", 0)
-        --Spring.Echo("starting upgrade; techCenter ID: "..(techCenterID or "nil").." techProxy ID: "..(techProxyID or "nil"))
-        setUpgradeState(teamID, "upgrading", techCenterID, techProxyID)
-        --WG.upgrades = {} -- { techID = { techCenter = unitID, status = "nonupgraded"|"upgrading"|"upgraded", ...},..}
-        --[TEST] moved to gui_multi_tech: SendToUnsynced("upgradeEvent", upgradeName, unitID, unitTeam, "upgrading")
-    end
-
-    function gadget:Initialize()
-        builderUnits = {}
-        techCenters = {}
-        upgradeState = {}
-        -- Initialize upgradeStates for all valid player teams (including AI, if any, and Gaia)
-        for _, teamID in ipairs(Spring.GetTeamList()) do
-            setUpgradeState(teamID, "nonupgraded", nil, nil)
-
-            techCenters[teamID] = {}
-            builderUnits[teamID] = {}
-        end
-    --    -- From cmd_multi_tech: Makes a command locked until all techs in str_reqs are reached.
-    --    --GG.TechSlaveCommand(CMD_UPG_CAPTURE,"Capture")
-    end
-
-    local function blockUnit (unitID)
-        Spring.SetUnitNoDraw (unitID, true)
-        Spring.SetUnitNoSelect (unitID, true)
-        Spring.SetUnitNoMinimap (unitID, true)
-    end
-
-    function gadget:UnitCreated(unitID, unitDefID, unitTeam, builderID)
-        --- If upgrade is already completed, we have nothing to do here
-        if not isUpgradedTeam(unitTeam) then
-            --- Check for tech proxies being built, to set upgrade state accordingly
-            if isTechProxy(unitDefID) then
-                startUpgrade(unitID, builderID, unitTeam)
-                blockUnit(unitID)
-            end
-            --- Disable capture button of builders being constructed, if upgrade is not available
-            if upgradeLockedUnits[unitDefID] then
-                local cmdDesc = spFindUnitCmdDesc(unitID, CMD_CAPTURE)
-                if cmdDesc then
-                    spEditUnitCmdDesc(unitID, cmdDesc, { disabled=true })
-                    builderUnits[unitTeam][unitID] = true
-                end
-            end
-        end
-    end
-
-    local function cancelUpgrade(unitTeam)
-        setUpgradeState(unitTeam,"nonupgraded", nil, nil)
-        --disableAllUpgradeButtons(unitTeam, false)
-        SendToUnsynced("upgradeEvent", upgradeName, nil, nil, unitTeam, "nonupgraded")
-    end
-
-    function gadget:GameFrame()
-        local frame = spGetGameFrame()
-        if frame % 5 > 0.001 then
-            return end
-        --- Check for all team tech proxies progresses (health)
-        for _,playerID in ipairs(spGetPlayerList()) do
-            --name,active,spectator,teamID,allyTeamID,ping
-            local teamID = select(4, spGetPlayerInfo(playerID))
-            --upgradestate { [unitTeam] = { techCenterID = unitID, techProxyID = unitID,
-            --                 status = "nonupgraded"|"upgrading"|"upgraded" }, ... }
-            if upgradeState[teamID] and upgradeState[teamID].status == "upgrading" then
-                local techProxyID = upgradeState[teamID].techProxyID
-                -- health, maxHealth, paralyzeDamage, captureProgress, buildProgress
-                local buildProgress = select(5, spGetUnitHealth(techProxyID))
-                spSetUnitRulesParam(upgradeState[teamID].techCenterID,"upgrade", buildProgress)
-            end
-        end
-    end
-
-    function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions)
-        ----Below returns a given cmdID index in the command queue
-        ----local cmdIndex = Spring.GetCmdDescIndex(-UnitDefNames.peewee.id)
-        ----Spring.Echo("cmdID: "..cmdID.." techproxy: "..techProxycmdID)
-        ----Spring.Echo("Params & Options: "..#cmdParams,#cmdOptions)
-        --Spring.Echo("cmdID: "..cmdID)
-        if cmdID ~= techProxycmdID then
-            return true
-        end
-        --- If team is already upgraded, don't allow command to go on
-        if isUpgradedTeam(unitTeam) then
-            return false end
-        --- Otherwise, that's an upgrade command, allow it
-        --startUpgrade(unitID, techCenterID, unitTeam) -- Done by the instantiation of tech proxy
-        return true
-    end
-
-    -- This tracks the actual completion of the upgrade/tech-proxy
-    function gadget:UnitFinished(unitID, unitDefID, unitTeam)
-        if spGetGameFrame() <= 1 or not unitTeam then   -- Let's skip pre-spawned units (commanders etc)
-            return end
-
-        --- Let's now check if it's our target-tech proxy unit
-        if not isTeamTechProxy(unitID, unitTeam) then
-            return end
-
-        --- Upgrade is complete, wrap things up
-        local x,y,z = spGetUnitPosition(unitID)
-        if x and y and z then
-            spMarkerAddPoint(x,y,z,"", true) -- local message/marker
-            spSendMessageToTeam(unitTeam, color_yellow.."Upgrade Finished: ".. upgradeName)
-        end
-
-        SendToUnsynced("upgradeEvent", upgradeName, nil, nil, unitTeam, "upgraded")
-        -- disable upgrade progress bar
-        spSetUnitRulesParam(upgradeState[unitTeam].techCenterID,"upgrade", nil)
-        setUpgradeState(unitTeam, "upgraded", nil, nil)
-        spDestroyUnit(unitID,false,true)    -- Remove the proxy unit instantly (won't deadlock since TechProxyId was set to nil)
-
-        disableTargetUnitsCmd(unitTeam, false)      -- Enables capture buttons of all existing/tracked builders
-        -- These are of no interest anymore, clean it up
-        builderUnits[unitTeam] = nil
-        techCenters[unitTeam] = nil
-    end
-
-    function gadget:UnitDestroyed(unitID, unitDefID, unitTeam)
-        --Spring.Echo("Unit destroyed: "..unitID.." state techCenter: "..(upgradeState[unitTeam].techCenterID or "nil")
-        --            .." techProxy: "..(upgradeState[unitTeam].techProxyID or "nil"))
-
-        -- An under-construction tech proxy was destroyed or cancelled
-        if isTeamTechProxy(unitID, unitTeam) then
-            --Spring.Echo("WIP tech proxy destroyed, team: "..unitTeam)
-            cancelUpgrade(unitTeam)
-        -- Below is never happening, probably because the techProxy is destroyed first
-        elseif upgradeState[unitTeam].techCenterID == unitID then
-            --Spring.Echo("WIP upgrade's tech center destroyed")
-            cancelUpgrade(unitTeam)
-        end
-        if techCenters[unitTeam] then
-            techCenters[unitTeam][unitID] = nil end
-        if builderUnits[unitTeam] then
-            builderUnits[unitTeam][unitID] = nil end
-    end
-
-    function gadget:UnitGiven(unitID, unitDefID, teamID)
-        gadget:UnitFinished(unitID, unitDefID, teamID)
-    end
-
-else
------------------
----- UNSYNCED
------------------
-
-    --local function handleUpgradeEvent(cmd, techID, techCenterID, techProxyID, unitTeam, status)
-    --    ---- Now we create an event at unsynced space
-    --    if Script.LuaUI('UpgradeUIEvent') then
-    --        Script.LuaUI.UpgradeUIEvent(techID, techCenterID, techProxyID, unitTeam, status)
-    --        --Spring.Echo("Sent event about "..unitID)
-    --    end
-    --end
-    --
-    ------ Wiring SendToUnsync message "upgradeEvent" to the unsync'd "handle..." method
-    --function gadget:Initialize()
-    --    gadgetHandler:AddSyncAction("upgradeEvent", handleUpgradeEvent)
-    --end
-    --
-    --function gadget:Shutdown()
-    --    gadgetHandler:RemoveSyncAction("upgradeEvent")
-    --end
-
 end
+
+function gadget:GameFrame()
+    local frame = spGetGameFrame()
+    if frame % updateRate > 0.001 then
+        return end
+
+    Update()
+end
+
+function gadget:UnitDestroyed(unitID)
+    trackedUnits[unitID] = nil
+end
+
+function gadget:UnitGiven(unitID, unitDefID, teamID)
+    gadget:UnitFinished(unitID, unitDefID, teamID)
+end
+
+
+
+--  -- From cmd_multi_tech: Makes a command locked until all techs in str_reqs are reached.
+--  --GG.TechSlaveCommand(CMD_UPG_CAPTURE,"Capture")
+--    #pointup Nice, but won't work for a given set of units as we want
+
+
+
+-- TODO: This should become an spEditUnitCmdDesc to add a red alert to buttons: "Upgrade already in progress"
+--- Actual blocking should be done in gui_multi_tech, since it's realtime (prevents quick double-clicking from adding)
+--local function disableAllUpgradeButtons(unitTeam, status, uIDexception)
+--if uIDexception then
+--    Spring.Echo("Setting upgrade buttons 'disable' to "..tostring(status).." except "..uIDexception)
+--else
+--    Spring.Echo("Setting upgrade buttons 'disable' to "..tostring(status))
+--end
+--if techCenters[unitTeam] then
+--    for uID, _ in pairs(techCenters[unitTeam]) do
+--        if uIDexception == nil then
+--            disableUpgradeButton(uID, status)
+--        elseif not uID == uIDexception then
+--            disableUpgradeButton(uID, status)
+--        end
+--        --Spring.Echo("Processed: "..uID)
+--    end
+--end
+--end

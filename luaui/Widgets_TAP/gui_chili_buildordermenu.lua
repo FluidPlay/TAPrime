@@ -277,27 +277,27 @@ local function InitializeControls()
     buildGrid, buildWindow = createGridWindow(Config.buildmenu)
 end --InitializeControls
 
--- One of the selected units is an upgrading tech center, block left-click at it
-local function getUpgradeStatus(cmdID) -- => upgrading techcenter was clicked, other tech center was clicked
-    --local selUnits = spGetSelectedUnits()
-    --for i = 1, #selUnits do
-        --- @gui_multi_tech.lua:
-        --- WG.upgrades = { techID = { techCenter = unitID, status = "nonupgraded"|"upgrading"|"upgraded", ...},..}
-        --local selUnit = selUnits[i]
-    --for techID, data in pairs(WG.upgrades) do
-    --    local upgLock = data.status == "upgrading" and data.cmdID == cmdID --upgrade.techCenter == selUnit and
-    --    if upgLock then
-    --        --Spring.Echo("Status: upgrade lock")
-    --        return true
-    --    end
-    --end
-    local techID = WG.techProxycmdIDs[cmdID]
-    if techID and WG.techIDs[techID] then
-        local upgrade = WG.upgrades[techID] --= { techCenterID = unitID, status = status }
-        return upgrade.status
-    end
-    return "nonupgraded"    -- All other cmdIDs are also clear this way
-end
+---- One of the selected units is an upgrading tech center, block left-click at it
+--local function getUpgradeStatus(cmdID) -- => upgrading techcenter was clicked, other tech center was clicked
+--    --local selUnits = spGetSelectedUnits()
+--    --for i = 1, #selUnits do
+--        --- @gui_multi_tech.lua:
+--        --- WG.upgrades = { techID = { techCenter = unitID, status = "nonupgraded"|"upgrading"|"upgraded", ...},..}
+--        --local selUnit = selUnits[i]
+--    --for techID, data in pairs(WG.upgrades) do
+--    --    local upgLock = data.status == "upgrading" and data.cmdID == cmdID --upgrade.techCenter == selUnit and
+--    --    if upgLock then
+--    --        --Spring.Echo("Status: upgrade lock")
+--    --        return true
+--    --    end
+--    --end
+--    local techID = WG.techProxycmdIDs[cmdID]
+--    if techID and WG.techIDs[techID] then
+--        local upgrade = WG.upgrades[techID] --= { techCenterID = unitID, status = status }
+--        return upgrade.status
+--    end
+--    return "nonupgraded"    -- All other cmdIDs are also clear this way
+--end
 
 local function ActionCommand(self, x, y, mouse, mods)
     local index = sGetCmdDescIndex(self.cmdID)
@@ -305,10 +305,10 @@ local function ActionCommand(self, x, y, mouse, mods)
         local left, right = mouse == 1, mouse == 3
         local alt, ctrl, meta, shift = mods.alt, mods.ctrl, mods.meta, mods.shift
         --- If cmdID is for an upgrade, check its status, might fire it if is a right click
-        local status = getUpgradeStatus(self.cmdID)
-        if status == "nonupgraded" or (status =="upgrading" and right) then
-            sSetActiveCommand(index, mouse, left, right, alt, ctrl, meta, shift)
-        end
+        --local status = getUpgradeStatus(self.cmdID)
+        --if status == "nonupgraded" or (status =="upgrading" and right) then
+        sSetActiveCommand(index, mouse, left, right, alt, ctrl, meta, shift)
+        --end
     end
 end --ActionCommand
 

@@ -145,7 +145,7 @@ UU = {
     },
 }
 -- Value is used as key of PUU (Per-unit upgrade table)
-TechResearchers = {
+UnitResearchers = {
     [UnitDefNames["corcom"].id] = "dgun",
     --[UnitDefNames["corcom2"].id] = "dgun",
     --[UnitDefNames["corcom3"].id] = "dgun",
@@ -212,7 +212,7 @@ local function editCommand (unitID, CMDID, options)
 end
 
 -- TODO: Add manualfire edited tooltip
---addUpdateCommand(unitID, puuItem.UpgradeCmdDesc.id, puuItem.UpgradeCmdDesc, { req=puuItem.Prereq, defCmdDesc=puuItem.UpgradeCmdDesc })
+--AddUpdateCommand(unitID, puuItem.UpgradeCmdDesc.id, puuItem.UpgradeCmdDesc, { req=puuItem.Prereq, defCmdDesc=puuItem.UpgradeCmdDesc })
 local function addUpdateCommand(unitID, puuItem)
     local insertID = puuItem.UpgradeCmdDesc.id
     local cmdDesc = puuItem.UpgradeCmdDesc
@@ -229,18 +229,8 @@ local function addUpdateCommand(unitID, puuItem)
     end
 end
 
-local function localAlert(unitID, msg)
-    local x, y, z = spGetUnitPosition(unitID)  --x and z on map floor, y is height
-    spMarkerAddPoint(x,y,z,msg,true)
-    spMarkerErasePosition(x,y,z)
-end
-
-local function hasPrereq(prereq, unitTeam)
-    return GG.TechCheck(prereq, unitTeam)
-end
-
 function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
-    local upgrade = TechResearchers[unitDefID]
+    local upgrade = UnitResearchers[unitDefID]
     if not upgrade then
         return true
     end
@@ -267,12 +257,12 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
             return true
         end
         -- Otherwise, check for requirements
-        if hasPrereq(puu.prereq, unitTeam) then
+        if HasTech(puu.prereq, unitTeam) then
             --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
             upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0, puu = puu, }
             spSetUnitRulesParam(unitID, unitRulesParamName, 0)
         else
-            localAlert(unitID, "Requires: "..puu.prereq)
+            LocalAlert(unitID, "Requires: "..puu.prereq)
         end
     end
     return true
@@ -285,7 +275,7 @@ function gadget:Initialize()
 end
 
 function gadget:UnitCreated(unitID, unitDefID, unitTeam)
-    local upgrade = TechResearchers[unitDefID]
+    local upgrade = UnitResearchers[unitDefID]
     if not upgrade then
         return end
     --Spring.Echo("Found locally available upgrade: "..upgrade)

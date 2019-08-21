@@ -7,6 +7,12 @@
 
 CMD.UPG_CAPTURE = 42999
 CMD_UPG_CAPTURE = CMD.UPG_CAPTURE
+CMD.UPG_BOOSTER1 = 42998
+CMD_UPG_BOOSTER1 = CMD.UPG_BOOSTER1
+CMD.UPG_BOOSTER2 = 42997
+CMD_UPG_BOOSTER2 = CMD.UPG_BOOSTER2
+CMD.UPG_BOOSTER3 = 42996
+CMD_UPG_BOOSTER3 = CMD.UPG_BOOSTER3
 
 local CMD_CAPTURE = CMD.CAPTURE
 
@@ -16,25 +22,104 @@ GlobalUpgrades = {
     capture = {
         UpgradeCmdDesc = {
             id      = CMD_UPG_CAPTURE,
-            name    = '^ Capture',
+            name    = '^ CAPTURE',
             action  = 'upgradecapture',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Enables Capture',
+            tooltip = 'Unlocks the Capture ability of all builder units',
         },
         prereq = "",
-        metalCost = 200,
-        energyCost = 1200,
-        upgradeTime = 5 * 30, --5 seconds, in frames
+        metalCost = 300,
+        energyCost = 6000,
+        upgradeTime = 10 * 30, --5 seconds, in frames
         type = "tech",
         buttonToUnlock = CMD_CAPTURE,
-        techToGrant = "capture",
         --UnlockedCmdDescTootip = "" (to be added/used by handlers)
+        lockedUnitDefIds = { [UnitDefNames["armck"].id] = true,
+                             [UnitDefNames["corck"].id] = true,
+                             [UnitDefNames["armcv"].id] = true,
+                             [UnitDefNames["corcv"].id] = true,
+                             [UnitDefNames["armca"].id] = true,
+                             [UnitDefNames["corca"].id] = true,
+                             [UnitDefNames["armack"].id] = true,
+                             [UnitDefNames["corack"].id] = true,
+                             [UnitDefNames["armacv"].id] = true,
+                             [UnitDefNames["coracv"].id] = true,
+                             [UnitDefNames["armaca"].id] = true,
+                             [UnitDefNames["coraca"].id] = true,
+                             [UnitDefNames["corcom"].id] = true,
+        },
+        techToGrant = "capture",
+    },
+    booster1 = {
+        UpgradeCmdDesc = {
+            id      = CMD_UPG_BOOSTER1,
+            name    = '^ BOOST 1',
+            action  = 'upgradecapture',
+            cursor  = 'Morph',
+            type    = CMDTYPE.ICON,
+            tooltip = 'Increases Morph Speed by 25%',
+        },
+        prereq = "",
+        metalCost = 600,
+        energyCost = 11400,
+        upgradeTime = 15 * 30, --15 seconds, in frames
+        type = "tech",
+        buttonToUnlock = nil,
+        --UnlockedCmdDescTootip = "" (to be added/used by handlers)
+        lockedUnitDefIds = { },
+        techToGrant = "booster1",
+    },
+    booster2 = {
+        UpgradeCmdDesc = {
+            id      = CMD_UPG_BOOSTER2,
+            name    = '^ BOOST 2',
+            action  = 'upgradecapture',
+            cursor  = 'Morph',
+            type    = CMDTYPE.ICON,
+            tooltip = 'Increases Morph Speed by 33% (cumulative)',
+        },
+        prereq = "",
+        metalCost = 1800,
+        energyCost = 30600,
+        upgradeTime = 30 * 30, --5 seconds, in frames
+        type = "tech",
+        buttonToUnlock = nil,
+        --UnlockedCmdDescTootip = "" (to be added/used by handlers)
+        lockedUnitDefIds = { },
+        techToGrant = "booster2",
+    },
+    booster3 = {
+        UpgradeCmdDesc = {
+            id      = CMD_UPG_BOOSTER3,
+            name    = '^ BOOST 3',
+            action  = 'upgradecapture',
+            cursor  = 'Morph',
+            type    = CMDTYPE.ICON,
+            tooltip = 'Increases Morph Speed by 50% (cumulative)',
+        },
+        prereq = "",
+        metalCost = 3600,
+        energyCost = 58320,
+        upgradeTime = 40 * 30, --5 seconds, in frames
+        type = "tech",
+        buttonToUnlock = nil,
+        --UnlockedCmdDescTootip = "" (to be added/used by handlers)
+        lockedUnitDefIds = { },
+        techToGrant = "booster3",
     },
 }
 
 -- Which units can research what
-TechResearchers = {
-    [UnitDefNames["armtech"].id] = {"capture","techbooster1"},
-    [UnitDefNames["cortech"].id] = {"capture","techbooster1"},
+GlobalResearchers = {
+    [UnitDefNames["armtech"].id] = {"capture","booster1",},
+    [UnitDefNames["cortech"].id] = {"capture","booster1",},
+    [UnitDefNames["armtech1"].id] = {"capture","booster1",},
+    [UnitDefNames["cortech1"].id] = {"capture","booster1",},
+    [UnitDefNames["armtech2"].id] = {"capture","booster1","booster2"},
+    [UnitDefNames["cortech2"].id] = {"capture","booster1","booster2"},
+    [UnitDefNames["armtech3"].id] = {"capture","booster1","booster2","booster3"},
+    [UnitDefNames["cortech3"].id] = {"capture","booster1","booster2","booster3"},
+    [UnitDefNames["armtech4"].id] = {"capture","booster1","booster2","booster3"},
+    [UnitDefNames["cortech4"].id] = {"capture","booster1","booster2","booster3"},
 }

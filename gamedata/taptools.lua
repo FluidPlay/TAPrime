@@ -387,7 +387,7 @@ end
 --////////////////////////
 
 function HasTech(prereq, teamID)
-	GG.TechCheck(prereq, teamID)
+	return GG.TechCheck(prereq, teamID)
 end
 
 --////////////////////////
@@ -395,16 +395,29 @@ end
 --////////////////////////
 
 --Adds or updates the command-button
-function addUpdateCommand(unitID, cmdDesc)
-    local cmdDescId = spFindUnitCmdDesc(unitID, cmdDesc.id)
-    if not cmdDescId then
+function AddUpdateCommand(unitID, cmdDesc)
+    local CurrentCmdDescId = spFindUnitCmdDesc(unitID, cmdDesc.id)
+    if not CurrentCmdDescId then
         spInsertUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
     else
         spEditUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
     end
 end
 
-function localAlert(unitID, msg)
+-- BlockCmdID(.., ..) or BlockCmdID(.., .., false)
+function BlockCmdID(unitID, cmdID, block)
+	local cmdDescId = spFindUnitCmdDesc(unitID, cmdID)
+	if not cmdDescId then
+		return end
+	local disable = true -- default: disabled (blocked)
+	if block == false then
+		disable = false
+	end
+	--Spring.Echo(cmdID.." Disabled: "..tostring(disable))
+	spEditUnitCmdDesc(unitID, cmdDescId, { disabled = disable })
+end
+
+function LocalAlert(unitID, msg)
     local x, y, z = spGetUnitPosition(unitID)  --x and z on map floor, y is height
     spMarkerAddPoint(x,y,z,msg,true)
     spMarkerErasePosition(x,y,z)
