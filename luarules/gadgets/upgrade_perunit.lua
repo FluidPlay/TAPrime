@@ -78,13 +78,15 @@ UU = {
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
             tooltip = 'Enables D-gun weapon',
+            texture = 'luaui/images/upgrades/techdgun.dds',
+            onlyTexture = true,
         },
         prereq = "Tech1",
         metalCost = 200,
         energyCost = 1200,
         upgradeTime = 10 * 30, --5 seconds, in frames
         type = "tech",
-        alertWhenDone = true, -- Optional, if set fires an alert once completed
+        alertWhenDone = true, -- [Optional] if true, fires an alert once completed
     },
     grenade = {     -- >> Peewee's Laser Grenade (Per Unit)
         UpgradeCmdDesc = {

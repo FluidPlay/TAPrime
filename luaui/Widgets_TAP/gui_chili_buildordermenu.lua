@@ -205,7 +205,7 @@ local function applyHighlightHandler(button, cmd)
 
     local highlight = chiliCache['highlight' .. button.cmdID] or Image:New{
         name = 'highlight' .. button.cmdID,
-        parent = button,
+        parent = button.image or button,
         file   = 'LuaUI/Images/button-highlight.dds',
         width = '100%', height = '100%',
         fixedRatio = false, keepAspect = false,
@@ -313,27 +313,56 @@ local function ActionCommand(self, x, y, mouse, mods)
 end --ActionCommand
 
 local function addOrderCommand(cmd)
-    local button = chiliCache['button' .. cmd.id] or Button:New{
-        name = 'button' .. cmd.id,
-        --parent = orderGrid,
-        cmdID = cmd.id,
-        caption = cmd.name,
-        textPadding = 8, -- (MaDDoX)
-        padding = {0, 0, 0, 0},
-        margin = {2, 2, 2, 2},
-        OnMouseUp = {ActionCommand},
-    }
-    --local truncName = (string.len(cmd.name) > 14) and cmd.name:sub(0,14) or cmd.name
-    local truncName = cmd.name
-    if not string.find(cmd.name,"\n") then
-    --    truncName = (string.len(cmd.name) > 14) and cmd.name:sub(0,14).."." or cmd.name
-    --else
-        truncName = (string.len(cmd.name) > 11) and cmd.name:sub(0,11).."." or cmd.name
+    local button
+    if cmd.texture and cmd.texture ~= "" then --cmd.onlyTexture and
+        local image = chiliCache['button' .. cmd.id .. 'texture'] or Image:New{
+            name = 'button' .. cmd.id .. 'texture',
+            --cmdID = cmd.id,
+            width = '100%', height = '100%',
+            file = cmd.texture,
+            padding = {0, 0, 0, 0},
+            margin = {2, 2, 2, 2},
+            --OnClick = {ActionCommand},
+        }
+        chiliCache['button' .. cmd.id .. 'texture'] = image
+
+        button = chiliCache['button' .. cmd.id] or Button:New{
+            name = 'button' .. cmd.id,
+            --parent = orderGrid,
+            cmdID = cmd.id,
+            image = image,
+            caption = '',
+            textPadding = 8, -- (MaDDoX)
+            padding = {0, 0, 0, 0},
+            margin = {2, 2, 2, 2},
+            OnMouseUp = {ActionCommand},
+        }
+        if not image.parent then
+            button:AddChild(image)
+        end
+    else
+        button = chiliCache['button' .. cmd.id] or Button:New{
+            name = 'button' .. cmd.id,
+            --parent = orderGrid,
+            cmdID = cmd.id,
+            caption = cmd.name,
+            textPadding = 8, -- (MaDDoX)
+            padding = {0, 0, 0, 0},
+            margin = {2, 2, 2, 2},
+            OnMouseUp = {ActionCommand},
+        }
+        --local truncName = (string.len(cmd.name) > 14) and cmd.name:sub(0,14) or cmd.name
+        local truncName = cmd.name
+        if not string.find(cmd.name,"\n") then
+            --    truncName = (string.len(cmd.name) > 14) and cmd.name:sub(0,14).."." or cmd.name
+            --else
+            truncName = (string.len(cmd.name) > 11) and cmd.name:sub(0,11).."." or cmd.name
+        end
+        button:SetCaption(truncName) --cmd.name
+        local s = (btWidth - button.textPadding * 2) / glGetTextWidth(button.caption)
+        button.font:SetSize(mathmin(s, Config.labels.captionFontMaxSize) + fontSizeOffset)
     end
-    button:SetCaption(truncName) --cmd.name
     chiliCache['button' .. cmd.id] = button
-    local s = (btWidth - button.textPadding * 2) / glGetTextWidth(button.caption)
-    button.font:SetSize(mathmin(s, Config.labels.captionFontMaxSize) + fontSizeOffset)
     applyHighlightHandler(button, cmd)
     orderGrid:AddChild(button)
 end --addOrderCommand
@@ -421,6 +450,7 @@ local function addBuildCommand(cmd)
     buildGrid:AddChild(image)
     end --addBuildCommand
 
+--- Defines which commands go to which block (1, 2, 3)
 local function processCommand(cmd)
     if UnitDefNames[cmd.name] then return 3
     elseif #cmd.params > 1 then return 1

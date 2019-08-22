@@ -14,6 +14,7 @@ Unsynced
 
 ]]--
 
+---<< DEPRECATED; check global_upgradedata.lua >>
 --[[
 *** How the upgrade system works
 
@@ -51,7 +52,7 @@ function widget:GetInfo()
       date      = "Dec, 2018",
       license   = "GNU GPL, v3 or later",
       layer     = -100,
-      enabled   = true,
+      enabled   = false, --true,
    }
 end
 
