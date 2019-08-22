@@ -83,29 +83,29 @@ RestoreAfterDelay()
 	return (1);
 }
 
-QueryWeapon1(piecenum)
-{
-	piecenum = turret;
-}
+//QueryWeapon1(piecenum)
+//{
+	//piecenum = turret;
+//}
 
-AimFromWeapon1(piecenum)
-{
-	piecenum = flare1;
-}
+//AimFromWeapon1(piecenum)
+//{
+//	piecenum = flare1;
+//}
 
-QueryTertiary(piecenum)
-{
-	piecenum = flare1;
-}
+//QueryTertiary(piecenum)
+//{
+//	piecenum = flare1;
+//}
 
 // Secondary
 
-AimFromSecondary(piecenum)
+AimFromPrimary(piecenum)
 {
 	piecenum = turret;
 }
 
-AimSecondary(heading, pitch)
+AimPrimary(heading, pitch)
 {
 	signal SIG_AIM_3;
 	set-signal-mask SIG_AIM_3;
@@ -117,7 +117,7 @@ AimSecondary(heading, pitch)
 	return (1);
 }
 
-FireSecondary()
+FirePrimary()
 {
 	if( gun_3 == 0 )
 	{
@@ -145,12 +145,12 @@ FireSecondary()
 
 // Tertiary
 
-AimFromTertiary(piecenum)
+AimFromSecondary(piecenum)
 {
 	piecenum = turret;
 }
 
-AimTertiary(heading, pitch)
+AimSecondary(heading, pitch)
 {
 	signal SIG_AIM_3;
 	set-signal-mask SIG_AIM_3;
@@ -162,7 +162,7 @@ AimTertiary(heading, pitch)
 	return (1);
 }
 
-FireTertiary()
+FireSecondary()
 {
 	if( gun_3 == 0 )
 	{

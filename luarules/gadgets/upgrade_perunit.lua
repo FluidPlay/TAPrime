@@ -66,23 +66,10 @@ CMD.UPG_FIRERAIN = 41997
 CMD_UPG_FIRERAIN = CMD.UPG_FIRERAIN
 CMD.UPG_FIRERAIN = 41996
 CMD_UPG_BARRAGE = CMD.UPG_BARRAGE
+
+-- TODO: Move to Separate file for better organization
 -- Unit Upgrades (as shown in a certain unit's command list)
 UU = {
-    --capture = {
-    --    UpgradeCmdDesc = {
-    --        id      = CMD_UPG_DGUN,
-    --        name    = 'Upg D-Gun',
-    --        action  = 'dgunupgrade',
-    --        cursor  = 'Morph',
-    --        type    = CMDTYPE.ICON,
-    --        tooltip = 'Enables D-gun weapon',
-    --    },
-    --    prereq = "Tech1",
-    --    metalCost = 200,
-    --    energyCost = 1200,
-    --    upgradeTime = 5 * 30, --5 seconds, in frames
-    --    type = "tech",
-    --},
     dgun = {
         UpgradeCmdDesc = {
             id      = CMD_UPG_DGUN,
@@ -95,8 +82,9 @@ UU = {
         prereq = "Tech1",
         metalCost = 200,
         energyCost = 1200,
-        upgradeTime = 5 * 30, --5 seconds, in frames
+        upgradeTime = 10 * 30, --5 seconds, in frames
         type = "tech",
+        alertWhenDone = true, -- Optional, if set fires an alert once completed
     },
     grenade = {     -- >> Peewee's Laser Grenade (Per Unit)
         UpgradeCmdDesc = {
@@ -125,7 +113,7 @@ UU = {
         prereq = "Tech1",
         metalCost = 160,
         energyCost = 960,
-        upgradeTime = 5 * 30, --5 seconds, in frames
+        upgradeTime = 10 * 30, --5 seconds, in frames
         type = "perunit",
     },
     barrage = {     -- >> Core Informer comet rain (Per Unit)
@@ -140,7 +128,7 @@ UU = {
         prereq = "Tech1",
         metalCost = 160,
         energyCost = 960,
-        upgradeTime = 5 * 30, --5 seconds, in frames
+        upgradeTime = 10 * 30, --5 seconds, in frames
         type = "perunit",
     },
 }
@@ -292,17 +280,24 @@ end
 local function finishUpgrade(idx, unitID, puu)
     editCommand (unitID, puu.UpgradeCmdDesc.id, {disabled=true})
 
+    if puu.alertWhenDone then
+        LocalAlert(unitID, "Unit upgrade complete: "..puu.UpgradeCmdDesc.name)
+    end
+
     -- Enable action & remove "Requires" red alert at bottom
     editCommand (unitID, CMD_MANUALFIRE, {disabled=false, req="", defCmdDesc = puu.UpgradeCmdDesc})
-
-    ipairs_remove(upgradingUnits, unitID)   -- setting it to nil won't remove the element, affecting the # operator
+    --Spring.Echo("Here")
+    --ipairs_remove(upgradingUnits, unitID)   -- setting it to nil won't remove the element, affecting the # operator
+    upgradingUnits[idx] = nil
     upgradedUnits[unitID] = true
+
     spSetUnitRulesParam(unitID, unitRulesParamName, nil)
 end
 
 function gadget:UnitDestroyed(unitID)
     upgradedUnits[unitID] = nil
-    ipairs_remove(upgradingUnits, unitID)
+    --ipairs_remove(upgradingUnits, unitID)
+    ipairs_removeByElement(upgradingUnits, "unitID", unitID )
 end
 
 function gadget:GameFrame()

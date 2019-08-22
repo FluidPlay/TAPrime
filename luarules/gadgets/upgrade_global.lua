@@ -80,9 +80,12 @@ local function getUpgradeID (unitDefID, cmdID)
 end
 
 local function SetUpgrade(unitID, upgradeID, progress, globalUpgrade)
-    upgradingUnits[unitID] = (globalUpgrade == nil)
-            and nil
-            or { upgradeID = upgradeID, progress = progress, globalUpgrade = globalUpgrade, }
+    if (globalUpgrade == nil) then
+        upgradingUnits[unitID] = nil
+    else
+        upgradingUnits[unitID] = { upgradeID = upgradeID, progress = progress, globalUpgrade = globalUpgrade, }
+    end
+
     spSetUnitRulesParam(unitID, upgParamName, progress)
 end
 
@@ -177,20 +180,22 @@ function gadget:GameFrame()
         return end
     oldFrame = frame
 
-    if not upgradingUnits or tablelength(upgradingUnits) == 0 then    -- If no unit upgrading, return
+    if not upgradingUnits then    -- If no unit upgrading, return
         return end
     --Spring.Echo("Count: "..#upgradingUnits)
 
     for unitID, data in pairs(upgradingUnits) do
         local progress = data.progress
         local gUpg = data.globalUpgrade
-        if spUseUnitResource(unitID, {  ["m"] = gUpg.metalCost / gUpg.upgradeTime,
+        if progress ~= nil and gUpg ~= nil then
+            if spUseUnitResource(unitID, {  ["m"] = gUpg.metalCost / gUpg.upgradeTime,
                                             ["e"] = gUpg.energyCost / gUpg.upgradeTime }) then
-            progress = progress + 1 / gUpg.upgradeTime -- TODO: Add "Morph speedup" bonus maybe?
-            upgradingUnits[unitID].progress = progress
-            spSetUnitRulesParam(unitID, upgParamName, progress)
-            if progress >= 1.0 then
-                finishUpgrade(unitID, gUpg, data.upgradeID)
+                progress = progress + 1 / gUpg.upgradeTime -- TODO: Add "Morph speedup" bonus maybe?
+                upgradingUnits[unitID].progress = progress
+                spSetUnitRulesParam(unitID, upgParamName, progress)
+                if progress >= 1.0 then
+                    finishUpgrade(unitID, gUpg, data.upgradeID)
+                end
             end
         end
     end

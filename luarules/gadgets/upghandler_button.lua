@@ -94,7 +94,7 @@ function gadget:UnitDestroyed(unitID)
 end
 
 function gadget:UnitGiven(unitID, unitDefID, teamID)
-    gadget:UnitFinished(unitID, unitDefID, teamID)
+    gadget:UnitCreated(unitID, unitDefID, teamID)
 end
 
 

@@ -230,13 +230,11 @@ local morphingUnits = {}    --// make it global in Initialize()
 
 local reqTechs = {}         --// all possible techs which are used as a requirement for a morph
 local techboosters = { {id="booster1",bonus=1.25}, {id="booster2",bonus=1.33}, {id="booster3",bonus=1.5},}
-local techboosterIds = { "booster1", "booster2", "booster3" }
-local techboosterbonus = { 1.25, 1.33, 1.5 }
 
 --// per team techlevel and owned MorphReq. units table
 local teamTechLevel = {}
 --// per team Queue Units
-  --- TODO: Make it global, accessible by UNSYNCED
+--- TODO: Make it global, accessible by UNSYNCED
 local teamQueuedUnits = {}  -- [team:1..n]={ queuedUnits }
 local unitsToDestroy = {}   -- [uid:1..n]={frame:number}  :: Frame it was set to be removed from game
 --local queuedUnits = {}    -- [idx:1..n]={unitID=n, morphData={}}
@@ -562,14 +560,13 @@ local function GetMorphTimeBonus(unitTeam)
     end
   end
   -- Check for Tech Boosters
-  local techboosters = { {id="booster1",bonus=1.25}, {id="booster2",bonus=1.33}, {id="booster3",bonus=1.5},}
   for i = 1, 3 do
     if GG.TechCheck(techboosters[i].id, unitTeam) then
       bonus = bonus * techboosters[i].bonus --1.25, 1.33, 1.5
     end
   end
   --if bonus ~= 1 then
-    --spEcho("bonus: "..bonus) --end
+  --  spEcho("bonus: "..bonus) end
   return math.min (MaxMorphTimeBonus, bonus) -- max MaxMorphTimeBonus
 end
 
