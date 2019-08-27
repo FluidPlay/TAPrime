@@ -525,6 +525,27 @@ fragment = [[
 		return finalTexCoords;
 	}
 
+	vec3 GetSpecularBlinnPhong(float HdotN, float roughness) {
+		float power = 2.0 / max(roughness * 0.25, 0.01);
+		float powerNorm = (power + 8.0) / 32.0;
+		return sunSpecular * pow(HdotN, power) * powerNorm;
+	}
+
+	vec3 SampleEnvironmentWithRoughness(vec3 samplingVec, float roughness) {
+		int reflectTexSize = textureSize(reflectTex, 0).x;
+		float maxLodLevel = log2(float(reflectTexSize));
+
+		// makes roughness of reflection scale perceptually much more linear
+		// Assumes "CubeTexSizeReflection" = 2048
+		maxLodLevel -= 5.0;
+
+		float lodBias = maxLodLevel * roughness;
+
+		vec3 reflection = texture(reflectTex, samplingVec, lodBias).rgb;
+
+		return reflection;
+	}
+
 	/***********************************************************************/
 	// Shader output definitions
 	#if (RENDERING_MODE == 1)
@@ -623,7 +644,19 @@ fragment = [[
 		vec3 lightDiffuse = NdotL * sunDiffuse;
 
 		// sunSpecularParams = (exponent, multiplier, bias)
-		vec3 lightSpecular = sunSpecular * pow(HdotN, sunSpecularParams.x);
+		// texColor2
+		//		.r = emissive multiplier
+		//		.g = specular multiplier (metalness)
+		//		.b = roughness
+
+		#if (USE_ROUGHNESS == 1)
+			float roughness = texColor2.b;
+			roughness = SNORM2NORM(sin(simFrame * 0.05));
+			vec3 lightSpecular = GetSpecularBlinnPhong(HdotN, roughness);
+		#else
+			vec3 lightSpecular = sunSpecular * pow(HdotN, sunSpecularParams.x);
+		#endif
+
 		lightSpecular *= sunSpecularParams.z + texColor2.g * sunSpecularParams.y;
 
 		// apply shadows
@@ -631,7 +664,12 @@ fragment = [[
 		lightSpecular *= shadowMult;
 
 		// environment reflection
-		vec3 lightADR = texture(reflectTex,  Rv).rgb;
+		#if (USE_ROUGHNESS == 1)
+			vec3 lightADR = SampleEnvironmentWithRoughness(Rv, roughness);
+		#else
+			vec3 lightADR = texture(reflectTex,  Rv).rgb;
+		#endif
+
 		lightADR = mix(lightAD, lightADR, texColor2.g);
 
 		// emissive color
@@ -656,7 +694,7 @@ fragment = [[
 		#undef wreckMetal
 
 		#if 0
-			finalColor = vec3( GetNormalFromDiffuse(myUV));
+			finalColor = vec3( N );
 		#endif
 
 		#if (RENDERING_MODE == 0)
@@ -702,9 +740,11 @@ local defaultMaterialTemplate = {
 
 	shaderDefinitions = {
 		"#define RENDERING_MODE 0",
+		"#define USE_ROUGHNESS 1",
 	},
 	deferredDefinitions = {
 		"#define RENDERING_MODE 1",
+		"#define USE_ROUGHNESS 1",
 	},
 	shadowDefinitions = {
 		"#define RENDERING_MODE 2",
@@ -728,7 +768,7 @@ local defaultMaterialTemplate = {
 		materialIndex	= 0,
 
 		autoNormalParams = {1.0, 0.00200}, -- Sampling distance, autonormal value
-		sunSpecularParams = {18.0, 4.0, 0.0}, -- Exponent, multiplier, bias
+		sunSpecularParams = {18.0, 2.0, 0.0}, -- Exponent, multiplier, bias
 		pomParams = {0.002, 1.0, 24.0, -2.0}, -- scale, minLayers, maxLayers, lodBias
 	},
 
@@ -748,7 +788,7 @@ local defaultMaterialTemplate = {
 		shadowsQuality	= 0,
 		materialIndex	= 0,
 
-		sunSpecularParams = {18.0, 4.0, 0.0}, -- Exponent, multiplier, bias
+		sunSpecularParams = {18.0, 2.0, 0.0}, -- Exponent, multiplier, bias
 	},
 
 	shadowOptions = {

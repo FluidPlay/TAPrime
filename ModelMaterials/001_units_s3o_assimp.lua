@@ -10,6 +10,7 @@ local materials = {
 		shaderOptions = {
 			flashlights   = true,
 			normalmapping = true,
+			autonormal = true,
 		},
 		deferredOptions = {
 			normalmapping = true,
