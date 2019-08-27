@@ -651,7 +651,7 @@ fragment = [[
 
 		#if (USE_ROUGHNESS == 1)
 			float roughness = texColor2.b;
-			roughness = SNORM2NORM(sin(simFrame * 0.05));
+			//roughness = SNORM2NORM(sin(simFrame * 0.05));		-- roughness cycling effect
 			vec3 lightSpecular = GetSpecularBlinnPhong(HdotN, roughness);
 		#else
 			vec3 lightSpecular = sunSpecular * pow(HdotN, sunSpecularParams.x);
@@ -768,7 +768,7 @@ local defaultMaterialTemplate = {
 		materialIndex	= 0,
 
 		autoNormalParams = {1.0, 0.00200}, -- Sampling distance, autonormal value
-		sunSpecularParams = {18.0, 2.0, 0.0}, -- Exponent, multiplier, bias
+		sunSpecularParams = {18.0, 2.0, 0}, -- Exponent, multiplier, bias --18, 2, 0
 		pomParams = {0.002, 1.0, 24.0, -2.0}, -- scale, minLayers, maxLayers, lodBias
 	},
 

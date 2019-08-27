@@ -5,22 +5,23 @@ function widget:GetInfo()
 		author = "MaDDoX",
 		date = "12/03/2017",
 		license = "LGPL",
-		layer = 100,
+		layer = -1,
 		enabled = true,
 	}
 end
 
-local camAngle = 2.52  --2.677 is the default, more = vertical top/down
+local camAngle = 2.4 --2.52  --2.677 is the default, more = vertical top/down
 
 --local spGetAllUnits		= Spring.GetAllUnits
 local initialized = false
+local postinit = nil
 local spGetMyTeamID		= Spring.GetMyTeamID
 local spGetTeamUnits	= Spring.GetTeamUnits
 local spGetCameraState = Spring.GetCameraState
 local spSetCameraState = Spring.SetCameraState
 local spGetPlayerInfo = Spring.GetPlayerInfo
 local myPlayerID = 0
-local spGetGameFrame = Spring.GetGameFrame
+--local spGetGameFrame = Spring.GetGameFrame
 local spGetUnitPosition = Spring.GetUnitPosition
 local spSetCameraTarget = Spring.SetCameraTarget
 local spec = false
@@ -35,12 +36,21 @@ function widget:Initialize()
 end
 
 function widget:GameFrame(n)
-	if spec or initialized then
+	if spec then
         -- Only enable MMB-hold scroll-lock if it's in spec mode
         Spring.SendCommands("/set MouseDragScrollThreshold 0.3")
+		Spring.SetSunLighting({unitAmbientColor = {1, 1, 1}}) --, unitDiffuseColor = {1, 1, 1} })
 		widgetHandler:RemoveWidget()
-		return
+		--postinit = n + 1
 	end
+	if initialized then
+		widgetHandler:RemoveWidget()
+	end
+	--if postinit and n >= postinit then
+	--	widgetHandler:RemoveWidget()
+		--return end
+	Spring.Echo("Sun lighting set")
+	Spring.SetSunLighting({unitAmbientColor = {1, 1, 1} })--, unitDiffuseColor = {1, 1, 1} })
     Spring.SendCommands("/set MouseDragScrollThreshold -1")
     Spring.SendCommands("/set CamTimeExponent 100") -- Instant zoom-in / zoom-out with TAB
     local myUnits = spGetTeamUnits(spGetMyTeamID())
