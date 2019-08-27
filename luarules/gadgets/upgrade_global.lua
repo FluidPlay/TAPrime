@@ -12,7 +12,7 @@ function gadget:GetInfo()
         license	= "GNU GPL, v2 or later",
         layer	= -1,
         enabled = true, --true, (WIP)
-        -- The only thing this guy does is to award the given tech to the Team and/or unlock a given button. --TODO
+        -- The only thing this guy does is to award the given tech to the Team and/or unlock a given button.
     }
 end
 
@@ -149,7 +149,7 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
 end
 
 function gadget:UnitDestroyed(unitID)
-    upgradedUnits[unitID] = nil     -- Revoke awarded techs? Currently it doesn't.
+    upgradedUnits[unitID] = nil     -- TODO: Revoke awarded Tech Center techs.
     upgradingUnits[unitID] = nil
 end
 
@@ -203,7 +203,7 @@ end
 
 
 
--- [Deprecated] TODO: Move logic to Handlers
+-- [Deprecated] Logic moved to Handlers
 --local function editCommand (unitID, CMDID, upgradeID)
 --    --local options = { req = upgData.prereq, defCmdDesc= upgData.UpgradeCmdDesc }
 --    local cmdDescID = spFindUnitCmdDesc(unitID, CMDID)
