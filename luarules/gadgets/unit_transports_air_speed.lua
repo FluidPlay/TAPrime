@@ -28,7 +28,8 @@ local allowedSpeed = 0
 local currentMassUsage = 0
 -- update allowed speed for transport
 function updateAllowedSpeed(transportId, transportUnitDef)
-	
+    if not transportUnitDef or not transportUnitDef.transportMass then
+        return end
 	-- get sum of mass and size for all transported units                                
 	currentMassUsage = 0
 	for _,tUnitId in pairs(Spring.GetUnitIsTransporting(transportId)) do

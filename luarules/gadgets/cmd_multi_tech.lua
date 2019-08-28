@@ -144,7 +144,6 @@ if (gadgetHandler:IsSyncedCode()) then
 	local spEditUnitCmdDesc = Spring.EditUnitCmdDesc
 	local spGetUnitCmdDescs = Spring.GetUnitCmdDescs
 
-
 	local function SplitString(Line)
 		local words={}
 		local str=Line
@@ -194,7 +193,6 @@ if (gadgetHandler:IsSyncedCode()) then
 		return words
 	end
 
-
 	local function InitTechEntry(techname)
 		if not TechTable[techname] then
 			TechTable[techname]={name=techname,ProvidedBy={},AccessTo={},ProviderCount={}}
@@ -205,7 +203,6 @@ if (gadgetHandler:IsSyncedCode()) then
 		end
 	end
 
-
 	local function CheckTech(TechName,Team)
 		TechName=string.lower(TechName)
 		if not TechTable[TechName] then
@@ -213,7 +210,7 @@ if (gadgetHandler:IsSyncedCode()) then
 			return nil
 		else
 			if not TechTable[TechName].ProviderCount[Team] then
-				--Spring.Echo("Bad call to Check Tech: TechName=\""..TechName.."\", Team="..Team)
+				Spring.Echo("Bad call to Check Tech (Provider Count error): TechName=\""..TechName.."\", Team="..Team)
 				return nil
 			else
 				if TechTable[TechName].ProviderCount[Team]>=1 then
@@ -224,7 +221,6 @@ if (gadgetHandler:IsSyncedCode()) then
 			end
 		end
 	end
-
 
 	local function CheckCmd(cmd,team)
 		if not AccessionTable[cmd] then
@@ -238,7 +234,6 @@ if (gadgetHandler:IsSyncedCode()) then
 			return true
 		end
 	end
-
 
 	local function EditButtons(u,ud,team)
 
@@ -396,7 +391,9 @@ if (gadgetHandler:IsSyncedCode()) then
 	end
 
 	local function UnitLost(u,ud,team)
+        EditButtons(u,ud,team)
 		if isComplete(u) and ProviderTable[ud] then
+            Spring.Echo("Checking unit lost 2")
 			for _,tech in ipairs(ProviderTable[ud]) do
 				TechTable[tech].ProviderCount[team]=TechTable[tech].ProviderCount[team]-1
 				spSetTeamRulesParam(team,"technology:"..tech,TechTable[tech].ProviderCount[team])

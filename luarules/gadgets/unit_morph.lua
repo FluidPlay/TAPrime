@@ -242,7 +242,7 @@ local unitsToDestroy = {}   -- [uid:1..n]={frame:number}  :: Frame it was set to
 
   --// Prime: Removing support for Required Units
 local morphableUnits = {}  -- UnitTypeIDs which may be morphed [teamId] [# of required UnitTypeIDs currenty]
---// Prime: We need to know how many techcenters from each tech level the player has, since this speeds up morphs
+--// Boosters could be, eg. techcenters. For each tech level the player has it, the faster the morphs would be globally (TAP not using it now)
 local boosters = {}     -- TechCenter [teamID][Tier] --eg.: TechCenters[1][1] == Player 1's Tier 1 techcenters
 
 local teamList = Spring.GetTeamList()
@@ -1413,7 +1413,6 @@ function gadget:GameFrame(n)
   --end
 
   -- We do a next-frame destroy to prevent upgraded last-commanders inadvertently finishing the game
-    -- TODO: Add delay library
   for uID, frame in pairs(unitsToDestroy) do
     if n >= frame then
       --Remark: This will fire up UnitDestroyed > checkQueue > StartQueue if/when needed

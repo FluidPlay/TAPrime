@@ -20,8 +20,8 @@ local sSetActiveCommand = Spring.SetActiveCommand
 local sGetCmdDescIndex = Spring.GetCmdDescIndex
 local sGetActiveCommand = Spring.GetActiveCommand
 local sGetWindowGeometry = Spring.GetWindowGeometry
-local spGetSelectedUnits = Spring.GetSelectedUnits
-local spGetUnitRulesParam = Spring.GetUnitRulesParam
+--local spGetSelectedUnits = Spring.GetSelectedUnits
+--local spGetUnitRulesParam = Spring.GetUnitRulesParam
 
 local stringfind = string.find
 local stringsub = string.sub
@@ -318,10 +318,10 @@ local function addOrderCommand(cmd)
         local image = chiliCache['button' .. cmd.id .. 'texture'] or Image:New{
             name = 'button' .. cmd.id .. 'texture',
             --cmdID = cmd.id,
-            width = '100%', height = '100%',
+            width = '95%', height = '95%',
             file = cmd.texture,
             padding = {0, 0, 0, 0},
-            margin = {2, 2, 2, 2},
+            margin = {4, 4, 4, 4},
             --OnClick = {ActionCommand},
         }
         chiliCache['button' .. cmd.id .. 'texture'] = image
@@ -351,11 +351,8 @@ local function addOrderCommand(cmd)
             margin = {2, 2, 2, 2},
             OnMouseUp = {ActionCommand},
         }
-        --local truncName = (string.len(cmd.name) > 14) and cmd.name:sub(0,14) or cmd.name
         local truncName = cmd.name
         if not string.find(cmd.name,"\n") then
-            --    truncName = (string.len(cmd.name) > 14) and cmd.name:sub(0,14).."." or cmd.name
-            --else
             truncName = (string.len(cmd.name) > 11) and cmd.name:sub(0,11).."." or cmd.name
         end
         button:SetCaption(truncName) --cmd.name

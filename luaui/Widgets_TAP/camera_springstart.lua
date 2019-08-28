@@ -1,7 +1,7 @@
 function widget:GetInfo()
 	return {
-		name = "Camera Start Setup",
-		desc = "Sets camera to Spring after load, centers on commander on start",
+		name = "Camera & Lighting Setup",
+		desc = "Sets camera to Spring after load, centers on commander on start, buffs ambient lighting",
 		author = "MaDDoX",
 		date = "12/03/2017",
 		license = "LGPL",

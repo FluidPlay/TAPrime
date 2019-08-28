@@ -113,7 +113,7 @@ local tips = {
 local titleColor = "\255\215\255\215"
 local contentColor = "\255\255\255\255"
 local unit_descs = {
-    "coroutpost.dds "..titleColor.."Pro Tip:\n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
+    "armoutpost.dds "..titleColor.."Pro Tip:\n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
     "armack.dds "..titleColor.."Adv. Builder (ARM T2):\n"..contentColor.."Advanced Builders can assist factory production, just like outposts, commanders and FARKs. Building (or morphing) a couple beforehand might save you from total disaster if you lose your T2 Tech Center.",
     "corca.dds "..titleColor.."Construction Plane (CORE T1):\n"..contentColor.."Differently from their ground counterparts, basic Construction Planes can build both missile and laser defenses.",
 	"armck.dds "..titleColor.."Builder (ARM T1)\n"..contentColor.."Slightly slower and weaker than the Dozer, this kbot builder can climb steeper hills, effective for expansion especially in mountainous terrain.",
