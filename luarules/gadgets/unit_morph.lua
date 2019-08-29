@@ -155,7 +155,7 @@ local function isFactory(UnitDefID)
   return UnitDefs[UnitDefID].isFactory or false
 end
 
-local function isFinished(UnitID)
+local function isDone(UnitID)
   local _,_,_,_,buildProgress = Spring.GetUnitHealth(UnitID)
   return (buildProgress==nil)or(buildProgress>=1)
 end
@@ -228,7 +228,7 @@ local PWUnits = {}            -- planetwars units
 --                             morphID = morphID, pauseID, queueID, teamID = teamID, paused = false }
 local morphingUnits = {}    --// make it global in Initialize()
 
-local reqTechs = {}         --// all possible techs which are used as a requirement for a morph
+local reqTechs = {}         --// {[techId]=true, ...} all possible techs which are used as a requirement for a morph
 local techboosters = { {id="booster1",bonus=1.25}, {id="booster2",bonus=1.33}, {id="booster3",bonus=1.5},}
 
 --// per team techlevel and owned MorphReq. units table
@@ -240,15 +240,15 @@ local unitsToDestroy = {}   -- [uid:1..n]={frame:number}  :: Frame it was set to
 --local queuedUnits = {}    -- [idx:1..n]={unitID=n, morphData={}}
 --local teamJustMorphed = {}       -- [teamID] = unitID | nil
 
-  --// Prime: Removing support for Required Units
-local morphableUnits = {}  -- UnitTypeIDs which may be morphed [teamId] [# of required UnitTypeIDs currenty]
+--// Prime: Removing support for Required Units
+local prereqCount = {}  -- UnitDefIDs which may be morphed; [teamId] [# of required UnitDefIDs currenty]
 --// Boosters could be, eg. techcenters. For each tech level the player has it, the faster the morphs would be globally (TAP not using it now)
 local boosters = {}     -- TechCenter [teamID][Tier] --eg.: TechCenters[1][1] == Player 1's Tier 1 techcenters
 
 local teamList = Spring.GetTeamList()
 for i=1,#teamList do
   local teamID = teamList[i]
-  morphableUnits[teamID]  = {}
+  prereqCount[teamID]  = {}
   teamTechLevel[teamID]   = 0     -- Initialize how many techCenters of each tier this team owns
   --teamJustMorphed[teamID] = nil   -- When a unit has just finished morph, nil becomes its unitID (checkQueue resets it)
   boosters[teamID]     = {}
@@ -395,7 +395,9 @@ local function BuildMorphDef(udSrc, morphData)
           if (requires[i]=="Tech4") then reqTier = 4
             elseif (requires[i]=="Tech3") then reqTier = 3
             elseif (requires[i]=="Tech2") then reqTier = 2
-            elseif (requires[i]=="Tech1") then reqTier = 1 end
+            elseif (requires[i]=="Tech1") then reqTier = 1
+            elseif (requires[i]=="Tech")  then reqTier = 0
+          end
           reqTechs[requires[i]]=true              -- echo('Morph gadget: Requirement defined: ' .. requires[i])
         else
           foundAllRequires = false                -- echo('Morph gadget: Bad morph requirement: ' .. requires[i].." tech not found")           --require = -1
@@ -493,13 +495,8 @@ local function TechReqList(teamID, reqTechs)
 
     for i = 1, #requires do
       local hasRequire = GG.TechCheck(requires[i], teamID) == true
-      if (hasRequire) then
-        --echo('Morph gadget: Requirement found: ' .. requires[i])
-      else
-        --echo('Morph gadget: Unreached requirement: ' .. requires[i])
-        --require = -1
-        unreachedTechs[#unreachedTechs+1] = requires[i]
-      end
+      if (not hasRequire) then
+        unreachedTechs[#unreachedTechs+1] = requires[i] end
     end
   end
 
@@ -735,7 +732,7 @@ end
 local function StartMorph(unitID, morphDef, teamID) --, cmdID)
 
   -- do not allow morph for unfinished units
-  if not isFinished(unitID) then return true end
+  if not isDone(unitID) then return true end
 
   --Spring.SetUnitHealth(unitID, { paralyze = 1.0e9 })    --// turns mexes and mm off (paralyze the unit)
   --Spring.SetUnitResourcing(unitID,"e",0)                --// turns solars off
@@ -805,7 +802,7 @@ local function StartQueue(teamID)
 end
 
 local function PauseMorph(unitID, morphData, cmdID)
-  if not isFinished(unitID) then return true end  -- unit not fully built yet
+  if not isDone(unitID) then return true end  -- unit not fully built yet
   local morphingUnit = morphingUnits[unitID]
   if not morphingUnit then
     return false end
@@ -829,7 +826,7 @@ local function QueueMorph(unitID, teamID, startCmdID)
     return end
 
   -- do not allow queue for unfinished units or if morph already started
-  if not isFinished(unitID) or morphingUnits[unitID]
+  if not isDone(unitID) or morphingUnits[unitID]
      or ipairs_containsElement(teamQueuedUnits[teamID], "unitID", unitID) then
     --Spring.Echo("Unit already queued!")
     return end
@@ -1068,7 +1065,7 @@ end
 -- Here's where the Morph is updated
 local function UpdateMorph(unitID, morphData, bonus)
   -- Morph is paused either explicity or when unit is not finished being built or is being transported
-  if not isFinished(unitID) or morphData.paused or spGetUnitTransporter(unitID) then
+  if not isDone(unitID) or morphData.paused or spGetUnitTransporter(unitID) then
     return true end               -- true => Morph is still enabled
 
   -- Workaround for a weird edge case with team-less units breaking the gadget
@@ -1127,6 +1124,10 @@ function gadget:Initialize()
   if (GG.rankHandler) then
     GetUnitRank = GG.rankHandler.GetUnitRank
     RankToXp    = GG.rankHandler.RankToXp
+  end
+
+  for i = 1, 3 do
+      GG.TechInit(techboosters[i].id)
   end
   
   -- self linking for planetwars
@@ -1280,28 +1281,26 @@ function gadget:UnitFinished(unitID, unitDefID, teamID)
 end
 
 function gadget:UnitDestroyed(unitID, unitDefID, teamID)
-  --Spring.Echo("Unit Destroyed: "..unitID.." was just morphed? "..tostring(teamJustMorphed[teamID]==unitID))
+  --.." was just morphed? "..tostring(teamJustMorphed[teamID]==unitID))
   checkQueue(unitID, teamID)
   local morphData = morphingUnits[unitID]
   if morphData then
-    StopMorph(unitID, morphData)
-  end
+    StopMorph(unitID, morphData) end
 
   local prevTechLevel = teamTechLevel[teamID] or 0
 
   RemoveFactory(unitID, unitDefID, teamID)
 
   local updateButtons = false
-  if reqTechs[unitDefID] and isFinished(unitID) then
-    local teamReq = morphableUnits[teamID]
+  --TODO: Devolution enabled by lack of prerequisites should be added here, if needed
+  --if isDone(unitID) then --reqTechs[techId]
     -- Reduces 1 from amount of required units found
-    teamReq[unitDefID] = (teamReq[unitDefID] or 0) - 1
-    if (teamReq[unitDefID]==0) then
-      StopMorphsOnDevolution(teamID)
-      updateButtons = true
-    end
-  end
-
+    --prereqCount[teamID][unitDefID] = (prereqCount[teamID][unitDefID] or 1) - 1
+    --if (prereqCount[teamID][unitDefID] <= 0) then
+    --  StopMorphsOnDevolution(teamID)
+    --  updateButtons = true
+    --end
+  --end
   UpdateMorphBoosters(unitID, unitDefID, false) --removed
 
   if prevTechLevel ~= teamTechLevel[teamID] then
@@ -1309,13 +1308,13 @@ function gadget:UnitDestroyed(unitID, unitDefID, teamID)
     updateButtons = true
   end
 
-  if updateButtons then
-    UpdateMorphReqs(teamID) end
+  --if updateButtons then
+  UpdateMorphReqs(teamID) --end
 end
 
 function gadget:UnitTaken(unitID, unitDefID, oldTeamID, teamID)
   self:UnitCreated(unitID, unitDefID, teamID)
-  if isFinished(unitID) then
+  if isDone(unitID) then
     self:UnitFinished(unitID, unitDefID, teamID)
   end
 end
@@ -1365,7 +1364,7 @@ end
 
 -- unitID was destroyed, check if is factory
 function RemoveFactory(unitID, unitDefID, teamID)
-  if (devolution)and(isFactory(unitDefID))and(isFinished(unitID)) then
+  if (devolution)and(isFactory(unitDefID))and(isDone(unitID)) then
 
     --// check all factories and determine team level
     local level = 0
@@ -1374,7 +1373,7 @@ function RemoveFactory(unitID, unitDefID, teamID)
       local unitID2 = teamUnits[i]
       if (unitID2 ~= unitID) then
         local unitDefID2 = spGetUnitDefID(unitID2)
-        if (isFactory(unitDefID2) and isFinished(unitID2)) then
+        if (isFactory(unitDefID2) and isDone(unitID2)) then
           local unitTechLevel = GetTechLevel(unitDefID2)
           if (unitTechLevel>level) then level = unitTechLevel end
         end

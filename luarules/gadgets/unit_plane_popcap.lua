@@ -76,7 +76,7 @@ if gadgetHandler:IsSyncedCode() then
 
     local function popcapUpdated(team)
         if pop[team] < popcap[team] then
-            GG.TechGrant("Airpad", team)
+            GG.TechGrant("Airpad", team, true)
             --Spring.Echo("Airpad tech GRANTED - planes: ".. pop[team].." popcap: "..popcap[team])
         else
             GG.TechRevoke("Airpad", team)

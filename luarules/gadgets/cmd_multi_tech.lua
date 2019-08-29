@@ -118,17 +118,16 @@ function gadget:GetInfo()
 	}
 end
 
-
-
 if (gadgetHandler:IsSyncedCode()) then
 
+    VFS.Include("gamedata/taptools.lua")
 
 	-- Variables
-	local TechTable={}
-	local ProviderTable={}
-	local AccessionTable={}
-	local ProviderIDs={}
-	local AccessionIDs={}
+	local TechTable = {}        -- {[techId] = { name = techname, ProvidedBy={}, AccessTo={}, ProviderCount[team] = count}
+	local ProviderUnits = {}    -- {[uDefId] = { techId1, ... }} || Which technologies are provided by each unitDef Id
+	local TechLockedCmdIds = {} -- {[1] = cmdId, ... }            "AccessionIDs"
+	local cmdIdRequirements = {}-- {[cmdId]  = { techId1, ... }}  "AccessionTable"
+	local ProviderUdefIds = {}  -- {[1] = uDefId, ... }
 
 	local OriDesc={}
 	local GrantDesc={}
@@ -203,31 +202,29 @@ if (gadgetHandler:IsSyncedCode()) then
 		end
 	end
 
-	local function CheckTech(TechName,Team)
-		TechName=string.lower(TechName)
-		if not TechTable[TechName] then
-			--Spring.Echo("Bad call to Check Tech: TechName=\""..TechName.."\" is unknown")
-			return nil
-		else
-			if not TechTable[TechName].ProviderCount[Team] then
-				Spring.Echo("Bad call to Check Tech (Provider Count error): TechName=\""..TechName.."\", Team="..Team)
-				return nil
-			else
-				if TechTable[TechName].ProviderCount[Team]>=1 then
-					return true
-				else
-					return false
-				end
-			end
-		end
+	local function CheckTech(techId, teamId)
+		techId = string.lower(techId)
+		if not TechTable[techId] then
+			Spring.Echo("Check Tech: TechId=\""..techId.."\" is unknown")
+			return nil end
+
+        local providerCount = TechTable[techId].ProviderCount[teamId]
+        if not providerCount then
+            Spring.Echo("Bad call to Check Tech (Provider Count error): TechName=\"".. techId .."\", Team=".. teamId)
+            return nil
+        else
+            --Spring.Echo("[Tech Check] Provider count: "..providerCount)
+            return providerCount >= 1
+        end
 	end
 
-	local function CheckCmd(cmd,team)
-		if not AccessionTable[cmd] then
+	local function CheckCmd(cmdId, teamId)
+		if not cmdIdRequirements[cmdId] then
 			return true
 		else
-			for _,tech in ipairs(AccessionTable[cmd]) do
-				if not CheckTech(tech,team) then
+            -- If any of the tech requirements is not met, return false
+			for _, techId in ipairs(cmdIdRequirements[cmdId]) do
+				if not CheckTech(techId, teamId) then
 					return false
 				end
 			end
@@ -235,7 +232,7 @@ if (gadgetHandler:IsSyncedCode()) then
 		end
 	end
 
-	local function EditButtons(u,ud,team)
+	local function EditButtons(unitID, uDefId, teamID)
 
 		-- Sub-functions
 		local function GrantingToolTip(u,ucd,cmd)
@@ -243,7 +240,7 @@ if (gadgetHandler:IsSyncedCode()) then
 				if not OriDesc[cmd] then
 					OriDesc[cmd]=spGetUnitCmdDescs(u)[ucd].tooltip
 				end
-				GrantDesc[cmd]="\255\64\255\255Grants "..table.concat(ProviderTable[-cmd],", ").."\n\255\255\255\255"..OriDesc[cmd]
+				GrantDesc[cmd]="\255\64\255\255Grants "..table.concat(ProviderUnits[-cmd],", ").."\n\255\255\255\255"..OriDesc[cmd]
 			end
 			return GrantDesc[cmd]
 		end
@@ -253,7 +250,7 @@ if (gadgetHandler:IsSyncedCode()) then
 				if not OriDesc[cmd] then
 					OriDesc[cmd]=spGetUnitCmdDescs(u)[ucd].tooltip
 				end
-				ReqDesc[cmd]="\255\255\64\64Requires "..table.concat(AccessionTable[cmd],", ").."\n\255\255\255\255"..(GrantDesc[cmd] or OriDesc[cmd])
+				ReqDesc[cmd]="\255\255\64\64Requires "..table.concat(cmdIdRequirements[cmd],", ").."\n\255\255\255\255"..(GrantDesc[cmd] or OriDesc[cmd])
 			end
 			return ReqDesc[cmd]
 		end
@@ -270,25 +267,26 @@ if (gadgetHandler:IsSyncedCode()) then
 		--local Requires=nil
 
 		-- What is granted
-		for _,ud in ipairs(ProviderIDs) do
-			local UnitCmdDesc = spFindUnitCmdDesc(u,-ud)
+		for _,ud in ipairs(ProviderUdefIds) do
+			local UnitCmdDesc = spFindUnitCmdDesc(unitID,-ud)
 			if UnitCmdDesc then
-				spEditUnitCmdDesc(u,UnitCmdDesc,{tooltip=GrantingToolTip(u,UnitCmdDesc,-ud)})
+				spEditUnitCmdDesc(unitID,UnitCmdDesc,{ tooltip=GrantingToolTip(unitID,UnitCmdDesc,-ud)})
 			end
 		end
 
 		-- What is required
-		for _,cid in ipairs(AccessionIDs) do
-			local UnitCmdDesc = spFindUnitCmdDesc(u,cid)
-			if UnitCmdDesc then
-				if CheckCmd(cid,team) then
-					spEditUnitCmdDesc(u,UnitCmdDesc,{disabled=false,tooltip=UnlockedToolTip(u,UnitCmdDesc,cid)})
+		for _, cmdId in ipairs(TechLockedCmdIds) do
+			local cmdDescId = spFindUnitCmdDesc(unitID, cmdId)
+			if cmdDescId then
+                local cmdDesc = spGetUnitCmdDescs(unitID, cmdDescId, cmdDescId)[1]
+				if CheckCmd(cmdId, teamID) then
+					spEditUnitCmdDesc(unitID, cmdDescId,{ disabled=false, tooltip=UnlockedToolTip(unitID, cmdDescId, cmdId)})
 				else
                     ---- TODO: Fix this silly last-minute workaround
                     --if dontAddDescription then
                     --    spEditUnitCmdDesc(u,UnitCmdDesc,{disabled=true})
                     --else
-                    spEditUnitCmdDesc(u,UnitCmdDesc,{disabled=true,tooltip=LockedToolTip(u,UnitCmdDesc,cid)})
+                    spEditUnitCmdDesc(unitID, cmdDescId,{ disabled=true, tooltip=LockedToolTip(unitID, cmdDescId, cmdId)})
                     --end
 				end
 			end
@@ -296,26 +294,29 @@ if (gadgetHandler:IsSyncedCode()) then
 
 	end
 
+    -- ####################################
+    -- # External Method (Eg.: GG.SlvCmd) #
+    -- ####################################
 
-	local function SlvCmd(cmd,str_reqs)
-		local lst_reqs=SplitString(str_reqs)
-		if AccessionTable[cmd] then
-			Spring.Echo("Slave Command Error: command "..cmd.." already tech-slaved")
+	local function SlvCmd(cmdId, techReqList)
+		local techReqs = SplitString(techReqList)
+		if cmdIdRequirements[cmdId] then
+			Spring.Echo("Slave Command Error: command ".. cmdId .." already tech-slaved")
 			return false
 		else
-			AccessionTable[cmd]={}
-			table.insert(AccessionIDs,cmd)
-			for _,techname in ipairs(lst_reqs) do
+			cmdIdRequirements[cmdId]={}
+			table.insert(TechLockedCmdIds, cmdId)   -- Watch out, this is evaluated using negatives
+			for _,techname in ipairs(techReqs) do
 				if not TechTable[techname] then
 					Spring.Echo("Slave Command Error: TechName=\""..techname.."\" is unknown")
 				else
-					table.insert(TechTable[techname].AccessTo,cmd)
-					table.insert(AccessionTable[cmd],techname)
+					table.insert(TechTable[techname].AccessTo, cmdId)
+					table.insert(cmdIdRequirements[cmdId],techname)
 				end
 			end
 			-- Edit buttons of existing units:
 			for _,u in ipairs(spGetAllUnits()) do
-				local UnitCmdDesc = spFindUnitCmdDesc(u,cmd)
+				local UnitCmdDesc = spFindUnitCmdDesc(u, cmdId)
 				if UnitCmdDesc then
 					EditButtons(u,spGetUnitDefID(u),spGetUnitTeam(u))
 				end
@@ -324,20 +325,20 @@ if (gadgetHandler:IsSyncedCode()) then
 		end
 	end
 
-	local function RevokeTech(TechName, Team)
+	local function RevokeTech(TechName, teamId)
 		TechName=string.lower(TechName)
 		if not TechTable[TechName] then
 			Spring.Echo("Bad call to Revoke Tech: TechName=\""..TechName.."\" is unknown")
 			return nil
         else
-            if not TechTable[TechName].ProviderCount[Team] then
-                Spring.Echo("Bad call to Check Tech: TechName=\""..TechName.."\", Team="..Team)
+            if not TechTable[TechName].ProviderCount[teamId] then
+                Spring.Echo("Bad call to Check Tech: TechName=\""..TechName.."\", Team=".. teamId)
                 return false
             else
-                TechTable[TechName].ProviderCount[Team]=0
-                spSetTeamRulesParam(Team,"technology:"..TechName,0)
-                for _,u in ipairs(spGetAllUnits()) do
-                    EditButtons(u,spGetUnitDefID(u),spGetUnitTeam(u))
+                TechTable[TechName].ProviderCount[teamId]=0
+                spSetTeamRulesParam(teamId,"technology:"..TechName,0)
+                for _,u in ipairs(spGetTeamUnits(teamId)) do
+                    EditButtons(u, spGetUnitDefID(u), teamId)
                 end
                 return true
             end
@@ -377,37 +378,37 @@ if (gadgetHandler:IsSyncedCode()) then
 		end
 	end
 
-	local function UnitGained(u,ud,team)
-		EditButtons(u,ud,team)
-		if isComplete(u) and ProviderTable[ud] then
-			for _,tech in ipairs(ProviderTable[ud]) do
-				TechTable[tech].ProviderCount[team]=TechTable[tech].ProviderCount[team]+1
-				spSetTeamRulesParam(team,"technology:"..tech,TechTable[tech].ProviderCount[team])
+	local function UnitGained(unitId, uDefId, teamId)
+		EditButtons(unitId, uDefId, teamId)
+		if isComplete(unitId) and ProviderUnits[uDefId] then
+			for _,tech in ipairs(ProviderUnits[uDefId]) do
+                local newCount = TechTable[tech].ProviderCount[teamId]+1
+				TechTable[tech].ProviderCount[teamId] = newCount
+				spSetTeamRulesParam(teamId,"technology:"..tech, newCount)
 			end
-			for _,u2 in ipairs(spGetTeamUnits(team)) do
-				EditButtons(u2,spGetUnitDefID(u2),team)
-			end
-		end
-	end
-
-	local function UnitLost(u,ud,team)
-        EditButtons(u,ud,team)
-		if isComplete(u) and ProviderTable[ud] then
-            Spring.Echo("Checking unit lost 2")
-			for _,tech in ipairs(ProviderTable[ud]) do
-				TechTable[tech].ProviderCount[team]=TechTable[tech].ProviderCount[team]-1
-				spSetTeamRulesParam(team,"technology:"..tech,TechTable[tech].ProviderCount[team])
-			end
-			for _,u2 in ipairs(spGetTeamUnits(team)) do
-				EditButtons(u2,spGetUnitDefID(u2),team)
+			for _, teamUnit in ipairs(spGetTeamUnits(teamId)) do
+				EditButtons(teamUnit,spGetUnitDefID(teamUnit), teamId)
 			end
 		end
 	end
 
-	function gadget:UnitCreated(u,ud,team)
-		EditButtons(u,ud,team)
-		if ProviderTable[ud] then
-			spSetUnitTooltip(u,"\255\64\255\255Provides "..table.concat(ProviderTable[ud],", ").."\n\255\255\255\255"..Spring.GetUnitTooltip(u))
+	local function UnitLost(unitId, uDefId, teamId)
+		if isComplete(unitId) and ProviderUnits[uDefId] then
+			for _,tech in ipairs(ProviderUnits[uDefId]) do
+                local newCount = TechTable[tech].ProviderCount[teamId]-1
+				TechTable[tech].ProviderCount[teamId] = newCount
+				spSetTeamRulesParam(teamId,"technology:"..tech,newCount)
+			end
+			for _, thisUnit in ipairs(spGetTeamUnits(teamId)) do
+				EditButtons(thisUnit, spGetUnitDefID(thisUnit), teamId)
+			end
+		end
+	end
+
+	function gadget:UnitCreated(u, uDefId, team)
+		EditButtons(u, uDefId,team)
+		if ProviderUnits[uDefId] then
+			spSetUnitTooltip(u,"\255\64\255\255Provides "..table.concat(ProviderUnits[uDefId],", ").."\n\255\255\255\255"..Spring.GetUnitTooltip(u))
 		end
 	end
 
@@ -427,60 +428,58 @@ if (gadgetHandler:IsSyncedCode()) then
 		UnitLost(u,ud,team)
 	end
 
-	function gadget:AllowCommand(u,ud,team,cmd,param,opt,synced)
-		return CheckCmd(cid,team)
+	function gadget:AllowCommand(u, ud, team, cmdId, param, opt, synced)
+		return CheckCmd(cmdId, team)
 	end
 
-	function gadget:AllowUnitCreation(ud,builder,team,x,y,z)
-		return CheckCmd(-ud,team)
+	function gadget:AllowUnitCreation(uDefId, builder, team, x, y, z)
+		return CheckCmd(-uDefId, team)  -- build commands are -1 * the uDefId
 	end
 
 	function gadget:Initialize()
 
-		for _,ud in pairs(UnitDefs) do
-			local cp=ud.customParams
-			if cp then
-				local str_p=cp.providestech or cp.providetech
-				local str_r=cp.requirestech or cp.requiretech
-				if str_p then
-					local lst_p=SplitString(str_p)
-					ProviderTable[ud.id]={}
-					table.insert(ProviderIDs,ud.id)
-					for _,techname in ipairs(lst_p) do
+		for _, uDef in pairs(UnitDefs) do
+			local cparms = uDef.customParams
+			if cparms then
+				local techProvided = cparms.providestech or cparms.providetech
+				local techRequired = cparms.requirestech or cparms.requiretech --or cparms.morphdef.require
+				if techProvided then
+					local providedTechs = SplitString(techProvided)
+					ProviderUnits[uDef.id]={}
+					table.insert(ProviderUdefIds, uDef.id)
+					for _, techname in ipairs(providedTechs) do
 						InitTechEntry(techname)
-						table.insert(TechTable[techname].ProvidedBy,ud.id)
-						table.insert(ProviderTable[ud.id],techname)
+						table.insert(TechTable[techname].ProvidedBy, uDef.id)
+						table.insert(ProviderUnits[uDef.id],techname)
 					end
 				end
-				if str_r then
-					local lst_r=SplitString(str_r)
-					AccessionTable[-ud.id]={}
-					table.insert(AccessionIDs,-ud.id)
-					for _,techname in ipairs(lst_r) do
+				if techRequired then
+					local techReqs = SplitString(techRequired)
+					cmdIdRequirements[-uDef.id] = {}
+					table.insert(TechLockedCmdIds,-uDef.id)
+					for _, techname in ipairs(techReqs) do
 						InitTechEntry(techname)
-						table.insert(TechTable[techname].AccessTo,-ud.id)
-						table.insert(AccessionTable[-ud.id],techname)
+						table.insert(TechTable[techname].AccessTo,-uDef.id)
+						table.insert(cmdIdRequirements[-uDef.id],techname)
 					end
 				end
 			end
 		end
 
-		if true then
-			local msg=nil
-			for _,tech in pairs(TechTable) do
-				msg=(msg and (msg..", ") or "")..tech.name
-			end
-			msg="\""..gadget:GetInfo().name.."\" gadget"..(msg and (" managing the technologies: "..msg..".") or " found no technology to manage.")
-			Spring.Echo(msg)
-		end
+        --local msg=nil
+        --for _,tech in pairs(TechTable) do
+        --    msg=(msg and (msg..", ") or "")..tech.name
+        --end
+        --msg="\""..gadget:GetInfo().name.."\" gadget"..(msg and (" managing the technologies: "..msg..".") or " found no technology to manage.")
+        --Spring.Echo(msg)
 
-		GG.TechSlaveCommand=SlvCmd
+		GG.TechInit=InitTechEntry
+        GG.TechSlaveCommand=SlvCmd
 		GG.TechCheckCommand=CheckCmd
 		GG.TechCheck=CheckTech
 		GG.TechGrant=GrantTech
 		GG.TechRevoke=RevokeTech
 
 	end
-
 
 end

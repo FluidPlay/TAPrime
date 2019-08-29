@@ -31,7 +31,7 @@ end
 local tips = {
     "armsolar.dds ".."You may order your builder or outpost to build structures in an array-like pattern by holding SHIFT+ALT and dragging with the left mouse button. Spread them up by hitting 'T' on keyboard while the Shift key is held. Ctrl+Shift+T brings them closer.",
     "armwin.dds ".."Wind Generators built on high ground have a bonus compared to units built closer to the sea level. Isn't nature beautiful?",
-    "cordt.dds ".."Arm and Core's Dragon Teeth (DTs) are great to surround perimeters, preventing lower-tech units movement. They also block incoming direct-fire and missiles from going through, so improve your defenses resistance by surrounding them with DTs.",
+    "cordrag.dds ".."Arm and Core's Dragon Teeth (DTs) are great to surround perimeters, preventing lower-tech units movement. They also block incoming direct-fire and missiles from going through, so improve your defenses resistance by surrounding them with DTs.",
     "armcom.dds ".."The D-Gun is the Commander's directed-fire ability and the most powerful weapon in the game. Upgrade it in the commander menu after your Tech Center is on level 1, then use it with the 'D' keyboard shortcut.",
     "armyork.dds ".."Flak-weaponry units, like the Phalanx, fire scattered projectiles. Flak is excellent at taking out fighters and heavy infantry, but will barely scratch tanks, commanders and plasma kbots.",
     "armaak.dds ".."The Arm Archangel (Tier 2) and the Core Manticore (T3) fire long range missiles. Like all AA (anti-air) missiles, it's great vs bombers but not so much against fighters.",
@@ -56,7 +56,7 @@ local tips = {
 	--"Tweak graphic preferences in options (top right corner of the screen).\nWhen your FPS drops, switch to a lower graphic preset.",
     "corgol.dds ".."Tanks can crush lighter enemy kbots, like rifle and missile kbots. Tier 2 tanks can crush dragon teeth, and the Tier 3 Goliath can even crush Tier 2 Tanks.",
     "armmine3.dds ".."Pokers, Arm's basic assault vehicle, can build land mines, great vs kbots, and bar mines, excellent vs vehicles.",
-	"armrad.dds ".."Radars are cheap and their detection range is much larger than their vision range. In the beginning, Commanders and Outposts are your best options for true vision range.",
+	"armrad.dds ".."Radars are cheap and their detection range is much larger than their vision range. In the early game, Commanders and Outposts are your best options for true vision range.",
     "armgeo.dds ".."Abandoned/Neutral Geothermals might be scattered around the map and provide plenty of energy. You can capture them with commanders or with builders, after you research the 'capture' upgrade in the Tech Center.",
     "cormort.dds ".."Powerful artillery units are available after you upgrade your Tech Center to Level 1. Core's Morty is built from the kbot lab, Arm Luger from the Vehicle Plant.",
     "armpship.dds ".."Position your naval units properly during engagements. Missile ships are stronger at their rear area, while other ships are stronger at the front. Submarines are up to twice stronger at the front.",
@@ -113,7 +113,8 @@ local tips = {
 local titleColor = "\255\215\255\215"
 local contentColor = "\255\255\255\255"
 local unit_descs = {
-    "armoutpost.dds "..titleColor.."Pro Tip:\n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
+    "armoutpost.dds "..titleColor.."Pro Tip: \n"..contentColor.."Morphs in progress won't be interrupted if the Tech Center is destroyed. Start morphing an outpost to Tier 2 (if you didn't yet) if you feel you can't save the Tech Center.",
+    "armoutpost.dds "..titleColor.."Pro Tip: \n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
     "armack.dds "..titleColor.."Adv. Builder (ARM T2):\n"..contentColor.."Advanced Builders can assist factory production, just like outposts, commanders and FARKs. Building (or morphing) a couple beforehand might save you from total disaster if you lose your T2 Tech Center.",
     "corca.dds "..titleColor.."Construction Plane (CORE T1):\n"..contentColor.."Differently from their ground counterparts, basic Construction Planes can build both missile and laser defenses.",
 	"armck.dds "..titleColor.."Builder (ARM T1)\n"..contentColor.."Slightly slower and weaker than the Dozer, this kbot builder can climb steeper hills, effective for expansion especially in mountainous terrain.",

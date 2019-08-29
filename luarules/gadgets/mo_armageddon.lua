@@ -213,7 +213,7 @@ end
 
 function gadget:UnitCreated(unitID, unitDefID, teamID, builderID)
     -- make sure meteors die & make sure they don't show up as "proper" units
-    if unitDefID==meteorDefID then
+    if unitDefID == meteorDefID then
         n = spGetGameFrame()
         local m = n+3*30+2
         if not toKill[m] then toKill[m] = {} end
