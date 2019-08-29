@@ -38,7 +38,7 @@ local glGetTextWidth = gl.GetTextWidth
 local Chili, Window, Image, Button, Grid, Label, ScrollPanel, color2incolor
 
 -- Global vars
-local orderWindow, buildWindow, orderGrid, buildGrid, updateRequired, tooltip, btWidth
+local orderWindow, buildWindow, orderGrid, buildGrid, buildGridAdv, updateRequired, tooltip, btWidth
 local chiliCache = {}
 local vsx, vsy = sGetWindowGeometry()
 
@@ -194,7 +194,7 @@ local function createGridWindow(config)
 
     grid.updateGrid = updateGrid
     gridWindow:Hide()
-    return grid, gridWindow
+    return grid, gridWindow -- buttons, frame
 end --createGridWindow
 
 local function applyHighlightHandler(button, cmd)
@@ -383,7 +383,7 @@ local function addStateCommand(cmd)
     orderGrid:AddChild(button)
 end --addStateCommand
 
-local function addBuildCommand(cmd)
+local function addBuildCommand(cmd, advanced)
     local image = chiliCache['button' .. cmd.id] or Image:New{
         name = 'button' .. cmd.id,
         cmdID = cmd.id,
@@ -444,20 +444,50 @@ local function addBuildCommand(cmd)
     end
 
     applyHighlightHandler(image, cmd)
-    buildGrid:AddChild(image)
-    end --addBuildCommand
+    if advanced then
+        if not buildGridAdv then
+            local config = Config.ordermenu
+            buildGridAdv =  Grid:New {
+                name = 'gridAdv_' .. config.name,
+                x = '0%', y = '50%',
+                width = '100%', height = '100%',
+                rows = config.rows,
+                columns = config.columns,
+                orientation = config.orientation,
+                padding = {0, 0, 0, 0},
+            }
+        end
+        buildGridAdv:AddChild(image)
+        if not buildGridAdv.parent then
+            buildWindow:AddChild(buildGridAdv)
+        end
+    else
+        buildGrid:AddChild(image)
+    end
+end --addBuildCommand
 
---- Defines which commands go to which block (1, 2, 3)
+local function addBuildCommandAdv(cmd)
+    addBuildCommand(cmd, true)
+end
+
+--TODO: Defines which commands go to which block (1, 2, 3)
 local function processCommand(cmd)
-    if UnitDefNames[cmd.name] then return 3
-    elseif #cmd.params > 1 then return 1
-    else return 2 end
+    local uDef = UnitDefNames[cmd.name]
+    --local uDefId = uDef.id
+    if uDef then    -- It's a unit (build command)
+        local advanced = (uDef.customParams and tonumber(uDef.customParams.tier) >= 2)
+        return advanced and 4 or 3  -- Advanced: grid #4, regular: grid #3
+    elseif #cmd.params > 1 then
+        return 1
+    else
+        return 2
+    end
 end --processCommand
 
 local lastCommands
 local function processAllCommands()
     if (deepEquals(lastCommands, widgetHandler.commands)) then
-     return
+        return
     end
     lastCommands = widgetHandler.commands
 
@@ -466,7 +496,7 @@ local function processAllCommands()
     --chiliCache = {} -- clears all cached chili elements
 
     local haveCmd = 0
-    local commands = { [1] = {}, [2] = {}, [3] = {} }
+    local commands = { [1] = {}, [2] = {}, [3] = {}, [4] = {}, }
     for _,cmd in ipairs(lastCommands) do
         if cmd.name ~= '' and not (Config.hiddenCMDs[cmd.name] or Config.hiddenCMDs[cmd.action]) then
             local grid = processCommand(cmd)
@@ -475,8 +505,8 @@ local function processAllCommands()
         end
     end
 
-    local sortBy = { [1] = Config.ordermenu.sortBy, [2] = Config.ordermenu.sortBy, [3] = Config.buildmenu.sortBy }
-    local gridFunc = { [1] = addStateCommand, [2] = addOrderCommand, [3] = addBuildCommand }
+    local sortBy = { [1] = Config.ordermenu.sortBy, [2] = Config.ordermenu.sortBy, [3] = Config.buildmenu.sortBy, [4] = Config.buildmenu.sortBy }
+    local gridFunc = { [1] = addStateCommand, [2] = addOrderCommand, [3] = addBuildCommand , [4] = addBuildCommandAdv }
     for grid,cmds in ipairs(commands) do
         -- pairsByKeys imported from taptools.lua
         if sortBy[grid] then
@@ -490,6 +520,7 @@ local function processAllCommands()
 
     orderGrid.updateGrid()
     buildGrid.updateGrid()
+    --buildGridAdv.updateGrid()
 
     if haveCmd > 0 and orderWindow.hidden then orderWindow:Show()
     elseif haveCmd == 0 and orderWindow.visible then orderWindow:Hide() end
@@ -502,6 +533,9 @@ local function updateSelection()
     if not buildGrid then
         return end
     local _,cmdID = sGetActiveCommand()
+    --for _, bt in ipairs(buildGridAdv.children) do
+    --    if bt.updateSelection then bt.updateSelection(cmdID) end
+    --end
     for _, bt in ipairs(buildGrid.children) do
         if bt.updateSelection then bt.updateSelection(cmdID) end
     end
