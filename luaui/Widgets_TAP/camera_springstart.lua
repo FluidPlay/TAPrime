@@ -35,11 +35,21 @@ function widget:Initialize()
     spec = select(3, spGetPlayerInfo(myPlayerID))
 end
 
+-- Let's average the current map unit lighting color with white, to light up darker areas in models
+local function SetSunLighting()
+    local r,g,b = gl.GetSun("ambient" ,"unit")
+    r = r and (r + 1) / 2 or 1
+    g = g and (g + 1) / 2 or 1
+    b = b and (b + 1) / 2 or 1
+    Spring.SetSunLighting({unitAmbientColor = {r, g, b} })--, unitDiffuseColor = {1, 1, 1} })
+    Spring.Echo("Sun lighting set")
+end
+
 function widget:GameFrame(n)
 	if spec then
         -- Only enable MMB-hold scroll-lock if it's in spec mode
         Spring.SendCommands("/set MouseDragScrollThreshold 0.3")
-		Spring.SetSunLighting({unitAmbientColor = {1, 1, 1}}) --, unitDiffuseColor = {1, 1, 1} })
+		SetSunLighting()
 		widgetHandler:RemoveWidget()
 		--postinit = n + 1
 	end
@@ -49,8 +59,9 @@ function widget:GameFrame(n)
 	--if postinit and n >= postinit then
 	--	widgetHandler:RemoveWidget()
 		--return end
-	Spring.Echo("Sun lighting set")
-	Spring.SetSunLighting({unitAmbientColor = {1, 1, 1} })--, unitDiffuseColor = {1, 1, 1} })
+
+    SetSunLighting()
+
     Spring.SendCommands("/set MouseDragScrollThreshold -1")
     Spring.SendCommands("/set CamTimeExponent 100") -- Instant zoom-in / zoom-out with TAB
     local myUnits = spGetTeamUnits(spGetMyTeamID())
