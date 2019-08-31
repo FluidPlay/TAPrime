@@ -38,7 +38,7 @@ local glGetTextWidth = gl.GetTextWidth
 local Chili, Window, Image, Button, Grid, Label, ScrollPanel, color2incolor
 
 -- Global vars
-local orderWindow, buildWindow, orderGrid, buildGrid, buildGridAdv, updateRequired, tooltip, btWidth
+local orderWindow, buildWindow, buildWindowAdv, orderGrid, buildGrid, buildGridAdv, updateRequired, tooltip, btWidth
 local chiliCache = {}
 local vsx, vsy = sGetWindowGeometry()
 
@@ -47,7 +47,7 @@ local Config = {
         name = 'ordermenu',
         rows = 5, columns = 5,
         x = '0%', y = '28%',
-        width = '20%', height = '20%', --height 20%
+        width = '20%', height = '14%', --height 20%
         orientation = 'horizontal',
         maxWidth = 420,
         padding = {5, 5, 5, 5},     -- outer panel
@@ -55,8 +55,18 @@ local Config = {
     buildmenu = {
         name = 'buildmenu',
         rows = 5, columns = 5,
-        x = '0%', y = '48%',
-        width = '20%', height = '35%',
+        x = '0%', y = '42%',
+        width = '20%', height = '20%',
+        orientation = 'horizontal',
+        maxWidth = 420,
+        padding = {5, 5, 5, 5},
+        --sortBy = 'customParams.tier',
+    },
+    buildmenuAdv = {
+        name = 'buildmenuAdv',
+        rows = 5, columns = 5,
+        x = '0%', y = '62.25%',
+        width = '20%', height = '20%',
         orientation = 'horizontal',
         maxWidth = 420,
         padding = {5, 5, 5, 5},
@@ -275,6 +285,7 @@ end --applyStateHandler
 local function InitializeControls()
     orderGrid, orderWindow = createGridWindow(Config.ordermenu)
     buildGrid, buildWindow = createGridWindow(Config.buildmenu)
+    buildGridAdv, buildWindowAdv = createGridWindow(Config.buildmenuAdv)
 end --InitializeControls
 
 ---- One of the selected units is an upgrading tech center, block left-click at it
@@ -445,22 +456,7 @@ local function addBuildCommand(cmd, advanced)
 
     applyHighlightHandler(image, cmd)
     if advanced then
-        if not buildGridAdv then
-            local config = Config.ordermenu
-            buildGridAdv =  Grid:New {
-                name = 'gridAdv_' .. config.name,
-                x = '0%', y = '50%',
-                width = '100%', height = '100%',
-                rows = config.rows,
-                columns = config.columns,
-                orientation = config.orientation,
-                padding = {0, 0, 0, 0},
-            }
-        end
         buildGridAdv:AddChild(image)
-        if not buildGridAdv.parent then
-            buildWindow:AddChild(buildGridAdv)
-        end
     else
         buildGrid:AddChild(image)
     end
@@ -492,6 +488,7 @@ local function processAllCommands()
     lastCommands = widgetHandler.commands
 
     buildGrid:ClearChildren()
+    buildGridAdv:ClearChildren()
     orderGrid:ClearChildren()
     --chiliCache = {} -- clears all cached chili elements
 
@@ -520,12 +517,14 @@ local function processAllCommands()
 
     orderGrid.updateGrid()
     buildGrid.updateGrid()
-    --buildGridAdv.updateGrid()
+    buildGridAdv.updateGrid()
 
     if haveCmd > 0 and orderWindow.hidden then orderWindow:Show()
     elseif haveCmd == 0 and orderWindow.visible then orderWindow:Hide() end
     if haveCmd > 2 and buildWindow.hidden then buildWindow:Show()
     elseif haveCmd <= 2 and buildWindow.visible then buildWindow:Hide() end
+    if haveCmd > 3 and buildWindowAdv.hidden then buildWindowAdv:Show()
+    elseif haveCmd <= 3 and buildWindowAdv.visible then buildWindowAdv:Hide() end
 end --processAllCommands
 
 local function updateSelection()
@@ -598,6 +597,9 @@ function widget:ViewResize(newX,newY)
     -- TODO: implement config for this resize and make a reusable helper function to handle it
     Config.buildmenu.height = buildWindow.width * (Config.buildmenu.rows / Config.buildmenu.columns)
     buildWindow:SetPos(nil, nil, nil, Config.buildmenu.height)
+
+    Config.buildmenuAdv.height = buildWindowAdv.width * (Config.buildmenuAdv.rows / Config.buildmenuAdv.columns)
+    buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.height)
 end --ViewResize
 
 function widget:Shutdown()
@@ -606,6 +608,9 @@ function widget:Shutdown()
     end
     if buildWindow then
         buildWindow:Dispose()
+    end
+    if buildWindowAdv then
+        buildWindowAdv:Dispose()
     end
     widgetHandler:ConfigLayoutHandler(nil)
     chiliCache = nil
