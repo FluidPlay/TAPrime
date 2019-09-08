@@ -202,7 +202,6 @@ function gadget:GameFrame()
 end
 
 
-
 -- [Deprecated] Logic moved to Handlers
 --local function editCommand (unitID, CMDID, upgradeID)
 --    --local options = { req = upgData.prereq, defCmdDesc= upgData.UpgradeCmdDesc }

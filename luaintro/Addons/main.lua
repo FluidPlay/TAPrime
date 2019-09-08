@@ -29,6 +29,7 @@ end
 
 -- Random tips we can show
 local tips = {
+    "corhrk.dds ".."Some units can only be obtained by morph, like the Core Dominator (T2 Flak Artillery, morphed from Mortys) and the Arm Zeus (T3 Thermo Kbot, morphed from Mavericks).",
     "armsolar.dds ".."You may order your builder or outpost to build structures in an array-like pattern by holding SHIFT+ALT and dragging with the left mouse button. Spread them up by hitting 'T' on keyboard while the Shift key is held. Ctrl+Shift+T brings them closer.",
     "armwin.dds ".."Wind Generators built on high ground have a bonus compared to units built closer to the sea level. Isn't nature beautiful?",
     "cordrag.dds ".."Arm and Core's Dragon Teeth (DTs) are great to surround perimeters, preventing lower-tech units movement. They also block incoming direct-fire and missiles from going through, so improve your defenses resistance by surrounding them with DTs.",
@@ -113,8 +114,8 @@ local tips = {
 local titleColor = "\255\215\255\215"
 local contentColor = "\255\255\255\255"
 local unit_descs = {
-    "armoutpost.dds "..titleColor.."Pro Tip: \n"..contentColor.."Morphs in progress won't be interrupted if the Tech Center is destroyed. Start morphing an outpost to Tier 2 (if you didn't yet) if you feel you can't save the Tech Center.",
-    "armoutpost.dds "..titleColor.."Pro Tip: \n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
+    "outpost.dds "..titleColor.."Pro Tip: \n"..contentColor.."Morphs in progress won't be interrupted if the Tech Center is destroyed. Start morphing an outpost to Tier 2 (if you didn't yet) if you feel you can't save the Tech Center.",
+    "armtech.dds "..titleColor.."Pro Tip: \n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
     "armack.dds "..titleColor.."Adv. Builder (ARM T2):\n"..contentColor.."Advanced Builders can assist factory production, just like outposts, commanders and FARKs. Building (or morphing) a couple beforehand might save you from total disaster if you lose your T2 Tech Center.",
     "corca.dds "..titleColor.."Construction Plane (CORE T1):\n"..contentColor.."Differently from their ground counterparts, basic Construction Planes can build both missile and laser defenses.",
 	"armck.dds "..titleColor.."Builder (ARM T1)\n"..contentColor.."Slightly slower and weaker than the Dozer, this kbot builder can climb steeper hills, effective for expansion especially in mountainous terrain.",

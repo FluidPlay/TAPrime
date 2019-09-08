@@ -90,7 +90,7 @@ function gadget:UnitDestroyed(unitID, unitDefID, teamID, attackerID, attackerDef
 
     local x,y,z = Spring.GetUnitBasePosition(unitID)
     -- If it was simply morphed into => No explosion FX, just "level up" fx.
-    if spGetUnitRulesParam(unitID, "wasmorphed") == 1 then
+    if spGetUnitRulesParam(unitID, "justmorphed") == 1 then
         -- TODO: spawnCEG of promotion fx
         Spring.SpawnCEG("commander-levelup", x,y,z, 0,0,0, 0, 0)
         return

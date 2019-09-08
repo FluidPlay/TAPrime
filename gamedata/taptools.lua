@@ -409,10 +409,9 @@ function BlockCmdID(unitID, cmdID, block)
 	local cmdDescId = spFindUnitCmdDesc(unitID, cmdID)
 	if not cmdDescId then
 		return end
-	local disable = true -- default: disabled (blocked)
-	if block == false then
-		disable = false
-	end
+
+    local disable = (block == true or block == nil) -- default: disabled (blocked)
+
 	--Spring.Echo(cmdID.." Disabled: "..tostring(disable))
 	spEditUnitCmdDesc(unitID, cmdDescId, { disabled = disable })
 end

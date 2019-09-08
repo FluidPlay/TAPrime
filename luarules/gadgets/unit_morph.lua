@@ -924,7 +924,7 @@ local function FinishMorph(unitID, morphData)
   local h = spGetUnitHeading(unitID)
   spSetUnitBlocking(unitID, false)
   morphingUnits[unitID] = nil
-  spSetUnitRulesParam(unitID, "wasmorphed", 1)
+  spSetUnitRulesParam(unitID, "justmorphed", 1)
     --[Deprecated] After 10 frames, we'll clean up this unitRulesParam, to allow explosions after this time frame
     --cleanRulesParam[unitID] = Spring.GetGameFrame()+10
 
@@ -972,7 +972,6 @@ local function FinishMorph(unitID, morphData)
     -- send planetwars deployment message
     PWUnit = PWUnits[unitID]
     PWUnit.currentDef=udDst
-    -- TODO: determine and apply smart orientation of the structure
 	local data = PWUnit.owner..","..defName..","..math.floor(px)..","..math.floor(pz)..",".."S"
 	spSendCommands("w "..hostName.." pwmorph:"..data)
 	extraUnitMorphDefs[unitID] = nil

@@ -7,7 +7,7 @@ return {
 		edgeeffectiveness = 0.60000002384186,
 		explosiongenerator = "custom:FLASHMEDIUMBUILDING",
 		impulseboost = 0.5,
-		name = "MediumMine",
+		name = "Heavy Mine",
 		range = 480,
 		reloadtime = 3.5999999046326,
 		soundhit = "xplomed1",
@@ -17,6 +17,6 @@ return {
 			default = 1000,
 			--mines = 0.5,
 		},
-		customparams = { damagetype = "flak"},
+		customparams = { damagetype = "explosive"},
 	},
 }

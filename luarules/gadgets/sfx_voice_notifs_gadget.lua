@@ -173,6 +173,14 @@ if gadgetHandler:IsSyncedCode() then
 	end
 	
 else
+    --#####################
+    --# Unsynced
+    --#####################
+
+    local commanderIDs = { armcom = true, armcom2 = true, armcom3 = true, armcom4 = true,
+                           corcom = true, corcom2 = true, corcom3 = true, corcom4 = true, }
+
+    local spGetUnitRulesParam = Spring.GetUnitRulesParam
 
 	function gadget:Initialize()
 		gadgetHandler:AddSyncAction("EventBroadcast", BroadcastEvent)
@@ -217,33 +225,37 @@ else
 
 	-- Unit Lost send to all in team
 	function gadget:UnitDestroyed(unitID, unitDefID, unitTeam, attackerID, attackerDefID, attackerTeam)
-		if not Spring.IsUnitInView(unitID) then
-			if not (UnitDefs[unitDefID].name == "armcom" or UnitDefs[unitDefID].name == "corcom" or UnitDefs[unitDefID].name == "armcom_bar" or UnitDefs[unitDefID].name == "corcom_bar") then
-				if attackerID or attackerDefID or attackerTeam then
-					local event = "UnitLost"
-					local players =  PlayersInTeamID(Spring.GetUnitTeam(unitID))
-					for ct, player in pairs (players) do
-						if tostring(player) then
-							BroadcastEvent("EventBroadcast", event, tostring(player))
-						end
-					end
-				end
-			else
-				local event = "aCommLost"
-				local players =  PlayersInAllyTeamID(GetAllyTeamID(Spring.GetUnitTeam(unitID)))
-				for ct, player in pairs (players) do
-					if tostring(player) then
-						BroadcastEvent("EventBroadcast", event, tostring(player))
-					end
-				end
-				local event = "eCommDestroyed"
-				local players =  AllButAllyTeamID(GetAllyTeamID(Spring.GetUnitTeam(unitID)))
-				for ct, player in pairs (players) do
-					if tostring(player) then
-						BroadcastEvent("EventBroadcast", event, tostring(player))
-					end
-				end
-			end
-		end
-	end
+        if spGetUnitRulesParam(unitID, "justmorphed") == 1 then
+            return end
+
+        if not Spring.IsUnitInView(unitID) then
+            --(UnitDefs[unitDefID].name == "armcom" or UnitDefs[unitDefID].name == "corcom" or UnitDefs[unitDefID].name == "armcom_bar" or UnitDefs[unitDefID].name == "corcom_bar")
+            if not commanderIDs[UnitDefs[unitDefID].name] then
+                if attackerID or attackerDefID or attackerTeam then
+                    local event = "UnitLost"
+                    local players = PlayersInTeamID(Spring.GetUnitTeam(unitID))
+                    for ct, player in pairs (players) do
+                        if tostring(player) then
+                            BroadcastEvent("EventBroadcast", event, tostring(player))
+                        end
+                    end
+                end
+            else
+                local event = "aCommLost"
+                local players =  PlayersInAllyTeamID(GetAllyTeamID(Spring.GetUnitTeam(unitID)))
+                for ct, player in pairs (players) do
+                    if tostring(player) then
+                        BroadcastEvent("EventBroadcast", event, tostring(player))
+                    end
+                end
+                local event = "eCommDestroyed"
+                local players =  AllButAllyTeamID(GetAllyTeamID(Spring.GetUnitTeam(unitID)))
+                for ct, player in pairs (players) do
+                    if tostring(player) then
+                        BroadcastEvent("EventBroadcast", event, tostring(player))
+                    end
+                end
+            end
+        end
+    end
 end

@@ -71,6 +71,7 @@ CMD_UPG_BARRAGE = CMD.UPG_BARRAGE
 -- Unit Upgrades (as shown in a certain unit's command list)
 UU = {
     dgun = {
+        id = "dgun",
         UpgradeCmdDesc = {
             id      = CMD_UPG_DGUN,
             name    = '^ D-Gun',
@@ -87,8 +88,10 @@ UU = {
         upgradeTime = 10 * 30, --5 seconds, in frames
         type = "tech",
         alertWhenDone = true, -- [Optional] if true, fires an alert once completed
+        buttonToUnlock = CMD_MANUALFIRE,
     },
     grenade = {     -- >> Peewee's Laser Grenade (Per Unit)
+        id = "grenade",
         UpgradeCmdDesc = {
             id      = CMD_UPG_GRENADE,
             name    = '^ Grenade',
@@ -104,8 +107,10 @@ UU = {
         energyCost = 480,     --6x metalCost
         upgradeTime = 5 * 30, --5 seconds, in frames
         type = "perunit",
+        buttonToUnlock = CMD_MANUALFIRE,
     },
     firerain = {     -- >> Arm Samson's Missile Shower (Per Unit)
+        id = "firerain",
         UpgradeCmdDesc = {
             id      = CMD_UPG_FIRERAIN,
             name    = '^ FireRain',
@@ -121,8 +126,10 @@ UU = {
         energyCost = 960,
         upgradeTime = 10 * 30, --5 seconds, in frames
         type = "perunit",
+        buttonToUnlock = CMD_MANUALFIRE,
     },
     barrage = {     -- >> Core Informer comet rain (Per Unit)
+        id = "barrage",
         UpgradeCmdDesc = {
             id      = CMD_UPG_BARRAGE,
             name    = 'Upg Barrage',
@@ -138,6 +145,7 @@ UU = {
         energyCost = 960,
         upgradeTime = 10 * 30, --5 seconds, in frames
         type = "perunit",
+        buttonToUnlock = CMD_MANUALFIRE,
     },
 }
 -- Value is used as key of PUU (Per-unit upgrade table)
@@ -165,47 +173,44 @@ local upgradedUnits = {}
 if not gadgetHandler:IsSyncedCode() then
     return end
 
-local function isUpgrading(unitID)
-    for idx = 1, #upgradingUnits do
-        if upgradingUnits[idx].unitID == unitID then
-            return idx
-        end
-    end
-    return nil
-end
+--local function isUpgrading(unitID)
+--    for idx = 1, #upgradingUnits do
+--        if upgradingUnits[idx].unitID == unitID then
+--            return idx
+--        end
+--    end
+--    return nil
+--end
 
-local function editCommand (unitID, CMDID, options)
-    local cmdDesc = spFindUnitCmdDesc(unitID, CMDID)
-    if not cmdDesc or not options then --or not options.defCmdDesc then
-        return end
-
-    if options.req and options.defCmdDesc then
-        local append = ""
-        if options.req == "perunit" then
-            if not upgradedUnits[unitID] then
-                append = "\n\n"..RedStr.."Requires: "..options.defCmdDesc.name.." unit upgrade."
-                --append = options.missingPrereqTooltip
-            end
-        else
-            if not options.req == "" and not GG.TechCheck(options.req, spGetUnitTeam(unitID)) then
-                append = "\n\n"..RedStr.."Requires Tech: "..options.req
-            end
-        end
-        options.tooltip = ((options.tooltip == nil) and options.defCmdDesc.tooltip or options.tooltip) .. append
-    end
-
-    local currentCmdDesc = spGetUnitCmdDescs(unitID, cmdDesc, cmdDesc)[1]
-
-    currentCmdDesc.tooltip = options.tooltip and options.tooltip or currentCmdDesc.tooltip
-    currentCmdDesc.hidden = (options.hidden == nil) and currentCmdDesc.hidden or options.hidden
-    currentCmdDesc.disabled = (options.disabled == nil) and currentCmdDesc.disabled or options.disabled
-
-    spEditUnitCmdDesc (unitID, cmdDesc, currentCmdDesc)
-    --Spring.Echo(tostringplus(currentCmdDesc))
-
-    -- getUpgradeTooltip(spGetUnitTeam(unitID))
-    -- Spring.Echo("New tooltip: "..newCmdDesc.tooltip.." disabled: "..tostring(disabled))
-end
+--- TODO: Move the tooltip description editing logic to taptools (somehow?)
+--local function editCommand (unitID, cmdID, options)
+--    local cmdDesc = spFindUnitCmdDesc(unitID, cmdID)
+--    if not cmdDesc or not options then --or not options.defCmdDesc then
+--        return end
+--
+--    if options.req and options.defCmdDesc then
+--        local append = ""
+--        if options.req == "perunit" then        -- Just tags if the button requirement is a per-unit upgrade
+--            if not upgradedUnits[unitID] then
+--                append = "\n\n"..RedStr.."Requires: "..options.defCmdDesc.name.." unit upgrade."
+--                --append = options.missingPrereqTooltip
+--            end
+--        else
+--            if not options.req == "" and not GG.TechCheck(options.req, spGetUnitTeam(unitID)) then
+--                append = "\n\n"..RedStr.."Requires Tech: "..options.req
+--            end
+--        end
+--        options.tooltip = ((options.tooltip == nil) and options.defCmdDesc.tooltip or options.tooltip) .. append
+--    end
+--
+--    local currentCmdDesc = spGetUnitCmdDescs(unitID, cmdDesc, cmdDesc)[1]
+--
+--    currentCmdDesc.tooltip = options.tooltip and options.tooltip or currentCmdDesc.tooltip
+--    currentCmdDesc.hidden = (options.hidden == nil) and currentCmdDesc.hidden or options.hidden
+--    currentCmdDesc.disabled = (options.disabled == nil) and currentCmdDesc.disabled or options.disabled
+--
+--    spEditUnitCmdDesc (unitID, cmdDesc, currentCmdDesc)
+--end
 
 -- TODO: Add manualfire edited tooltip
 --AddUpdateCommand(unitID, puuItem.UpgradeCmdDesc.id, puuItem.UpgradeCmdDesc, { req=puuItem.Prereq, defCmdDesc=puuItem.UpgradeCmdDesc })
@@ -220,9 +225,19 @@ local function addUpdateCommand(unitID, puuItem)
     else
         spEditUnitCmdDesc(unitID, cmdDescId, cmdDesc)
     end
-    if options then
-        editCommand (unitID, cmdDesc.id, options)
-    end
+    spEditUnitCmdDesc(unitID, cmdDescId, options)
+end
+
+local function startUpgrade(unitID, puu)
+    --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
+    upgradingUnits[unitID] = { progress = 0, puu = puu, }
+    spSetUnitRulesParam(unitID, unitRulesParamName, 0)
+end
+
+local function cancelUpgrade(unitID)
+    upgradingUnits[unitID] = nil
+    spSetUnitRulesParam(unitID, unitRulesParamName, nil)
+    return true
 end
 
 function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
@@ -232,31 +247,14 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
     end
     local puu = UU[upgrade]
 
-    --grenade = {     -- >> Peewee's Laser Grenade (Per Unit)
-    --    UpgradeCmdDesc = {
-    --        id      = CMD_UPG_GRENADE,
-    --        name    = 'Upg Grenade',
-    --        action  = 'grenadeupgrade',
-    --        cursor  = 'Morph',
-    --        type    = CMDTYPE.ICON,
-    --        tooltip = 'Enables Laser Grenade weapon',
-    --    },
-    --    Prereq = "Tech0",
-    --},
-    --Spring.Echo("Expected puu id: "..puu.UpgradeCmdDesc.id.." cmdID: "..cmdID)
     if cmdID == puu.UpgradeCmdDesc.id and (not upgradedUnits[unitID]) then
-        -- If currently upgrading, cancel upgrade
-        local upgradingIdx = isUpgrading(unitID)
-        if upgradingIdx then
-            upgradingUnits[upgradingIdx] = nil
-            spSetUnitRulesParam(unitID, unitRulesParamName, nil)
-            return true
+        --- If currently upgrading, cancel upgrade
+        if upgradingUnits[unitID] then
+            cancelUpgrade(unitID)
         end
-        -- Otherwise, check for requirements
+        --- Otherwise, check for requirements
         if HasTech(puu.prereq, unitTeam) then
-            --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
-            upgradingUnits[#upgradingUnits+1] = { unitID = unitID, progress = 0, puu = puu, }
-            spSetUnitRulesParam(unitID, unitRulesParamName, 0)
+            startUpgrade(unitID, puu)
         else
             LocalAlert(unitID, "Requires: "..puu.prereq)
         end
@@ -279,24 +277,26 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
     local puuItem = UU[upgrade]
     if puuItem then
         addUpdateCommand(unitID, puuItem)
-        editCommand(unitID, CMD_MANUALFIRE, {disabled=true, req="perunit", defCmdDesc=UpgradeCmdDesc})
+        --spEditUnitCmdDesc(unitID, CMD_MANUALFIRE, {disabled=true, req="perunit", defCmdDesc=UpgradeCmdDesc})
+        BlockCmdID(unitID, puuItem.buttonToUnlock) -- usually CMD_MANUALFIRE
     else
         --Spring.Echo ("Defined upgrade not found in Settings: "..upgrade)
     end
 end
 
-local function finishUpgrade(idx, unitID, puu)
-    editCommand (unitID, puu.UpgradeCmdDesc.id, {disabled=true})
+local function finishUpgrade(unitID, puu)
+    --spEditUnitCmdDesc(unitID, puu.UpgradeCmdDesc.id, {disabled=true})
+    BlockCmdID(unitID, puu.UpgradeCmdDesc.id) --TODO: Edit Prereq
 
     if puu.alertWhenDone then
-        LocalAlert(unitID, "Unit upgrade complete: "..puu.UpgradeCmdDesc.name)
+        LocalAlert(unitID, "Unit upgrade complete.")
     end
 
     -- Enable action & remove "Requires" red alert at bottom
-    editCommand (unitID, CMD_MANUALFIRE, {disabled=false, req="", defCmdDesc = puu.UpgradeCmdDesc})
-    --Spring.Echo("Here")
-    --ipairs_remove(upgradingUnits, unitID)   -- setting it to nil won't remove the element, affecting the # operator
-    upgradingUnits[idx] = nil
+    --spEditUnitCmdDesc(unitID, puu.UpgradeCmdDesc.id, {disabled=false, req="", defCmdDesc = puu.UpgradeCmdDesc})
+
+    BlockCmdID(unitID, puu.buttonToUnlock, false) -- TODO: Edit requirement
+    upgradingUnits[unitID] = nil
     upgradedUnits[unitID] = true
 
     spSetUnitRulesParam(unitID, unitRulesParamName, nil)
@@ -304,8 +304,7 @@ end
 
 function gadget:UnitDestroyed(unitID)
     upgradedUnits[unitID] = nil
-    --ipairs_remove(upgradingUnits, unitID)
-    ipairs_removeByElement(upgradingUnits, "unitID", unitID )
+    upgradingUnits[unitID] = nil
 end
 
 function gadget:GameFrame()
@@ -319,16 +318,15 @@ function gadget:GameFrame()
     --Spring.Echo("Count: "..#upgradingUnits)
 
     --{ unitID = unitID, progress = 0, puu = puu, }
-    for idx,data in ipairs(upgradingUnits) do
-        local unitID = data.unitID
+    for unitID, data in pairs(upgradingUnits) do
         local progress = data.progress
         local puu = data.puu
         if spUseUnitResource(unitID, { ["m"] = puu.metalCost / puu.upgradeTime, ["e"] = puu.energyCost / puu.upgradeTime }) then
             local progress = progress + 1 / puu.upgradeTime -- TODO: Add "Morph speedup" bonus maybe?
-            upgradingUnits[idx].progress = progress
+            upgradingUnits[unitID].progress = progress
             spSetUnitRulesParam(unitID, unitRulesParamName, progress)
             if progress >= 1.0 then
-                finishUpgrade(idx, unitID, puu)
+                finishUpgrade(unitID, puu)
             end
         end
     end

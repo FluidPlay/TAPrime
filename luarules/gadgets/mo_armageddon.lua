@@ -203,7 +203,7 @@ end
 
 function gadget:UnitFinished(unitID, unitDefID, teamID, builderID)
     -- Just morphed-into units shouldn't be destroyed
-	if hadArmageddon and unitDefID~=meteorDefID and spGetUnitRulesParam(unitID, "wasmorphed") ~= 1 then
+	if hadArmageddon and unitDefID~=meteorDefID and spGetUnitRulesParam(unitID, "justmorphed") ~= 1 then
 		local n = spGetGameFrame()
 		if not toKill[n+1] then toKill[n+1] = {} end
 		local k = #(toKill[n+1])+1

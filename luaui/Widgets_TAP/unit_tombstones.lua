@@ -43,7 +43,7 @@ end
 function widget:UnitDestroyed(unitID, unitDefID, unitTeam)
   local ud = UnitDefs[unitDefID]
   -- Only deal with destroyed commanders which weren't morphed into
-  if ud == nil or commanders[ud.name] == nil or spGetUnitRulesParam(unitID, "wasmorphed") == 1 then
+  if ud == nil or commanders[ud.name] == nil or spGetUnitRulesParam(unitID, "justmorphed") == 1 then
     return end
   local x,y,z = Spring.GetUnitPosition(unitID)
   local tombstoneUdefID = armstoneUdefID

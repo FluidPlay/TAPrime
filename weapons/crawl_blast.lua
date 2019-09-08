@@ -3,7 +3,7 @@ return {
 		areaofeffect = 432,
 		craterboost = 0,
 		cratermult = 0,
-		edgeeffectiveness = 0.40000000596046,
+		edgeeffectiveness = 0.75, --0.40000000596046,
 		explosiongenerator = "custom:FLASHSKTL", --FLASHNUKE360
 		impulseboost = 0.12300000339746,
 		impulsefactor = 0.12300000339746,
@@ -15,7 +15,7 @@ return {
 		turret = 1,
 		weaponvelocity = 900, --250,
 		damage = {
-			default = 500, --3000
+			default = 2000, --3000, 500
 		},
 		customparams = { damagetype = "explosive"},
 	},

@@ -3,7 +3,7 @@ return {
 		areaofeffect = 480,
 		craterboost = 4,
 		cratermult = 1.25,
-		edgeeffectiveness = 0.75, --0.30000001192093,
+		edgeeffectiveness = 0.85, --0.30000001192093,
 		explosiongenerator = "custom:FLASHSKTLSELFD", --FLASHNUKE480",
 		impulseboost = 0.24, --12300000339746,
 		impulsefactor = 0.24, --12300000339746,
@@ -17,7 +17,7 @@ return {
 		damage = {
 			--commander = 1000,	--commanders
 			--crawlingbombs = 199,
-			default = 1550, --7500
+			default = 5500, --7500, 1550
 		},
 		customparams = { damagetype = "explosive"},
 	},
