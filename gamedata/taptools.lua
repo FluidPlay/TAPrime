@@ -399,9 +399,8 @@ end
 --Adds or updates the command-button
 function AddUpdateCommand(unitID, cmdDesc, block)
     local CurrentCmdDescId = spFindUnitCmdDesc(unitID, cmdDesc.id)
-    if block == true then
-        cmdDesc.disabled = true
-    end
+    cmdDesc.disabled = block
+
     if not CurrentCmdDescId then
         spInsertUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
     else

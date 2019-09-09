@@ -39,12 +39,12 @@ PerUnitUpgrades [made by unit]
 VFS.Include("gamedata/taptools.lua")
 
 --local spGetUnitDefID        = Spring.GetUnitDefID
---local spFindUnitCmdDesc     = Spring.FindUnitCmdDesc
 --local spInsertUnitCmdDesc   = Spring.InsertUnitCmdDesc
 --local spEditUnitCmdDesc     = Spring.EditUnitCmdDesc
 --local spMarkerAddPoint      = Spring.MarkerAddPoint
 --local spMarkerErasePosition = Spring.MarkerErasePosition
 --local spGetUnitPosition     = Spring.GetUnitPosition
+local spFindUnitCmdDesc     = Spring.FindUnitCmdDesc
 local spGetUnitCmdDescs     = Spring.GetUnitCmdDescs
 local spGetUnitTeam         = Spring.GetUnitTeam
 local spSetUnitRulesParam   = Spring.SetUnitRulesParam
@@ -84,7 +84,7 @@ UnitUpg = {
         metalCost = 200,
         energyCost = 1200,
         upgradeTime = 10 * 30, --5 seconds, in frames
-        type = "tech",
+        type = "tech",          -- TODO: Currently unused. Should indicate special types (auras, debuffs, etc)
         alertWhenDone = true, -- [Optional] if true, fires an alert once completed
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "", --automatically fed when button is locked (@ unit create)
@@ -107,6 +107,7 @@ UnitUpg = {
         upgradeTime = 5 * 30, --5 seconds, in frames
         type = "perunit",
         buttonToUnlock = CMD_MANUALFIRE,
+        buttonToUnlockTooltip = "",
     },
     firerain = {     -- >> Arm Samson's Missile Shower (Per Unit)
         id = "firerain",
@@ -126,6 +127,7 @@ UnitUpg = {
         upgradeTime = 10 * 30, --5 seconds, in frames
         type = "perunit",
         buttonToUnlock = CMD_MANUALFIRE,
+        buttonToUnlockTooltip = "",
     },
     barrage = {     -- >> Core Informer comet rain (Per Unit)
         id = "barrage",
@@ -145,6 +147,7 @@ UnitUpg = {
         upgradeTime = 10 * 30, --5 seconds, in frames
         type = "perunit",
         buttonToUnlock = CMD_MANUALFIRE,
+        buttonToUnlockTooltip = "",
     },
 }
 -- Value is used as key of PUU (Per-unit upgrade table)
@@ -222,22 +225,23 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
 
     local unitUpg = UnitUpg[upgrade]
     if unitUpg then
-        -- Add upgrade Cmd, block & add it to watch list, if tech not yet available
-        local cmdDesc = spGetUnitCmdDescs(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlock)[1]
+        -- Store original buttonToUnlock tooltip for later usage (add suffix / restore)
+        local cmdIdx = spFindUnitCmdDesc(unitID, unitUpg.buttonToUnlock)
+        local cmdDesc = spGetUnitCmdDescs(unitID, cmdIdx, cmdIdx)[1]
         if cmdDesc then
-            Spring.Echo("Found")
-            unitUpg.buttonToUnlockTooltip = cmdDesc.tooltip
-        end
+            unitUpg.buttonToUnlockTooltip = cmdDesc.tooltip end
+
+        -- Add upgrade Cmd, block & add it to watch list, if tech not yet available
         local block = not HasTech(unitUpg.prereq, unitTeam)
         AddUpdateCommand(unitID, unitUpg.UpgradeCmdDesc, block)
+        -- Disable upgrade-locked button (since it's per-unit, it always starts locked)
+        Spring.Echo("Lock button tooltip: "..unitUpg.buttonToUnlockTooltip)
+        BlockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip, "Requires: "..upgrade.." upgrade [per-unit]")
+
         if block then
             upgradeLockedUnits[unitID] = { prereq = unitUpg.prereq, upgradeButton = unitUpg.UpgradeCmdDesc.id,
                                            orgTooltip = unitUpg.UpgradeCmdDesc.tooltip }
         end
-        --TODO: locked button tooltip is wrong, fix it
-        BlockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip, "Requires: "..upgrade.." upgrade [per-unit]")
-    else
-        --Spring.Echo ("Defined upgrade not found in Settings: "..upgrade)
     end
 end
 
