@@ -395,8 +395,12 @@ end
 --////////////////////////
 
 --Adds or updates the command-button
-function AddUpdateCommand(unitID, cmdDesc)
+function AddUpdateCommand(unitID, cmdDesc, block)
     local CurrentCmdDescId = spFindUnitCmdDesc(unitID, cmdDesc.id)
+    if block == true then
+        cmdDesc.disabled = true
+        Spring.Echo("Nutsy..")
+    end
     if not CurrentCmdDescId then
         spInsertUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
     else
