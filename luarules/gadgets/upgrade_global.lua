@@ -153,6 +153,16 @@ function gadget:UnitDestroyed(unitID)
     upgradingUnits[unitID] = nil
 end
 
+-- If unit was taken, apply unit-creation check
+function gadget:UnitTaken(unitID, unitDefID, oldTeamID, teamID)
+    self:UnitCreated(unitID, unitDefID, teamID)
+    --if isDone(unitID) then self:UnitFinished(unitID, unitDefID, teamID) end
+end
+
+function gadget:UnitGiven(unitID, unitDefID, newTeamID, oldTeamID)
+    self:UnitDestroyed(unitID, unitDefID, oldTeamID)
+end
+
 -- Upgrade is complete, award related tech to the researcher team
 local function finishUpgrade(unitID, gUpg, upgradeID)
     -- Disable Upgrade button

@@ -7,6 +7,8 @@
 --== TAPrime HELPER FUNCTIONS ==
 --==============================
 --shard_include("luarules/gadgets/ai/ba/commonfunctions.lua") 	-- doesn' work here
+VFS.Include("LuaRules/colors.h.lua")
+
 local spFindUnitCmdDesc     = Spring.FindUnitCmdDesc
 local spInsertUnitCmdDesc     = Spring.InsertUnitCmdDesc
 local spEditUnitCmdDesc     = Spring.EditUnitCmdDesc
@@ -399,7 +401,6 @@ function AddUpdateCommand(unitID, cmdDesc, block)
     local CurrentCmdDescId = spFindUnitCmdDesc(unitID, cmdDesc.id)
     if block == true then
         cmdDesc.disabled = true
-        Spring.Echo("Nutsy..")
     end
     if not CurrentCmdDescId then
         spInsertUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
@@ -409,16 +410,32 @@ function AddUpdateCommand(unitID, cmdDesc, block)
 end
 
 -- BlockCmdID(.., ..) or BlockCmdID(.., .., false)
-function BlockCmdID(unitID, cmdID, block)
+function SetCmdIDEnable(unitID, cmdID, block, orgTooltip, suffix)
 	local cmdDescId = spFindUnitCmdDesc(unitID, cmdID)
 	if not cmdDescId then
 		return end
 
     local disable = (block == true or block == nil) -- default: disabled (blocked)
+    local cmdArray = { disabled = disable }
+
+    if disable then
+        cmdArray.tooltip = orgTooltip.."\n\n"..RedStr..suffix
+    else
+        cmdArray.tooltip = orgTooltip
+    end
 
 	--Spring.Echo(cmdID.." Disabled: "..tostring(disable))
-	spEditUnitCmdDesc(unitID, cmdDescId, { disabled = disable })
+	spEditUnitCmdDesc(unitID, cmdDescId, cmdArray)
 end
+
+function BlockCmdID(unitID, cmdID, orgTooltip, suffix)
+    SetCmdIDEnable(unitID, cmdID, true, orgTooltip, suffix)
+end
+
+function UnblockCmdID(unitID, cmdID, orgTooltip, suffix)
+    SetCmdIDEnable(unitID, cmdID, false, orgTooltip)
+end
+
 
 function LocalAlert(unitID, msg)
     local x, y, z = spGetUnitPosition(unitID)  --x and z on map floor, y is height

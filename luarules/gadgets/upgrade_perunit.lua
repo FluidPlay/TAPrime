@@ -39,19 +39,18 @@ PerUnitUpgrades [made by unit]
 VFS.Include("gamedata/taptools.lua")
 
 --local spGetUnitDefID        = Spring.GetUnitDefID
---local spGetUnitTeam         = Spring.GetUnitTeam
 --local spFindUnitCmdDesc     = Spring.FindUnitCmdDesc
---local spGetUnitCmdDescs     = Spring.GetUnitCmdDescs
 --local spInsertUnitCmdDesc   = Spring.InsertUnitCmdDesc
 --local spEditUnitCmdDesc     = Spring.EditUnitCmdDesc
 --local spMarkerAddPoint      = Spring.MarkerAddPoint
 --local spMarkerErasePosition = Spring.MarkerErasePosition
 --local spGetUnitPosition     = Spring.GetUnitPosition
+local spGetUnitCmdDescs     = Spring.GetUnitCmdDescs
+local spGetUnitTeam         = Spring.GetUnitTeam
 local spSetUnitRulesParam   = Spring.SetUnitRulesParam
 local spGetGameFrame        = Spring.GetGameFrame
 local spUseUnitResource     = Spring.UseUnitResource
 
-local RedStr = "\255\255\001\001"
 local unitRulesParamName = "upgrade"
 local oldFrame = 0
 
@@ -77,7 +76,7 @@ UnitUpg = {
             action  = 'dgunupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Enables D-gun weapon',
+            tooltip = 'D-Gun Upgrade: Enables D-gun weapon [per unit]',
             texture = 'luaui/images/upgrades/techdgun.dds',
             onlyTexture = true,
         },
@@ -88,6 +87,7 @@ UnitUpg = {
         type = "tech",
         alertWhenDone = true, -- [Optional] if true, fires an alert once completed
         buttonToUnlock = CMD_MANUALFIRE,
+        buttonToUnlockTooltip = "", --automatically fed when button is locked (@ unit create)
     },
     grenade = {     -- >> Peewee's Laser Grenade (Per Unit)
         id = "grenade",
@@ -97,7 +97,7 @@ UnitUpg = {
             action  = 'grenadeupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Enables Laser Grenade weapon',
+            tooltip = 'Laser Grenade upgrade: Enables manual-fire Grenade weapon [per unit]',
             texture = 'luaui/images/upgrades/techexplosives.dds',
             onlyTexture = true,
         },
@@ -116,7 +116,7 @@ UnitUpg = {
             action  = 'firerainupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Enables Fire Rain weapon',
+            tooltip = 'Fire Rain upgrade: Enables manual-fire Fire Rain weapon [per unit]',
             texture = 'luaui/images/upgrades/techdgun.dds',
             onlyTexture = true
         },
@@ -135,7 +135,7 @@ UnitUpg = {
             action  = 'barrageupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Enables Barrage weapon',
+            tooltip = 'Barrage upgrade: Enables manual-fire Barrage weapon [per unit]',
             texture = 'luaui/images/upgrades/techexplosives.dds',
             onlyTexture = true,
         },
@@ -168,6 +168,8 @@ UnitUpgrades = {} -- Auto-completed from UnitUpg table @ Initialize
 --local tooltipRequirement = "\n"..RedStr.."Requires ".. PUU.dgun.prereq
 local upgradingUnits = {}   -- { [unitID] = { progress = 0, unitUpg = { id = "x", UpgradeCmdDesc = {}, ..} } }
 local upgradedUnits  = {}
+local upgradeLockedUnits = {} -- { [unitID] = { prereq = "", upgradeButton = cmdID, orgTooltip = "" .. }, ... }
+local frameRate = 4
 
 if not gadgetHandler:IsSyncedCode() then
     return end
@@ -220,49 +222,73 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
 
     local unitUpg = UnitUpg[upgrade]
     if unitUpg then
+        -- Add upgrade Cmd, block & add it to watch list, if tech not yet available
+        local cmdDesc = spGetUnitCmdDescs(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlock)[1]
+        if cmdDesc then
+            Spring.Echo("Found")
+            unitUpg.buttonToUnlockTooltip = cmdDesc.tooltip
+        end
         local block = not HasTech(unitUpg.prereq, unitTeam)
-        Spring.Echo("Block: "..tostring(block))
         AddUpdateCommand(unitID, unitUpg.UpgradeCmdDesc, block)
-        --spEditUnitCmdDesc(unitID, CMD_MANUALFIRE, {disabled=true, req="perunit", defCmdDesc=UpgradeCmdDesc})
-        BlockCmdID(unitID, unitUpg.buttonToUnlock) -- usually CMD_MANUALFIRE
+        if block then
+            upgradeLockedUnits[unitID] = { prereq = unitUpg.prereq, upgradeButton = unitUpg.UpgradeCmdDesc.id,
+                                           orgTooltip = unitUpg.UpgradeCmdDesc.tooltip }
+        end
+        --TODO: locked button tooltip is wrong, fix it
+        BlockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip, "Requires: "..upgrade.." upgrade [per-unit]")
     else
         --Spring.Echo ("Defined upgrade not found in Settings: "..upgrade)
     end
 end
 
-local function finishUpgrade(unitID, puu)
-    BlockCmdID(unitID, puu.UpgradeCmdDesc.id) --TODO: Edit Prereq
+function gadget:UnitDestroyed(unitID)
+    upgradedUnits[unitID] = nil
+    upgradingUnits[unitID] = nil
+    upgradeLockedUnits[unitID] = nil
+end
 
-    if puu.alertWhenDone then
-        LocalAlert(unitID, "Unit upgrade complete.")
-    end
+-- If unit was taken, apply unit-creation check
+function gadget:UnitTaken(unitID, unitDefID, oldTeamID, teamID)
+    self:UnitCreated(unitID, unitDefID, teamID)
+    --if isDone(unitID) then self:UnitFinished(unitID, unitDefID, teamID) end
+end
+
+function gadget:UnitGiven(unitID, unitDefID, newTeamID, oldTeamID)
+    self:UnitDestroyed(unitID, unitDefID, oldTeamID)
+end
+
+local function finishUpgrade(unitID, unitUpg)
+    BlockCmdID(unitID, unitUpg.UpgradeCmdDesc.id, unitUpg.UpgradeCmdDesc.tooltip, "Requires: "..unitUpg.id)
 
     -- Enable action & remove "Requires" red alert at bottom
     --spEditUnitCmdDesc(unitID, puu.UpgradeCmdDesc.id, {disabled=false, req="", defCmdDesc = puu.UpgradeCmdDesc})
 
-    BlockCmdID(unitID, puu.buttonToUnlock, false) -- TODO: Edit requirement
+    UnblockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip)
     upgradingUnits[unitID] = nil
+    upgradeLockedUnits[unitID] = nil -- Once an unit upgrade is complete we can safely stop watching its prereqs
     upgradedUnits[unitID] = true
 
     spSetUnitRulesParam(unitID, unitRulesParamName, nil)
+
+    if unitUpg.alertWhenDone then
+        LocalAlert(unitID, "Unit upgrade complete.")
+    end
 end
 
-function gadget:UnitDestroyed(unitID)
-    upgradedUnits[unitID] = nil
-    upgradingUnits[unitID] = nil
-end
-
-function gadget:GameFrame()
+function gadget:GameFrame(n)
     local frame = spGetGameFrame()
-    if (frame <= oldFrame) then
+    if (frame <= oldFrame or n % frameRate > 0.0001) then
         return end
     oldFrame = frame
+
+    --Watch all prereq blocked units to see if they're prereqs are done/lost, block/unblock accordingly
+    for unitID, data in pairs(upgradeLockedUnits) do
+        local hasTech = HasTech(data.prereq, spGetUnitTeam(unitID))
+        SetCmdIDEnable(unitID, data.upgradeButton, not hasTech, data.orgTooltip, "Requires: "..data.prereq )
+    end
+
     if not upgradingUnits or tablelength(upgradingUnits) == 0 then    -- If table empty, return
         return end
-
-    --Spring.Echo("Count: "..#upgradingUnits)
-
-    --TODO: Watch all prereq blocked units to see if they're upgrades are done, then unblock them
 
     --{ unitID = unitID, progress = 0, unitUpg = unitUpg, }
     for unitID, data in pairs(upgradingUnits) do

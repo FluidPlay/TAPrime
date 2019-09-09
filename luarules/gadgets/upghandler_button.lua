@@ -20,7 +20,6 @@ if not gadgetHandler:IsSyncedCode() then
 
 VFS.Include("gamedata/taptools.lua")
 VFS.Include("LuaRules/configs/global_upgradedata.lua")
-VFS.Include("LuaRules/colors.h.lua")
 -----------------
 ---- SYNCED
 -----------------
@@ -56,7 +55,8 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
         for upgID, upgData in pairs(GlobalUpgrades) do
             --Spring.Echo("Locked upgID: "..lockedUpgID.." upgID: "..upgID)
             if lockedUpgID == upgID and not HasTech(upgID, unitTeam) then
-                BlockCmdID(unitID, upgData.buttonToUnlock)
+                BlockCmdID(unitID, upgData.buttonToUnlock, upgData.UpgradeCmdDesc.tooltip,
+                        "Requires: "..upgID)
                 trackedUnits[unitID] = unitDefID
             end
         end
@@ -72,7 +72,7 @@ local function Update()
             for lockedUpgID in pairs(lockedUpgradeIds) do
                 for upgID, upgData in pairs(GlobalUpgrades) do
                     if lockedUpgID == upgID and HasTech(upgID, spGetUnitTeam(unitID)) then
-                        BlockCmdID(unitID, upgData.buttonToUnlock, false)
+                        UnblockCmdID(unitID, upgData.buttonToUnlock, upgData.UpgradeCmdDesc.tooltip )
                         trackedUnits[unitID] = nil
                     end
                 end
