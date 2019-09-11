@@ -235,7 +235,6 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
         local block = not HasTech(unitUpg.prereq, unitTeam)
         AddUpdateCommand(unitID, unitUpg.UpgradeCmdDesc, block)
         -- Disable upgrade-locked button (since it's per-unit, it always starts locked)
-        Spring.Echo("Lock button tooltip: "..unitUpg.buttonToUnlockTooltip)
         BlockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip, "Requires: "..upgrade.." upgrade [per-unit]")
 
         if block then
@@ -262,11 +261,9 @@ function gadget:UnitGiven(unitID, unitDefID, newTeamID, oldTeamID)
 end
 
 local function finishUpgrade(unitID, unitUpg)
-    BlockCmdID(unitID, unitUpg.UpgradeCmdDesc.id, unitUpg.UpgradeCmdDesc.tooltip, "Requires: "..unitUpg.id)
+    BlockCmdID(unitID, unitUpg.UpgradeCmdDesc.id, unitUpg.UpgradeCmdDesc.tooltip)  --, "Requires: "..unitUpg.id)
 
     -- Enable action & remove "Requires" red alert at bottom
-    --spEditUnitCmdDesc(unitID, puu.UpgradeCmdDesc.id, {disabled=false, req="", defCmdDesc = puu.UpgradeCmdDesc})
-
     UnblockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip)
     upgradingUnits[unitID] = nil
     upgradeLockedUnits[unitID] = nil -- Once an unit upgrade is complete we can safely stop watching its prereqs
@@ -285,7 +282,7 @@ function gadget:GameFrame(n)
         return end
     oldFrame = frame
 
-    --Watch all prereq blocked units to see if they're prereqs are done/lost, block/unblock accordingly
+    --Watch all prereq blocked units to see if theit prereqs are done/lost, block/unblock accordingly
     for unitID, data in pairs(upgradeLockedUnits) do
         local hasTech = HasTech(data.prereq, spGetUnitTeam(unitID))
         SetCmdIDEnable(unitID, data.upgradeButton, not hasTech, data.orgTooltip, "Requires: "..data.prereq )

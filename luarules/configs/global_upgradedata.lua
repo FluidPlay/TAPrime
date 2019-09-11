@@ -34,8 +34,10 @@ GlobalUpgrades = {
         metalCost = 300,
         energyCost = 6000,
         upgradeTime = 10 * 30, --5 seconds, in frames
-        type = "tech",
+        alertWhenDone = true, -- [Optional] if true, fires an alert once completed
+        type = "tech", -- TODO: Currently unused. Should indicate special types (auras, debuffs, etc)
         buttonToUnlock = CMD_CAPTURE,
+        buttonToUnlockTooltip = "", --automatically fed when button is locked (@ unit create)
         --UnlockedCmdDescTootip = "" (to be added/used by handlers)
         lockedUnitDefIds = { [UnitDefNames["armck"].id] = true,
                              [UnitDefNames["corck"].id] = true,
@@ -70,7 +72,7 @@ GlobalUpgrades = {
         upgradeTime = 15 * 30, --15 seconds, in frames
         type = "tech",
         buttonToUnlock = nil,
-        --UnlockedCmdDescTootip = "" (to be added/used by handlers)
+        buttonToUnlockTooltip = "",
         lockedUnitDefIds = { },
         techToGrant = "booster1",
     },
@@ -85,13 +87,13 @@ GlobalUpgrades = {
             texture = 'luaui/images/upgrades/techbooster2.dds',
             onlyTexture = true,
         },
-        prereq = "",
+        prereq = "Tech2",
         metalCost = 1800,
         energyCost = 30600,
-        upgradeTime = 30 * 30, --5 seconds, in frames
+        upgradeTime = 30 * 30,
         type = "tech",
         buttonToUnlock = nil,
-        --UnlockedCmdDescTootip = "" (to be added/used by handlers)
+        buttonToUnlockTooltip = "",
         lockedUnitDefIds = { },
         techToGrant = "booster2",
     },
@@ -106,13 +108,13 @@ GlobalUpgrades = {
             texture = 'luaui/images/upgrades/techbooster3.dds',
             onlyTexture = true,
         },
-        prereq = "",
+        prereq = "Tech3",
         metalCost = 3600,
         energyCost = 58320,
-        upgradeTime = 40 * 30, --5 seconds, in frames
+        upgradeTime = 40 * 30,
         type = "tech",
         buttonToUnlock = nil,
-        --UnlockedCmdDescTootip = "" (to be added/used by handlers)
+        buttonToUnlockTooltip = "",
         lockedUnitDefIds = { },
         techToGrant = "booster3",
     },
@@ -120,12 +122,12 @@ GlobalUpgrades = {
 
 -- Which units can research what
 GlobalResearchers = {
-    [UnitDefNames["armtech"].id] = {"capture","booster1",},
-    [UnitDefNames["cortech"].id] = {"capture","booster1",},
-    [UnitDefNames["armtech1"].id] = {"capture","booster1",},
-    [UnitDefNames["cortech1"].id] = {"capture","booster1",},
-    [UnitDefNames["armtech2"].id] = {"capture","booster1","booster2"},
-    [UnitDefNames["cortech2"].id] = {"capture","booster1","booster2"},
+    [UnitDefNames["armtech"].id] = {"capture","booster1","booster2","booster3"},
+    [UnitDefNames["cortech"].id] = {"capture","booster1","booster2","booster3"},
+    [UnitDefNames["armtech1"].id] = {"capture","booster1","booster2","booster3"},
+    [UnitDefNames["cortech1"].id] = {"capture","booster1","booster2","booster3"},
+    [UnitDefNames["armtech2"].id] = {"capture","booster1","booster2","booster3"},
+    [UnitDefNames["cortech2"].id] = {"capture","booster1","booster2","booster3"},
     [UnitDefNames["armtech3"].id] = {"capture","booster1","booster2","booster3"},
     [UnitDefNames["cortech3"].id] = {"capture","booster1","booster2","booster3"},
     [UnitDefNames["armtech4"].id] = {"capture","booster1","booster2","booster3"},

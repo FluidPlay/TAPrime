@@ -389,6 +389,8 @@ end
 --////////////////////////
 
 function HasTech(prereq, teamID)
+	if prereq == "" or prereq == nil then
+		return true end
 	return GG.TechCheck(prereq, teamID)
 end
 
@@ -410,6 +412,9 @@ end
 
 -- BlockCmdID(.., ..) or BlockCmdID(.., .., false)
 function SetCmdIDEnable(unitID, cmdID, block, orgTooltip, suffix)
+	if not isnumber(cmdID) then
+		return
+	end
 	local cmdDescId = spFindUnitCmdDesc(unitID, cmdID)
 	if not cmdDescId then
 		return end
@@ -423,7 +428,7 @@ function SetCmdIDEnable(unitID, cmdID, block, orgTooltip, suffix)
         cmdArray.tooltip = orgTooltip
     end
 
-	--Spring.Echo(cmdID.." Disabled: "..tostring(disable))
+	Spring.Echo(cmdID.." Disabled: "..tostring(disable))
 	spEditUnitCmdDesc(unitID, cmdDescId, cmdArray)
 end
 
