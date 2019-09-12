@@ -51,9 +51,9 @@ local oldFrame = 0
 
 --TechUpgrades = {} -- Auto-completed from UT @ Initialize
 
-local upgradingUnits = {}   -- => { unitID = { upgradeID = "capture", progress = 0, globalUpgrade = { UpgradeCmdDesc,.. } }
+local upgradingUnits = {}   -- => { unitID = { upgradeID = "capture", progress = 0, upgData = { UpgradeCmdDesc,.. } }
 local upgradedUnits = {}    -- => { unitID = { upgrades = { ["capture"]=true, ... } } | upgradeID
-local upgradeLockedUnits = {} --  { [unitID] = { prereq = "", upgradeButton = cmdID, orgTooltip = "" .. }, ... }
+local upgradeLockedUnits = {} --  { [unitID] = { upgradeID = { prereq = "", upgradeButton = cmdID, orgTooltip = "" .. }, ... }
 
 if not gadgetHandler:IsSyncedCode() then
     return end
@@ -77,11 +77,11 @@ local function getUpgradeID (unitDefID, cmdID)
     return nil
 end
 
-local function SetUpgrade(unitID, upgradeID, progress, globalUpgrade)
-    if (globalUpgrade == nil) then
+local function SetUpgrade(unitID, upgradeID, progress, upgData)
+    if (upgData == nil) then
         upgradingUnits[unitID] = nil
     else
-        upgradingUnits[unitID] = { upgradeID = upgradeID, progress = progress, globalUpgrade = globalUpgrade, }
+        upgradingUnits[unitID] = { upgradeID = upgradeID, progress = progress, upgData = upgData, }
     end
 
     spSetUnitRulesParam(unitID, upgParamName, progress)
@@ -101,20 +101,20 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
         SetUpgrade(unitID, upgradeID, nil, nil)
         return true
     end
-    local globalUpgrade = GlobalUpgrades[upgradeID]
-    if globalUpgrade == nil then
+    local upgData = GlobalUpgrades[upgradeID]
+    if upgData == nil then
         return false end
 
     -- Otherwise, check for requirements
-    if globalUpgrade.prereq ~= "" then
+    if upgData.prereq ~= "" then
         --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
-        if HasTech(globalUpgrade.prereq, unitTeam) then
-            SetUpgrade(unitID, upgradeID, 0, globalUpgrade)
+        if HasTech(upgData.prereq, unitTeam) then
+            SetUpgrade(unitID, upgradeID, 0, upgData)
         else
-            LocalAlert(unitID, "Requires: "..globalUpgrade.prereq)
+            LocalAlert(unitID, "Requires: ".. upgData.prereq)
         end
     else
-        SetUpgrade(unitID, upgradeID, 0, globalUpgrade)
+        SetUpgrade(unitID, upgradeID, 0, upgData)
     end
     return true
 end
@@ -146,12 +146,16 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
 
             ----Check for requirements and edit tooltip if needed
             local block = not HasTech(upgData.prereq, unitTeam)
-            Spring.Echo("Block? "..tostring(block).." "..upgData.prereq)
+            --Spring.Echo("Block? "..tostring(block).." "..upgData.prereq)
             AddUpdateCommand(unitID, cmdDesc, block)
             SetCmdIDEnable(unitID, upgData.buttonToUnlock, block, upgData.buttonToUnlockTooltip, "Requires: "..upgradeID.." global upgrade")
 
             if block then
-                upgradeLockedUnits[unitID] = { prereq = upgData.prereq, upgradeButton = upgData.UpgradeCmdDesc.id,
+                if upgradeLockedUnits[unitID] == nil then
+                    upgradeLockedUnits[unitID] = {}
+                end
+                upgradeLockedUnits[unitID][upgradeID] = { prereq = upgData.prereq,
+                                               upgradeButton = upgData.UpgradeCmdDesc.id,
                                                orgTooltip = upgData.UpgradeCmdDesc.tooltip }
             end
         end
@@ -175,30 +179,37 @@ function gadget:UnitGiven(unitID, unitDefID, newTeamID, oldTeamID)
 end
 
 -- Upgrade is complete, award related tech to the researcher team
-local function finishUpgrade(unitID, upg, upgradeID)
+local function finishUpgrade(unitID, upgData, upgID)
     --local cmdDesc = Upg.UpgradeCmdDesc
     --cmdDesc.disabled = true
     --AddUpdateCommand(unitID, cmdDesc)
 
-    -- Disable Upgrade button
-    BlockCmdID(unitID, upg.UpgradeCmdDesc.id, upg.UpgradeCmdDesc.tooltip)
-    -- Enable action & remove "Requires" red alert at bottom
-    UnblockCmdID(unitID, upg.buttonToUnlock, upg.buttonToUnlockTooltip)
+    -- ### Disable Upgrade button
+    -- Must block upgrade button on *all* upgradeLockedUnits
+    -- & Enable action & remove "Requires" red alert at bottom
+    for uID, data in pairs (upgradeLockedUnits) do
+        if data[uID] and data[uID][upgID] then
+            BlockCmdID(uID, upgData.UpgradeCmdDesc.id, upgData.UpgradeCmdDesc.tooltip)
+            UnblockCmdID(uID, upgData.buttonToUnlock, upgData.buttonToUnlockTooltip)
+            data[uID][upgID] = nil
+        end
+    end
 
-    upgradeLockedUnits[unitID] = nil -- Once an unit upgrade is complete we can safely stop watching its prereqs
-    upgradingUnits[unitID] = nil
+    -- Once an unit upgrade is complete we can safely stop watching its prereqs
+    --upgradeLockedUnits[unitID][upgID] = nil
+    upgradingUnits[unitID] = nil --TODO: upgradingUnits must also be [uID][upgID]
     if not upgradedUnits[unitID] then
         upgradedUnits[unitID] = {} end
-    upgradedUnits[unitID][upgradeID] = true
+    upgradedUnits[unitID][upgID] = true
 
     spSetUnitRulesParam(unitID, upgParamName, nil)  -- Used by UI (healthbars2)
 
-    local techToGrant = upg.techToGrant
+    local techToGrant = upgData.techToGrant
     if techToGrant then
         GG.TechGrant(techToGrant, spGetUnitTeam(unitID), true) end
 
-    if upg.alertWhenDone then
-        LocalAlert(unitID, "Upgrade Finished: "..upgradeID)
+    if upgData.alertWhenDone then
+        LocalAlert(unitID, "Upgrade Finished: ".. upgID)
     end
 end
 
@@ -209,10 +220,13 @@ function gadget:GameFrame()
     oldFrame = frame
 
     --Watch all prereq blocked units to see if their prereqs are done/lost, block/unblock accordingly
-    Spring.Echo("Upgrading units count: "..tablelength(upgradeLockedUnits))
-    for unitID, data in pairs(upgradeLockedUnits) do
-        local hasTech = HasTech(data.prereq, spGetUnitTeam(unitID))
-        SetCmdIDEnable(unitID, data.upgradeButton, not hasTech, data.orgTooltip, "Requires: "..data.prereq )
+    --Spring.Echo("Upgrade-locked units count: "..tablelength(upgradeLockedUnits))
+    for unitID, upgrades in pairs(upgradeLockedUnits) do
+        for upgID, data in pairs (upgrades) do
+            local hasTech = HasTech(data.prereq, spGetUnitTeam(unitID))
+            --Spring.Echo("UnitID "..unitID.." has tech: "..tostring(hasTech).." for upg: "..upgID)
+            SetCmdIDEnable(unitID, data.upgradeButton, not hasTech, data.orgTooltip, "Requires: "..data.prereq )
+        end
     end
 
     if not upgradingUnits then    -- If no unit upgrading, get outta here
@@ -220,7 +234,7 @@ function gadget:GameFrame()
 
     for unitID, data in pairs(upgradingUnits) do
         local progress = data.progress
-        local upgData = data.globalUpgrade
+        local upgData = data.upgData
         if progress ~= nil and upgData ~= nil then
             if spUseUnitResource(unitID, {  ["m"] = upgData.metalCost / upgData.upgradeTime,
                                             ["e"] = upgData.energyCost / upgData.upgradeTime }) then

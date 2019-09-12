@@ -202,15 +202,17 @@ if (gadgetHandler:IsSyncedCode()) then
 		end
 	end
 
-	local function CheckTech(techId, teamId)
-		techId = string.lower(techId)
-		if not TechTable[techId] then
+	local function CheckTech(techID, teamID)
+        if not isstring(techID) or not isnumber(teamID)then
+            return false end
+		techID = string.lower(techID)
+		if not TechTable[techID] then
 			--Spring.Echo("Check Tech: TechId=\""..techId.."\" is unknown")
 			return nil end
 
-        local providerCount = TechTable[techId].ProviderCount[teamId]
+        local providerCount = TechTable[techID].ProviderCount[teamID]
         if not providerCount then
-            Spring.Echo("Bad call to Check Tech (Provider Count error): TechName=\"".. techId .."\", Team=".. teamId)
+            --Spring.Echo("Bad call to Check Tech (Provider Count error): TechName=\"".. techId .."\", Team=".. teamId)
             return nil
         else
             --Spring.Echo("[Tech Check] Provider count: "..providerCount)
