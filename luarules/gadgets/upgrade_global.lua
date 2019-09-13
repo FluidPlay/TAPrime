@@ -77,6 +77,7 @@ local function getUpgradeID (unitDefID, cmdID)
     return nil
 end
 
+--- StartUpgrade / CancelUpgrade
 local function SetUpgrade(unitID, upgradeID, progress, upgData)
     if (upgData == nil) then
         upgradingUnits[unitID] = nil
@@ -101,20 +102,23 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
         SetUpgrade(unitID, upgradeID, nil, nil)
         return true
     end
-    local upgData = GlobalUpgrades[upgradeID]
-    if upgData == nil then
+    local upgEntry = GlobalUpgrades[upgradeID]
+    if upgEntry == nil then
         return false end
 
+    local cmdDesc = upgEntry.UpgradeCmdDesc
+
     -- Otherwise, check for requirements
-    if upgData.prereq ~= "" then
+    if upgEntry.prereq ~= "" then
         --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
-        if HasTech(upgData.prereq, unitTeam) then
-            SetUpgrade(unitID, upgradeID, 0, upgData)
+        if HasTech(upgEntry.prereq, unitTeam) then
+            SetUpgrade(unitID, upgradeID, 0, upgEntry)
         else
-            LocalAlert(unitID, "Requires: ".. upgData.prereq)
+            LocalAlert(unitID, "Requires: ".. upgEntry.prereq)
         end
     else
-        SetUpgrade(unitID, upgradeID, 0, upgData)
+        SetUpgrade(unitID, upgradeID, 0, upgEntry)
+        BlockCmdID(unitID, cmdID, cmdDesc.tooltip, "Upgrading")
     end
     return true
 end
@@ -136,13 +140,6 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
             local cmdDesc = upgData.UpgradeCmdDesc
             if cmdDesc then
                 upgData.buttonToUnlockTooltip = cmdDesc.tooltip end
-
-            --local shouldDisable = (upgData.prereq ~= "") and not HasTech(upgData.prereq, spGetUnitTeam(unitID))
-            --cmdDesc.disabled = shouldDisable
-            --
-            --if shouldDisable then
-            --    cmdDesc.tooltip = upgData.UpgradeCmdDesc.tooltip .. "\n\n"..RedStr.."Requires Tech: "..upgData.prereq
-            --end
 
             ----Check for requirements and edit tooltip if needed
             local block = not HasTech(upgData.prereq, unitTeam)
