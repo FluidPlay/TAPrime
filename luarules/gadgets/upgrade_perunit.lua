@@ -79,6 +79,7 @@ UnitUpg = {
             tooltip = 'D-Gun Upgrade: Enables D-gun weapon [per unit]',
             texture = 'luaui/images/upgrades/techdgun.dds',
             onlyTexture = true,
+            params      = { refresh = "false", ... }
         },
         prereq = "Tech1",
         metalCost = 200,
@@ -205,8 +206,9 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
         return true
     end
     local unitUpg = UnitUpg[upgrade]
+    local cmdDesc = unitUpg.UpgradeCmdDesc
 
-    if cmdID == unitUpg.UpgradeCmdDesc.id and (not upgradedUnits[unitID]) then
+    if cmdID == cmdDesc.id and (not upgradedUnits[unitID]) then
         --- If currently upgrading, cancel upgrade
         if upgradingUnits[unitID] then
             cancelUpgrade(unitID)
@@ -214,6 +216,11 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
         --- Otherwise, check for requirements
         if HasTech(unitUpg.prereq, unitTeam) then
             startUpgrade(unitID, unitUpg)
+            BlockCmdID(unitID, cmdID, cmdDesc.tooltip, "Upgrading")
+            --TODO: Must update texture to "WIP" texture. buildordermenu is not helping.
+            --cmdDesc.texture = cmdDesc.texture:gsub(".dds", "_wip.dds") -- "Upgrade in progress" texture
+            --cmdDesc.params.refresh = "true"
+            --AddUpdateCommand(unitID, cmdDesc)
         else
             LocalAlert(unitID, "Requires: ".. unitUpg.prereq)
         end
@@ -271,7 +278,8 @@ function gadget:UnitGiven(unitID, unitDefID, newTeamID, oldTeamID)
 end
 
 local function finishUpgrade(unitID, unitUpg)
-    BlockCmdID(unitID, unitUpg.UpgradeCmdDesc.id, unitUpg.UpgradeCmdDesc.tooltip)  --, "Requires: "..unitUpg.id)
+    -- TODO: Being blocked by Upgrade Start
+    --BlockCmdID(unitID, unitUpg.UpgradeCmdDesc.id, unitUpg.UpgradeCmdDesc.tooltip)  --, "Requires: "..unitUpg.id)
 
     -- Enable action & remove "Requires" red alert at bottom
     UnblockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip)

@@ -485,6 +485,8 @@ local function processCommand(cmd)
 end --processCommand
 
 local lastCommands
+
+-- Executed every Update, when updateRequired == true
 local function processAllCommands()
     if (deepEquals(lastCommands, widgetHandler.commands)) then
         return
