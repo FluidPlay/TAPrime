@@ -181,6 +181,16 @@ local function startUpgrade(unitID, unitUpg)
     --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
     upgradingUnits[unitID] = { progress = 0, unitUpg = unitUpg, }
     spSetUnitRulesParam(unitID, unitRulesParamName, 0)
+
+    local cmdDesc = unitUpg.UpgradeCmdDesc
+    if not cmdDesc.customParams then
+        cmdDesc.customParams = {}
+    end
+    cmdDesc.customParams.upgrading = true
+    AddUpdateCommand(unitID, cmdDesc)
+    --local cmdIdx = spFindUnitCmdDesc(unitID, unitUpg.buttonToUnlock)
+    --local cmdDesc = spGetUnitCmdDescs(unitID, cmdIdx, cmdIdx)[1]
+    --spEditUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
 end
 
 local function cancelUpgrade(unitID)

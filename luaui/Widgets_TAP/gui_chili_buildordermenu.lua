@@ -212,6 +212,7 @@ local function applyHighlightHandler(button, cmd)
     local hovered = {0.75, 0.75, 0.75, 0.25}
     local out = {0, 0, 0, 0}
     local disabled = {0, 0, 0, 0.6}
+    local upgrading = { 0.85, 0, 0.85, 0.75}
 
     local highlight = chiliCache['highlight' .. button.cmdID] or Image:New{
         name = 'highlight' .. button.cmdID,
@@ -223,7 +224,7 @@ local function applyHighlightHandler(button, cmd)
     }
     chiliCache['highlight' .. button.cmdID] = highlight
     local function updateSelection(cmdID)
-        local function checkColor(color)
+        local function tryApplyColor(color)
             if highlight.color ~= color then
                 highlight.color = color
                 highlight:Invalidate()
@@ -231,15 +232,18 @@ local function applyHighlightHandler(button, cmd)
         end
 
         if cmd.disabled then
-            checkColor(disabled)
+            tryApplyColor(disabled)
             if button.state.hovered then
                 tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
             end
-        elseif button.cmdID == cmdID then checkColor(selected)
+        elseif cmd.customParams and cmd.customParams.upgrading then
+            tryApplyColor(upgrading)
+        elseif button.cmdID == cmdID then
+            tryApplyColor(selected)
         elseif button.state.hovered then
             tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
-            checkColor(hovered)
-        else checkColor(out)
+            tryApplyColor(hovered)
+        else tryApplyColor(out)
         end
     end
     button.updateSelection = updateSelection
