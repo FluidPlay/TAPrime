@@ -44,6 +44,8 @@ VFS.Include("gamedata/taptools.lua")
 --local spMarkerAddPoint      = Spring.MarkerAddPoint
 --local spMarkerErasePosition = Spring.MarkerErasePosition
 --local spGetUnitPosition     = Spring.GetUnitPosition
+local spGetAllUnits         = Spring.GetAllUnits
+local spGetUnitDefID        = Spring.GetUnitDefID
 local spFindUnitCmdDesc     = Spring.FindUnitCmdDesc
 local spGetUnitCmdDescs     = Spring.GetUnitCmdDescs
 local spGetUnitTeam         = Spring.GetUnitTeam
@@ -123,9 +125,9 @@ UnitUpg = {
             onlyTexture = true
         },
         prereq = "Tech1",
-        metalCost = 160,
-        energyCost = 960,
-        upgradeTime = 10 * 30, --5 seconds, in frames
+        metalCost = 250,
+        energyCost = 1500, --960
+        upgradeTime = 10 * 30, --10 seconds, in frames
         type = "perunit",
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "",
@@ -200,9 +202,10 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
 
     if cmdID == cmdDesc.id and (not upgradedUnits[unitID]) then
         --- If currently upgrading, cancel upgrade
-        if upgradingUnits[unitID] then
-            cancelUpgrade(unitID)
-        end
+        --TODO: Uncomment when below is fixed, currently useles..
+        --if upgradingUnits[unitID] then
+        --    cancelUpgrade(unitID)
+        --end
         --- Otherwise, check for requirements
         if HasTech(unitUpg.prereq, unitTeam) then
             startUpgrade(unitID, unitUpg)
@@ -221,6 +224,13 @@ end
 function gadget:Initialize()
     for _,upgrade in pairs(UnitUpg) do
         UnitUpgrades[upgrade] = true
+    end
+    local allUnits = spGetAllUnits()
+    for i = 1, #allUnits do
+        local unitID    = allUnits[i]
+        local unitDefID = spGetUnitDefID(unitID)
+        local unitTeam  = spGetUnitTeam(unitID)
+        widget:UnitFinished(unitID, unitDefID, unitTeam)
     end
 end
 
@@ -293,7 +303,9 @@ function gadget:GameFrame(n)
     --Watch all prereq blocked units to see if theit prereqs are done/lost, block/unblock accordingly
     for unitID, data in pairs(upgradeLockedUnits) do
         local hasTech = HasTech(data.prereq, spGetUnitTeam(unitID))
-        SetCmdIDEnable(unitID, data.upgradeButton, not hasTech, data.orgTooltip, "Requires: "..data.prereq )
+        if not upgradingUnits[unitID] then
+            SetCmdIDEnable(unitID, data.upgradeButton, not hasTech, data.orgTooltip, "Requires: "..data.prereq )
+        end
     end
 
     if not upgradingUnits or tablelength(upgradingUnits) == 0 then    -- If table empty, return
