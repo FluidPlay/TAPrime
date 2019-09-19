@@ -81,7 +81,7 @@ UnitUpg = {
             tooltip = 'D-Gun Upgrade: Enables D-gun weapon [per unit]',
             texture = 'luaui/images/upgrades/techdgun.dds',
             onlyTexture = true,
-            params      = { refresh = "false", ... }
+            params = { '1', ' Fly ', 'Land'}
         },
         prereq = "Tech1",
         metalCost = 200,
@@ -180,20 +180,24 @@ local frameRate = 4
 if not gadgetHandler:IsSyncedCode() then
     return end
 
-local function startUpgrade(unitID, unitUpg)
+local function startUpgrade(unitID, unitUpg, cmdParams)
     --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
     upgradingUnits[unitID] = { progress = 0, unitUpg = unitUpg, }
     spSetUnitRulesParam(unitID, unitRulesParamName, 0)
 
     --TODO: Not working, can't be read by chili_buildordermenu
-    --local cmdDesc = unitUpg.UpgradeCmdDesc
-    --if not cmdDesc.params then
-    --    cmdDesc.params = {}
-    --end
-    --cmdDesc.params[1] = 1
-    --local cmdIdx = spFindUnitCmdDesc(unitID, cmdDesc.id)
+    local cmdDesc = unitUpg.UpgradeCmdDesc
+    if not cmdDesc.params then
+        cmdDesc.params = {}
+    end
+    --cmdDesc.params["upg"] = 1
     ----Spring.Echo ("Updating CmdDesc Idx: "..cmdIdx)
-    --Spring.EditUnitCmdDesc(unitID, cmdIdx, cmdDesc)
+    local cmdIdx = spFindUnitCmdDesc(unitID, cmdDesc.id)
+    local cmdArray = { showUnique = true }
+    --cmdArray.params = { '1', ' Fly ', 'Land'}
+    --cmdArray.params[1] = cmdParams[1]
+    Spring.EditUnitCmdDesc(unitID, cmdIdx, cmdArray) --unpack(cmdDesc.params),
+    cmdArray.params[1] = 1
 
 
     --local cmdIdx = spFindUnitCmdDesc(unitID, unitUpg.buttonToUnlock)
@@ -207,7 +211,7 @@ local function cancelUpgrade(unitID)
     return true
 end
 
-function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
+function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID, cmdParams) --,cmdParams
     local upgrade = UnitResearchers[unitDefID]
     if not upgrade then
         return true
@@ -223,8 +227,8 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
         --end
         --- Otherwise, check for requirements
         if HasTech(unitUpg.prereq, unitTeam) then
-            startUpgrade(unitID, unitUpg)
-            BlockCmdID(unitID, cmdID, cmdDesc.tooltip, "Upgrading")
+            startUpgrade(unitID, unitUpg, cmdParams)
+            --BlockCmdID(unitID, cmdID, cmdDesc.tooltip, "Upgrading")
             --TODO: Must update texture to "WIP" texture. buildordermenu is not helping.
             --cmdDesc.texture = cmdDesc.texture:gsub(".dds", "_wip.dds") -- "Upgrade in progress" texture
             --cmdDesc.params.refresh = "true"
@@ -240,6 +244,7 @@ function gadget:Initialize()
     for _,upgrade in pairs(UnitUpg) do
         UnitUpgrades[upgrade] = true
     end
+    --GG.UnitUpgrades = UnitUpgrades
     local allUnits = spGetAllUnits()
     for i = 1, #allUnits do
         local unitID    = allUnits[i]

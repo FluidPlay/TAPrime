@@ -231,34 +231,29 @@ local function applyHighlightHandler(button, cmd)
             end
         end
         local selectedUnit = Spring.GetSelectedUnits()[1]
-        local function isUpgrading(unitID)
-            --if not button.cmdID then
-            --    Spring.Echo("cmdID not found")
-            --    return false
-            --end
-            --if not unitID then
-            --    Spring.Echo("unitID not found")
-            --    return false
-            --end
-            --Spring.Echo("Checking cmdID: "..button.cmdID)
-            local cmdIdx = Spring.FindUnitCmdDesc(unitID, 36)
-            --local upgPerc = Spring.GetUnitRulesParam(selectedUnit, "upgrade")
-            --upgPerc = upgPerc and tonumber(upgPerc) or 0
-            --return upgPerc > 0.001 and upgPerc < 1
-            local cmdDesc = Spring.GetUnitCmdDescs(unitID, 36, 36)[1]
-            if cmdDesc.params[1] == 1 then
-                Spring.Echo ("Upgrading, according to CmdDesc Idx: "..cmdIdx)
-            end
-            --Spring.Echo("Is upgrading? "..tostring(cmdDesc.params[1] == 1))
-            return cmdDesc.params[1] == 1
-        end
+        --local function isUpgrading(unitID)
+        --    Spring.Echo("Checking cmdID: "..button.cmdID)
+        --    local upgPerc = Spring.GetUnitRulesParam(selectedUnit, "upgrade")
+        --    upgPerc = upgPerc and tonumber(upgPerc) or 0
+        --    return upgPerc > 0.001 and upgPerc < 1
+        --
+        --    --local cmdIdx = Spring.FindUnitCmdDesc(unitID, 36)
+        --    --local cmdDesc = Spring.GetUnitCmdDescs(unitID, cmdIdx, cmdIdx)[1]
+        --    --if cmdDesc.params["upg"] == 1 then
+        --    --    Spring.Echo ("Upgrading, according to CmdDesc Idx: "..cmdIdx)
+        --    --end
+        --    ----Spring.Echo("Is upgrading? "..tostring(cmdDesc.params[1] == 1))
+        --    --return cmdDesc.params[1] == 1
+        --end
         if cmd.disabled then
             tryApplyColor(disabled)
             if button.state.hovered then
                 tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
             end
-        elseif isUpgrading(selectedUnit) then
-            Spring.Echo ("Upg'ing: "..selectedUnit)
+        elseif cmd.showUnique then-- and isUpgrading(selectedUnit)
+            Spring.Echo(cmd.params[1] or "888 is nil")
+            --Spring.Echo('-')
+            --Spring.Echo ("Upg'ing: "..selectedUnit)
             tryApplyColor(upgrading)
         elseif button.cmdID == cmdID then
             tryApplyColor(selected)
