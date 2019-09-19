@@ -15,11 +15,11 @@ end
 VFS.Include("gamedata/taptools.lua")
 
 -- Localize
-local sForceLayoutUpdate = Spring.ForceLayoutUpdate
-local sSetActiveCommand = Spring.SetActiveCommand
-local sGetCmdDescIndex = Spring.GetCmdDescIndex
-local sGetActiveCommand = Spring.GetActiveCommand
-local sGetWindowGeometry = Spring.GetWindowGeometry
+local spForceLayoutUpdate = Spring.ForceLayoutUpdate
+local spSetActiveCommand = Spring.SetActiveCommand
+local spGetCmdDescIndex = Spring.GetCmdDescIndex
+local spGetActiveCommand = Spring.GetActiveCommand
+local spGetWindowGeometry = Spring.GetWindowGeometry
 --local spGetSelectedUnits = Spring.GetSelectedUnits
 --local spGetUnitRulesParam = Spring.GetUnitRulesParam
 
@@ -40,7 +40,7 @@ local Chili, Window, Image, Button, Grid, Label, ScrollPanel, color2incolor
 -- Global vars
 local orderWindow, buildWindow, buildWindowAdv, orderGrid, buildGrid, buildGridAdv, updateRequired, tooltip, btWidth
 local chiliCache = {}
-local vsx, vsy = sGetWindowGeometry()
+local vsx, vsy = spGetWindowGeometry()
 
 local Config = {
     ordermenu = {
@@ -230,13 +230,35 @@ local function applyHighlightHandler(button, cmd)
                 highlight:Invalidate()
             end
         end
-
+        local selectedUnit = Spring.GetSelectedUnits()[1]
+        local function isUpgrading(unitID)
+            --if not button.cmdID then
+            --    Spring.Echo("cmdID not found")
+            --    return false
+            --end
+            --if not unitID then
+            --    Spring.Echo("unitID not found")
+            --    return false
+            --end
+            --Spring.Echo("Checking cmdID: "..button.cmdID)
+            local cmdIdx = Spring.FindUnitCmdDesc(unitID, 36)
+            --local upgPerc = Spring.GetUnitRulesParam(selectedUnit, "upgrade")
+            --upgPerc = upgPerc and tonumber(upgPerc) or 0
+            --return upgPerc > 0.001 and upgPerc < 1
+            local cmdDesc = Spring.GetUnitCmdDescs(unitID, 36, 36)[1]
+            if cmdDesc.params[1] == 1 then
+                Spring.Echo ("Upgrading, according to CmdDesc Idx: "..cmdIdx)
+            end
+            --Spring.Echo("Is upgrading? "..tostring(cmdDesc.params[1] == 1))
+            return cmdDesc.params[1] == 1
+        end
         if cmd.disabled then
             tryApplyColor(disabled)
             if button.state.hovered then
                 tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
             end
-        elseif cmd.customParams and cmd.customParams.upgrading then
+        elseif isUpgrading(selectedUnit) then
+            Spring.Echo ("Upg'ing: "..selectedUnit)
             tryApplyColor(upgrading)
         elseif button.cmdID == cmdID then
             tryApplyColor(selected)
@@ -247,7 +269,7 @@ local function applyHighlightHandler(button, cmd)
         end
     end
     button.updateSelection = updateSelection
-    updateSelection()
+    updateSelection()   -- (cmdID == nil)  =>  no highlight
     return button
 end --applyHighlightHandler
 
@@ -296,7 +318,6 @@ end --InitializeControls
 --local function getUpgradeStatus(cmdID) -- => upgrading techcenter was clicked, other tech center was clicked
 --    --local selUnits = spGetSelectedUnits()
 --    --for i = 1, #selUnits do
---        --- @gui_multi_tech.lua:
 --        --- WG.upgrades = { techID = { techCenter = unitID, status = "nonupgraded"|"upgrading"|"upgraded", ...},..}
 --        --local selUnit = selUnits[i]
 --    --for techID, data in pairs(WG.upgrades) do
@@ -315,14 +336,14 @@ end --InitializeControls
 --end
 
 local function ActionCommand(self, x, y, mouse, mods)
-    local index = sGetCmdDescIndex(self.cmdID)
+    local index = spGetCmdDescIndex(self.cmdID)
     if index then
         local left, right = mouse == 1, mouse == 3
         local alt, ctrl, meta, shift = mods.alt, mods.ctrl, mods.meta, mods.shift
         --- If cmdID is for an upgrade, check its status, might fire it if is a right click
         --local status = getUpgradeStatus(self.cmdID)
         --if status == "nonupgraded" or (status =="upgrading" and right) then
-        sSetActiveCommand(index, mouse, left, right, alt, ctrl, meta, shift)
+        spSetActiveCommand(index, mouse, left, right, alt, ctrl, meta, shift)
         --end
     end
 end --ActionCommand
@@ -537,10 +558,7 @@ local function updateSelection()
     tooltip = nil
     if not buildGrid then
         return end
-    local _,cmdID = sGetActiveCommand()
-    --for _, bt in ipairs(buildGridAdv.children) do
-    --    if bt.updateSelection then bt.updateSelection(cmdID) end
-    --end
+    local _,cmdID = spGetActiveCommand()
     for _, bt in ipairs(buildGrid.children) do
         if bt.updateSelection then bt.updateSelection(cmdID) end
     end
@@ -558,7 +576,7 @@ local function OverrideDefaultMenu()
         return '', xIcons, yIcons, {}, customCmds, {}, {}, {}, {}, {}, {[1337]=9001}
     end
     widgetHandler:ConfigLayoutHandler(layoutHandler)
-    sForceLayoutUpdate()
+    spForceLayoutUpdate()
 end --OverrideDefaultMenu
 --------------------------------------------------------------------------------
 
@@ -620,5 +638,5 @@ function widget:Shutdown()
     end
     widgetHandler:ConfigLayoutHandler(nil)
     chiliCache = nil
-    sForceLayoutUpdate()
+    spForceLayoutUpdate()
 end --Shutdown

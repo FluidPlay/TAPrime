@@ -185,12 +185,17 @@ local function startUpgrade(unitID, unitUpg)
     upgradingUnits[unitID] = { progress = 0, unitUpg = unitUpg, }
     spSetUnitRulesParam(unitID, unitRulesParamName, 0)
 
-    local cmdDesc = unitUpg.UpgradeCmdDesc
-    if not cmdDesc.customParams then
-        cmdDesc.customParams = {}
-    end
-    cmdDesc.customParams.upgrading = true
-    AddUpdateCommand(unitID, cmdDesc)
+    --TODO: Not working, can't be read by chili_buildordermenu
+    --local cmdDesc = unitUpg.UpgradeCmdDesc
+    --if not cmdDesc.params then
+    --    cmdDesc.params = {}
+    --end
+    --cmdDesc.params[1] = 1
+    --local cmdIdx = spFindUnitCmdDesc(unitID, cmdDesc.id)
+    ----Spring.Echo ("Updating CmdDesc Idx: "..cmdIdx)
+    --Spring.EditUnitCmdDesc(unitID, cmdIdx, cmdDesc)
+
+
     --local cmdIdx = spFindUnitCmdDesc(unitID, unitUpg.buttonToUnlock)
     --local cmdDesc = spGetUnitCmdDescs(unitID, cmdIdx, cmdIdx)[1]
     --spEditUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
@@ -224,8 +229,8 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
             --cmdDesc.texture = cmdDesc.texture:gsub(".dds", "_wip.dds") -- "Upgrade in progress" texture
             --cmdDesc.params.refresh = "true"
             --AddUpdateCommand(unitID, cmdDesc)
-        else
-            LocalAlert(unitID, "Requires: ".. unitUpg.prereq)
+        --else
+        --    LocalAlert(unitID, "Requires: ".. unitUpg.prereq)
         end
     end
     return true
@@ -240,7 +245,7 @@ function gadget:Initialize()
         local unitID    = allUnits[i]
         local unitDefID = spGetUnitDefID(unitID)
         local unitTeam  = spGetUnitTeam(unitID)
-        widget:UnitFinished(unitID, unitDefID, unitTeam)
+        gadget:UnitFinished(unitID, unitDefID, unitTeam)
     end
 end
 
@@ -310,7 +315,7 @@ function gadget:GameFrame(n)
         return end
     oldFrame = frame
 
-    --Watch all prereq blocked units to see if theit prereqs are done/lost, block/unblock accordingly
+    --Watch all prereq blocked units to see if their prereqs are done/lost, block/unblock accordingly
     for unitID, data in pairs(upgradeLockedUnits) do
         local hasTech = HasTech(data.prereq, spGetUnitTeam(unitID))
         if not upgradingUnits[unitID] then
