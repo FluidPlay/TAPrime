@@ -20,8 +20,8 @@ local spSetActiveCommand = Spring.SetActiveCommand
 local spGetCmdDescIndex = Spring.GetCmdDescIndex
 local spGetActiveCommand = Spring.GetActiveCommand
 local spGetWindowGeometry = Spring.GetWindowGeometry
---local spGetSelectedUnits = Spring.GetSelectedUnits
---local spGetUnitRulesParam = Spring.GetUnitRulesParam
+local spGetUnitRulesParam = Spring.GetUnitRulesParam
+local spGetSelectedUnits = Spring.GetSelectedUnits
 
 local stringfind = string.find
 local stringsub = string.sub
@@ -212,7 +212,7 @@ local function applyHighlightHandler(button, cmd)
     local hovered = {0.75, 0.75, 0.75, 0.25}
     local out = {0, 0, 0, 0}
     local disabled = {0, 0, 0, 0.6}
-    local upgrading = { 0.85, 0, 0.85, 0.75}
+    local upgrading = { 0.85, 0, 0.85, 0.6}
 
     local highlight = chiliCache['highlight' .. button.cmdID] or Image:New{
         name = 'highlight' .. button.cmdID,
@@ -230,31 +230,24 @@ local function applyHighlightHandler(button, cmd)
                 highlight:Invalidate()
             end
         end
-        local selectedUnit = Spring.GetSelectedUnits()[1]
-        --local function isUpgrading(unitID)
-        --    Spring.Echo("Checking cmdID: "..button.cmdID)
-        --    local upgPerc = Spring.GetUnitRulesParam(selectedUnit, "upgrade")
-        --    upgPerc = upgPerc and tonumber(upgPerc) or 0
-        --    return upgPerc > 0.001 and upgPerc < 1
-        --
-        --    --local cmdIdx = Spring.FindUnitCmdDesc(unitID, 36)
-        --    --local cmdDesc = Spring.GetUnitCmdDescs(unitID, cmdIdx, cmdIdx)[1]
-        --    --if cmdDesc.params["upg"] == 1 then
-        --    --    Spring.Echo ("Upgrading, according to CmdDesc Idx: "..cmdIdx)
-        --    --end
-        --    ----Spring.Echo("Is upgrading? "..tostring(cmdDesc.params[1] == 1))
-        --    --return cmdDesc.params[1] == 1
-        --end
+        local function isUpgrading(unitID)
+            local upgPerc = spGetUnitRulesParam(unitID, "upgrade")
+            --upgPerc = upgPerc and tonumber(upgPerc) or 0
+            --return upgPerc > 0.001 and upgPerc < 1
+            return isnumber(upgPerc)
+        end
         if cmd.disabled then
             tryApplyColor(disabled)
             if button.state.hovered then
                 tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
             end
-        elseif cmd.showUnique then-- and isUpgrading(selectedUnit)
-            Spring.Echo(cmd.params[1] or "888 is nil")
-            --Spring.Echo('-')
-            --Spring.Echo ("Upg'ing: "..selectedUnit)
-            tryApplyColor(upgrading)
+        elseif cmd.showUnique then
+            --Spring.Echo("Show Unique found!")
+            local selectedUnit = spGetSelectedUnits()[1]
+            if isUpgrading(selectedUnit) then
+                tryApplyColor(upgrading)
+            else
+                tryApplyColor(out) end
         elseif button.cmdID == cmdID then
             tryApplyColor(selected)
         elseif button.state.hovered then

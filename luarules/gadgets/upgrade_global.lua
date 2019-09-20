@@ -45,21 +45,26 @@ local spGetUnitTeam         = Spring.GetUnitTeam
 local spSetUnitRulesParam   = Spring.SetUnitRulesParam
 local spGetGameFrame        = Spring.GetGameFrame
 local spUseUnitResource     = Spring.UseUnitResource
+local spGetUnitHealth       = Spring.GetUnitHealth
 
 local upgParamName = "upgrade" -- Param Name to be read by unit_healthbars2.lua (lua UI)
 local oldFrame = 0
 
 --TechUpgrades = {} -- Auto-completed from UT @ Initialize
 
-local upgradingUnits = {}   -- => { unitID = { upgradeID = "capture", progress = 0, upgData = { UpgradeCmdDesc,.. } }
+local upgradingUnits = {}   -- => { unitID = { progress = 0, { upgradeID = { upgData = { UpgradeCmdDesc,.. } ,... }} } || [uID][upgID]
 local upgradedUnits = {}    -- => { unitID = { upgrades = { ["capture"]=true, ... } } | upgradeID
-local upgradeLockedUnits = {} --  { [unitID] = { upgradeID = { prereq = "", upgradeButton = cmdID, orgTooltip = "" .. }, ... }
+local upgradeLockedUnits = {} --  { unitID = { upgradeID = { prereq = "", upgradeButton = cmdID, orgTooltip = "" .. }, ... }
+local globalUpgraders = {}  -- { unitID = true, .. } || Tech Centers, basically
 
 if not gadgetHandler:IsSyncedCode() then
     return end
 
-local function isUpgrading(unitID)
-    return upgradingUnits[unitID]
+local function isUpgrading(unitID, upgradeID)
+    if not unitID or not upgradeID or not upgradingUnits[unitID] then
+        return false
+    end
+    return upgradingUnits[unitID][upgradeID]
 end
 
 --- Returns UpgradeID (from GlobalUpgrades) with the related cmdID (eg.: CMD_CAPTURE)
@@ -82,45 +87,57 @@ local function SetUpgrade(unitID, upgradeID, progress, upgData)
     if (upgData == nil) then
         upgradingUnits[unitID] = nil
     else
-        upgradingUnits[unitID] = { upgradeID = upgradeID, progress = progress, upgData = upgData, }
+        if upgradingUnits[unitID] == nil then
+            upgradingUnits[unitID] = {}
+        end
+        upgradingUnits[unitID].progress = progress
+        upgradingUnits[unitID][upgradeID] = { upgData = upgData, }
     end
 
     spSetUnitRulesParam(unitID, upgParamName, progress)
 end
 
-function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID) --,cmdParams
-    local upgradeID = getUpgradeID(unitDefID, cmdID)
-    if not upgradeID then
-        return true
-    end
-    if upgradedUnits[unitID] and upgradedUnits[unitID][upgradeID] then
-        --LocalAlert(unitID, "Upgrade Already researched: "..upgradeID)
-        return false
-    end
-    -- If currently upgrading, cancel upgrade
-    if isUpgrading(unitID) then
-        SetUpgrade(unitID, upgradeID, nil, nil)
-        return true
-    end
+local function cancelUpgrade(unitID, upgradeID)
+    SetUpgrade(unitID, upgradeID, nil, nil)
+end
+
+local function tryStartUpgrade(unitID, upgradeID) --, cmdID, unitTeam)
     local upgEntry = GlobalUpgrades[upgradeID]
     if upgEntry == nil then
         return false end
 
-    local cmdDesc = upgEntry.UpgradeCmdDesc
+    SetUpgrade(unitID, upgradeID, 0, upgEntry)
 
-    -- Otherwise, check for requirements
-    if upgEntry.prereq ~= "" then
-        --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
-        if HasTech(upgEntry.prereq, unitTeam) then
-            SetUpgrade(unitID, upgradeID, 0, upgEntry)
-        else
-            LocalAlert(unitID, "Requires: ".. upgEntry.prereq)
-        end
-    else
-        SetUpgrade(unitID, upgradeID, 0, upgEntry)
-        BlockCmdID(unitID, cmdID, cmdDesc.tooltip, "Upgrading")
-    end
+    --- Obsolete. Using buildordermenu instead
+    --BlockCmdID(unitID, cmdID, cmdDesc.tooltip, "Upgrading")
+    --end
     return true
+end
+
+function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID,cmdParams,cmdOptions)
+    -- If unit is not complete, disallow upgrades
+    if select(5, spGetUnitHealth(unitID)) < 1 then
+        return true
+    end
+    local upgradeID = getUpgradeID(unitDefID, cmdID)
+    if not upgradeID then
+        return true
+    end
+    --TODO: Remove ASAP, obsolete. Button should already be disabled instead
+    if upgradedUnits[unitID] and upgradedUnits[unitID][upgradeID] then
+        --LocalAlert(unitID, "Upgrade Already researched: "..upgradeID)
+        return false
+    end
+
+    -- If currently upgrading and right-clicked, cancel upgrade
+    if isUpgrading(unitID, upgradeID) then
+        if cmdOptions.right == true then
+            cancelUpgrade(unitID, upgradeID)
+            return true
+        end
+    else                --- Otherwise, check for requirements
+        return tryStartUpgrade(unitID, upgradeID) --, cmdID, unitTeam)
+    end
 end
 
 function gadget:Initialize()
@@ -184,6 +201,8 @@ local function finishUpgrade(unitID, upgData, upgID)
     -- ### Disable Upgrade button
     -- Must block upgrade button on *all* upgradeLockedUnits
     -- & Enable action & remove "Requires" red alert at bottom
+
+    -- Once an unit upgrade is complete we can safely stop watching its prereqs
     for uID, data in pairs (upgradeLockedUnits) do
         if data[uID] and data[uID][upgID] then
             BlockCmdID(uID, upgData.UpgradeCmdDesc.id, upgData.UpgradeCmdDesc.tooltip)
@@ -192,12 +211,12 @@ local function finishUpgrade(unitID, upgData, upgID)
         end
     end
 
-    -- Once an unit upgrade is complete we can safely stop watching its prereqs
-    --upgradeLockedUnits[unitID][upgID] = nil
-    upgradingUnits[unitID] = nil --TODO: upgradingUnits must also be [uID][upgID]
+    upgradingUnits[unitID][upgID] = nil
     if not upgradedUnits[unitID] then
         upgradedUnits[unitID] = {} end
     upgradedUnits[unitID][upgID] = true
+    --TODO: Go through all global-tech upgraders and block it as well
+    BlockCmdID(unitID, upgData.UpgradeCmdDesc.id, upgData.UpgradeCmdDesc.tooltip, "Already Researched.")
 
     spSetUnitRulesParam(unitID, upgParamName, nil)  -- Used by UI (healthbars2)
 

@@ -29,6 +29,7 @@ GlobalUpgrades = {
             tooltip = 'Unlocks the Capture ability of all builder units',
             texture = 'luaui/images/upgrades/techcapture.dds',
             onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "",
         metalCost = 300,
@@ -65,6 +66,7 @@ GlobalUpgrades = {
             tooltip = 'Increases Morph Speed by 25%',
             texture = 'luaui/images/upgrades/techbooster1.dds',
             onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "",
         metalCost = 600,
@@ -86,6 +88,7 @@ GlobalUpgrades = {
             tooltip = 'Increases Morph Speed by 33% (cumulative)',
             texture = 'luaui/images/upgrades/techbooster2.dds',
             onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "Tech2",
         metalCost = 1800,
@@ -107,6 +110,7 @@ GlobalUpgrades = {
             tooltip = 'Increases Morph Speed by 50% (cumulative)',
             texture = 'luaui/images/upgrades/techbooster3.dds',
             onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "Tech3",
         metalCost = 3600,

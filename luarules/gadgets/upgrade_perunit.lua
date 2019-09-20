@@ -52,6 +52,7 @@ local spGetUnitTeam         = Spring.GetUnitTeam
 local spSetUnitRulesParam   = Spring.SetUnitRulesParam
 local spGetGameFrame        = Spring.GetGameFrame
 local spUseUnitResource     = Spring.UseUnitResource
+local spGetUnitHealth       = Spring.GetUnitHealth
 
 local unitRulesParamName = "upgrade"
 local oldFrame = 0
@@ -84,7 +85,8 @@ UnitUpg = {
             tooltip = 'D-Gun Upgrade: Enables D-gun weapon [per unit]',
             texture = 'luaui/images/upgrades/techdgun.dds',
             onlyTexture = true,
-            params = { '1', ' Fly ', 'Land'}
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
+            --params = { '1', ' Fly ', 'Land'}
         },
         prereq = "Tech1",
         metalCost = 200,
@@ -106,6 +108,7 @@ UnitUpg = {
             tooltip = 'Laser Grenade upgrade: Enables manual-fire Grenade weapon [per unit]',
             texture = 'luaui/images/upgrades/techexplosives.dds',
             onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "Tech",
         metalCost = 80,
@@ -125,7 +128,8 @@ UnitUpg = {
             type    = CMDTYPE.ICON,
             tooltip = 'Fire Rain upgrade: Enables manual-fire Fire Rain weapon [per unit]',
             texture = 'luaui/images/upgrades/techdgun.dds',
-            onlyTexture = true
+            onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "Tech1",
         metalCost = 250,
@@ -146,6 +150,7 @@ UnitUpg = {
             tooltip = 'Barrage upgrade: Enables manual-fire Barrage weapon [per unit]',
             texture = 'luaui/images/upgrades/techexplosives.dds',
             onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "Tech1",
         metalCost = 160,
@@ -166,6 +171,7 @@ UnitUpg = {
             tooltip = 'Resurrect upgrade: Enables ressurect ability [per unit]',
             texture = 'luaui/images/upgrades/techexplosives.dds',
             onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "Tech1",
         metalCost = 160,
@@ -208,20 +214,18 @@ local function startUpgrade(unitID, unitUpg, cmdParams)
     upgradingUnits[unitID] = { progress = 0, unitUpg = unitUpg, }
     spSetUnitRulesParam(unitID, unitRulesParamName, 0)
 
-    --TODO: Not working, can't be read by chili_buildordermenu
-    local cmdDesc = unitUpg.UpgradeCmdDesc
-    if not cmdDesc.params then
-        cmdDesc.params = {}
-    end
+    --TODO: Not working, cmdDesc.params can't be used to pass params to chili_buildordermenu
+    --local cmdDesc = unitUpg.UpgradeCmdDesc
+    --if not cmdDesc.params then
+    --    cmdDesc.params = {}
+    --end
     --cmdDesc.params["upg"] = 1
     ----Spring.Echo ("Updating CmdDesc Idx: "..cmdIdx)
-    local cmdIdx = spFindUnitCmdDesc(unitID, cmdDesc.id)
-    local cmdArray = { showUnique = true }
+    --local cmdIdx = spFindUnitCmdDesc(unitID, cmdDesc.id)
+    --local cmdArray = { showUnique = true }
     --cmdArray.params = { '1', ' Fly ', 'Land'}
     --cmdArray.params[1] = cmdParams[1]
-    Spring.EditUnitCmdDesc(unitID, cmdIdx, cmdArray) --unpack(cmdDesc.params),
-    cmdArray.params[1] = 1
-
+    --Spring.EditUnitCmdDesc(unitID, cmdIdx, cmdArray) --unpack(cmdDesc.params),
 
     --local cmdIdx = spFindUnitCmdDesc(unitID, unitUpg.buttonToUnlock)
     --local cmdDesc = spGetUnitCmdDescs(unitID, cmdIdx, cmdIdx)[1]
@@ -231,10 +235,13 @@ end
 local function cancelUpgrade(unitID)
     upgradingUnits[unitID] = nil
     spSetUnitRulesParam(unitID, unitRulesParamName, nil)
-    return true
 end
 
-function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID, cmdParams) --,cmdParams
+function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID, cmdParams, cmdOptions)
+    -- If unit is not complete, disallow upgrades
+    if select(5, spGetUnitHealth(unitID)) < 1 then
+        return true
+    end
     local upgrade = UnitResearchers[unitDefID]
     if not upgrade then
         return true
@@ -243,21 +250,24 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID, cmdParams) --,cmdP
     local cmdDesc = unitUpg.UpgradeCmdDesc
 
     if cmdID == cmdDesc.id and (not upgradedUnits[unitID]) then
-        --- If currently upgrading, cancel upgrade
-        --TODO: Uncomment when below is fixed, currently useles..
-        --if upgradingUnits[unitID] then
-        --    cancelUpgrade(unitID)
-        --end
-        --- Otherwise, check for requirements
-        if HasTech(unitUpg.prereq, unitTeam) then
-            startUpgrade(unitID, unitUpg, cmdParams)
+        local isUpgrading = upgradingUnits[unitID]
+        --- If currently upgrading and right-clicked, cancel upgrade
+        if isUpgrading then
+            if cmdOptions.right == true then
+                cancelUpgrade(unitID)
+            else
+                return true
+            end
+        else                --- Otherwise, check for requirements
+            if HasTech(unitUpg.prereq, unitTeam) then
+                startUpgrade(unitID, unitUpg, cmdParams) end
             --BlockCmdID(unitID, cmdID, cmdDesc.tooltip, "Upgrading")
             --TODO: Must update texture to "WIP" texture. buildordermenu is not helping.
             --cmdDesc.texture = cmdDesc.texture:gsub(".dds", "_wip.dds") -- "Upgrade in progress" texture
             --cmdDesc.params.refresh = "true"
             --AddUpdateCommand(unitID, cmdDesc)
         --else
-        --    LocalAlert(unitID, "Requires: ".. unitUpg.prereq)
+            --LocalAlert(unitID, "Requires: ".. unitUpg.prereq)
         end
     end
     return true
@@ -321,8 +331,8 @@ function gadget:UnitGiven(unitID, unitDefID, newTeamID, oldTeamID)
 end
 
 local function finishUpgrade(unitID, unitUpg)
-    -- TODO: Being blocked by Upgrade Start
-    --BlockCmdID(unitID, unitUpg.UpgradeCmdDesc.id, unitUpg.UpgradeCmdDesc.tooltip)  --, "Requires: "..unitUpg.id)
+    -- Disable upgrade button on this unit
+    BlockCmdID(unitID, unitUpg.UpgradeCmdDesc.id, unitUpg.UpgradeCmdDesc.tooltip)  --, "Requires: "..unitUpg.id)
 
     -- Enable action & remove "Requires" red alert at bottom
     UnblockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip)
@@ -332,9 +342,10 @@ local function finishUpgrade(unitID, unitUpg)
 
     spSetUnitRulesParam(unitID, unitRulesParamName, nil)
 
-    if unitUpg.alertWhenDone then
-        LocalAlert(unitID, "Unit upgrade complete.")
-    end
+    --- Below is alerting all players about upgrade finished. Looks like an engine bug.
+    --if unitUpg.alertWhenDone then
+    --    LocalAlert(unitID, "Unit upgrade complete.")
+    --end
 end
 
 function gadget:GameFrame(n)
