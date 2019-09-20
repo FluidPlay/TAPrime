@@ -58,6 +58,7 @@ local oldFrame = 0
 
 -- Per-unit upgrade settings (TODO: Move to a separate file for better organization)
 local CMD_MANUALFIRE = CMD.MANUALFIRE
+local CMD_RESURRECT = CMD.RESURRECT
 CMD.UPG_DGUN = 41999
 CMD_UPG_DGUN = CMD.UPG_DGUN
 CMD.UPG_GRENADE = 41998
@@ -66,6 +67,8 @@ CMD.UPG_FIRERAIN = 41997
 CMD_UPG_FIRERAIN = CMD.UPG_FIRERAIN
 CMD.UPG_FIRERAIN = 41996
 CMD_UPG_BARRAGE = CMD.UPG_BARRAGE
+CMD.UPG_RESURRECT = 41995
+CMD_UPG_RESURRECT = CMD.UPG_RESURRECT
 
 -- TODO: Move to Separate file for better organization
 -- Unit Upgrades (as shown in a certain unit's command list)
@@ -152,6 +155,26 @@ UnitUpg = {
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "",
     },
+    resurrect = {     -- >> Core Informer Resurrect (Per Unit)
+        id = "resurrect",
+        UpgradeCmdDesc = {
+            id      = CMD_UPG_RESURRECT,
+            name    = 'Upg Resurrect',
+            action  = 'resurrectupgrade',
+            cursor  = 'Morph',
+            type    = CMDTYPE.ICON,
+            tooltip = 'Resurrect upgrade: Enables ressurect ability [per unit]',
+            texture = 'luaui/images/upgrades/techexplosives.dds',
+            onlyTexture = true,
+        },
+        prereq = "Tech1",
+        metalCost = 160,
+        energyCost = 960,
+        upgradeTime = 10 * 30, --10 seconds, in frames
+        type = "perunit",
+        buttonToUnlock = CMD_RESURRECT,
+        buttonToUnlockTooltip = "",
+    },
 }
 -- Value is used as key of PUU (Per-unit upgrade table)
 UnitResearchers = {
@@ -165,7 +188,7 @@ UnitResearchers = {
     --[UnitDefNames["armcom4"].id] = "dgun",
     [UnitDefNames["armpw"].id] = "grenade",
     [UnitDefNames["armsam"].id] = "firerain",
-    [UnitDefNames["corvrad"].id] = "plasmabarrage",
+    [UnitDefNames["corvrad"].id] = "resurrect", --plasmabarrage
 }
 UnitUpgrades = {} -- Auto-completed from UnitUpg table @ Initialize
 
