@@ -108,7 +108,7 @@ local tips = {
 	--"Mines are super-cheap and quick to build. Remember to make them away from enemy's line of sight.",
 	--"Enemy's mines, radars, and jammers may be disabled using the Juno - built by both factions with T1 constructors.",
     --"Use Alt+0-9 sets the autogroup number (1 .. 9, 0) for selected unit type(s). Newly built units get automatically added to their autogroup number. Alt+Tilde (~) remove units from that autogroup.",
-    "Tier 0 (starting) builder units can not assist the production of factories, unlike their advanced (Tier 2) counterparts. Morph the into Adv. builders as soon as you can.",
+    "Tier 0 (starting) builder units can not assist the production of factories, unlike their advanced (Tier 2) counterparts. Morph them into Adv. builders as soon as you can.",
     "Before you start building a ton of Outposts, please notice they spend +50e per tick. Super-effective Nano Towers won't exist for 2000 more years.",
 }
 

@@ -1,8 +1,3 @@
---
--- Created by IntelliJ IDEA.
--- User: BEPID
--- Date: 30/05/17
--- Time: 20:41
 --==============================
 --== TAPrime HELPER FUNCTIONS ==
 --==============================
