@@ -52,7 +52,7 @@ local oldFrame = 0
 
 --TechUpgrades = {} -- Auto-completed from UT @ Initialize
 
-local upgradingUnits = {}   -- => { unitID = { progress = 0, { upgradeID = { upgData = { UpgradeCmdDesc,.. } ,... }} } || [uID][upgID]
+local upgradingUnits = {}   -- => { unitID = { progress = 0, upgradeID = { upgData = { UpgradeCmdDesc,.. } ,... }} } || [uID][upgID]
 local upgradedUnits = {}    -- => { unitID = { upgrades = { ["capture"]=true, ... } } | upgradeID
 local upgradeLockedUnits = {} --  { unitID = { upgradeID = { prereq = "", upgradeButton = cmdID, orgTooltip = "" .. }, ... }
 local globalUpgraders = {}  -- { unitID = true, .. } || Tech Centers, basically
@@ -84,8 +84,8 @@ end
 
 --- StartUpgrade / CancelUpgrade
 local function SetUpgrade(unitID, upgradeID, progress, upgData)
-    if (upgData == nil) then
-        upgradingUnits[unitID] = nil
+    if (upgData == nil and upgradingUnits[unitID] and upgradingUnits[unitID][upgradeID]) then
+        upgradingUnits[unitID][upgradeID] = nil
     else
         if upgradingUnits[unitID] == nil then
             upgradingUnits[unitID] = {}
@@ -247,18 +247,21 @@ function gadget:GameFrame()
 
     if not upgradingUnits then    -- If no unit upgrading, get outta here
         return end
-
-    for unitID, data in pairs(upgradingUnits) do
-        local progress = data.progress
-        local upgData = data.upgData
-        if progress ~= nil and upgData ~= nil then
-            if spUseUnitResource(unitID, {  ["m"] = upgData.metalCost / upgData.upgradeTime,
-                                            ["e"] = upgData.energyCost / upgData.upgradeTime }) then
-                progress = progress + 1 / upgData.upgradeTime -- TODO: Add "Morph speedup" bonus maybe?
-                upgradingUnits[unitID].progress = progress
-                spSetUnitRulesParam(unitID, upgParamName, progress)
-                if progress >= 1.0 then
-                    finishUpgrade(unitID, upgData, data.upgradeID)
+    --{ unitID = { progress = 0, upgradeID = { upgData = { UpgradeCmdDesc,.. } ,... }} } || [uID][upgID]
+    for unitID, progressandupgrades in pairs(upgradingUnits) do
+        local progress = progressandupgrades.progress
+        for key, value in progressandupgrades do
+            local upgradeID = key
+            local upgData = value
+            if upgradeID ~= "progress" and progress ~= nil and upgData ~= nil then
+                if spUseUnitResource(unitID, {  ["m"] = upgData.metalCost / upgData.upgradeTime,
+                                                ["e"] = upgData.energyCost / upgData.upgradeTime }) then
+                    progress = progress + 1 / upgData.upgradeTime -- TODO: Add "Morph speedup" bonus maybe?
+                    upgradingUnits[unitID].progress = progress
+                    spSetUnitRulesParam(unitID, upgParamName, progress)
+                    if progress >= 1.0 then
+                        finishUpgrade(unitID, upgData, data.upgradeID)
+                    end
                 end
             end
         end

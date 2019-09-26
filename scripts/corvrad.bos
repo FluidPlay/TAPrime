@@ -3,10 +3,13 @@
 #include "sfxtype.h"
 #include "exptype.h"
 
-piece  base, dish;
+piece  base, dish, nano, beam;
+
+static-var  statechg_DesiredState, statechg_StateChanging, notBuilding;
 
 // Signal definitions
-#define SIG_ACTIVATE			2
+#define SIG_ACTIVATE	2
+#define SIG_BUILD		4	
 
 
 SmokeUnit(healthpercent, sleeptime, smoketype)
@@ -38,6 +41,45 @@ SmokeUnit(healthpercent, sleeptime, smoketype)
 	// Build by COBBLER Ver4.0 Copyright @1998 DIGITAL CONCEPT SOFTWARE (MANU@inext.fr) / http://www.annihilationcenter.com/DCS/  
 }
 
+activatescr()
+{
+}
+
+deactivatescr()
+{
+	set INBUILDSTANCE to 0;
+	turn nano to y-axis 0 speed <320.00000>;
+	wait-for-turn nano around y-axis;
+}
+
+RequestState(requestedstate, currentstate)
+{
+	if( statechg_StateChanging )
+	{
+		statechg_DesiredState = requestedstate;
+		return (0);
+	}
+	statechg_StateChanging = TRUE;
+	currentstate = statechg_DesiredState;
+	statechg_DesiredState = requestedstate;
+	while( statechg_DesiredState != currentstate )
+	{
+		if( statechg_DesiredState )
+		{
+			call-script deactivatescr();
+			notBuilding = 1;
+			currentstate = 1;
+		}
+		else
+		{
+			call-script activatescr();
+			notBuilding = 0;
+			currentstate = 0;
+		}
+	}
+	statechg_StateChanging = FALSE;
+}
+
 HitByWeapon(anglex, anglez)
 {
 	turn base to z-axis anglez speed <105.00000>;
@@ -51,6 +93,10 @@ HitByWeapon(anglex, anglez)
 
 Create()
 {
+	notBuilding = 1;
+	statechg_DesiredState = TRUE;
+	statechg_StateChanging = FALSE;
+	
 	dont-cache dish;
 	dont-shade dish;
 	start-script SmokeUnit();
@@ -62,6 +108,7 @@ Activate()
 	signal SIG_ACTIVATE;
 	set-signal-mask SIG_ACTIVATE;
 	spin dish around y-axis speed <100.02198>;
+	start-script RequestState(0);
 	return (0);
 }
 
@@ -71,7 +118,37 @@ Deactivate()
 	set-signal-mask SIG_ACTIVATE;
 	turn dish to y-axis <0.00000> speed <100.00000>;
 	wait-for-turn dish around y-axis;
+	start-script RequestState(1);
 	return (0);
+}
+
+/// Ressurect actions
+
+StartBuilding(heading)
+{
+	start-script RequestState(0);
+	while( notBuilding ) sleep 100;
+	signal SIG_BUILD;
+	//turn nano to y-axis heading speed <320.00000>;
+	//wait-for-turn nano around y-axis;
+	set INBUILDSTANCE to 1;
+}
+
+StopBuilding()
+{
+	signal SIG_BUILD;	
+	set-signal-mask SIG_BUILD;
+	sleep 6000;
+	//turn nano to y-axis 0 speed <160.038462>;
+	//wait-for-turn nano around y-axis;
+	set-signal-mask 0;
+	signal SIG_BUILD;	
+	start-script RequestState(1);
+}
+
+QueryNanoPiece(piecenum)
+{
+	piecenum = beam;
 }
 
 SweetSpot(piecenum)

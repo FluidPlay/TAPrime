@@ -283,7 +283,7 @@ function gadget:Initialize()
         local unitID    = allUnits[i]
         local unitDefID = spGetUnitDefID(unitID)
         local unitTeam  = spGetUnitTeam(unitID)
-        gadget:UnitFinished(unitID, unitDefID, unitTeam)
+        gadget:UnitCreated(unitID, unitDefID, unitTeam)
     end
 end
 
