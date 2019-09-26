@@ -232,9 +232,7 @@ local function applyHighlightHandler(button, cmd)
         end
         local function isUpgrading(unitID)
             local upgPerc = spGetUnitRulesParam(unitID, "upgrade")
-            --upgPerc = upgPerc and tonumber(upgPerc) or 0
-            --return upgPerc > 0.001 and upgPerc < 1
-            return isnumber(upgPerc)
+             return isnumber(upgPerc)
         end
         if cmd.disabled then
             tryApplyColor(disabled)
@@ -244,7 +242,7 @@ local function applyHighlightHandler(button, cmd)
         elseif cmd.showUnique then
             --Spring.Echo("Show Unique found!")
             local selectedUnit = spGetSelectedUnits()[1]
-            if isUpgrading(selectedUnit) then
+            if selectedUnit and isUpgrading(selectedUnit) then
                 tryApplyColor(upgrading)
             else
                 tryApplyColor(out) end
