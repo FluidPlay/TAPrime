@@ -5,13 +5,13 @@
 
 function gadget:GetInfo()
     return {
-        name      = "Upgrade Handler - Button",
+        name      = "Global Upgrade Handler - Button",
         desc      = "Enables a command button in a set of units, once a global upgrade is available",
         author    = "MaDDoX",
         date      = "21 November 2018",
         license   = "GNU GPL, v2 or later",
         layer     = -100,
-        enabled   = false, --true,
+        enabled   = true,
     }
 end
 
@@ -96,31 +96,3 @@ end
 function gadget:UnitGiven(unitID, unitDefID, teamID)
     gadget:UnitCreated(unitID, unitDefID, teamID)
 end
-
-
-
---  -- From cmd_multi_tech: Makes a command locked until all techs in str_reqs are reached.
---  --GG.TechSlaveCommand(CMD_UPG_CAPTURE,"Capture")
---    #pointup Nice, but won't work for a given set of units as we want
-
-
-
--- TODO: This should become an spEditUnitCmdDesc to add a red alert to buttons: "Upgrade already in progress"
---- Actual blocking should be done in gui_multi_tech, since it's realtime (prevents quick double-clicking from adding)
---local function disableAllUpgradeButtons(unitTeam, status, uIDexception)
---if uIDexception then
---    Spring.Echo("Setting upgrade buttons 'disable' to "..tostring(status).." except "..uIDexception)
---else
---    Spring.Echo("Setting upgrade buttons 'disable' to "..tostring(status))
---end
---if techCenters[unitTeam] then
---    for uID, _ in pairs(techCenters[unitTeam]) do
---        if uIDexception == nil then
---            disableUpgradeButton(uID, status)
---        elseif not uID == uIDexception then
---            disableUpgradeButton(uID, status)
---        end
---        --Spring.Echo("Processed: "..uID)
---    end
---end
---end

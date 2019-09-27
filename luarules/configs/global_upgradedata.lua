@@ -137,3 +137,17 @@ GlobalResearchers = {
     [UnitDefNames["armtech4"].id] = {"capture","booster1","booster2","booster3"},
     [UnitDefNames["cortech4"].id] = {"capture","booster1","booster2","booster3"},
 }
+
+-- Which unitDefs are Tech Centers (Global Researchers)
+TechCenterDefIDs = {
+    [UnitDefNames["armtech"].id] = true,
+    [UnitDefNames["armtech1"].id] = true,
+    [UnitDefNames["armtech2"].id] = true,
+    [UnitDefNames["armtech3"].id] = true,
+    [UnitDefNames["armtech4"].id] = true,
+    [UnitDefNames["cortech"].id] = true,
+    [UnitDefNames["cortech1"].id] = true,
+    [UnitDefNames["cortech2"].id] = true,
+    [UnitDefNames["cortech3"].id] = true,
+    [UnitDefNames["cortech4"].id] = true,
+}

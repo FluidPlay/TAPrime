@@ -46,29 +46,29 @@ local Config = {
     ordermenu = {
         name = 'ordermenu',
         rows = 5, columns = 5,
-        x = '0%', y = '28%',
+        x = '0%', y = '25%',
         width = '20%', height = '14%', --height 20%
         orientation = 'horizontal',
-        maxWidth = 420,
+        maxWidth = 490, --420
         padding = {5, 5, 5, 5},     -- outer panel
     },
     buildmenu = {
         name = 'buildmenu',
         rows = 5, columns = 5,
-        x = '0%', y = '42%',
-        width = '20%', height = '20%',
+        x = '0%', y = '39%',
+        width = '20%', height = '20%',  -- button width/height within the area
         orientation = 'horizontal',
-        maxWidth = 420,
+        maxWidth = 490,
         padding = {5, 5, 5, 5},
         --sortBy = 'customParams.tier',
     },
     buildmenuAdv = {
         name = 'buildmenuAdv',
         rows = 5, columns = 5,
-        x = '0%', y = '62.25%',
+        x = '0%', y = '63%',
         width = '20%', height = '20%',
         orientation = 'horizontal',
-        maxWidth = 420,
+        maxWidth = 490,
         padding = {5, 5, 5, 5},
         --sortBy = 'customParams.tier',
     },

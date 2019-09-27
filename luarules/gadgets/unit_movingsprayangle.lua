@@ -34,9 +34,10 @@ local spGetUnitVelocity     = Spring.GetUnitVelocity
 local spGetUnitDefID        = Spring.GetUnitDefID
 local updateRate = 5    -- how Often, in frames, to update the value
 local minMoveSpeed = 1  -- move speed above which the custom sprayangle will kick in
-local spGetProjectileDefID = Spring.GetProjectileDefID
-local spSetProjectileVelocity = Spring.SetProjectileVelocity
-local spGetProjectileVelocity = Spring.GetProjectileVelocity
+local spGetProjectileDefID      = Spring.GetProjectileDefID
+local spSetProjectileVelocity   = Spring.SetProjectileVelocity
+local spGetProjectileVelocity   = Spring.GetProjectileVelocity
+local spIsUnitValid             = Spring.IsUnitValid
 
 local armfavweapID = WeaponDefNames["armfav_janus_rocket"].id
 
@@ -80,16 +81,14 @@ function gadget:GameFrame(f)
     for unitID, sprayangleData in pairs(trackedUnits) do
         -- Spring.GetUnitVelocity ( number unitID ) -> nil | number velx, number vely, number velz, number velLength
         local unitMoveSpeed = select(4, spGetUnitVelocity(unitID))
-        local newSprayAngle = (unitMoveSpeed > minMoveSpeed) and sprayangleData.movingsprayangle or sprayangleData.sprayangle
-        for weapNum = 1, sprayangleData.weaponCount do
-            spSetUnitWeaponState (unitID, weapNum, "sprayAngle", newSprayAngle)
+        if not spIsUnitValid(unitID) then
+            trackedUnits[unitID] = nil
+        elseif isnumber(unitMoveSpeed) then
+            local newSprayAngle = (unitMoveSpeed > minMoveSpeed) and sprayangleData.movingsprayangle or sprayangleData.sprayangle
+            for weapNum = 1, sprayangleData.weaponCount do
+                spSetUnitWeaponState (unitID, weapNum, "sprayAngle", newSprayAngle)
+            end
         end
---        if unitMoveSpeed > minMoveSpeed then
---            spSetUnitWeaponState (unitID, 1, "sprayAngle", sprayangleData.movingsprayangle)
---            --Spring.Echo("new spray angle: "..msprayangle*182.044)
---        else -- restore to unitDef (default) sprayangle
---            spSetUnitWeaponState (unitID, 1, "sprayAngle", sprayangleData.sprayangle)
---        end
     end
 end
 

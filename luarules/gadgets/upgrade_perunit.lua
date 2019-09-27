@@ -127,7 +127,7 @@ UnitUpg = {
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
             tooltip = 'Fire Rain upgrade: Enables manual-fire Fire Rain weapon [per unit]',
-            texture = 'luaui/images/upgrades/techdgun.dds',
+            texture = 'luaui/images/upgrades/techfirerain.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
@@ -148,7 +148,7 @@ UnitUpg = {
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
             tooltip = 'Barrage upgrade: Enables manual-fire Barrage weapon [per unit]',
-            texture = 'luaui/images/upgrades/techexplosives.dds',
+            texture = 'luaui/images/upgrades/techfirerain.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
@@ -169,7 +169,7 @@ UnitUpg = {
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
             tooltip = 'Resurrect upgrade: Enables ressurect ability [per unit]',
-            texture = 'luaui/images/upgrades/techexplosives.dds',
+            texture = 'luaui/images/upgrades/techresurrect.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
