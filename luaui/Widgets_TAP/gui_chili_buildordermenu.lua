@@ -542,9 +542,12 @@ end --processAllCommands
 
 local function updateSelection()
     tooltip = nil
-    if not buildGrid then
+    if not buildGrid and not buildGridAdv then
         return end
     local _,cmdID = spGetActiveCommand()
+    for _, bt in ipairs(buildGridAdv.children) do
+        if bt.updateSelection then bt.updateSelection(cmdID) end
+    end
     for _, bt in ipairs(buildGrid.children) do
         if bt.updateSelection then bt.updateSelection(cmdID) end
     end
