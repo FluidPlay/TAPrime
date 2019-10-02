@@ -197,7 +197,8 @@ function gadget:UnitDestroyed(unitID, unitDefID , unitTeam)
     upgradedUnits[unitID] = nil     -- TODO: Revoke awarded Tech Center techs.
     upgradingUnits[unitID] = nil
     upgradeLockedUnits[unitID] = nil
-    techCenters[unitTeam][unitID] = nil
+    if techCenters[unitTeam] then
+        techCenters[unitTeam][unitID] = nil end
 end
 
 -- If unit was taken, apply unit-creation check
