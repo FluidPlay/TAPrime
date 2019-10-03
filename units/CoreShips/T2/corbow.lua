@@ -1,10 +1,10 @@
 return {
-	corarch = {
+	corbow = {
 		airsightdistance = 900,
 		buildangle = 16384,
 		buildcostenergy = 12000,
 		buildcostmetal = 1000,
-		buildpic = "CORARCH.DDS",
+		buildpic = "CORBOW.DDS",
 		buildtime = 15000,
 		canmove = true,
 		category = "ALL MOBILE WEAPON NOTLAND SHIP NOTSUB NOTAIR SURFACE",
@@ -27,7 +27,7 @@ return {
 		movementclass = "BOAT44X4",
 		name = "Shredder",
 		nochasecategory = "NOTAIR",
-		objectname = "CORARCH",
+		objectname = "CORBOW",
 		seismicsignature = 0,
 		selfdestructas = "mediumexplosiongenericSelfd",
 		sightdistance = 465,
@@ -60,7 +60,7 @@ return {
 				height = 20,
 				hitdensity = 100,
 				metal = 0.8*354,
-				object = "CORARCH_DEAD",
+				object = "CORBOW_DEAD",
 				reclaimable = true,
 				seqnamereclamate = "TREE1RECLAMATE",
 				world = "All Worlds",

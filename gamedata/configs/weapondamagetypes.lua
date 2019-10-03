@@ -146,7 +146,7 @@ local weaponDamageTypes = {
 	armdecade = { ["flash"] = "homing", },
 	armliche = { ["PlasmaImplosionDumpRocket"] = "nuke", },
 	armjanus = { ["HeavyRocket"] = "laser", },
-	corarch = { ["FlakCannon"] = "rocket", ["AA2Missile"] = "rocket", ["rainoffire"] = "thermo", },
+	corbow = { ["FlakCannon"] = "rocket", ["AA2Missile"] = "rocket", ["Missiles"] = "thermo", },
 	corgol = { ["HeavyCannon"] = "cannon", },
 	armpnix = { ["AdvancedBombs"] = "explosive", },
 	armlance = { ["TorpedoLauncher"] = "rocket", },

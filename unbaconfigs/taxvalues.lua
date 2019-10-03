@@ -205,7 +205,7 @@ taxvalues = {
 	cortship = 1.025,
 -- T2 CORE
 	coracsub = 1.025,
-	corarch = 1.025,
+	corbow = 1.025,
 	corbats = 1.025,
 	corblackhy = 1.025,
 	corcarry = 1.025,

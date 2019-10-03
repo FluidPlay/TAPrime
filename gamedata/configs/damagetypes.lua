@@ -13,7 +13,7 @@ local damageTypes = {
 
 	bullet={"armkam","armsaber","corcut","corfink","corveng","armpw","corak","armpt","corpt","corsub","armflash","armemp","armspid",},
 
-	rocket={"armfig","armpship","corpship","armlance","armmerl","armsb","armblade","corcrw","corsb","cortitan","armseap","corape","corseap","corvipe","armtl","corptl","cortl","armclaw","armdl","armpb","corerad","cordl","armah","corcat","armrock","armjeth","coraak","corcrash","armaak","corstorm","armbanth","corbuzz","armmship","cormship","armptl","armaas","corarch","armsptk","corfrt","packo","armsub","corssub","tawf009","cormh","armmh","corah","armfrt","madsam",},
+	rocket={"armfig","armpship","corpship","armlance","armmerl","armsb","armblade","corcrw","corsb","cortitan","armseap","corape","corseap","corvipe","armtl","corptl","cortl","armclaw","armdl","armpb","corerad","cordl","armah","corcat","armrock","armjeth","coraak","corcrash","armaak","corstorm","armbanth","corbuzz","armmship","cormship","armptl","armaas","corbow","armsptk","corfrt","packo","armsub","corssub","tawf009","cormh","armmh","corah","armfrt","madsam",},
 
 	laser={"armfast","armwar","corfav","armsubk","corshark","armjanus","corgator",},
 

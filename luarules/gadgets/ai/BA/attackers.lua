@@ -144,7 +144,7 @@ mobileaalist = {
 	"corsent",	--	Copperhead		/	Anti Air Flak Vehicle
 	"coraak",   --	Manticore		/	Heavy Amphibious Anti-Air Kbot
 	"corcrash",	--	Crasher			/	Anti-Air
-	"corarch",	--	Shredder		/	Anti-Air Ship
+	"corbow",	--	Bow (former Shredder)	/	Anti-Air Ship
 	"armyork",	--	Phalanx			/	Anti-Air Flak Vehicle
 	"armjeth",	--	Jethro			/	Anti-Air
 	"armaak",   --  Archangel       /   Advanced Amphibious Anti-Air Kbot

@@ -205,7 +205,7 @@ categories = {
 	cortship = "ship",
 -- T2 CORE
 	coracsub = "ship",
-	corarch = "ship",
+	corbow = "ship",
 	corbats = "ship",
 	corblackhy = "ship",
 	corcarry = "ship",

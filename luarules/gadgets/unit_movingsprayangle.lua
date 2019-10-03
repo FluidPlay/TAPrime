@@ -37,7 +37,6 @@ local minMoveSpeed = 1  -- move speed above which the custom sprayangle will kic
 local spGetProjectileDefID      = Spring.GetProjectileDefID
 local spSetProjectileVelocity   = Spring.SetProjectileVelocity
 local spGetProjectileVelocity   = Spring.GetProjectileVelocity
-local spIsUnitValid             = Spring.IsUnitValid
 
 local armfavweapID = WeaponDefNames["armfav_janus_rocket"].id
 
@@ -81,7 +80,7 @@ function gadget:GameFrame(f)
     for unitID, sprayangleData in pairs(trackedUnits) do
         -- Spring.GetUnitVelocity ( number unitID ) -> nil | number velx, number vely, number velz, number velLength
         local unitMoveSpeed = select(4, spGetUnitVelocity(unitID))
-        if not spIsUnitValid(unitID) then
+        if not unitID == nil then
             trackedUnits[unitID] = nil
         elseif isnumber(unitMoveSpeed) then
             local newSprayAngle = (unitMoveSpeed > minMoveSpeed) and sprayangleData.movingsprayangle or sprayangleData.sprayangle
