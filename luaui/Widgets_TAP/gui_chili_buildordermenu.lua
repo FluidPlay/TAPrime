@@ -231,9 +231,12 @@ local function applyHighlightHandler(button, cmd)
             end
         end
         local function isUpgrading(unitID)
+            if unitID == nil then
+                return false
+            end
             local upgPerc = spGetUnitRulesParam(unitID, "upgrade")
-             return isnumber(upgPerc)
-        end
+            return isnumber(upgPerc)
+            end
         if cmd.disabled then
             tryApplyColor(disabled)
             if button.state.hovered then

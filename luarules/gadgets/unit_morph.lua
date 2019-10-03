@@ -937,33 +937,33 @@ local function FinishMorph(unitID, morphData)
   local newUnit
   local face = HeadingToFacing(h)
 
-    if udDst.isBuilding or udDst.isFactory then
-        --if udDst.isBuilding then
+  if udDst.isBuilding or udDst.isFactory then
+      --if udDst.isBuilding then
 
-        local x = math.floor(px/16)*16
-        local y = py
-        local z = math.floor(pz/16)*16
+      local x = math.floor(px/16)*16
+      local y = py
+      local z = math.floor(pz/16)*16
 
-        local xsize = udDst.xsize
-        local zsize =(udDst.zsize or udDst.ysize)
-        if ((face == 1) or(face == 3)) then
-            xsize, zsize = zsize, xsize
-        end
-        if xsize/4 ~= math.floor(xsize/4) then
-            x = x+8
-        end
-        if zsize/4 ~= math.floor(zsize/4) then
-            z = z+8
-        end
-        newUnit = spCreateUnit(defName, x, y, z, face, unitTeam)
-        if newUnit then
-            spSetUnitPosition(newUnit, x, y, z) end
-    else
-        newUnit = spCreateUnit(defName, px, py, pz, face, unitTeam)
-        --Spring.SetUnitRotation(newUnit, 0, -h * math.pi / 32768, 0)
-        if newUnit then
-            spSetUnitPosition(newUnit, px, py, pz) end
-    end
+      local xsize = udDst.xsize
+      local zsize =(udDst.zsize or udDst.ysize)
+      if ((face == 1) or(face == 3)) then
+          xsize, zsize = zsize, xsize
+      end
+      if xsize/4 ~= math.floor(xsize/4) then
+          x = x+8
+      end
+      if zsize/4 ~= math.floor(zsize/4) then
+          z = z+8
+      end
+      newUnit = spCreateUnit(defName, x, y, z, face, unitTeam)
+      if newUnit then
+          spSetUnitPosition(newUnit, x, y, z) end
+  else
+      newUnit = spCreateUnit(defName, px, py, pz, face, unitTeam)
+      --Spring.SetUnitRotation(newUnit, 0, -h * math.pi / 32768, 0)
+      if newUnit then
+          spSetUnitPosition(newUnit, px, py, pz) end
+  end
   
   if (extraUnitMorphDefs[unitID] ~= nil) then
     -- nothing here for now
@@ -1002,8 +1002,10 @@ local function FinishMorph(unitID, morphData)
     end
     newXp = math.min( newXp, maxXp*0.9)
   end
-  spSetUnitExperience(newUnit, newXp)
---  spSetUnitGroup(newUnit, oldGroup)
+  if newUnit and newXp then
+      spSetUnitExperience(newUnit, newXp)
+  end
+--spSetUnitGroup(newUnit, oldGroup)
 
   --//copy some state
   local states = spGetUnitStates(unitID)
