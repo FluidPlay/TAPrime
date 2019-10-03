@@ -18,13 +18,13 @@ local damageMultipliers = {
 	rocket={ 	peon = 0.15, 	rpg = 0.5, 		stalwart = 0.42,aiv = 0.5, 			tank = 4.5, 	artillery = 0.85,
 				fighter = 0.3, 	gunship = 2.55, bomber = 0.5, 	structure = 0.8, 	defense = 0.6, 	defenseaa = 0.5, 	commander = 0.4,
 				invader = 0.3,	heavybot = 0.25,assault = 0.8,	heavyveh = 1.75,	resource = 0.8,
-				lightship = 0.33,				supportship = 0.75,					heavyship = 2,
+				lightship = 0.33,				supportship = 0.75,					heavyship = 1.6,
 	}
 ,
 	homing={ 	peon = 0.1, 	rpg = 0.25, 	stalwart = 0.5, aiv = 0.75, 		tank = 3.2, 	artillery = 1.25,
 				fighter = 1.25, gunship = 3, 	bomber = 1.5, 	structure = 0.6, 	defense = 0.75, defenseaa = 0.125, 	commander = 0.2,
 				invader = 0.4,  heavybot = 0.2,	assault = 0.75,	heavyveh = 1,		resource = 0.75,
-				lightship = 1.25,				supportship = 1.5,					heavyship = 3,
+				lightship = 1.25,				supportship = 1.5,					heavyship = 2,
 	}
 ,
 	laser={ 	peon = 2, 		rpg = 1.6, 		stalwart = 0.75, aiv = 0.6, 		tank = 0.33, 	artillery = 0.65,
