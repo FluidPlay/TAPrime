@@ -16,9 +16,9 @@ local armorDefs = {
 
 	gunship={"armatlas","armbrawl","armdfly","armpeep","armsaber","armseap","corseah","corape","corcrw","corcut","corfink","corseap","corvalk",},
 
-	defense={"armvulc","armamb","armamd","armclaw","armdl","armdrag","armemp","armfhlt","armguard","armhlt","armllt","armpb","armtl","corbhmth","corbuzz","corexp","corfgate","corfhlt","cormaw","corfmd","corgate","corhlt","corllt","corpun","cortl","cortoast","corvipe","hllt","armbeamer","armbrtha","corint","armamex",},
+	defense={"armvulc","armamb","armamd","armclaw","armdl","armdrag","armemp","armfhlt","armguard","armhlt","armllt","armpb","corbhmth","corbuzz","corexp","corfgate","corfhlt","cormaw","corfmd","corgate","corhlt","corllt","corpun","cortoast","corvipe","hllt","armbeamer","armbrtha","corint","armamex",},
 
-	defenseaa={"armrl","armatl","armcir","armdeva","armfflak","armflak","armfrt","coratl","corenaa","corerad","corflak","corfrt","corrl","madsam","armmercury","packo","corscreamer","cordoom","armanni",},
+	defenseaa={"armrl","armatl","armcir","armdeva","armfflak","armflak","armfrt","coratl","corenaa","corerad","corflak","corfrt","corrl","madsam","armmercury","packo","corscreamer","cordoom","armanni","armptl","corptl","armtl","cortl",},
 
 	heavybot={"corkrog","armmav","armsptk","armsnipe", "armmark", "armzeus", "armfboy", "cortermite", "corsumo",},
 
