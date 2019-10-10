@@ -33,6 +33,7 @@ local tips = {
     "corshark.dds ".."Certain units are built in groups of two or more. Their description will show, ie. [x2] so you can know about it, and the cost shown is the total for all units. You retain individual control after they're built.",
     "armsolar.dds ".."You may order your builder or outpost to build structures in an array-like pattern by holding SHIFT+ALT and dragging with the left mouse button. Spread them up by hitting 'T' on keyboard while the Shift key is held. Ctrl+Shift+T brings them closer.",
     "armwin.dds ".."Wind Generators built on high ground have a bonus compared to units built closer to the sea level. Isn't nature beautiful?",
+    "armfdrag.dds ".."Dragon Teeth can block low-height missiles, bullets and laser shots, like those from basic kbots. Shark Teeth only block ships movement.",
     "cordrag.dds ".."Arm and Core's Dragon Teeth (DTs) are great to surround perimeters, preventing lower-tech units movement. They also block incoming direct-fire and missiles from going through, so improve your defenses resistance by surrounding them with DTs.",
     "armcom.dds ".."The D-Gun is the Commander's directed-fire ability and the most powerful weapon in the game. Upgrade it in the commander menu after your Tech Center is on level 1, then use it with the 'D' keyboard shortcut.",
     "armyork.dds ".."Flak-weaponry units, like the Phalanx, fire scattered projectiles. Flak is excellent at taking out fighters and heavy infantry, but will barely scratch tanks, commanders and plasma kbots.",
