@@ -7,13 +7,56 @@ piece  groundx2, hips, body, lleg, lfoot, rleg, rfoot, head,
        laser, laserflare, gun, gunflare;
 
 static-var  bMoving, bAiming, Static_Var_3, restore_delay, Static_Var_5,
-            gun_1, Static_Var_7, Static_Var_8;
+            gun_1, Static_Var_7, Static_Var_8, Static_Var_2, statechg_DesiredState, statechg_StateChanging;
 
 // Signal definitions
 #define SIG_AIM				2
 #define SIG_AIM_3			8
 #define SIG_MOVE			16
 
+
+Go()
+{
+	//call-script activatescr();
+	turn hips to y-axis Static_Var_2 speed <160.000000>;
+	wait-for-turn hips around y-axis;
+	set INBUILDSTANCE to 1;
+}
+
+Stop()
+{
+	set INBUILDSTANCE to 0;
+	turn hips to y-axis <0.000000> speed <180.000000>;
+	wait-for-turn hips around y-axis;
+	//call-script deactivatescr();
+}
+
+
+RequestState(requestedstate, currentstate)
+{
+	if( statechg_StateChanging )
+	{
+		statechg_DesiredState = requestedstate;
+		return (0);
+	}
+	statechg_StateChanging = TRUE;
+	currentstate = statechg_DesiredState;
+	statechg_DesiredState = requestedstate;
+	while( statechg_DesiredState != currentstate )
+	{
+		if( statechg_DesiredState )
+		{
+			call-script Stop();
+			currentstate = 1;
+		}
+		else
+		{
+			call-script Go();
+			currentstate = 0;
+		}
+	}
+	statechg_StateChanging = FALSE;
+}
 
 walk()
 {
@@ -645,6 +688,22 @@ RestoreAfterDelay()
 	turn head to y-axis <0.000000> speed <90.000000>;
 	wait-for-turn head around y-axis;
 	bAiming = FALSE;
+}
+
+StartBuilding(Func_Var_1)
+{
+	Static_Var_2 = Func_Var_1;
+	start-script RequestState(0);
+}
+
+QueryNanoPiece(piecenum)
+{
+	piecenum = gunflare;
+}
+
+StopBuilding()
+{
+	start-script RequestState(1);
 }
 
 AimTertiary(heading, pitch)

@@ -72,7 +72,7 @@ local damageMultipliers = {
 	explosive={ peon = 1, 		rpg = 0.75, 	stalwart = 1,   aiv = 1, 			tank = 1, 		artillery = 1,
 				fighter = 0.5, 	gunship = 0.5, 	bomber = 0.5, 	structure = 3, 		defense = 1.5, 	defenseaa = 0.75, 	commander = 0.3,
 				invader = 1.5,	heavybot = 0.5, assault = 0.75,	heavyveh = 1.2,		resource = 1.25,
-				lightship = 2,					supportship = 1,					heavyship = 2,
+				lightship = 3,					supportship = 1.5,					heavyship = 4,
 	}
 ,
 	flak={ 		peon = 0.75, 	rpg = 0.4, 		stalwart = 0.25,aiv = 0.75,			tank = 0.275, 	artillery = 0.75,

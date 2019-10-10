@@ -89,6 +89,9 @@ local unitIconTable = {
       veh_antinuke=2,
       veh_radar=1.5,
       veh_tank=1.6,
+      sea_light = 0.9,
+      sea_support = 1,
+      sea_heavy = 1.25,
 }
 
 local tierSizeMult = {

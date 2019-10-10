@@ -30,6 +30,7 @@ end
 -- Random tips we can show
 local tips = {
     "corhrk.dds ".."Some units can only be obtained by morph, like the Core Dominator (T2 Flak Artillery, morphed from Mortys) and the Arm Zeus (T3 Thermo Kbot, morphed from Mavericks).",
+    "corshark.dds ".."Certain units are built in groups of two or more. Their description will show, ie. [x2] so you can know about it, and the cost shown is the total for all units. You retain individual control after they're built.",
     "armsolar.dds ".."You may order your builder or outpost to build structures in an array-like pattern by holding SHIFT+ALT and dragging with the left mouse button. Spread them up by hitting 'T' on keyboard while the Shift key is held. Ctrl+Shift+T brings them closer.",
     "armwin.dds ".."Wind Generators built on high ground have a bonus compared to units built closer to the sea level. Isn't nature beautiful?",
     "cordrag.dds ".."Arm and Core's Dragon Teeth (DTs) are great to surround perimeters, preventing lower-tech units movement. They also block incoming direct-fire and missiles from going through, so improve your defenses resistance by surrounding them with DTs.",
