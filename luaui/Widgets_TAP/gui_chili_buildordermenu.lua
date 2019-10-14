@@ -45,18 +45,18 @@ local vsx, vsy = spGetWindowGeometry()
 local Config = {
     ordermenu = {
         name = 'ordermenu',
-        rows = 5, columns = 5,
+        rows = 4, columns = 4,
         x = '0%', y = '25%',
-        width = '20%', height = '14%', --height 20%
+        width = '15%', height = '16%', --width 14, height 20%
         orientation = 'horizontal',
         maxWidth = 490, --420
-        padding = {5, 5, 5, 5},     -- outer panel
+        padding = {2, 2, 2, 2},     -- outer panel
     },
     buildmenu = {
         name = 'buildmenu',
-        rows = 5, columns = 5,
-        x = '0%', y = '39%',
-        width = '20%', height = '20%',  -- button width/height within the area
+        rows = 4, columns = 5,
+        x = '0%', y = '41%',
+        width = '15%', height = '15%',  -- button width/height within the area (20,20)
         orientation = 'horizontal',
         maxWidth = 490,
         padding = {5, 5, 5, 5},
@@ -64,9 +64,9 @@ local Config = {
     },
     buildmenuAdv = {
         name = 'buildmenuAdv',
-        rows = 5, columns = 5,
+        rows = 4, columns = 5,
         x = '0%', y = '63%',
-        width = '20%', height = '20%',
+        width = '15%', height = '15%', -- 20, 20
         orientation = 'horizontal',
         maxWidth = 490,
         padding = {5, 5, 5, 5},
@@ -75,13 +75,13 @@ local Config = {
     labels = {
         captionFontMaxSize = 18,
         queueFontSize = 18, --32 (MaDDoX)
-        costFontSize = 12,
+        costFontSize = 9,
         showMetalCost = true,
         showEnergyCost = false, --true
     },
     hiddenCMDs = {
         timewait = true, deathwait = true, squadwait = true, gatherwait = true,
-        loadonto = true, selfd = false, settargetnoground = true,
+        loadonto = true, selfd = false, settargetnoground = true, manualfire = true,
     },
 }
 --------------------------------------------------------------------------------

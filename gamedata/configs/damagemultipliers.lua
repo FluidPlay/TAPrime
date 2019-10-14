@@ -52,7 +52,7 @@ local damageMultipliers = {
 	}
 ,
 	thermo={ 	peon = 0.4, 	rpg = 1.1, 		stalwart = 0.5, aiv = 0.2, 			tank = 1.2, 	artillery = 1.25,
-				fighter = 1.3, 	gunship = 1.5,	bomber = 1.25, 	structure = 0.75, 	defense = 1.25, defenseaa = 0.5, 	commander = 0.5,
+				fighter = 1.3, 	gunship = 1.5,	bomber = 1.25, 	structure = 0.75, 	defense = 1,    defenseaa = 0.5, 	commander = 0.25,
 				invader = 0.65,	heavybot = 1.2, assault = 0.6,	heavyveh = 1,		resource = 0.45,
 				lightship = 2,					supportship = 0.5,					heavyship = 1.75,
 	}

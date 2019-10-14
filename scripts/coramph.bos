@@ -6,11 +6,12 @@
 piece  groundx2, hips, body, lleg, lfoot, rleg, rfoot, head,
        laser, laserflare, gun, gunflare;
 
-static-var  bMoving, bAiming, Static_Var_3, restore_delay, Static_Var_5,
-            gun_1, Static_Var_7, Static_Var_8, Static_Var_2, statechg_DesiredState, statechg_StateChanging;
+static-var  bMoving, bAiming, Static_Var_3, restore_delay, Static_Var_5, notBuilding,
+            gun_1, Static_Var_7, Static_Var_8, BuildHeading, statechg_DesiredState, statechg_StateChanging;
 
 // Signal definitions
 #define SIG_AIM				2
+#define SIG_BUILD		4
 #define SIG_AIM_3			8
 #define SIG_MOVE			16
 
@@ -18,16 +19,17 @@ static-var  bMoving, bAiming, Static_Var_3, restore_delay, Static_Var_5,
 Go()
 {
 	//call-script activatescr();
-	turn hips to y-axis Static_Var_2 speed <160.000000>;
-	wait-for-turn hips around y-axis;
-	set INBUILDSTANCE to 1;
+	//turn head to y-axis BuildHeading speed <160.000000>;
+	//wait-for-turn hips around y-axis;
+	//set INBUILDSTANCE to 1;
+	return (1);
 }
 
 Stop()
 {
 	set INBUILDSTANCE to 0;
-	turn hips to y-axis <0.000000> speed <180.000000>;
-	wait-for-turn hips around y-axis;
+	//turn head to y-axis <0.000000> speed <180.000000>;
+	//wait-for-turn hips around y-axis;
 	//call-script deactivatescr();
 }
 
@@ -47,11 +49,13 @@ RequestState(requestedstate, currentstate)
 		if( statechg_DesiredState )
 		{
 			call-script Stop();
+			notBuilding = 1;
 			currentstate = 1;
 		}
 		else
 		{
 			call-script Go();
+			notBuilding = 0;
 			currentstate = 0;
 		}
 	}
@@ -690,10 +694,15 @@ RestoreAfterDelay()
 	bAiming = FALSE;
 }
 
-StartBuilding(Func_Var_1)
+StartBuilding(heading)
 {
-	Static_Var_2 = Func_Var_1;
 	start-script RequestState(0);
+	while( notBuilding ) sleep 100;
+	signal SIG_BUILD;
+	turn head to y-axis heading speed <350.000000>;
+	wait-for-turn head around y-axis;
+	BuildHeading = heading;
+	set INBUILDSTANCE to 1;
 }
 
 QueryNanoPiece(piecenum)
@@ -703,6 +712,11 @@ QueryNanoPiece(piecenum)
 
 StopBuilding()
 {
+	signal SIG_BUILD;	
+	set-signal-mask SIG_BUILD;
+	sleep 6000;
+	set-signal-mask 0;
+	signal SIG_BUILD;
 	start-script RequestState(1);
 }
 
