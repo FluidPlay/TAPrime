@@ -251,7 +251,7 @@ local moveDatas = {
 		footprintx = 4,
 		footprintz = 4,
 		maxslope = 80,
-		maxwaterdepth = 22,
+		maxwaterdepth = 128, --22,
 		depthModParams = {
 			minHeight = 4,
 			linearCoeff = 0.03,
@@ -440,7 +440,7 @@ local moveDatas = {
         allowRawMovement = true,
 		footprintx = 2,
 		footprintz = 2,
-		minwaterdepth = 15,
+		minwaterdepth = 22, --15
 		crushstrength = 5,
 		subMarine = 1,
 	},
@@ -448,7 +448,7 @@ local moveDatas = {
         allowRawMovement = true,
         footprintx = 3,
         footprintz = 3,
-        minwaterdepth = 15,
+        minwaterdepth = 22, --15
         crushstrength = 5,
         subMarine = 1,
     },

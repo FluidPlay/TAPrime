@@ -28,7 +28,7 @@ local armorDefs = {
 
 	fighter={"armaca","armawac","armca","armcsa","armfig","armhawk","armsehak","armsfig","corawac","corca","corcsa","corhunt","corsfig","corvamp","corveng",},
 
-	rpg={"armaak","armah","armjeth","armmh","armrock","coraak","corah","corbow","corcrash","corstorm",},
+	rpg={"armaak","armah","armjeth","armmh","armrock","coraak","corah","corcrash","corstorm",},
 
 	stalwart={"armbanth","armham","armorco","armraz","armvader","armwar","corcan","corkarg","corroach","corthud","corthovr","krogtaar","meteor","tawf009",},
 
@@ -50,7 +50,7 @@ local armorDefs = {
 	lightship = {"corpt", "corcrus", "armpt", "armcrus",},
 
 	supportship = {"armcs", "armacsub", "armpship", "armrecl", "armmship", "armsjam", "armaas",
-				   "corcs", "coracsub", "corpship", "correcl", "cormship", "corsjam",},
+				   "corcs", "coracsub", "corpship", "correcl", "cormship", "corsjam", "corbow",},
 
 	heavyship = {"armroy", "armtship", "armbats", "armsub", "armcarry", "armepoch",
 				 "corshark", "corssub", "corcarry", "corroy", "cortship", "corbats", "corblackhy",} ,
