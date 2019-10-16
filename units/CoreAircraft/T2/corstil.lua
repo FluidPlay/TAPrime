@@ -1,10 +1,10 @@
 return {
-	armstil = {
+	corstil = {
 		acceleration = 0.25,
 		brakerate = 0.04,
 		buildcostenergy = 20000,
 		buildcostmetal = 240,
-		buildpic = "ARMSTIL.DDS",
+		buildpic = "CORSTIL.DDS",
 		buildtime = 21522,
 		canfly = true,
 		canmove = true,
@@ -29,7 +29,7 @@ return {
 		maxwaterdepth = 0,
 		name = "Stiletto",
 		nochasecategory = "VTOL",
-		objectname = "ARMSTIL",
+		objectname = "CORSTIL",
 		seismicsignature = 0,
 		selfdestructas = "mediumExplosionGenericSelfd",
 		sightdistance = 390,

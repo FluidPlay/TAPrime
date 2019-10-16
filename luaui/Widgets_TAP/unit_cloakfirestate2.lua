@@ -44,14 +44,15 @@ local exceptionList = { --add exempt units here
 	"cormine3",
 	"cormine4",
 	"corfmine3",
-	"corsktl",
+	--"corsktl",
 	"armpb",
 	"armamb",
 	"armpacko",
-	"armsnipe",
+	--"armsnipe",
 }
 
 local exceptionArray = {}
+local CMD_CLOAK = CMD.CLOAK
 for _,name in pairs(exceptionList) do
 	local ud = UnitDefNames[name]
 	if ud then
@@ -62,30 +63,35 @@ end
 local cloakUnit = {} --stores the desired fire state when decloaked of each unitID
 
 function widget:UnitCommand(unitID, unitDefID, teamID, cmdID, cmdParams)
-if cmdID == 37382 and cmdParams[1] == 1 then
-	if (not enabled) or (teamID ~= myTeam) or exceptionArray[unitDefID] then 
-		return
-	end
-	local states = GetUnitStates(unitID)
-	cloakUnit[unitID] = states.firestate --store last state
-	if states.firestate ~= 0 then
-		STATIC_STATE_TABLE[1] = 0
-		GiveOrderToUnit(unitID, CMD.FIRE_STATE, STATIC_STATE_TABLE, 0)
-	end
-elseif cmdID == 37382 and cmdParams[1] == 0 then
-
-	if (not enabled) or (teamID ~= myTeam) or exceptionArray[unitDefID] or (not cloakUnit[unitID]) then 
-		return
-	end
-	local states = GetUnitStates(unitID)
-	if states.firestate == 0 then
-		local targetState = cloakUnit[unitID]
-		STATIC_STATE_TABLE[1] = targetState
-		GiveOrderToUnit(unitID, CMD.FIRE_STATE, STATIC_STATE_TABLE, 0) --revert to last state
-		--Spring.Echo("Unit compromised - weapons free!")
-	end
-	cloakUnit[unitID] = nil
-end
+    Spring.Echo("cmdID: "..cmdID.." params[1]: "..cmdParams[1])
+    if not cmdID == 37382 then
+        return end
+    if (not enabled) or (teamID ~= myTeam) or exceptionArray[unitDefID] then
+        return
+    end
+    if cmdParams[1] == 1 then --[[ Cloak ]]
+        local states = GetUnitStates(unitID)
+        cloakUnit[unitID] = states.firestate --store last state
+        Spring.Echo("Found state: "..states.firestate)
+        --if states.firestate ~= 0 then
+            --STATIC_STATE_TABLE[1] = 0
+            local newState = 0
+            GiveOrderToUnit(unitID, CMD.FIRE_STATE, newState, 0)
+        --end
+    elseif cmdParams[1] == 0 then --[[ Decloak ]] --cmdID == 37382
+        if not cloakUnit[unitID] then
+            return
+        end
+        --local states = GetUnitStates(unitID)
+        --if states.firestate == 0 then
+            local targetState = cloakUnit[unitID]
+            --STATIC_STATE_TABLE[1] = targetState
+            GiveOrderToUnit(unitID, CMD.FIRE_STATE, targetState, 0) --revert to last state
+            Spring.Echo("State set: "..targetState)
+            --Spring.Echo("Unit compromised - weapons free!")
+        --end
+        cloakUnit[unitID] = nil
+    end
 end
 
 function widget:PlayerChanged()

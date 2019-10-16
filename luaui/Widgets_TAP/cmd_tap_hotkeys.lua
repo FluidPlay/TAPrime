@@ -13,6 +13,7 @@ end
 
 -- table of stuff that we unbind on load
 local unbinds={
+    "bind any+k cloak",
     "bind any+q",
     "bind q",
     "bind any+c controlunit",
@@ -57,11 +58,9 @@ function MakeBindsTable (swapYZ)
 
     local _binds = {
         -- generic commands
-        "bind k cloak",
-        "bind shift+k cloak",
         "bind Ctrl+a  select AllMap++_ClearSelection_SelectAll+",
         "bind Ctrl+b  select AllMap+_Builder_Idle+_ClearSelection_SelectOne+",
-        "bind Ctrl+c  select AllMap+_ManualFireUnit+_ClearSelection_SelectOne+",
+        --"bind Ctrl+c  select AllMap+_ManualFireUnit+_ClearSelection_SelectOne+",
         "bind Ctrl+r  select AllMap+_Radar+_ClearSelection_SelectAll+",
         "bind Ctrl+v  select AllMap+_Not_Builder_Not_Commander_InPrevSel_Not_InHotkeyGroup+_SelectAll+",
         "bind Ctrl+w  select AllMap+_Not_Aircraft_Weapons+_ClearSelection_SelectAll+",
@@ -354,9 +353,7 @@ function MakeBindsTable (swapYZ)
         "bind alt+i buildunit_corfgate",	-- floating
         "bind alt+shift+i buildunit_corfgate",
 
-
         -- Build Spacing
-
         "bind any+t buildspacing inc",
         "bind shift+t buildspacing inc",
         "bind alt+t buildspacing dec",
@@ -416,6 +413,7 @@ function MakeBindsTable (swapYZ)
         "bind space deselect",
         "bind Ctrl+p pause",
         "bind Ctrl+Alt+z areamex",
+        "bind any+k cloak",
         "bind Alt+z select Visible+_InPrevSel+_ClearSelection_SelectAll+",
         "bind Any+f9 showhealthbars",
     }

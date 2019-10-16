@@ -236,6 +236,8 @@ local function DrawRectRound(px,py,sx,sy,cs)
 end
 
 function RectRound(px,py,sx,sy,cs)
+    if not px or not py or not sx or not sy or not cs then
+        return end
 	local px,py,sx,sy,cs = math.floor(px),math.floor(py),math.ceil(sx),math.ceil(sy),math.floor(cs)
 	
 	gl.Texture(bgcorner)
@@ -475,6 +477,8 @@ local function updateComs(forceText)
 	end
 	dlistComs2 = glCreateList( function()
 		-- Commander icon
+        if not height then
+            return nil end
 		local sizeHalf = (height/2.75)*widgetScale
 
 		glTexture(comTexture)

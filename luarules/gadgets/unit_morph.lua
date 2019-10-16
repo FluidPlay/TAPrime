@@ -1023,7 +1023,7 @@ local function FinishMorph(unitID, morphData)
     local cmdqueuesize = Spring.GetUnitCommands(unitID, 0)
     if type(cmdqueuesize) == "number" then
         local cmds = Spring.GetUnitCommands(unitID,100)
-        for i = 2, cmdqueuesize do  -- skip the first command (CMD_MORPH)
+        for i = 1, cmdqueuesize do  -- skip the first command (CMD_MORPH)
             local cmd = cmds[i]
             if cmd.id == CMD.MOVE or cmd.id == CMD.PATROL then
                 local m = { x = cmd.params[1], z = cmd.params[3] }

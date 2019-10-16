@@ -63,10 +63,10 @@ local damageMultipliers = {
 			   	lightship = 3,					supportship = 0.75,					heavyship = 0.25,
 	}
 ,
-	emp={ 	    peon = 1, 		rpg = 0.75, 	stalwart = 1, 	aiv = 0.125, 		tank = 2.5, 	artillery = 2,
+	emp={ 	    peon = 1, 		rpg = 0.75, 	stalwart = 1, 	aiv = 0.125, 		tank = 4.5, 	artillery = 2,
 				fighter = 1, 	gunship = 1, 	bomber = 1, 	structure = 1, 		defense = 1, 	defenseaa = 0.75, 	commander = 0.1,
 				invader = 0.5, 	heavybot = 0.75,assault = 0.5,	heavyveh = 3,		resource = 1,
-				lightship = 0.5,				supportship = 2,					heavyship = 4,
+				lightship = 2,				    supportship = 1.25,					heavyship = 4,
 	}
 ,
 	explosive={ peon = 1, 		rpg = 0.75, 	stalwart = 1,   aiv = 1, 			tank = 1, 		artillery = 1,

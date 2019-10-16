@@ -205,7 +205,7 @@ local UnitEffects = {}
       [UnitDefNames["armsb"].id] = {
         {class='AirJet',options={color={0.1,0.4,0.6}, width=4.3, length=59, piece="emit1", onActive=true, light=1}},
       },
-      [UnitDefNames["armstil"].id] = {
+      [UnitDefNames["corstil"].id] = {
         {class='AirJet',options={color={0.1,0.4,0.6}, width=4, length=59, piece="thrust", onActive=true, light=1}},
       },
       [UnitDefNames["armblade"].id] = {
