@@ -6,61 +6,16 @@
 piece  groundx2, hips, body, lleg, lfoot, rleg, rfoot, head,
        laser, laserflare, gun, gunflare;
 
-static-var  bMoving, bAiming, Static_Var_3, restore_delay, Static_Var_5, notBuilding,
-            gun_1, Static_Var_7, Static_Var_8, BuildHeading, statechg_DesiredState, statechg_StateChanging;
+//static-var  bMoving, bAiming, Static_Var_3, restore_delay, Static_Var_5, notBuilding,
+//            gun_1, Static_Var_7, Static_Var_8, BuildHeading, statechg_DesiredState, statechg_StateChanging;
+static-var  bMoving, notBuilding, nanoNozzle, currentSpeed, moveSpeed,
+            statechg_DesiredState, statechg_StateChanging;
 
 // Signal definitions
 #define SIG_AIM				2
 #define SIG_BUILD		4
 #define SIG_AIM_3			8
 #define SIG_MOVE			16
-
-
-Go()
-{
-	//call-script activatescr();
-	//turn head to y-axis BuildHeading speed <160.000000>;
-	//wait-for-turn hips around y-axis;
-	//set INBUILDSTANCE to 1;
-	return (1);
-}
-
-Stop()
-{
-	set INBUILDSTANCE to 0;
-	//turn head to y-axis <0.000000> speed <180.000000>;
-	//wait-for-turn hips around y-axis;
-	//call-script deactivatescr();
-}
-
-
-RequestState(requestedstate, currentstate)
-{
-	if( statechg_StateChanging )
-	{
-		statechg_DesiredState = requestedstate;
-		return (0);
-	}
-	statechg_StateChanging = TRUE;
-	currentstate = statechg_DesiredState;
-	statechg_DesiredState = requestedstate;
-	while( statechg_DesiredState != currentstate )
-	{
-		if( statechg_DesiredState )
-		{
-			call-script Stop();
-			notBuilding = 1;
-			currentstate = 1;
-		}
-		else
-		{
-			call-script Go();
-			notBuilding = 0;
-			currentstate = 0;
-		}
-	}
-	statechg_StateChanging = FALSE;
-}
 
 walk()
 {
@@ -573,21 +528,103 @@ walklegs()
 	sleep 137;
 }
 
+MotionControl(moving, building)
+{
+	while( TRUE )
+	{
+		moving = bMoving;
+		building = notBuilding;
+		if( moving )
+		{
+			if( building )
+			{
+				call-script walk();
+			}
+			else
+			{
+				call-script walklegs();
+			}
+		}
+		else
+		{
+		}
+		sleep 130;
+	}
+}
+
+Go()
+{
+	//call-script activatescr();
+	//turn head to y-axis BuildHeading speed <160.000000>;
+	//wait-for-turn hips around y-axis;
+	//set INBUILDSTANCE to 1;
+}
+
+Stop()
+{
+	set INBUILDSTANCE to 0;
+	turn head to y-axis <0.000000> speed <180.000000>;
+	wait-for-turn head around y-axis;
+	//call-script deactivatescr();
+}
+
+
+RequestState(requestedstate, currentstate)
+{
+	if( statechg_StateChanging )
+	{
+		statechg_DesiredState = requestedstate;
+		return (0);
+	}
+	statechg_StateChanging = TRUE;
+	currentstate = statechg_DesiredState;
+	statechg_DesiredState = requestedstate;
+	while( statechg_DesiredState != currentstate )
+	{
+		if( statechg_DesiredState )
+		{
+			call-script Stop();
+			notBuilding = 1;
+			currentstate = 1;
+		}
+		else
+		{
+			call-script Go();
+			notBuilding = 0;
+			currentstate = 0;
+		}
+	}
+	statechg_StateChanging = FALSE;
+}
+
+
+UnitSpeed()
+{
+	while(TRUE)
+	{
+		currentSpeed = (get CURRENT_SPEED)*100/moveSpeed;
+		if (currentSpeed<20) currentSpeed=20;
+		sleep 142;
+	}
+}
+
 SmokeUnit(healthpercent, sleeptime, smoketype)
 {
 	while( get BUILD_PERCENT_LEFT )
 	{
-		sleep 400;
+		sleep 500;
 	}
+	start-script UnitSpeed();
+	start-script MotionControl();
 	while( TRUE )
 	{
 		healthpercent = get HEALTH;
 		if( healthpercent < 66 )
 		{
-			smoketype = 256 | 2;
+			smoketype = 258;
 			if( Rand( 1, 66 ) < healthpercent )
 			{
-				smoketype = 256 | 1;
+				smoketype = 257;
 			}
 			emit-sfx smoketype from body;
 		}
@@ -600,67 +637,65 @@ SmokeUnit(healthpercent, sleeptime, smoketype)
 	}
 }
 
-MotionControl(Func_Var_1)
-{
-	Func_Var_1 = 1;
-	while( TRUE )
-	{
-		if( bMoving )
-		{
-			if( bAiming )
-			{
-				Static_Var_3 = 1;
-				call-script walklegs();
-			}
-			if( !bAiming )
-			{
-				Static_Var_3 = 0;
-				call-script walk();
-			}
-			Func_Var_1 = 1;
-			if( Static_Var_5 == 3 )
-			{
-				Static_Var_7 = 1;
-			}
-			if( Static_Var_5 == 2 )
-			{
-				Static_Var_7 = 0;
-			}
-			if( Static_Var_5 == 1 )
-			{
-				Static_Var_7 = 0;
-			}
-		}
-		if( !bMoving )
-		{
-			Static_Var_3 = 1;
-			if( Func_Var_1 )
-			{
-				move body to x-axis [0.000000] speed [1.000000];
-				turn rleg to x-axis <0.000000> speed <200.000000>;
-				turn rfoot to x-axis <0.000000> speed <200.000000>;
-				turn lleg to x-axis <0.000000> speed <200.000000>;
-				turn lfoot to x-axis <0.000000> speed <200.000000>;
-				Func_Var_1 = 0;
-			}
-			sleep 100;
-		}
-	}
-}
+//RestoreAfterDelay()
+//{
+//	sleep restore_delay;
+//	turn head to y-axis <0.000000> speed <90.000000>;
+//	wait-for-turn head around y-axis;
+//	bAiming = FALSE;
+//}
 
 Create()
 {
-	Static_Var_8 = 0 - -2147483648;
+//	Static_Var_8 = 0 - -2147483648;
+//	bMoving = FALSE;
+//	bAiming = FALSE;
+//	Static_Var_3 = 1;
+//	Static_Var_7 = 0;
+//	hide gunflare;
+//	hide laserflare;
+//	restore_delay = 3000;
+//	start-script MotionControl();
+//	start-script SmokeUnit();
+//	gun_1 = groundx2;
 	bMoving = FALSE;
-	bAiming = FALSE;
-	Static_Var_3 = 1;
-	Static_Var_7 = 0;
-	hide gunflare;
-	hide laserflare;
-	restore_delay = 3000;
-	start-script MotionControl();
+	nanoNozzle = 0;
+	notBuilding = 1;
+	moveSpeed = get MAX_SPEED;
+	currentSpeed = 100;
+	statechg_DesiredState = TRUE;
+	statechg_StateChanging = FALSE;
 	start-script SmokeUnit();
-	gun_1 = groundx2;
+}
+
+Activate()
+{
+	start-script RequestState(0);
+}
+
+Deactivate()
+{
+	start-script RequestState(1);
+}
+
+StartBuilding(heading, pitch)
+{
+	start-script RequestState(0);
+	while( notBuilding ) sleep 100;
+	signal SIG_BUILD;
+	turn head to y-axis heading speed <160.000000>;
+	wait-for-turn head around y-axis;
+	set INBUILDSTANCE to 1;
+}
+
+StopBuilding()
+{
+	signal SIG_BUILD;	
+	set-signal-mask SIG_BUILD;
+	sleep 6000;
+	set-signal-mask 0;
+	signal SIG_BUILD;	
+	start-script RequestState(1);
 }
 
 StartMoving()
@@ -676,9 +711,9 @@ StopMoving()
 	signal SIG_MOVE;
 }
 
-SetMaxReloadTime(Func_Var_1)
+QueryNanoPiece(piecenum)
 {
-	restore_delay = Func_Var_1 * 2;
+	piecenum = gunflare;
 }
 
 SweetSpot(piecenum)
@@ -686,116 +721,18 @@ SweetSpot(piecenum)
 	piecenum = body;
 }
 
-RestoreAfterDelay()
-{
-	sleep restore_delay;
-	turn head to y-axis <0.000000> speed <90.000000>;
-	wait-for-turn head around y-axis;
-	bAiming = FALSE;
-}
-
-StartBuilding(heading)
-{
-	start-script RequestState(0);
-	while( notBuilding ) sleep 100;
-	signal SIG_BUILD;
-	turn head to y-axis heading speed <350.000000>;
-	wait-for-turn head around y-axis;
-	BuildHeading = heading;
-	set INBUILDSTANCE to 1;
-}
-
-QueryNanoPiece(piecenum)
-{
-	piecenum = gunflare;
-}
-
-StopBuilding()
-{
-	signal SIG_BUILD;	
-	set-signal-mask SIG_BUILD;
-	sleep 6000;
-	set-signal-mask 0;
-	signal SIG_BUILD;
-	start-script RequestState(1);
-}
-
-AimTertiary(heading, pitch)
-{
-    if ( get IN_WATER(0) == 0 )
-    {
-     return (0);
-    }
-	signal SIG_AIM_3;
-	set-signal-mask SIG_AIM_3;
-	turn head to y-axis heading speed <60.000000>;
-	wait-for-turn head around y-axis;
-	return (1);
-}
-
-FireTertiary()
-{
-	sleep 100;
-}
-
-AimFromTertiary(piecenum)
-{
-	piecenum = head;
-}
-
-QueryTertiary(piecenum)
-{
-	piecenum = head;
-}
-
-AimPrimary(heading, pitch)
-{
-    if ( get IN_WATER(0) == 1 )
-    {
-     return (0);
-    }
-	signal SIG_AIM;
-	set-signal-mask SIG_AIM;
-	bAiming = TRUE;
-	turn head to y-axis heading speed <200.000000>;
-	wait-for-turn head around y-axis;
-	start-script RestoreAfterDelay();
-	return (1);
-}
-
-FirePrimary()
-{
-	if( !gun_1 )
-	{
-		show gunflare;
-		sleep 200;
-		hide gunflare;
-	}
-	if( gun_1 )
-	{
-		show laserflare;
-		sleep 200;
-		hide laserflare;
-	}
-	gun_1 = !gun_1;
-}
-
-AimFromPrimary(piecenum)
-{
-	piecenum = head;
-}
-
-QueryPrimary(piecenum)
-{
-	if( !gun_1 )
-	{
-		piecenum = gunflare;
-	}
-	if( gun_1 )
-	{
-		piecenum = laserflare;
-	}
-}
+//AimTertiary(heading, pitch)
+//{
+//    if ( get IN_WATER(0) == 0 )
+//    {
+//     return (0);
+//    }
+//	signal SIG_AIM_3;
+//	set-signal-mask SIG_AIM_3;
+//	turn head to y-axis heading speed <60.000000>;
+//	wait-for-turn head around y-axis;
+//	return (1);
+//}
 
 Killed(severity, corpsetype)
 {
