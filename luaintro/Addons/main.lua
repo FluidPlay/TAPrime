@@ -111,7 +111,7 @@ local tips = {
 	--"Enemy's mines, radars, and jammers may be disabled using the Juno - built by both factions with T1 constructors.",
     --"Use Alt+0-9 sets the autogroup number (1 .. 9, 0) for selected unit type(s). Newly built units get automatically added to their autogroup number. Alt+Tilde (~) remove units from that autogroup.",
     "Tier 0 (starting) builder units can not assist the production of factories, unlike their advanced (Tier 2) counterparts. Morph them into Adv. builders as soon as you can.",
-    "Before you start building a ton of Outposts, remember each outpost spend +50e per tick. Super-effective Nano Towers won't exist for 2000 more years.",
+    "Before you start building a ton of Outposts, remember each outpost spends +50e per tick. Super-effective Nano Towers won't exist for 2000 more years.",
 	"If you stall (run out of) energy, morphs slow down much more than unit production. Try to maintain your juice flowing to keep your morphs fast.",
 	"Tech Center (Global) upgrades in-progress may be cancelled by right-clicking any upgrade button",
 }

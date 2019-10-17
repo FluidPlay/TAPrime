@@ -458,7 +458,8 @@ local function updateComs(forceText)
 		glDeleteList(dlistComs1)
 	end
 	dlistComs1 = glCreateList( function()
-	
+        if not bgpadding or not area[1] or not widgetscale then
+            return nil end
 		-- background
 		glColor(0,0,0,ui_opacity)
 		RectRound(area[1], area[2], area[3], area[4], 5.5*widgetScale)
@@ -477,7 +478,7 @@ local function updateComs(forceText)
 	end
 	dlistComs2 = glCreateList( function()
 		-- Commander icon
-        if not height then
+        if not height or not area[1] then
             return nil end
 		local sizeHalf = (height/2.75)*widgetScale
 

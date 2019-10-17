@@ -30,7 +30,7 @@ local mathceil = math.ceil
 local mathmax = math.max
 local mathmin = math.min
 
-local fontSizeOffset = -5 -- Buttons' font size offset
+local fontSizeOffset = 0 -- -5 || Buttons' font size offset (anything but zero is breaking with small screen sizes)
 
 local glGetTextWidth = gl.GetTextWidth
 
@@ -45,9 +45,9 @@ local vsx, vsy = spGetWindowGeometry()
 local Config = {
     ordermenu = {
         name = 'ordermenu',
-        rows = 4, columns = 4,
+        rows = 5, columns = 4,
         x = '0%', y = '25%',
-        width = '15%', height = '16%', --width 14, height 20%
+        width = '17%', height = '16.25%', --width 14, height 20%
         orientation = 'horizontal',
         maxWidth = 490, --420
         padding = {2, 2, 2, 2},     -- outer panel
@@ -56,7 +56,7 @@ local Config = {
         name = 'buildmenu',
         rows = 4, columns = 5,
         x = '0%', y = '41%',
-        width = '15%', height = '15%',  -- button width/height within the area (20,20)
+        width = '17%', height = '15%',  -- button width/height within the area (20,20)
         orientation = 'horizontal',
         maxWidth = 490,
         padding = {5, 5, 5, 5},
@@ -65,15 +65,16 @@ local Config = {
     buildmenuAdv = {
         name = 'buildmenuAdv',
         rows = 4, columns = 5,
-        x = '0%', y = '63%',
-        width = '15%', height = '15%', -- 20, 20
+        x = '0%', y = '64.5%',
+        width = '17%', height = '15%', -- 20, 20
         orientation = 'horizontal',
         maxWidth = 490,
         padding = {5, 5, 5, 5},
         --sortBy = 'customParams.tier',
     },
     labels = {
-        captionFontMaxSize = 18,
+        --captionFontMinSize = 12, -- test, not being used currently
+        captionFontMaxSize = 10, --18,
         queueFontSize = 18, --32 (MaDDoX)
         costFontSize = 9,
         showMetalCost = true,
@@ -175,7 +176,7 @@ local function createGridWindow(config)
         height = config.height, width = config.width,
         maxWidth = config.maxWidth,
         children = {grid},
-        bringToFrontOnClick = false, dockable = false, draggable = false,
+        bringToFrontOnClick = false, dockable = true, draggable = false,
         resizable = false, tweakDraggable = true, tweakResizable = false,
         padding = config.padding,
     }
@@ -329,7 +330,7 @@ local function ActionCommand(self, x, y, mouse, mods)
     if index then
         local left, right = mouse == 1, mouse == 3
         local alt, ctrl, meta, shift = mods.alt, mods.ctrl, mods.meta, mods.shift
-        --- If cmdID is for an upgrade, check its status, might fire it if is a right click
+        --- If cmdID is for an upgrade, check its status, might fire if it's a right click
         --local status = getUpgradeStatus(self.cmdID)
         --if status == "nonupgraded" or (status =="upgrading" and right) then
         spSetActiveCommand(index, mouse, left, right, alt, ctrl, meta, shift)

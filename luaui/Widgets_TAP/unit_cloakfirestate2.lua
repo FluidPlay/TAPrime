@@ -25,10 +25,11 @@ end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 -- Speedups
-local GiveOrderToUnit  = Spring.GiveOrderToUnit
+local spGiveOrderToUnit = Spring.GiveOrderToUnit
 local GetUnitStates    = Spring.GetUnitStates
 
 local STATIC_STATE_TABLE = {0}
+local holdFireState = 0
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -53,6 +54,7 @@ local exceptionList = { --add exempt units here
 
 local exceptionArray = {}
 local CMD_CLOAK = CMD.CLOAK
+local CMD_FIRE_STATE = CMD.FIRE_STATE
 for _,name in pairs(exceptionList) do
 	local ud = UnitDefNames[name]
 	if ud then
@@ -62,37 +64,51 @@ end
 
 local cloakUnit = {} --stores the desired fire state when decloaked of each unitID
 
-function widget:UnitCommand(unitID, unitDefID, teamID, cmdID, cmdParams)
-    Spring.Echo("cmdID: "..cmdID.." params[1]: "..cmdParams[1])
-    if not cmdID == 37382 then
-        return end
-    if (not enabled) or (teamID ~= myTeam) or exceptionArray[unitDefID] then
-        return
-    end
-    if cmdParams[1] == 1 then --[[ Cloak ]]
-        local states = GetUnitStates(unitID)
-        cloakUnit[unitID] = states.firestate --store last state
-        Spring.Echo("Found state: "..states.firestate)
-        --if states.firestate ~= 0 then
-            --STATIC_STATE_TABLE[1] = 0
-            local newState = 0
-            GiveOrderToUnit(unitID, CMD.FIRE_STATE, newState, 0)
-        --end
-    elseif cmdParams[1] == 0 then --[[ Decloak ]] --cmdID == 37382
-        if not cloakUnit[unitID] then
-            return
-        end
-        --local states = GetUnitStates(unitID)
-        --if states.firestate == 0 then
-            local targetState = cloakUnit[unitID]
-            --STATIC_STATE_TABLE[1] = targetState
-            GiveOrderToUnit(unitID, CMD.FIRE_STATE, targetState, 0) --revert to last state
-            Spring.Echo("State set: "..targetState)
-            --Spring.Echo("Unit compromised - weapons free!")
-        --end
-        cloakUnit[unitID] = nil
-    end
+
+function widget:UnitCloaked(unitID, unitDefID, teamID)
+    local states = GetUnitStates(unitID)
+    cloakUnit[unitID] = states.firestate --store last state
+    spGiveOrderToUnit(unitID, CMD_FIRE_STATE, holdFireState, 0)
 end
+
+function widget:UnitDecloaked(unitID, unitDefID, teamID)
+    if not cloakUnit[unitID] then
+        return end
+    local originalState = cloakUnit[unitID]
+    spGiveOrderToUnit(unitID, CMD_FIRE_STATE, originalState, 0) --revert to last state
+    cloakUnit[unitID] = nil
+    --Spring.Echo("State set: "..targetState)
+end
+
+--function widget:UnitCommand(unitID, unitDefID, teamID, cmdID, cmdParams)
+--    if not cmdID == 37382 or not enabled or teamID ~= myTeam or exceptionArray[unitDefID] then
+--        return
+--    end
+--    local states = GetUnitStates(unitID)
+--    Spring.Echo(" params[1]: "..cmdParams[1].." Curr state: "..states.firestate) --"cmdID: "..cmdID..
+--    if cmdParams[1] == 1 then --[[ Cloak ]]
+--        cloakUnit[unitID] = states.firestate --store last state
+--        Spring.Echo("Stored state: "..states.firestate)
+--        if states.firestate ~= 0 then
+--            --STATIC_STATE_TABLE[1] = 0
+--            local newState = 0
+--            spGiveOrderToUnit(unitID, CMD.FIRE_STATE, newState, 0)
+--        end
+--    else --[[ Decloak ]] --cmdID == 37382 --if cmdParams[1] == 0 then
+--        if not cloakUnit[unitID] then
+--            return
+--        end
+--        --local states = GetUnitStates(unitID)
+--        if states.firestate == 0 then
+--            local targetState = cloakUnit[unitID]
+--            --STATIC_STATE_TABLE[1] = targetState
+--            spGiveOrderToUnit(unitID, CMD.FIRE_STATE, targetState, 0) --revert to last state
+--            Spring.Echo("State set: "..targetState)
+--            --Spring.Echo("Unit compromised - weapons free!")
+--        end
+--        cloakUnit[unitID] = nil
+--    end
+--end
 
 function widget:PlayerChanged()
 	myTeam = Spring.GetMyTeamID()
