@@ -28,7 +28,7 @@ end
 local spGiveOrderToUnit = Spring.GiveOrderToUnit
 local GetUnitStates    = Spring.GetUnitStates
 
-local STATIC_STATE_TABLE = {0}
+--local STATIC_STATE_TABLE = {0}
 local holdFireState = 0
 
 --------------------------------------------------------------------------------
@@ -53,7 +53,7 @@ local exceptionList = { --add exempt units here
 }
 
 local exceptionArray = {}
-local CMD_CLOAK = CMD.CLOAK
+--local CMD_CLOAK = CMD.CLOAK
 local CMD_FIRE_STATE = CMD.FIRE_STATE
 for _,name in pairs(exceptionList) do
 	local ud = UnitDefNames[name]
