@@ -195,11 +195,12 @@ local moveDatas = {
 		footprintx = 4,
 		footprintz = 4,
 		maxslope = 36,
-		maxwaterdepth = 26,
+		maxwaterdepth = 128, --26,
 		depthModParams = {
-			minHeight = 4,
+			minHeight = -4,
 			linearCoeff = 0.03,
-			maxValue = 0.7,
+			--maxValue = 0.7,
+            maxScale = 1.1,
 		}
 	},
 	HKBOT5 = {
@@ -253,9 +254,10 @@ local moveDatas = {
 		maxslope = 80,
 		maxwaterdepth = 128, --22,
 		depthModParams = {
-			minHeight = 4,
+			minHeight = -4,
 			linearCoeff = 0.03,
-			maxValue = 0.7,
+			--maxValue = 0.7,
+            maxScale=1.25,
 		}
 	},
 	KBOT1 = {

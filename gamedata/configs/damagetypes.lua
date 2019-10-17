@@ -9,11 +9,11 @@
 --
 local damageTypes = {
 
-	cannon={"armcrus","armfflak","armflak","armmav","armroy","corcrus","corraid","corroy","corenaa","corflak","armst","armanac","armcroc","armlun","armpincer","corparrow","corseal","corsnap","corsok","armbull","armstump","corgol","correap","corgarp"},
+	cannon={"armcrus","armfflak","armflak","armblade","armmav","armroy","corcrus","corraid","corroy","corenaa","corflak","armst","armanac","armcroc","armlun","armpincer","corparrow","corseal","corsnap","corsok","armbull","armstump","corgol","correap","corgarp"},
 
 	bullet={"armkam","armsaber","corcut","corfink","corveng","armpw","corak","armpt","corpt","corsub","armflash","armemp","armspid",},
 
-	rocket={"armfig","armpship","corpship","armlance","armmerl","armsb","armblade","corcrw","corsb","cortitan","armseap","corape","corseap","corvipe","armtl","corptl","cortl","armclaw","armdl","armpb","corerad","cordl","armah","corcat","armrock","armjeth","coraak","corcrash","armaak","corstorm","armbanth","corbuzz","armmship","cormship","armptl","armaas","corbow","armsptk","corfrt","packo","armsub","corssub","tawf009","cormh","armmh","corah","armfrt","madsam",},
+	rocket={"armfig","armpship","corpship","armlance","armmerl","armsb","corcrw","corsb","cortitan","armseap","corape","corseap","corvipe","armtl","corptl","cortl","armclaw","armdl","armpb","corerad","cordl","armah","corcat","armrock","armjeth","coraak","corcrash","armaak","corstorm","armbanth","corbuzz","armmship","cormship","armptl","armaas","corbow","armsptk","corfrt","packo","armsub","corssub","tawf009","cormh","armmh","corah","armfrt","madsam",},
 
 	laser={"armfast","armwar","corfav","armsubk","corshark","armjanus","corgator",},
 
@@ -25,7 +25,7 @@ local damageTypes = {
 
 	rail={"armsnipe","corsktl",},
 
-	emp={"armstil","corbw","armemp","armspid",},
+	emp={"corstil","corbw","armemp","armspid",},
 
 	homing={"armrl","corrl","corsumo","armfav","armcir","armsam","coratl","cormist","armatl","armmercury","corscreamer","armsfig","corsfig","corvamp","armsh","marauder","armorco","coresupp","armdecade","corsh","nsaclash","armmlv",},
 

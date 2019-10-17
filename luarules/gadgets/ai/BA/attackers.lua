@@ -126,8 +126,7 @@ bomberlist = {
 	"armliche",	--	Liche			/	Atomic Bomber	
 	"armpnix",	--	Phoenix			/	Strategic Bomber	
 	"armsb",	--	Tsunami			/	Seaplane Bomber
-	"armstil",	--	Stiletto		/	EMP Bomber
-
+	"corstil",	--	Stiletto		/	EMP Bomber
 }
 
 fighterlist = {

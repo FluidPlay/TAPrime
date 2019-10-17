@@ -18,7 +18,7 @@ taxvalues = {
 	armlance = 1.025,
 	armliche = 1.025,
 	armpnix = 1.025,
-	armstil = 1.025,
+	corstil = 1.025,
 -- T1 CORE
 	corca = 1.025,
 	corveng = 1.025,
@@ -142,7 +142,7 @@ taxvalues = {
 	armmart = 1.025,
 	armmerl = 1.025,
 	armseer = 1.025,
-	armstil = 1.025,
+	corstil = 1.025,
 	armyork = 1.025,
 -- T1 CORE
 	corcv = 1.025,

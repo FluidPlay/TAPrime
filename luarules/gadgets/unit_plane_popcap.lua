@@ -48,7 +48,7 @@ if gadgetHandler:IsSyncedCode() then
         [UnitDefNames["corvamp"].id] = true,
         [UnitDefNames["armhawk"].id] = true,
         [UnitDefNames["armthund"].id] = true,
-        [UnitDefNames["armstil"].id] = true,
+        [UnitDefNames["corstil"].id] = true,
         --[UnitDefNames["corape"].id] = true,
         [UnitDefNames["corhurc"].id] = true,
         --[UnitDefNames["armblade"].id] = true,

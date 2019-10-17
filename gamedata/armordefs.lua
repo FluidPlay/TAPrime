@@ -12,7 +12,7 @@ local armorDefs = {
 
 	assault={"armlatnk","armfav","armjanus","armmlv","armkam","armsh","armspy","cordefiler","coresupp","corbw","corfav","corlevlr","corsh","corvrad","decade","marauder","nsaclash",},
 
-	bomber={"armliche","armlance","armpnix","armsb","armthund","armstil","corhurc","corsb","corshad","cortitan","armblade",},
+	bomber={"armliche","armlance","armpnix","armsb","armthund","corstil","corhurc","corsb","corshad","cortitan","armblade",},
 
 	gunship={"armatlas","armbrawl","armdfly","armpeep","armsaber","armseap","corseah","corape","corcrw","corcut","corfink","corseap","corvalk",},
 

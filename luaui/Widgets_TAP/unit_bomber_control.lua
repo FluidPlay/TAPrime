@@ -6,13 +6,13 @@ function widget:GetInfo()
 		date	= "2010-02-04",
 		license	= "GPL v2 or later",
 		layer	= 5,
-		enabled	= true
+		enabled	= false,
 	}
 end
 
 --fixed for 0.83 (by vbs)
 
-local bombers={armpnix=true, armliche=true, armstil=true, armthund=true, armsb=true, corhurc=true, corsb=true, corshad=true, cortitan=true}
+local bombers={armpnix=true, armliche=true, corstil=true, armthund=true, armsb=true, corhurc=true, corsb=true, corshad=true, cortitan=true}
 local bomber_uds={}
 
 local GetUnitWeaponState   = Spring.GetUnitWeaponState

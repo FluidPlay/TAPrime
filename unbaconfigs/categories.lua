@@ -18,7 +18,7 @@ categories = {
 	armlance = "aircraft",
 	armliche = "aircraft",
 	armpnix = "aircraft",
-	armstil = "aircraft",
+	corstil = "aircraft",
 -- T1 CORE
 	corca = "aircraft",
 	corveng = "aircraft",
@@ -142,7 +142,7 @@ categories = {
 	armmart = "tank",
 	armmerl = "tank",
 	armseer = "tank",
-	armstil = "tank",
+	corstil = "tank",
 	armyork = "tank",
 -- T1 CORE
 	corcv = "tank",

@@ -10,7 +10,6 @@ function gadget:GetInfo()
    }
 end
 
-
 if (gadgetHandler:IsSyncedCode()) then
 
 	local GetUnitPosition = Spring.GetUnitPosition
