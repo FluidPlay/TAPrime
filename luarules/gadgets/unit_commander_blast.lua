@@ -38,11 +38,12 @@ local COMMANDER = {
   [UnitDefNames["armcom3"].id] = true,
   [UnitDefNames["armcom4"].id] = true,
 }
+local alreadyDamaged = {}
 
 --local METEOR_EXPLOSION = WeaponDefNames["meteor_weapon"].id
 
 local commanderExplosionEMPparams = {weaponDef = WeaponDefNames['armcom_empexplosion'].id,
-                                     hitUnit = 999999,
+                                     hitUnit = 1,
                                      hitFeature = 1,
                                      craterAreaOfEffect = 50,
                                      damageAreaOfEffect = 720,
@@ -94,12 +95,21 @@ function gadget:UnitDestroyed(unitID, unitDefID, teamID, attackerID, attackerDef
     end
     -- If it was actually killed/selfD-ed, spawn CEG and EMP explosion
     Spring.SpawnCEG(teamCEG[teamID], x,y,z, 0,0,0, 0, 0)
-    --Spring.SpawnExplosion(firex, firey, firez, 0, 0, 0, treefireExplosion[featureinfo.size])
-    --Spring.SpawnExplosion (x,y,z, 0, 0, 0, commanderExplosionparams)
+
     Spring.SpawnExplosion (x,y,z, 0, 0, 0, commanderExplosionEMPparams)
-    Spring.Echo("Spawning EMP")
+    Spring.Echo("Spawning EMP, weaponID: "..WeaponDefNames['armcom_empexplosion'].id)
     --Spring.UnitWeaponFire(unitID, WeaponDefNames['commanderexplosionemp'].id)
 end
+
+--function gadget:UnitDamaged(unitID, unitDefID, unitTeam, damage, paralyzer,
+--                            weaponID, attackerID, attackerDefID, attackerTeam)
+--    if weaponID ~= WeaponDefNames['armcom_empexplosion'].id or alreadyDamaged[unitID] then
+--        return
+--    end
+--    Spring.Echo("Applying EMP damage")
+--    Spring.AddUnitDamage ( unitID, 999999, 1, attackerID, weaponID )
+--    alreadyDamaged[unitID] = true
+--end
 
 
 

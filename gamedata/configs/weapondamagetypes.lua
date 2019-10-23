@@ -61,7 +61,7 @@ local weaponDamageTypes = {
 	armpw = { ["peewee"] = "bullet", ["grenade"] = "hflaser",},
 	armmart = { ["PlasmaCannon"] = "siege", },
 	coramph = { ["HighEnergyLaser"] = "laser", ["Torpedo"] = "rocket", },
-	armcom = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", ["J7NSLaser"] = "omni", },
+	armcom = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", ["J7NSLaser"] = "omni", ["empexplosion"] = "emp", },
 	armcom2 = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", ["J7NSLaser"] = "omni", },
 	armcom3 = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", ["J7NSLaser"] = "omni", ["CommanderShield"] = "omni"},
 	armcom4 = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", ["J7NSLaser"] = "omni", ["CommanderShield"] = "omni"},
