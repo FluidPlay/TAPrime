@@ -38,7 +38,7 @@ function gadget:UnitPreDamaged(unitID, unitDefID, unitTeam, damage, paralyzer, w
 			return newdamage,0
 		end		
 	end
-	return damage, 1
+	return damage, 1	--newdamage, impulsemult
 end
 
 

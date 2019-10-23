@@ -25,6 +25,9 @@ local COMMANDER_EXPLOSION = "COMMANDER_EXPLOSION"
 local COMMANDER_EXPLOSION_YELLOW = "COMMANDER_EXPLOSION_YELLOW"
 local COMMANDER_EXPLOSION_BLUE = "COMMANDER_EXPLOSION_BLUE"
 
+local COM_BLAST = WeaponDefNames['commander_blast'].id
+local COM_BLAST2 = WeaponDefNames['commander_blast2'].id
+
 local spGetUnitRulesParam = Spring.GetUnitRulesParam
 
 -- MaDDoX: Added Commanders level 2 through 4 to list
@@ -101,15 +104,18 @@ function gadget:UnitDestroyed(unitID, unitDefID, teamID, attackerID, attackerDef
     --Spring.UnitWeaponFire(unitID, WeaponDefNames['commanderexplosionemp'].id)
 end
 
---function gadget:UnitDamaged(unitID, unitDefID, unitTeam, damage, paralyzer,
---                            weaponID, attackerID, attackerDefID, attackerTeam)
---    if weaponID ~= WeaponDefNames['armcom_empexplosion'].id or alreadyDamaged[unitID] then
---        return
---    end
---    Spring.Echo("Applying EMP damage")
---    Spring.AddUnitDamage ( unitID, 999999, 1, attackerID, weaponID )
---    alreadyDamaged[unitID] = true
---end
+function gadget:UnitDamaged(unitID, unitDefID, unitTeam, damage, paralyzer,
+                            weaponDefID, attackerID, attackerDefID, attackerTeam)
+    --if weaponID ~= WeaponDefNames['armcom_empexplosion'].id or alreadyDamaged[unitID] then
+    --    return
+    --end
+    if (weaponDefID ~= COM_BLAST and weaponDefID ~= COM_BLAST2) then --and Spring.ValidUnitID(attackerID)
+        return end
+    Spring.Echo("Applying EMP damage")  --COMMANDER_BLAST
+    --unitID, damage, paralyze = 0, attackerID = -1, weaponID = -1
+    Spring.AddUnitDamage ( unitID, math.huge, 1, attackerID, WeaponDefNames['armcom_empexplosion'].id )
+    --alreadyDamaged[unitID] = true
+end
 
 
 
