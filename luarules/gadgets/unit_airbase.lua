@@ -69,11 +69,13 @@ local airbaseDefIDs = {
     [UnitDefNames["armasp"].id] = 5000, --350,     -- distance in elmos for snap onto pad
     [UnitDefNames["armpad"].id] = 5000,
     [UnitDefNames["armap"].id] = 4000,
+    [UnitDefNames["armaap"].id] = 4000,
     [UnitDefNames["armcarry"].id] = 1000,
     --Core
     [UnitDefNames["corasp"].id] = 5000, --350
     [UnitDefNames["corpad"].id] = 5000, --350
     [UnitDefNames["corap"].id] = 4000,
+    [UnitDefNames["coraap"].id] = 4000,
     [UnitDefNames["corcarry"].id] = 1000,
 }
 

@@ -1219,6 +1219,15 @@ definitions['genericshellexplosion-meteor'].clouddust = nil
 --definitions['genericshellexplosion-meteor'].groundclouddust.properties.alwaysvisible = true
 --definitions['genericshellexplosion-meteor'].kickedupwater.properties.alwaysvisible = true
 
+definitions['meteorstrike-tag'] = deepcopy(definitions[root.."-wind"])
+definitions['meteorstrike-tag'].explosion.properties.colormap = [[0 0 0 0   0.92 1 0.7 0.08   0.77 0.9 0.21 0.06   0.57 0.66 0.04 0.03   0 0 0 0.01]]
+definitions['meteorstrike-tag'].fireglow.properties.colormap = [[0.15 0.14 0.1 0.005  0 0 0 0.01]]
+definitions['meteorstrike-tag'].fireglow2.properties.colormap = [[0.26 0.24 0.08 0.26   0.36 0.44 0.13 0.44   0.15 0.2 0 0.2   0 0 0 0.01]]
+definitions['meteorstrike-tag'].sparks.properties.colormap = [[0.85 0.95 0.77 0.017   0.6 0.9 0.3 0.011   0 0 0 0]]
+definitions['meteorstrike-tag'].sparks.properties.numparticles = definitions[root..'-nano'].sparks.properties.numparticles * 1.5
+definitions['meteorstrike-tag'].dirt.properties.colormap = [[0.8 1 0.4 0.1   0 0 0 0.01]]
+definitions['meteorstrike-tag'].dirt2.properties.colormap = [[0.7 1 0.3 0.1   0 0 0 0.01]]
+
 
 local types = {
   uw = {

@@ -53,7 +53,7 @@ local spawnCount = 0
 
 for weaponDefID = 1, #WeaponDefs do
     local weapCparms = WeaponDefs[weaponDefID].customParams
-    if weapCparms.spawns_name then
+    if weapCparms and weapCparms.spawns_name then
         spawnDefs[weaponDefID] = {
             name = weapCparms.spawns_name,
             expire = weapCparms.spawns_expire and (tonumber(weapCparms.spawns_expire) * GAME_SPEED),
@@ -71,6 +71,9 @@ function gadget:Explosion_GetWantedWeaponDef()
 end
 
 local function SpawnUnit(spawnData)
+    if not spawnData or not spawnData.spawnDef then
+        return
+    end
     local spawnDef = spawnData.spawnDef
     if spawnDef.feature then
         local featureID = spCreateFeature(spawnDef.name, spawnData.x, spawnData.y, spawnData.z, 0, spawnData.teamID)

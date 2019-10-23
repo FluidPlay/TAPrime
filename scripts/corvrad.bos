@@ -5,9 +5,10 @@
 
 piece  base, dish, nano, beam;
 
-static-var  statechg_DesiredState, statechg_StateChanging, notBuilding;
+static-var restore_delay, statechg_DesiredState, statechg_StateChanging, notBuilding;
 
 // Signal definitions
+#define SIG_AIM				2
 #define SIG_ACTIVATE	2
 #define SIG_BUILD		4	
 
@@ -52,6 +53,19 @@ deactivatescr()
 	wait-for-turn nano around y-axis;
 }
 
+RestoreAfterDelay()
+{
+	if (notBuilding == 0) {
+		sleep restore_delay / 2;
+		start-script RestoreAfterDelay();
+		return (0);
+	}		
+	sleep restore_delay;
+	turn nano to y-axis <0.00000> speed <90.02198>;
+	//turn sleeve to x-axis <0.00000> speed <50.01099>;
+	return (0);
+}
+
 RequestState(requestedstate, currentstate)
 {
 	if( statechg_StateChanging )
@@ -93,6 +107,7 @@ HitByWeapon(anglex, anglez)
 
 Create()
 {
+	restore_delay = 3000;
 	notBuilding = 1;
 	statechg_DesiredState = TRUE;
 	statechg_StateChanging = FALSE;
@@ -109,7 +124,7 @@ Activate()
 	set-signal-mask SIG_ACTIVATE;
 	spin dish around y-axis speed <100.02198>;
 	start-script RequestState(0);
-	return (0);
+	//return (0);
 }
 
 Deactivate()
@@ -119,7 +134,7 @@ Deactivate()
 	turn dish to y-axis <0.00000> speed <100.00000>;
 	wait-for-turn dish around y-axis;
 	start-script RequestState(1);
-	return (0);
+	//return (0);
 }
 
 /// Ressurect actions
@@ -142,7 +157,7 @@ StopBuilding()
 	//turn nano to y-axis 0 speed <160.038462>;
 	//wait-for-turn nano around y-axis;
 	set-signal-mask 0;
-	signal SIG_BUILD;	
+	signal SIG_BUILD;
 	start-script RequestState(1);
 }
 
@@ -150,6 +165,45 @@ QueryNanoPiece(piecenum)
 {
 	piecenum = beam;
 }
+
+//-------- Meteor Strike (beam)
+
+AimPrimary(heading, pitch)
+{
+	signal SIG_AIM;
+	set-signal-mask SIG_AIM;
+	turn nano to y-axis heading speed <80.00000>; //200 was too slow
+	//turn sleeve to x-axis <0.00000> - pitch speed <200.00000>;
+	wait-for-turn nano around y-axis;
+	//wait-for-turn sleeve around x-axis;
+	return (1);
+}
+
+FirePrimary()
+{
+	//show flash;
+	//move barrel to z-axis [-6.00000] speed [1250.00000];
+	//sleep 150;
+	//hide flash;
+	//wait-for-move barrel along z-axis;
+	//move barrel to z-axis [0.00000] speed [7.50000];
+	//return (0);
+	start-script RestoreAfterDelay();
+}
+
+AimFromPrimary(piecenum)
+{
+	piecenum = nano;
+	return (0);
+}
+
+QueryPrimary(piecenum)
+{
+	piecenum = beam;
+	return (0);
+}
+
+//------
 
 SweetSpot(piecenum)
 {

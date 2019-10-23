@@ -59,6 +59,8 @@ if gadgetHandler:IsSyncedCode() then
         [UnitDefNames["corpad"].id] = 1,
         [UnitDefNames["armap"].id] = 2,
         [UnitDefNames["corap"].id] = 2,
+        [UnitDefNames["armaap"].id] = 2,
+        [UnitDefNames["coraap"].id] = 2,
         [UnitDefNames["armcarry"].id] = 2,
         [UnitDefNames["corcarry"].id] = 2,
         [UnitDefNames["armasp"].id] = 4,

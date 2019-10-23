@@ -194,7 +194,7 @@ UnitResearchers = {
     --[UnitDefNames["armcom4"].id] = "dgun",
     [UnitDefNames["armpw"].id] = "grenade",
     [UnitDefNames["armsam"].id] = "firerain",
-    [UnitDefNames["corvrad"].id] = "resurrect", --plasmabarrage
+    [UnitDefNames["corvrad"].id] = "resurrect", --barrage
 }
 UnitUpgrades = {} -- Auto-completed from UnitUpg table @ Initialize
 
