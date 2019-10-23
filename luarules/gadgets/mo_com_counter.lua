@@ -13,6 +13,10 @@ end
 -------------------------------------------------------------------------------------------------------------------------
 -------------------------------------------------------------------------------------------------------------------------
 
+local function isnumber(v)
+	return (type(v)=="number")
+end
+
 local enabled = (tostring(Spring.GetModOptions().mo_enemycomcount) == "1") or false
 if not enabled then 
   return false
@@ -25,8 +29,8 @@ end
 local teamComs = {} -- format is enemyComs[teamID] = total # of coms in enemy teams
 
 -- This could be improved by initializing the array automatically, with the isCom method
-local comDefIDs = { UnitDefNames.armcom.id, UnitDefNames.armcom2.id, UnitDefNames.armcom3.id,
-					UnitDefNames.corcom.id, UnitDefNames.corcom2.id, UnitDefNames.corcom3.id, }
+local comDefIDs = { UnitDefNames.armcom.id, UnitDefNames.armcom2.id, UnitDefNames.armcom3.id, UnitDefNames.armcom4.id,
+					UnitDefNames.corcom.id, UnitDefNames.corcom2.id, UnitDefNames.corcom3.id, UnitDefNames.corcom4.id,}
 
 local countChanged  = true 
 
@@ -65,10 +69,11 @@ end
 -- BA does not allow sharing to enemy, so no need to check Given, Taken, etc
 
 local function CountCommanders(teamID)
-	local count = 0
+	local count, teamComTypeCount = 0, nil
 	for i = 1, #comDefIDs do
-		if Spring.GetTeamUnitDefCount(teamID, comDefIDs[i]) then
-			i = i + 1
+		teamComTypeCount = Spring.GetTeamUnitDefCount(teamID, comDefIDs[i])
+		if isnumber(teamComTypeCount) then
+			count = count + teamComTypeCount
 		end
 	end
 	return count

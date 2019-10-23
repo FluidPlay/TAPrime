@@ -45,17 +45,19 @@ local COMMANDER = {
 
 --local METEOR_EXPLOSION = WeaponDefNames["meteor_weapon"].id
 
-local commanderExplosionEMPparams = {weaponDef = COM_EMPTRIGGER,
-                                     hitUnit = 1,
-                                     hitFeature = 1,
-                                     craterAreaOfEffect = 50,
-                                     damageAreaOfEffect = 720,
-                                     edgeEffectiveness = 1,
-                                     explosionSpeed = 900,
-                                     impactOnly = false,
-                                     ignoreOwner = false,
-                                     damageGround = true,
-}
+local commanderExplosionEMPparams = {
+                                    --damage = { default=999999, paralyzeDamageTime = 20 },
+                                    weaponDef = COM_EMPTRIGGER,
+                                    hitUnit = 1,
+                                    hitFeature = 1,
+                                    craterAreaOfEffect = 50,
+                                    damageAreaOfEffect = 720,
+                                    edgeEffectiveness = 1,
+                                    explosionSpeed = 900,
+                                    impactOnly = false,
+                                    ignoreOwner = false,
+                                    damageGround = true,
+                                    }
 
 local teamCEG = {} --teamCEG[tID] = cegID of commander blast for that team
 
@@ -108,7 +110,7 @@ function gadget:UnitDamaged(unitID, unitDefID, unitTeam, damage, paralyzer,
     if (weaponDefID ~= COM_EMPTRIGGER) then --and Spring.ValidUnitID(attackerID)
         return end
     --unitID, damage, paralyze = 0, attackerID = -1, weaponID = -1
-    Spring.AddUnitDamage ( unitID, math.huge, 20, attackerID, WeaponDefNames['armcom_empexplosion'].id )
+    Spring.AddUnitDamage ( unitID, math.huge, 17, attackerID, WeaponDefNames['armcom_empexplosion'].id )
 end
 
 --------------------------------------------------------------------------------

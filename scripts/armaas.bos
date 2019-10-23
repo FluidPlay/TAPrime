@@ -167,12 +167,53 @@ AimTertiary(heading, pitch)
 	return (1);
 }
 
+
+AimWeapon4(heading, pitch)
+{
+	signal SIG_AIM_3;
+	set-signal-mask SIG_AIM_3;
+	turn turretgun1 to y-axis heading speed <755.000000>;
+	turn turretgun2 to x-axis <0.000000> - pitch speed <730.000000>;
+	wait-for-turn turretgun1 around y-axis;
+	wait-for-turn turretgun2 around x-axis;
+	start-script RestoreAfterDelay();
+	return (1);
+
+}
+
+
+
 FireSecondary()
 {
 	gun_2 = !gun_2;
 }
 
 FireTertiary()
+{
+	if( gun_3 )
+	{
+		show flare2;
+		move gunbarrel2 to z-axis [-2.400000] speed [500.000000];
+		sleep 150;
+		hide flare2;
+		wait-for-move gunbarrel2 along z-axis;
+		move gunbarrel2 to z-axis [0.000000] speed [3.000000];
+	}
+	else
+	{
+		show flare1;
+		move gunbarrel1 to z-axis [-2.400000] speed [500.000000];
+		sleep 150;
+		hide flare1;
+		wait-for-move gunbarrel1 along z-axis;
+		move gunbarrel1 to z-axis [0.000000] speed [3.000000];
+	}
+	gun_3 = !gun_3;
+}
+
+
+
+FireWeapon4()
 {
 	if( gun_3 )
 	{
@@ -210,6 +251,12 @@ AimFromTertiary(piecenum)
 	piecenum = turretgun1;
 }
 
+
+AimFromWeapon4(piecenum)
+{
+	piecenum = turretgun1;
+}
+
 QueryPrimary(piecenum)
 {
 	piecenum = base;
@@ -225,28 +272,13 @@ QueryTertiary(piecenum)
 	piecenum = gun_3;
 }
 
-/*
-AimWeapon4(heading, pitch)
-{
-	sleep 100;
-	return (1);
-}
-
-FireWeapon4()
-{
-	sleep 100;
-}
-
 QueryWeapon4(piecenum)
 {
-	sleep 100;
+	piecenum = gun_3;
 }
 
-AimFromWeapon4(piecenum)
-{
-	piecenum = base;
-}
-*/
+
+//---
 
 SweetSpot(piecenum)
 {
