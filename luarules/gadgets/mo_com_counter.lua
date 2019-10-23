@@ -42,7 +42,7 @@ end
 
 function gadget:UnitCreated(unitID, unitDefID, teamID)
 	-- record com creation
-	if isCom(unitID) then
+	if isCom(unitID) and not spGetUnitRulesParam(unitID, "morphedinto") then
 		if not teamComs[teamID] then 
 			teamComs[teamID] = 0
 		end
@@ -53,7 +53,7 @@ end
 
 function gadget:UnitDestroyed(unitID, unitDefID, teamID)
 	-- record com death
-	if isCom(unitID) then
+	if isCom(unitID) and not spGetUnitRulesParam(unitID, "justmorphed") then
 		if not teamComs[teamID] then 
 			teamComs[teamID] = 0 --should never happen
 		end

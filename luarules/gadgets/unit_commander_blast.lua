@@ -39,21 +39,19 @@ local COMMANDER = {
   [UnitDefNames["armcom4"].id] = true,
 }
 
-local commanderExplosionEMPparams = {weaponDef = WeaponDefNames['commanderexplosionemp'].id,
+--local METEOR_EXPLOSION = WeaponDefNames["meteor_weapon"].id
+
+local commanderExplosionEMPparams = {weaponDef = WeaponDefNames['armcom_empexplosion'].id,
                                      hitUnit = 999999,
                                      hitFeature = 1,
                                      craterAreaOfEffect = 50,
                                      damageAreaOfEffect = 720,
                                      edgeEffectiveness = 1,
-                                     explosionSpeed = 900,}
-
---local commanderExplosionparams = {weaponDef = WeaponDefNames['commanderexplosion'].id,
---                                     hitUnit = 999999,
---                                     hitFeature = 1,
---                                     craterAreaOfEffect = 50,
---                                     damageAreaOfEffect = 720,
---                                     edgeEffectiveness = 1,
---                                     explosionSpeed = 900,}
+                                     explosionSpeed = 900,
+                                     impactOnly = false,
+                                     ignoreOwner = false,
+                                     damageGround = true,
+}
 
 local teamCEG = {} --teamCEG[tID] = cegID of commander blast for that team
 
@@ -91,7 +89,6 @@ function gadget:UnitDestroyed(unitID, unitDefID, teamID, attackerID, attackerDef
     local x,y,z = Spring.GetUnitBasePosition(unitID)
     -- If it was simply morphed into => No explosion FX, just "level up" fx.
     if spGetUnitRulesParam(unitID, "justmorphed") == 1 then
-        -- TODO: spawnCEG of promotion fx
         Spring.SpawnCEG("commander-levelup", x,y,z, 0,0,0, 0, 0)
         return
     end
@@ -100,7 +97,8 @@ function gadget:UnitDestroyed(unitID, unitDefID, teamID, attackerID, attackerDef
     --Spring.SpawnExplosion(firex, firey, firez, 0, 0, 0, treefireExplosion[featureinfo.size])
     --Spring.SpawnExplosion (x,y,z, 0, 0, 0, commanderExplosionparams)
     Spring.SpawnExplosion (x,y,z, 0, 0, 0, commanderExplosionEMPparams)
-    Spring.UnitWeaponFire(unitID, WeaponDefNames['commanderexplosionemp'].id)
+    Spring.Echo("Spawning EMP")
+    --Spring.UnitWeaponFire(unitID, WeaponDefNames['commanderexplosionemp'].id)
 end
 
 
