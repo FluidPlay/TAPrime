@@ -27,6 +27,7 @@ local COMMANDER_EXPLOSION_BLUE = "COMMANDER_EXPLOSION_BLUE"
 
 local COM_BLAST = WeaponDefNames['commander_blast'].id
 local COM_BLAST2 = WeaponDefNames['commander_blast2'].id
+local COM_EMPTRIGGER = WeaponDefNames['commander_emptrigger'].id
 
 local spGetUnitRulesParam = Spring.GetUnitRulesParam
 
@@ -41,11 +42,10 @@ local COMMANDER = {
   [UnitDefNames["armcom3"].id] = true,
   [UnitDefNames["armcom4"].id] = true,
 }
-local alreadyDamaged = {}
 
 --local METEOR_EXPLOSION = WeaponDefNames["meteor_weapon"].id
 
-local commanderExplosionEMPparams = {weaponDef = WeaponDefNames['armcom_empexplosion'].id,
+local commanderExplosionEMPparams = {weaponDef = COM_EMPTRIGGER,
                                      hitUnit = 1,
                                      hitFeature = 1,
                                      craterAreaOfEffect = 50,
@@ -99,25 +99,19 @@ function gadget:UnitDestroyed(unitID, unitDefID, teamID, attackerID, attackerDef
     -- If it was actually killed/selfD-ed, spawn CEG and EMP explosion
     Spring.SpawnCEG(teamCEG[teamID], x,y,z, 0,0,0, 0, 0)
 
+    --This will be intercepted by UnitDamaged to actually apply damage
     Spring.SpawnExplosion (x,y,z, 0, 0, 0, commanderExplosionEMPparams)
-    Spring.Echo("Spawning EMP, weaponID: "..WeaponDefNames['armcom_empexplosion'].id)
-    --Spring.UnitWeaponFire(unitID, WeaponDefNames['commanderexplosionemp'].id)
 end
 
 function gadget:UnitDamaged(unitID, unitDefID, unitTeam, damage, paralyzer,
                             weaponDefID, attackerID, attackerDefID, attackerTeam)
-    --if weaponID ~= WeaponDefNames['armcom_empexplosion'].id or alreadyDamaged[unitID] then
-    --    return
-    --end
-    if (weaponDefID ~= COM_BLAST and weaponDefID ~= COM_BLAST2) then --and Spring.ValidUnitID(attackerID)
+    if (weaponDefID ~= COM_EMPTRIGGER) then --and Spring.ValidUnitID(attackerID)
         return end
-    Spring.Echo("Applying EMP damage")  --COMMANDER_BLAST
     --unitID, damage, paralyze = 0, attackerID = -1, weaponID = -1
-    Spring.AddUnitDamage ( unitID, math.huge, 1, attackerID, WeaponDefNames['armcom_empexplosion'].id )
-    --alreadyDamaged[unitID] = true
+    Spring.AddUnitDamage ( unitID, math.huge, 20, attackerID, WeaponDefNames['armcom_empexplosion'].id )
 end
 
-
-
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+--- Enable Weapon?
+--Spring.UnitWeaponFire(unitID, WeaponDefNames['commanderexplosionemp'].id)
