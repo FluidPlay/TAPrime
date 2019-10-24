@@ -707,23 +707,25 @@ end
 
 
 local function ReAssignAssists(newUnit,oldUnit)
-  local ally = spGetUnitAllyTeam(newUnit)
-  local alliedTeams = spGetTeamList(ally)
-  for n=1,#alliedTeams do
-    local teamID = alliedTeams[n]
-    local alliedUnits = spGetTeamUnits(teamID)
-    for i=1,#alliedUnits do
-      local unitID = alliedUnits[i]
-      local cmds = spGetCommandQueue(unitID, 1)
-      for j=1,#cmds do
-        local cmd = cmds[j]
-        if (cmd.id == CMD.GUARD)and(cmd.params[1] == oldUnit) then
-          SpGiveOrderToUnit(unitID,CMD.INSERT,{cmd.tag,CMD.GUARD,0,newUnit},{})
-          SpGiveOrderToUnit(unitID,CMD.REMOVE,{cmd.tag},{})
+    if newUnit == nil or oldUnit == nil then
+        return end
+    local ally = spGetUnitAllyTeam(newUnit)
+    local alliedTeams = spGetTeamList(ally)
+    for n=1,#alliedTeams do
+        local teamID = alliedTeams[n]
+        local alliedUnits = spGetTeamUnits(teamID)
+        for i=1,#alliedUnits do
+          local unitID = alliedUnits[i]
+          local cmds = spGetCommandQueue(unitID, 1)
+          for j=1,#cmds do
+            local cmd = cmds[j]
+            if (cmd.id == CMD.GUARD)and(cmd.params[1] == oldUnit) then
+              SpGiveOrderToUnit(unitID,CMD.INSERT,{cmd.tag,CMD.GUARD,0,newUnit},{})
+              SpGiveOrderToUnit(unitID,CMD.REMOVE,{cmd.tag},{})
+            end
+          end
         end
-      end
     end
-  end
 end
 
 --------------------------------------------------------------------------------
@@ -916,28 +918,30 @@ local function StopMorph(unitID, morphData)
 end
 
 local function FinishMorph(unitID, morphData)
-  local udDst = UnitDefs[morphData.def.into]
-  --local ud = UnitDefs[unitID]
-  local defName = udDst.name
-  local unitTeam = morphData.teamID
-  local px, py, pz = spGetUnitBasePosition(unitID)
-  local h = spGetUnitHeading(unitID)
-  spSetUnitBlocking(unitID, false)
-  morphingUnits[unitID] = nil
-  spSetUnitRulesParam(unitID, "justmorphed", 1)
+    if unitID == nil then
+        return end
+    local udDst = UnitDefs[morphData.def.into]
+    --local ud = UnitDefs[unitID]
+    local defName = udDst.name
+    local unitTeam = morphData.teamID
+    local px, py, pz = spGetUnitBasePosition(unitID)
+    local h = spGetUnitHeading(unitID)
+    spSetUnitBlocking(unitID, false)
+    morphingUnits[unitID] = nil
+    spSetUnitRulesParam(unitID, "justmorphed", 1)
     --[Deprecated] After 10 frames, we'll clean up this unitRulesParam, to allow explosions after this time frame
     --cleanRulesParam[unitID] = Spring.GetGameFrame()+10
 
-  local oldHealth,oldMaxHealth,paralyzeDamage,captureProgress,buildProgress = spGetUnitHealth(unitID)
-  local isBeingBuilt = false
-  if buildProgress < 1 then
+    local oldHealth,oldMaxHealth,paralyzeDamage,captureProgress,buildProgress = spGetUnitHealth(unitID)
+    local isBeingBuilt = false
+    if buildProgress < 1 then
     isBeingBuilt = true
-  end
+    end
 
-  local newUnit
-  local face = HeadingToFacing(h)
+    local newUnit
+    local face = HeadingToFacing(h)
 
-  if udDst.isBuilding or udDst.isFactory then
+    if udDst.isBuilding or udDst.isFactory then
       --if udDst.isBuilding then
 
       local x = math.floor(px/16)*16
@@ -958,39 +962,39 @@ local function FinishMorph(unitID, morphData)
       newUnit = spCreateUnit(defName, x, y, z, face, unitTeam)
       if newUnit then
           spSetUnitPosition(newUnit, x, y, z) end
-  else
+    else
       newUnit = spCreateUnit(defName, px, py, pz, face, unitTeam)
       --Spring.SetUnitRotation(newUnit, 0, -h * math.pi / 32768, 0)
       if newUnit then
           spSetUnitPosition(newUnit, px, py, pz)
           spSetUnitRulesParam(unitID, "morphedinto", 1)
       end
-  end
-  
-  if (extraUnitMorphDefs[unitID] ~= nil) then
+    end
+
+    if (extraUnitMorphDefs[unitID] ~= nil) then
     -- nothing here for now
-  end
-  if (hostName ~= nil) and PWUnits[unitID] then
+    end
+    if (hostName ~= nil) and PWUnits[unitID] then
     -- send planetwars deployment message
     PWUnit = PWUnits[unitID]
     PWUnit.currentDef=udDst
-	local data = PWUnit.owner..","..defName..","..math.floor(px)..","..math.floor(pz)..",".."S"
-	spSendCommands("w "..hostName.." pwmorph:"..data)
-	extraUnitMorphDefs[unitID] = nil
-	GG.PlanetWars.units[unitID] = nil
-	GG.PlanetWars.units[newUnit] = PWUnit
-	SendToUnsynced('PWCreate', unitTeam, newUnit)
-  elseif (not morphData.def.facing) then  -- set rotation only if unit is not planetwars and facing is not true
+    local data = PWUnit.owner..","..defName..","..math.floor(px)..","..math.floor(pz)..",".."S"
+    spSendCommands("w "..hostName.." pwmorph:"..data)
+    extraUnitMorphDefs[unitID] = nil
+    GG.PlanetWars.units[unitID] = nil
+    GG.PlanetWars.units[newUnit] = PWUnit
+    SendToUnsynced('PWCreate', unitTeam, newUnit)
+    elseif (not morphData.def.facing) then  -- set rotation only if unit is not planetwars and facing is not true
     --Spring.Echo(morphData.def.facing)
     --Spring.SetUnitRotation(newUnit, 0, -h * math.pi / 32768, 0)
-  end
+    end
 
-  --//copy experience & group
-  local newXp = spGetUnitExperience(unitID)*XpScale
-  local nextMorph = morphDefs[morphData.def.into]
---  local oldGroup = spGetUnitGroup(unitID)
-  if nextMorph~= nil and nextMorph.into ~= nil then nextMorph = {morphDefs[morphData.def.into]} end
-  if (nextMorph) then --//determine the lowest xp req. of all next possible morphs
+    --//copy experience & group
+    local newXp = spGetUnitExperience(unitID)*XpScale
+    local nextMorph = morphDefs[morphData.def.into]
+    --  local oldGroup = spGetUnitGroup(unitID)
+    if nextMorph~= nil and nextMorph.into ~= nil then nextMorph = {morphDefs[morphData.def.into]} end
+    if (nextMorph) then --//determine the lowest xp req. of all next possible morphs
     local maxXp = math.huge
     for _, nm in pairs(nextMorph) do
       local rankXpInto = RankToXp(nm.into,nm.rank)
@@ -1003,25 +1007,25 @@ local function FinishMorph(unitID, morphData)
       end
     end
     newXp = math.min( newXp, maxXp*0.9)
-  end
-  if newUnit and newXp then
+    end
+    if newUnit and newXp then
       spSetUnitExperience(newUnit, newXp)
-  end
---spSetUnitGroup(newUnit, oldGroup)
+    end
+    --spSetUnitGroup(newUnit, oldGroup)
 
-  --//copy some state
-  local states = spGetUnitStates(unitID)
-  spGiveOrderArrayToUnitArray({ newUnit }, {
+    --//copy some state
+    local states = spGetUnitStates(unitID)
+    spGiveOrderArrayToUnitArray({ newUnit }, {
     { CMD.FIRE_STATE, { states.firestate },             { } },
     { CMD.MOVE_STATE, { states.movestate },             { } },
     { CMD.REPEAT,     { states["repeat"] and 1 or 0 },  { } },
     { CMD.CLOAK,      { states.cloak     and 1 or udDst.initCloaked },  { } },
     { CMD.ONOFF,      { 1 },                            { } },
     { CMD.TRAJECTORY, { states.trajectory and 1 or 0 }, { } },
-  })
+    })
 
-  --//Copy command queue        [deprecated]FIX : removed 04/2012, caused erros
-  --Now copies only move/patrol commands from queue, shouldn't pose any issues
+    --//Copy command queue        [deprecated]FIX : removed 04/2012, caused erros
+    --Now copies only move/patrol commands from queue, shouldn't pose any issues
     local cmdqueuesize = Spring.GetUnitCommands(unitID, 0)
     if type(cmdqueuesize) == "number" then
         local cmds = Spring.GetUnitCommands(unitID,100)
@@ -1039,34 +1043,35 @@ local function FinishMorph(unitID, morphData)
         end
     end
 
-  --//reassign assist commands to new unit
-  ReAssignAssists(newUnit,unitID)
+    --//reassign assist commands to new unit
+    ReAssignAssists(newUnit,unitID)
 
-  --// copy health
-  local oldHealth,oldMaxHealth,_,_,buildProgress = spGetUnitHealth(unitID)
-  local _,newMaxHealth         = spGetUnitHealth(newUnit)
-  local newHealth = (oldHealth / oldMaxHealth) * newMaxHealth
-  if newHealth<=1 then newHealth = 1 end
-  spSetUnitHealth(newUnit, {health = newHealth, build = buildProgress})
-  
-  --// copy shield power
-  local enabled,oldShieldState = spGetUnitShieldState(unitID)
-  if oldShieldState and spGetUnitShieldState(newUnit) then
+    --// copy health
+    local oldHealth,oldMaxHealth,_,_,buildProgress = spGetUnitHealth(unitID)
+    local _,newMaxHealth         = spGetUnitHealth(newUnit)
+    local newHealth = (oldHealth / oldMaxHealth) * newMaxHealth
+    if newHealth<=1 then newHealth = 1 end
+    spSetUnitHealth(newUnit, {health = newHealth, build = buildProgress})
+
+    --// copy shield power
+    local enabled,oldShieldState = spGetUnitShieldState(unitID)
+    if oldShieldState and spGetUnitShieldState(newUnit) then
     spSetUnitShieldState(newUnit, enabled,oldShieldState)
-  end
+    end
 
-  --// FIXME: - re-attach to current transport?
-  --// Send to unsynced so it can broadcast to widgets (and update selection here)
-  SendToUnsynced("unit_morph_finished", unitID, newUnit)
+    --// FIXME: - re-attach to current transport?
+    --// Send to unsynced so it can broadcast to widgets (and update selection here)
+    SendToUnsynced("unit_morph_finished", unitID, newUnit)
 
-  spSetUnitBlocking(newUnit, true)
-  -- Below is consumed in update (without it, last commander-ends might be triggered by mistake (!))
-  unitsToDestroy[unitID] = spGetGameFrame() + 1   -- Set frame for the unit to be removed from game
-
+    spSetUnitBlocking(newUnit, true)
+    -- Below is consumed in update (without it, last commander-ends might be triggered by mistake (!))
+    unitsToDestroy[unitID] = spGetGameFrame() + 1   -- Set frame for the unit to be removed from game
 end
 
 -- Here's where the Morph is updated
 local function UpdateMorph(unitID, morphData, bonus)
+  if not unitID then
+      return false end
   -- Morph is paused either explicity or when unit is not finished being built or is being transported
   if not isDone(unitID) or morphData.paused or spGetUnitTransporter(unitID) then
     return true end               -- true => Morph is still enabled
