@@ -118,7 +118,7 @@ local weaponDamageTypes = {
 	corstorm = { ["Rockets"] = "rocket", ["AARockets"] = "rocket", },
 	armamb = { ["PopupCannon"] = "plasma", },
 	armmh = { ["RocketArtillery"] = "rocket", },
-	armaas = { ["FlakCannon"] = "flak", ["AA2Missile"] = "homing", },
+	armaas = { ["AA2Missile"] = "homing", ["FlakCannon"] = "flak", ["FlakAACannon"] = "flak",  },
 	armrl = { ["Missiles"] = "homing", ["AAMissiles"] = "homing", },
 	armamd = { ["Rocket"] = "omni", },
 	marauder = { ["Missiles"] = "homing", ["MechPlasmaCannon"] = "homing", },

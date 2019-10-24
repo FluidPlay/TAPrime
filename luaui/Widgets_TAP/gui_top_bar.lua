@@ -1549,7 +1549,7 @@ function countComs()
 			end
 		end
 	end
-	---comcountChanged = true  || Not sure why this was here.. commenting out (MaDDoX)
+	comcountChanged = true  --|| Not sure why this was here.. commenting out (MaDDoX)
 	if allyComs ~= prevAllyComs then
 		comcountChanged = true
 		prevAllyComs = allyComs
