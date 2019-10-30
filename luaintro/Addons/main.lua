@@ -114,6 +114,8 @@ local tips = {
     "Before you start building a ton of Outposts, remember each outpost spends +50e per tick. Super-effective Nano Towers won't exist for 2000 more years.",
 	"If you stall (run out of) energy, morphs slow down much more than unit production. Try to maintain your juice flowing to keep your morphs fast.",
 	"Tech Center (Global) upgrades in-progress may be cancelled by right-clicking any upgrade button",
+    "There are three armor types (light, support & heavy) per mobile unit category (kbot, vehicle, air, ship). You may easily know what's the armor type by the unit's moving speed (fast, average, slow) relative to others in its category.",
+    "As a countering general rule of thumb, light units beat support units, which beat heavy units, which beat light units. Light > Support > Heavy > Light if you will.",
 }
 
 -- Random unit descriptions we can show

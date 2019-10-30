@@ -1,36 +1,35 @@
 local armorDefs = {
-	commander = {
-		"armcom", "armcom2", "armcom3", "armdecom", "corcom", "corcom2", "corcom3", "cordecom",
-	},
-	aiv = {
+    lightbot={"armack","armch","armck","armfark","armpw","armrectr","armsubk","armconsul","coraca","corack","corak",
+              "coramph","corch","corck","cornecro","corspy","corsub","corvoyr","armfast", "corsktl", "armspid",
+              "cormando", "corpyro",},
+    supportbot={"armaak","armah","armjeth","armmh","armrock","coraak","corah","corcrash","corstorm",},
+
+    heavybot={"corkrog","armmav","armsptk","armsnipe", "armmark", "armzeus", "armfboy", "cortermite", "corsumo","armbanth",
+              "armham","armorco","armraz","armvader","armwar","corcan","corkarg","corroach","corthud","corthovr","krogtaar",
+              "meteor","tawf009",},
+
+    --++++==== Vehicles
+	lightveh = {
 		"armflash", "armyork", "corsent", "cormuskrat", "cormls", "armacv", "armcv", "armmls", "coracv", "corfast",
 		"critter_ant", "critter_duck", "critter_goldfish", "critter_gull", "critter_penguin", "corcv", "corgator",
+        "armlatnk","armfav","armjanus","armmlv","armkam","armsh","armspy","cordefiler","coresupp","corbw","corfav",
+        "corlevlr","corsh","corvrad","decade","marauder","nsaclash",
 	},
-	artillery = {"armfido","armmart","armmerl","corcat","armshock","corhrk","cormart","cormh","cormort","corvroc","corwolv","corjugg","shiva","tawf013","cortrem",},
+	supportveh = {"armfido","armmart","armmerl","corcat","armshock","corhrk","cormart","cormh","cormort","corvroc","corwolv","corjugg","shiva","tawf013","cortrem",},
 
-	invader={"armfast", "corsktl", "armspid", "cormando", "corpyro",},
+	heavyveh={"armanac","armbull","armcroc","armlun","armpincer","armscab","armseer","armst","armstump","armthovr","cordl",
+              "coreter","corgarp","corgol","cormabm","cormlv","corparrow","corraid","correap","corseal","corsilo","corsnap",
+              "corsok","armintr","armsam", "cormist", "armmanni", "armjam", "corban",},
 
-	assault={"armlatnk","armfav","armjanus","armmlv","armkam","armsh","armspy","cordefiler","coresupp","corbw","corfav","corlevlr","corsh","corvrad","decade","marauder","nsaclash",},
+    --++++==== Air
+	lightair={"armaca","armawac","armca","armcsa","armfig","armhawk","armsehak","armsfig","corawac","corca","corcsa","corhunt","corsfig","corvamp","corveng",},
+	supportair={"armatlas","armbrawl","armdfly","armpeep","armsaber","armseap","corseah","corape","corcut","corfink","corseap","corvalk","armblade",},
+	heavyair={"armliche","armlance","armpnix","armsb","armthund","corstil","corhurc","corsb","corshad","cortitan","corcrw",},
 
-	bomber={"armliche","armlance","armpnix","armsb","armthund","corstil","corhurc","corsb","corshad","cortitan","armblade",},
-
-	gunship={"armatlas","armbrawl","armdfly","armpeep","armsaber","armseap","corseah","corape","corcrw","corcut","corfink","corseap","corvalk",},
-
+    --++++==== Structures & Defenses
 	defense={"armvulc","armamb","armamd","armclaw","armdl","armdrag","armemp","armfhlt","armguard","armhlt","armllt","armpb","corbhmth","corbuzz","corexp","corfgate","corfhlt","cormaw","corfmd","corgate","corhlt","corllt","corpun","cortoast","corvipe","hllt","armbeamer","armbrtha","corint","armamex",},
 
 	defenseaa={"armrl","armatl","armcir","armdeva","armfflak","armflak","armfrt","coratl","corenaa","corerad","corflak","corfrt","corrl","madsam","armmercury","packo","corscreamer","cordoom","armanni","armptl","corptl","armtl","cortl",},
-
-	heavybot={"corkrog","armmav","armsptk","armsnipe", "armmark", "armzeus", "armfboy", "cortermite", "corsumo",},
-
-	heavyveh={"armsam", "cormist", "armmanni", "armjam", "corban",},
-
-	peon={"armack","armch","armck","armfark","armpw","armrectr","armsubk","armconsul","coraca","corack","corak","coramph","corch","corck","cornecro","corspy","corsub","corvoyr",},
-
-	fighter={"armaca","armawac","armca","armcsa","armfig","armhawk","armsehak","armsfig","corawac","corca","corcsa","corhunt","corsfig","corvamp","corveng",},
-
-	rpg={"armaak","armah","armjeth","armmh","armrock","coraak","corah","corcrash","corstorm",},
-
-	stalwart={"armbanth","armham","armorco","armraz","armvader","armwar","corcan","corkarg","corroach","corthud","corthovr","krogtaar","meteor","tawf009",},
 
 	resource={ "armsolar", "corsolar", "armmex", "cormex", "armmoho", "cormoho","armfus","corfus","armafus","corafus","armuber","coruber","armgeo","armgmm","armageo",
         "armuwmex","armuwmme","armtide","coruwmex","coruwmme","cortide",},
@@ -45,15 +44,17 @@ local armorDefs = {
 		"corshroud","corsonar","corsy","cortarg","cortron","coruwadves","coruwadvms","coruwes","coruwfus","coruwmmm","coruwms",
 		"corvp","corwin","csubpen","tllmedfusion","armsonar",},
 
-	tank={"armanac","armbull","armcroc","armlun","armpincer","armscab","armseer","armst","armstump","armthovr","cordl","coreter","corgarp","corgol","cormabm","cormlv","corparrow","corraid","correap","corseal","corsilo","corsnap","corsok","armintr",},
-
+    --++++==== Ships
 	lightship = {"corpt", "corcrus", "armpt", "armcrus",},
-
 	supportship = {"armcs", "armacsub", "armpship", "armrecl", "armmship", "armsjam", "armaas",
 				   "corcs", "coracsub", "corpship", "correcl", "cormship", "corsjam", "corbow",},
-
 	heavyship = {"armroy", "armtship", "armbats", "armsub", "armcarry", "armepoch",
 				 "corshark", "corssub", "corcarry", "corroy", "cortship", "corbats", "corblackhy",} ,
+
+    --++++==== Extras
+	commander = {
+		"armcom", "armcom2", "armcom3", "armcom4", "armdecom", "corcom", "corcom2", "corcom3", "corcom4","cordecom",
+	},
 
 	["else"] = {},
 }
