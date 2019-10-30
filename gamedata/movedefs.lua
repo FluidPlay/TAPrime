@@ -1,6 +1,6 @@
 
 local moveDatas = {
-	AKBOT2 = {
+	AKBOT2 = {	--Used by Commanders
         allowRawMovement = true,
 		crushstrength = 50,
 		depthmod = 0,
@@ -9,7 +9,11 @@ local moveDatas = {
 		maxslope = 36,
 		maxwaterdepth = 5000,
 		maxwaterslope = 50,
-		
+		depthModParams = {
+			minHeight = 0,
+			linearCoeff = 0.03,
+			maxScale = 1.4,
+		}
 	},
 	AKBOTBOMB2 = {
         allowRawMovement = true,

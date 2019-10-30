@@ -41,7 +41,7 @@ local tips = {
 	"outpost.dds ".."To build unit factories you need an Outpost. Outposts can morph up to Tier4, with increasingly better build range and LOS.",
     "armsilo.dds ".."It's not just about upgrading the Tech Center! Keep upgrading your outpost. Building structures from it is much cheaper than morphing, and it'll build exclusive structures like Annihilators, Nukes and EMP Launchers.",
     "armshltx.dds ".."To build experimental units like the Krogoth and Bantha, you need an Experimental Gantry, built exclusively by a Level 4 outpost",
-    "corafus.dds ".."The 'AFUS' or Advanced Fusion Reactor has the best energy output in your army. You can get AFUSes by morphing a regular Fusion, once you're Tech Level 4",
+    "corafus.dds ".."The 'AFUS' or Advanced Fusion Reactor has the best energy output in your army. You can get AFUSes by morphing a regular Fusion Plant, once you're Tech Level 4",
     "armawin.dds ".."When the wind is blowing in your favor, Advanced Wind Generators are available on Tier 2 as morphs from the regular Wind Generator.",
     "cormuskrat.dds ".."FARKs and Muskrats are units built directly by the Outpost. They're great for early scout, can build dragon eyes (stealth remote cameras) and may assist factories (faster unit production speed).",
     "outpost.dds ".."Outposts can speed up any construction, but they're less cost effective for that than FARKs (built by the outpost) and they spend energy continuously.",

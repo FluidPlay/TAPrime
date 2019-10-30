@@ -12,15 +12,19 @@ end
 ---TODO: Read/Apply the minRange from customDefs
 ---TODO: Support other weapons, currently only 1st supported (weaponNum == 1)
 
+VFS.Include("gamedata/taptools.lua")
+
 if not gadgetHandler:IsSyncedCode() then
     return false
 end
 
+local function istable(x)  return (type(x) == 'table') end
 
 local spGetUnitWeaponState  = Spring.GetUnitWeaponState
 local spSetUnitWeaponState  = Spring.SetUnitWeaponState
 local spGetGameFrame        = Spring.GetGameFrame
 local spGetUnitRulesParam   = Spring.GetUnitRulesParam
+local spGetUnitPosition 	= Spring.GetUnitPosition
 local spSetUnitRulesParam   = Spring.SetUnitRulesParam
 local spGetUnitSeparation   = Spring.GetUnitSeparation
 local spGetUnitExperience   = Spring.GetUnitExperience
@@ -57,8 +61,6 @@ function gadget:GameFrame(n)
 		local dist = nil
 		if targetType == 1 then		-- Targeting a unit
 			dist = spGetUnitSeparation ( unitID, target, false ) -- unit1, unit2, 2D -> nil | number distance
-		elseif type(targetType) == "table" then
-			--TODO: Calculate distance and block shoot-ground within minrange as well
 		end
 
 		if dist then
@@ -83,6 +85,27 @@ function gadget:GameFrame(n)
 			--Spring.Echo("Can Shoot: "..tostring(checkedUnits[unitID]))
 		end
 	end
+end
+
+local function distance(x1,z1,x2,z2)
+	local dis = math.sqrt((x1-x2)*(x1-x2)+(z1-z2)*(z1-z2))
+	return dis
+end
+
+function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions, cmdTag, synced)
+	-- if cmdParams = number, the attack was issued directly on an unit. Not our business here.
+	if not trackedUnits[unitID] or cmdID ~= CMD.ATTACK or not istable(cmdParams) then
+		return true end
+	--DebugTable(cmdParams)
+	local x,y,z = cmdParams[1], cmdParams[2], cmdParams[3] -- click position
+	local minrange = tonumber(spGetUnitRulesParam(unitID, "minrange"))
+	local ux, uy, uz = spGetUnitPosition(unitID)
+	local dist = distance(ux, uz, x, z)
+	--Spring.Echo("dist: "..dist)
+	if dist < minrange then
+		return false
+	end
+	return true
 end
 
 function gadget:UnitDestroyed(unitID)

@@ -65,6 +65,7 @@ local splitMMUpdate = -1
 -- Constant
 ----------------------------------------------------------------
 
+local baseMmLevel = 0.25
 local paralysisRelRate = 75 -- unit HP / paralysisRelRate = paralysis dmg drop rate per slowupdate
 
 ----------------------------------------------------------------
@@ -246,7 +247,7 @@ function gadget:Initialize()
 				teamMMList[tID][eSteps[j]] = {}
         end
         teamUsages[tID] = 0
-        spSetTeamRulesParam(tID, mmLevelParamName, 0.75)
+        spSetTeamRulesParam(tID, mmLevelParamName, baseMmLevel)
         spSetTeamRulesParam(tID, mmCapacityParamName, 0)
         spSetTeamRulesParam(tID, mmUseParamName, 0)
 		spSetTeamRulesParam(tID, mmAvgEffiParamName, teamEfficiencies[tID]:avg())
