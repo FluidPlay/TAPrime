@@ -7,6 +7,6 @@ return {
   game='Total Annihilation Prime',
   shortgame='TAP',
   modtype=1,
-  url = "https://www.fluidplaystudios.com",
+  url = "https://www.fluidplay.co",
   engine = "104.0.1-1218-ga0cd6b1",    -- for chobby
 }
