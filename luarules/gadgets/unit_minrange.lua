@@ -97,9 +97,12 @@ function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdO
 	if not trackedUnits[unitID] or cmdID ~= CMD.ATTACK or not istable(cmdParams) then
 		return true end
 	--DebugTable(cmdParams)
-	local x,y,z = cmdParams[1], cmdParams[2], cmdParams[3] -- click position
+	local x,z = cmdParams[1], cmdParams[3] -- click position | cmdParams[2] = y
+    if not isnumber(x) or not isnumber(z) then
+        return true
+    end
 	local minrange = tonumber(spGetUnitRulesParam(unitID, "minrange"))
-	local ux, uy, uz = spGetUnitPosition(unitID)
+	local ux, _, uz = spGetUnitPosition(unitID)
 	local dist = distance(ux, uz, x, z)
 	--Spring.Echo("dist: "..dist)
 	if dist < minrange then
