@@ -35,30 +35,30 @@ local spGetGameFrame = Spring.GetGameFrame
 local unitSet = {}
 local initialized = false
 
-local unitArray = {
-  "armlab",
-  "armalab",
-  "armvp",
-  "armavp",
-  "armsy",
-  "armasy",
-  "armhp",
-  "armfhp",
-  "armshtlx",
-  "armcom",  "armcom2",  "armcom3",  "armcom4",
-  "asubpen",
-  "corlab",
-  "coralab",
-  "corvp",
-  "coravp",
-  "corsy",
-  "corasy",
-  "corhp",
-  "corfhp",
-  "corgant",
-  "csubpen",
-  "corcom",  "corcom2",  "corcom3",  "corcom4",
-}
+--local unitArray = {
+--  "armlab",
+--  "armalab",
+--  "armvp",
+--  "armavp",
+--  "armsy",
+--  "armasy",
+--  "armhp",
+--  "armfhp",
+--  "armshtlx",
+--  "armcom",  "armcom2",  "armcom3",  "armcom4",
+--  "asubpen",
+--  "corlab",
+--  "coralab",
+--  "corvp",
+--  "coravp",
+--  "corsy",
+--  "corasy",
+--  "corhp",
+--  "corfhp",
+--  "corgant",
+--  "csubpen",
+--  "corcom",  "corcom2",  "corcom3",  "corcom4",
+--}
 ----------------------------------------------
 ------------------------------------------
 
@@ -68,19 +68,19 @@ function widget:Initialize()
     widgetHandler:RemoveWidget()
     return false
   end
-  for i, v in pairs(unitArray) do
-    unitSet[v] = true
-  end
+  --for i, v in pairs(unitArray) do
+  --  unitSet[v] = true
+  --end
 end
 
 function widget:UnitCreated(unitID, unitDefID, unitTeam)
   local ud = UnitDefs[unitDefID]
   if ud ~= nil and unitTeam == spGetMyTeamID() then
-    for i, v in pairs(unitSet) do
-      if unitSet[ud.name] then
-        spGiveOrderToUnit(unitID, CMD.MOVE_STATE, { 0 }, {})
-      end
-    end
+    --for i, v in pairs(unitSet) do
+    --  if unitSet[ud.name] then
+    spGiveOrderToUnit(unitID, CMD.MOVE_STATE, { 0 }, {})
+    --  end
+    --end
   end
 end
 

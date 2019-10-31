@@ -52,7 +52,7 @@ end
 
 function gadget:GameFrame(f)
     for i,c in pairs(createList) do
-        Spring.Echo("Spawning at: "..c.x..", "..c.y..", "..c.z)
+        --Spring.Echo("Spawning at: "..c.x..", "..c.y..", "..c.z)
         spCreateUnit(meteorDefID, c.x, c.y+50, c.z, "north", spGetUnitTeam(c.owner))
         createList[i]=nil
     end

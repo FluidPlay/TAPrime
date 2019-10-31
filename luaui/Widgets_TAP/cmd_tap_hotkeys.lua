@@ -377,7 +377,7 @@ function MakeBindsTable (swapYZ)
 
         -- set target
         "bind Y settarget",
-        --"bind "..Y.." cenceltarget",
+        "bind alt+Y canceltarget",
         "bind shift+q morphqueue",
         "bind shift+alt+q morphpause",
         "bind m morph",
