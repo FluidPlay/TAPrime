@@ -52,7 +52,6 @@ GlobalUpgrades = {
                              [UnitDefNames["coracv"].id] = true,
                              [UnitDefNames["armaca"].id] = true,
                              [UnitDefNames["coraca"].id] = true,
-                             [UnitDefNames["corcom"].id] = true,
         },
         techToGrant = "capture",
     },

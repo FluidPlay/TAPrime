@@ -35,6 +35,7 @@ local tips = {
     "armwin.dds ".."Wind Generators built on high ground have a bonus compared to units built closer to the sea level. Isn't nature beautiful?",
     "armfdrag.dds ".."Dragon Teeth can block low-height missiles, bullets and laser shots, like those from basic kbots. Shark Teeth only block ships movement.",
     "cordrag.dds ".."Arm and Core's Dragon Teeth (DTs) are great to surround perimeters, preventing lower-tech units movement. They also block incoming direct-fire and missiles from going through, so improve your defenses resistance by surrounding them with DTs.",
+    "armdrag.dds ".."Artillery is great to break frontline stalemates, but they'll inevitably attract a 'payback wave' after they start firing. Before you start, try and wall in your towers there and create a 'choke wall' with dragon teeth to turn the odds in your favor."
     "armcom.dds ".."The D-Gun is the Commander's directed-fire ability and the most powerful weapon in the game. Upgrade it in the commander menu after your Tech Center is on level 1, then use it with the 'D' keyboard shortcut.",
     "armyork.dds ".."Flak-weaponry units, like the Phalanx, fire scattered projectiles. Flak is excellent at taking out fighters and heavy infantry, but will barely scratch tanks, commanders and plasma kbots.",
     "armaak.dds ".."The Arm Archangel (Tier 2) and the Core Manticore (T3) fire long range missiles. Like all AA (anti-air) missiles, it's great vs bombers but not so much against fighters.",
