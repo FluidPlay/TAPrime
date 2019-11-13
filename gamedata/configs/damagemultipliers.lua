@@ -79,7 +79,7 @@ local damageMultipliers = {
                 structure = 0.5,resource = 0.75, 	defense = 0.15, defenseaa = 0.05, 	commander = 0.2,
 	}
 ,
-	omni={ 	    lightbot = 1.01,supportbot = 1, 	heavybot = 1, 	lightveh = 1,       supportveh = 1.5,   heavyveh = 2,
+	omni={ 	    lightbot = 1.01,supportbot = 0.95, 	heavybot = 1, 	lightveh = 1,       supportveh = 1.5,   heavyveh = 2,
 				lightair = 2, 	supportair = 2, 	heavyair = 2,   lightship = 1.25,   supportship = 0.75,heavyship = 2.5,
                 structure = 1,  resource = 1, 		defense = 0.5, 	defenseaa = 0.5, 	commander = 1.5,
 	}
