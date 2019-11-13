@@ -14,12 +14,12 @@ local damageMultipliers = {
                 structure = 0.75,resource = 0.25, 	defense = 0.263,defenseaa = 0.35,   commander = 0.3,
 	}
 ,
-	rocket={ 	lightbot = 0.15,supportbot = 0.5,   heavybot = 0.35,lightveh = 0.45,    supportveh = 0.85,	heavyveh = 4,
+	rocket={ 	lightbot = 0.15,supportbot = 0.5,   heavybot = 0.35,lightveh = 0.4,     supportveh = 0.85,	heavyveh = 4,
 				lightair = 0.3, supportair = 2.55,  heavyair = 0.5, lightship = 0.45,   supportship = 0.75,heavyship = 1.6,
-                structure = 0.8,resource = 0.8,     defense = 0.6,  defenseaa = 0.5,    commander = 0.4,
+                structure = 0.8,resource = 0.8,     defense = 0.4,  defenseaa = 1.1,    commander = 0.4,
 	}
 ,
-	homing={ 	lightbot = 0.1, supportbot = 0.25, 	heavybot = 0.3, lightveh = 0.75,    supportveh = 1.25, heavyveh = 3.5,
+	homing={ 	lightbot = 0.1, supportbot = 0.25, 	heavybot = 0.3, lightveh = 0.75,    supportveh = 1.25, heavyveh = 3.2,
 				lightair = 1.1, supportair = 3, 	heavyair = 2.0, lightship = 1.25,   supportship = 1.75,heavyship = 2.5,
                 structure = 0.6,resource = 0.75, 	defense = 0.75, defenseaa = 0.125,  commander = 0.2,
 	}
@@ -29,7 +29,7 @@ local damageMultipliers = {
                 structure = 1.1,resource = 0.5,     defense = 0.7,  defenseaa = 0.8,    commander = 0.68,
 	}
 ,
-	hflaser={   lightbot = 2,   supportbot = 1.1,   heavybot = 0.45,lightveh = 0.55,    supportveh = 0.3,   heavyveh = 0.225,
+	hflaser={   lightbot = 1.5,  supportbot = 1.2,   heavybot = 0.45,lightveh = 0.55,    supportveh = 0.3,   heavyveh = 0.225,
                 lightair = 1.25, supportair = 0.5, 	heavyair = 1,   lightship = 1.5,    supportship = 0.75, heavyship = 0.25,
                 structure = 0.75,resource = 0.75, 	defense = 0.6,  defenseaa = 0.5,    commander = 0.85,
 	}
@@ -44,7 +44,7 @@ local damageMultipliers = {
                 structure = 1,  resource = 1, 		defense = 1.2, 	defenseaa = 0.3, 	commander = 0.75,
 	}
 ,
-	thermo={ 	lightbot = 0.4, supportbot = 1.1, 	heavybot = 1.3, lightveh = 0.3,    supportveh = 1.25,      heavyveh = 1.4,
+	thermo={ 	lightbot = 0.4, supportbot = 1.1, 	heavybot = 1.2, lightveh = 0.3,    supportveh = 1.25,      heavyveh = 1.4,
                 lightair = 1.3, supportair = 2.5,	heavyair = 2,   lightship = 2,     supportship = 0.5,     heavyship = 1.75,
                 structure = 0.75,resource = 0.45, 	defense = 1,    defenseaa = 0.5, 	commander = 0.25,
 	}

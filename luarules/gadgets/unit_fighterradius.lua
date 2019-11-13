@@ -18,8 +18,9 @@ if gadgetHandler:IsSyncedCode() then
 		UnitDefNames['corveng'].id,
 		UnitDefNames['corsfig'].id,
 		UnitDefNames['corvamp'].id
+        --UnitDefNames['armthund'].id
 	}
-	local radiusMult = 0.25
+	local radiusMult = 0.25 --0.01 --0.25
 	local heightMult = 1
 	local collisionFighters = {}
 
@@ -27,8 +28,8 @@ if gadgetHandler:IsSyncedCode() then
 		local count = 0
 		for i, unitDefID in ipairs(fighters) do
 			if UnitDefs[unitDefID].collide == true then
-				local unitDimentions = Spring.GetUnitDefDimensions(unitDefID)
-				collisionFighters[unitDefID] = {unitDimentions['radius'] * radiusMult, unitDimentions['height'] * heightMult }
+				local unitDimensions = Spring.GetUnitDefDimensions(unitDefID)
+				collisionFighters[unitDefID] = { unitDimensions['radius'] * radiusMult, unitDimensions['height'] * heightMult }
 				count = count + 1
 			end
 		end
