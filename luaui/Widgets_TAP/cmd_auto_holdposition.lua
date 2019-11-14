@@ -59,6 +59,14 @@ local initialized = false
 --  "csubpen",
 --  "corcom",  "corcom2",  "corcom3",  "corcom4",
 --}
+local exceptionArray = {
+  armfark = true, cormuskrat = true, corfast = true, armconsul = true,
+  corcom = true,  corcom2=true,  corcom3=true,  corcom4=true,
+  armoutpost = true, armoutpost2 = true, armoutpost3 = true, armoutpost4 = true,
+  coroutpost = true, coroutpost2 = true, coroutpost3 = true, coroutpost4 = true,
+  armck = true, armcv = true, armca = true, armack = true, armacv = true, armaca = true,
+  corck = true, corcv = true, corca = true, corack = true, coracv = true, coraca = true,
+}
 ----------------------------------------------
 ------------------------------------------
 
@@ -77,9 +85,9 @@ function widget:UnitCreated(unitID, unitDefID, unitTeam)
   local ud = UnitDefs[unitDefID]
   if ud ~= nil and unitTeam == spGetMyTeamID() then
     --for i, v in pairs(unitSet) do
-    --  if unitSet[ud.name] then
-    spGiveOrderToUnit(unitID, CMD.MOVE_STATE, { 0 }, {})
-    --  end
+    if not exceptionArray[ud.name] then
+        spGiveOrderToUnit(unitID, CMD.MOVE_STATE, { 0 }, {})
+    end
     --end
   end
 end

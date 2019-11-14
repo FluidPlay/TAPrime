@@ -21,6 +21,7 @@ end
 -----------------
 
 --VFS.Include("gamedata/taptools.lua")
+--local gaiaTeamID = Spring.GetGaiaTeamID()
 
 local trackedWeapon
 local createList = {}
@@ -40,11 +41,11 @@ function gadget:Initialize()
     spSetWatchWeapon(trackedWeapon, true)
 end
 
-function gadget:Explosion(w, x, y, z, owner)
-    if w == trackedWeapon and owner then
+function gadget:Explosion(w, x, y, z, attackerID)
+    if w == trackedWeapon and attackerID then
         --local y2 = Spring.GetGroundHeight(x,z)+100
         --if not Spring.GetGroundBlocked(x,z) then
-        table.insert(createList, {owner = owner, x=x,y=y,z=z})
+        table.insert(createList, { attackerID = attackerID, x=x, y=y, z=z})
         Spring.Echo("Tracked Explosion")
         return true
         --end
@@ -54,8 +55,16 @@ end
 
 function gadget:GameFrame(f)
     for i,c in pairs(createList) do
-        Spring.Echo("Spawning at: "..c.x..", "..c.y..", "..c.z)
-        spCreateUnit(meteorDefID, c.x, c.y+50, c.z, "north", spGetUnitTeam(c.owner))
+        local radius = 250
+        local rand1 = (math.random() - 0.5) * radius
+        local rand2 = (math.random() - 0.5) * radius
+        local unitID = Spring.CreateUnit(meteorDefID, c.x + rand1, c.y, c.z + rand2, "north", spGetUnitTeam(c.attackerID))
+        --Spring.Echo("Spawned "..unitID.." at: "..c.x..", "..c.y..", "..c.z)
+        Spring.SetUnitNoDraw(unitID, true)
+        Spring.SetUnitStealth(unitID, true)
+        Spring.SetUnitSonarStealth(unitID, true)
+        --Spring.SetUnitNeutral(unitID, true) -- Watch out, this breaks stuff
+        --spCreateUnit(meteorDefID, c.x, c.y+50, c.z, "north", spGetUnitTeam(c.owner))
         createList[i]=nil
     end
 end

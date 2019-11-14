@@ -8,7 +8,7 @@ function gadget:GetInfo()
         date      = '11/2013',
         license   = 'GNU GPL, v2 or later',
         layer     = 0,
-        enabled   = true
+        enabled   = true,
     }
 end
 
@@ -42,10 +42,11 @@ local hadArmageddon = false
 
 local gaiaTeamID = Spring.GetGaiaTeamID()
 
-local spGetUnitDefID 	= Spring.GetUnitDefID
-local spValidUnitID		= Spring.ValidUnitID
-local spDestroyUnit		= Spring.DestroyUnit
-local spGetGameFrame	= Spring.GetGameFrame
+local spGetUnitDefID 	  = Spring.GetUnitDefID
+local spValidUnitID		  = Spring.ValidUnitID
+local spDestroyUnit		  = Spring.DestroyUnit
+local spGetGameFrame	  = Spring.GetGameFrame
+local spGetUnitRulesParam = Spring.GetUnitRulesParam
 
 local numX = Game.mapX-1
 local numZ = Game.mapY-1
@@ -199,9 +200,12 @@ function gadget:UnitPreDamaged(unitID, unitDefID, unitTeam, damage, paralyzer, w
     end
 end
 
+local function wasntMorphedInto(unitID)
+    return spGetUnitRulesParam(unitID, "morphedinto") ~= 1
+end
 
 function gadget:UnitFinished(unitID, unitDefID, teamID, builderID)
-    if hadArmageddon and unitDefID~=meteorDefID then
+    if hadArmageddon and unitDefID~=meteorDefID and wasntMorphedInto(unitID) then
         local n = spGetGameFrame()
         if not toKill[n+1] then toKill[n+1] = {} end
         local k = #(toKill[n+1])+1
