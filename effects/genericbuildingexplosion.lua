@@ -1219,6 +1219,10 @@ definitions['genericshellexplosion-meteor'].clouddust = nil
 --definitions['genericshellexplosion-meteor'].groundclouddust.properties.alwaysvisible = true
 --definitions['genericshellexplosion-meteor'].kickedupwater.properties.alwaysvisible = true
 
+definitions['genericshellexplosion-meteorite'] = deepcopy(definitions[root.."-meteor"])
+definitions['genericshellexplosion-meteorite'].explosion.properties.particlespeed = 0.75
+definitions['genericshellexplosion-meteorite'].explosion.properties.particlespeedspread = 6
+
 definitions['meteorstrike-tag'] = deepcopy(definitions[root.."-wind"])
 definitions['meteorstrike-tag'].explosion.properties.colormap = [[0 0 0 0   0.92 1 0.7 0.08   0.77 0.9 0.21 0.06   0.57 0.66 0.04 0.03   0 0 0 0.01]]
 definitions['meteorstrike-tag'].fireglow.properties.colormap = [[0.15 0.14 0.1 0.005  0 0 0 0.01]]

@@ -29,8 +29,8 @@ local spCreateUnit = Spring.CreateUnit
 local spGetUnitTeam = Spring.GetUnitTeam
 local spSetWatchWeapon = Script.SetWatchWeapon
 
-local meteorDefID =  UnitDefNames["meteor"].id
-local METEOR_EXPLOSION = WeaponDefNames["meteor_weapon"].id
+local meteoriteDefID =  UnitDefNames["meteorite"].id
+local METEOR_EXPLOSION = WeaponDefNames["meteorite_weapon"].id
 
 function gadget:Initialize()
     for _,def in pairs(WeaponDefs) do
@@ -58,7 +58,7 @@ function gadget:GameFrame(f)
         local radius = 250
         local rand1 = (math.random() - 0.5) * radius
         local rand2 = (math.random() - 0.5) * radius
-        local unitID = Spring.CreateUnit(meteorDefID, c.x + rand1, c.y, c.z + rand2, "north", spGetUnitTeam(c.attackerID))
+        local unitID = Spring.CreateUnit(meteoriteDefID, c.x + rand1, c.y, c.z + rand2, "north", spGetUnitTeam(c.attackerID))
         --Spring.Echo("Spawned "..unitID.." at: "..c.x..", "..c.y..", "..c.z)
         Spring.SetUnitNoDraw(unitID, true)
         Spring.SetUnitStealth(unitID, true)

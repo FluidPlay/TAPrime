@@ -96,6 +96,7 @@ local weaponDamageTypes = {
 	armkam = { ["E.M.G."] = "bullet", },
 	corvamp = { ["GuidedMissiles"] = "homing", ["GuidedMissilesA2G"] = "homing", },
 	meteor = { ["Asteroid"] = "siege", },
+    meteorite = { ["Meteorite"] = "neutron", },
 	corcan = { ["HighEnergyLaser"] = "neutron", },
 	corlevlr = { ["RiotCannon"] = "explosive", },
 	armwar = { ["MediumLaser"] = "laser", },
