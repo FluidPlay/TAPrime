@@ -62,14 +62,19 @@ local CMD_MANUALFIRE = CMD.MANUALFIRE
 local CMD_RESURRECT = CMD.RESURRECT
 CMD.UPG_DGUN = 41999
 CMD_UPG_DGUN = CMD.UPG_DGUN
+
 CMD.UPG_GRENADE = 41998
 CMD_UPG_GRENADE = CMD.UPG_GRENADE
+
 CMD.UPG_FIRERAIN = 41997
 CMD_UPG_FIRERAIN = CMD.UPG_FIRERAIN
-CMD.UPG_FIRERAIN = 41996
-CMD_UPG_BARRAGE = CMD.UPG_BARRAGE
-CMD.UPG_RESURRECT = 41995
+
+CMD.UPG_RESURRECT = 41996
 CMD_UPG_RESURRECT = CMD.UPG_RESURRECT
+
+CMD.UPG_NEUTRONSTRIKE = 41995
+CMD_UPG_NEUTRONSTRIKE = CMD.UPG_NEUTRONSTRIKE
+
 
 -- TODO: Move to Separate file for better organization
 -- Unit Upgrades (as shown in a certain unit's command list)
@@ -139,23 +144,23 @@ UnitUpg = {
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "",
     },
-    barrage = {     -- >> Core Informer comet rain (Per Unit)
-        id = "barrage",
+    neutronstrike = {     -- >> Cor Vrad Neutron Hailstorm (Per Unit)
+        id = "neutronstrike",
         UpgradeCmdDesc = {
-            id      = CMD_UPG_BARRAGE,
-            name    = 'Upg Barrage',
-            action  = 'barrageupgrade',
+            id      = CMD_UPG_NEUTRONSTRIKE,
+            name    = '^ NeutronStrike',
+            action  = 'neutronstrikeupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Barrage upgrade: Enables manual-fire Barrage weapon [per unit]',
+            tooltip = 'Neutron Strike upgrade: Enables manual-fire Neutron Strike weapon [per unit]',
             texture = 'luaui/images/upgrades/techfirerain.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "Tech1",
-        metalCost = 160,
-        energyCost = 960,
-        upgradeTime = 10 * 30, --5 seconds, in frames
+        metalCost = 150,
+        energyCost = 960, --960
+        upgradeTime = 10 * 30, --10 seconds, in frames
         type = "perunit",
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "",
@@ -195,6 +200,7 @@ UnitResearchers = {
     [UnitDefNames["armpw"].id] = "grenade",
     [UnitDefNames["armsam"].id] = "firerain",
     [UnitDefNames["corvrad"].id] = "resurrect", --barrage
+    [UnitDefNames["corvrad"].id] = "neutronstrike",
 }
 UnitUpgrades = {} -- Auto-completed from UnitUpg table @ Initialize
 
