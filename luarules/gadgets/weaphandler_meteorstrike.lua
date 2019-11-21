@@ -24,13 +24,24 @@ end
 --local gaiaTeamID = Spring.GetGaiaTeamID()
 
 local trackedWeapon
-local createList = {}
+local spawnList = {}
 local spCreateUnit = Spring.CreateUnit
 local spGetUnitTeam = Spring.GetUnitTeam
 local spSetWatchWeapon = Script.SetWatchWeapon
+local spSetUnitNoDraw = Spring.SetUnitNoDraw
+local spSetUnitStealth = Spring.SetUnitStealth
+local spSetUnitSonarStealth = Spring.SetUnitSonarStealth
+local spGetGameFrame = Spring.GetGameFrame
+local minSpawnDelay = 1.25 * 30 -- n seconds in frames  --TODO: Make static
+local maxSpawnDelay = 2 * 30    -- n seconds in frames
 
 local meteoriteDefID =  UnitDefNames["meteorite"].id
 local METEOR_EXPLOSION = WeaponDefNames["meteorite_weapon"].id
+
+local meteroiteSpawnRadius = 250
+local rnd = math.random
+
+VFS.Include("gamedata/taptools.lua")
 
 function gadget:Initialize()
     for _,def in pairs(WeaponDefs) do
@@ -45,8 +56,9 @@ function gadget:Explosion(w, x, y, z, attackerID)
     if w == trackedWeapon and attackerID then
         --local y2 = Spring.GetGroundHeight(x,z)+100
         --if not Spring.GetGroundBlocked(x,z) then
-        table.insert(createList, { attackerID = attackerID, x=x, y=y, z=z})
-        Spring.Echo("Tracked Explosion")
+        local thisSpawnDelay = lerp(minSpawnDelay, maxSpawnDelay, rnd())
+        table.insert(spawnList, { spawnTime = spGetGameFrame() + thisSpawnDelay, attackerID = attackerID, x=x, y=y, z=z})
+        --Spring.Echo("Tracked Explosion")
         return true
         --end
     end
@@ -54,18 +66,18 @@ function gadget:Explosion(w, x, y, z, attackerID)
 end
 
 function gadget:GameFrame(f)
-    for i,c in pairs(createList) do
-        local radius = 250
-        local rand1 = (math.random() - 0.5) * radius
-        local rand2 = (math.random() - 0.5) * radius
-        local unitID = Spring.CreateUnit(meteoriteDefID, c.x + rand1, c.y, c.z + rand2, "north", spGetUnitTeam(c.attackerID))
-        --Spring.Echo("Spawned "..unitID.." at: "..c.x..", "..c.y..", "..c.z)
-        Spring.SetUnitNoDraw(unitID, true)
-        Spring.SetUnitStealth(unitID, true)
-        Spring.SetUnitSonarStealth(unitID, true)
-        --Spring.SetUnitNeutral(unitID, true) -- Watch out, this breaks stuff
-        --spCreateUnit(meteorDefID, c.x, c.y+50, c.z, "north", spGetUnitTeam(c.owner))
-        createList[i]=nil
+    for i, data in pairs(spawnList) do
+        if data.spawnTime >= f then
+            local rand1 = (rnd() - 0.5) * meteroiteSpawnRadius
+            local rand2 = (rnd() - 0.5) * meteroiteSpawnRadius
+            local unitID = spCreateUnit(meteoriteDefID, data.x + rand1, data.y, data.z + rand2, "north", spGetUnitTeam(data.attackerID))
+            --Spring.Echo("Spawned "..unitID.." at: "..c.x..", "..c.y..", "..c.z)
+            spSetUnitNoDraw(unitID, true)
+            spSetUnitStealth(unitID, true)
+            spSetUnitSonarStealth(unitID, true)
+            table.remove(spawnList, i)
+        end
+        --spawnList[i]=nil
     end
 end
 

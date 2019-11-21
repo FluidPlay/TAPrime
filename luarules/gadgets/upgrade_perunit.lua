@@ -274,6 +274,8 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID, cmdParams, cmdOpti
 end
 
 function gadget:Initialize()
+    -- Sets the dgun cursor to the FireRain ability
+    Spring.AssignMouseCursor("firerain", "cursordgun", false)
     for _,upgrade in pairs(UnitUpg) do
         UnitUpgrades[upgrade] = true
     end
