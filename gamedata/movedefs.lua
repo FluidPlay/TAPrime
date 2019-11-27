@@ -50,7 +50,7 @@ local moveDatas = {
 			maxValue = 0.7,
 		}
 	},
-	TANK2 = {	-- Stumpy, Raider, Leveler -- (can crush light bots but not DTs)
+	TANK2 = {	-- Stumpy, Raider, Leveler -- (can crush light bots but not plasma bots or DTs)
         allowRawMovement = true,
 		crushstrength = 300,	-- plasma kbots crushresistance = 400
 		footprintx = 3,
