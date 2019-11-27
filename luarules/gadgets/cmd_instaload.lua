@@ -332,11 +332,18 @@ local function ShowUnit (unitID, enable)
 end
 
 function gadget:UnitLoaded(unitID, unitDefID, unitTeam, transportID, transportTeam)
+    ---- Let's ignore naval transports
+    --local transportuDef = UnitDefs[transportID]
+    --local minUnloadDistance = tonumber(transportuDef.customParams.minunloaddistance)
+    --if not minUnloadDistance or minUnloadDistance < 1 then
+    --    return
+    --end
     unitisintransport[unitID] = true
     if passengers[transportID] == nil then
         passengers[transportID] = {}
     end
     table.insert(passengers[transportID], unitID)
+    --Spring.Echo("Count: "..#passengers[transportID])
     if currenttransportcapacity[transportID] then
         currenttransportcapacity[transportID] = currenttransportcapacity[transportID] - 1
     else
@@ -346,6 +353,8 @@ end
 
 function gadget:UnitUnloaded(unitID, unitDefID, unitTeam, transportID, transportTeam)
     unitisintransport[unitID] = false
+    ipairs_remove(passengers[transportID], unitID)
+    --Spring.Echo("New count: "..#passengers[transportID] or "nil")
     if not currenttransportcapacity[transportID] or not currentassignablecapacity[transportID] then
         --Spring.Echo("Warning: Transport info was not initialized")
         return
@@ -353,21 +362,17 @@ function gadget:UnitUnloaded(unitID, unitDefID, unitTeam, transportID, transport
     currenttransportcapacity[transportID] = (currenttransportcapacity[transportID] + 1)
     currentassignablecapacity[transportID] = (currentassignablecapacity[transportID] + 1)
 
-    ipairs_remove(passengers[transportID], unitID)
 
     local ttu = transportstounload[transportID]   --transport to unload
 
-    if not ttu then
+    if ttu == nil then
         --Spring.Echo("no ttu - transport to unload")
-        return
-    else
-        --Spring.Echo("Has transport to unload")
-    end
+        return end
 
     --Spring.SetUnitPosition ( unitID, ttu.x, ttu.z )
     --Spring.Echo("Unload registered, assignable capacity: "..currentassignablecapacity[transportID])
     ShowUnit(unitID, false)
-    -- We have to the move control by 10 frames after unload, or else it twitches and fails.
+    -- We have to punt the move control by 10 frames after unload, or else it twitches and fails.
     -- PS.: This was found by shameless trial and error. No idea if it's an engine bug or expected behavior.
     queueMovePassengers[#queueMovePassengers +1]={ unitID = unitID, frame = spGetGameFrame()+10,
                                                    clickPos = { x = ttu.x, y = ttu.y, z = ttu.z, r = ttu.r }}
@@ -385,7 +390,7 @@ function gadget:GameFrame(f)
             --Spring.SetUnitPosition ( unitID, px, pz )
             --Spring.Echo("Moving: "..unitID)
             mcEnable(unitID)
-            mcSetPosition( unitID, px, clickPos.y, pz ) -- clickPos.y || px
+            mcSetPosition( unitID, px + math.random(-20,20), clickPos.y, pz + math.random(-20,20)) -- clickPos.y || px
             mcDisable(unitID)
             ShowUnit(unitID, true)
             table.remove(queueMovePassengers, i)
@@ -400,21 +405,20 @@ function gadget:GameFrame(f)
             local minUnloadDistance = transportuDef.customParams.minunloaddistance
             if (minUnloadDistance) then
                 local distance = math.sqrt(sqr(tx-clickPos.x) + sqr(ty-clickPos.y) + sqr(tz- clickPos.z))
-                Spring.Echo("current/min: "..distance.." / "..minUnloadDistance)
+                --Spring.Echo("current/min: "..distance.." / "..minUnloadDistance)
                 if distance <= tonumber(minUnloadDistance) then
                     -- actually unload all (for now) units
-                    if passengers[transpUID] and passengers[transpUID][1] then
-                        local passengerUID = passengers[transpUID][1]
-                        --Spring.Echo("Detaching passenger ID: " ..passengerUID)
-                        --UnitDetachFromAir
-                        -- Test: only one for now   --TODO: go across all units in the table
-                        spSetUnitLoadingTransport(passengerUID, transpUID)
-                        if transportuDef.isAirUnit then
-                            spUnitDetachFromAir(passengerUID)
-                        else
-                            spUnitDetach(passengerUID)
+                    if passengers[transpUID] and #passengers[transpUID]>0 then
+                        Spring.Echo("passenger count: "..#passengers)
+                        for _, passengerUID in ipairs(passengers) do
+                            spSetUnitLoadingTransport(passengerUID, transpUID) --disable collision temporarily
+                            if transportuDef.isAirUnit then
+                                spUnitDetachFromAir(passengerUID)
+                            else
+                                spUnitDetach(passengerUID)
+                            end
+                            --ipairs_remove(passengers[transpUID], passengerUID) -- Dont use, fired from unit_unload
                         end
-                        --ipairs_remove(unloadtheseunits[transpUID], passengerUID)
                     end
                 end
             end
