@@ -760,7 +760,7 @@ local function StartMorph(unitID, morphDef, teamID) --, cmdID)
   local stopCmdDescID = spFindUnitCmdDesc(unitID, morphDef.stopCmd)
   if stopCmdDescID then
       spEditUnitCmdDesc(unitID, stopCmdDescID, {disabled=false})
-  end    
+  end
 
   local queueDescID = spFindUnitCmdDesc(unitID, CMD_MORPH_QUEUE)
   if queueDescID then
@@ -779,6 +779,7 @@ end
 local function StartQueue(teamID)
   local queuedUnits = teamQueuedUnits[teamID]
   if queuedUnits and #queuedUnits > 0 then
+      -- TODO: => Next Morph Set
     local nextMorph = queuedUnits[1]  -- Takes first in line
     -- Safe check. It shouldn't ever fall in here, but this is quite finicky so..
     --while not nextMorph.unitID and #queuedUnits > 1 do
