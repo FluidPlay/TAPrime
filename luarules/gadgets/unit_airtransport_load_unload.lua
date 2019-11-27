@@ -7,7 +7,7 @@ function gadget:GetInfo()
 	  date = "2018",
 	  license = "PD",
 	  layer = 0,
-	  enabled = true,	--TODO: Check vs new unit_airbase
+	  enabled = false, --true,	--TODO: Check vs new unit_airbase
    }
 end
 

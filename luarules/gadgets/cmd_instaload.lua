@@ -396,23 +396,26 @@ function gadget:GameFrame(f)
         for transpUID, clickPos in pairs(transportstounload) do
             local tx, ty, tz = spGetUnitPosition(transpUID)
             local transportuDef = UnitDefs[spGetUnitDefID(transpUID)]
-            local minUnloadDistance = tonumber(transportuDef.loadingRadius) / 2 or 150
-            local distance = math.sqrt(sqr(tx-clickPos.x) + sqr(ty-clickPos.y) + sqr(tz- clickPos.z))
-            --Spring.Echo("current/min: "..distance.." / "..minUnloadDistance)
-            if distance <= minUnloadDistance then
-                -- actually unload all (for now) units
-                --TODO: check if it's a ground transport, use spUnitDetach then
-                --TODO: Disable unit collisions, if needed ( Spring.SetUnitLoadingTransport(passengerID, transportID) )
-                if passengers[transpUID] and passengers[transpUID][1] then
-                    local passengerUID = passengers[transpUID][1]
-                    --Spring.Echo("Detaching passenger ID: " ..passengerUID)
-                    --UnitDetachFromAir
-                    spSetUnitLoadingTransport(passengerUID, transpUID)
-                    spUnitDetach(passengerUID)   -- Test: only one for now   --TODO: go across all units in the table
-
-                    --Spring.MoveCtrl.SetGroundOffset(passengerUID, -20)
-                    --mcDisable(passengerUID)
-                    --ipairs_remove(unloadtheseunits[transpUID], passengerUID)
+            --local minUnloadDistance = tonumber(transportuDef.loadingRadius) / 2 or 150
+            local minUnloadDistance = transportuDef.customParams.minunloaddistance
+            if (minUnloadDistance) then
+                local distance = math.sqrt(sqr(tx-clickPos.x) + sqr(ty-clickPos.y) + sqr(tz- clickPos.z))
+                Spring.Echo("current/min: "..distance.." / "..minUnloadDistance)
+                if distance <= tonumber(minUnloadDistance) then
+                    -- actually unload all (for now) units
+                    if passengers[transpUID] and passengers[transpUID][1] then
+                        local passengerUID = passengers[transpUID][1]
+                        --Spring.Echo("Detaching passenger ID: " ..passengerUID)
+                        --UnitDetachFromAir
+                        -- Test: only one for now   --TODO: go across all units in the table
+                        spSetUnitLoadingTransport(passengerUID, transpUID)
+                        if transportuDef.isAirUnit then
+                            spUnitDetachFromAir(passengerUID)
+                        else
+                            spUnitDetach(passengerUID)
+                        end
+                        --ipairs_remove(unloadtheseunits[transpUID], passengerUID)
+                    end
                 end
             end
         end

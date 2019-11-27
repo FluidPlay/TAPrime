@@ -277,8 +277,16 @@ end
 local morphCmdDesc = {
 --  id     = CMD_MORPH, -- added by the calling function because there is now more than one option
   type   = CMDTYPE.ICON,
-  name   = 'Upgrade',
+  name   = 'Morph',
   cursor = 'Morph',  -- add with LuaUI?
+  action = 'morph',
+}
+
+local morphStopCmdDesc = {
+  id     = CMD_MORPH_STOP,
+  type   = CMDTYPE.ICON,
+  name   = 'Stop\nMorph',
+  cursor = 'Morph',
   action = 'morph',
 }
 
@@ -672,9 +680,11 @@ local function AddMorphButtons(unitID, unitDefID, teamID, morphDef, teamTech)
 	morphCmdDesc.texture = "#" .. morphDef.into   --// only works with a patched layout.lua or the TweakedLayout widget!
   end
   morphCmdDesc.name = morphDef.cmdname
-  
+
+  -- Sets initial state of command buttons to be added to the unit
   morphCmdDesc.disabled = morphDef.tech > teamTech or morphDef.rank > unitRank
                           or morphDef.xp > unitXP or not teamHasTechs
+  morphStopCmdDesc.disabled = true
   morphQueueCmdDesc.disabled = morphCmdDesc.disabled
   morphQueueCmdDesc.tooltip = "Queue "..morphCmdDesc.tooltip
   morphPauseCmdDesc.disabled = true
@@ -687,6 +697,7 @@ local function AddMorphButtons(unitID, unitDefID, teamID, morphDef, teamTech)
     spEditUnitCmdDesc(unitID, cmdDescID, morphCmdDesc)
   else
     spInsertUnitCmdDesc(unitID, morphCmdDesc)
+    spInsertUnitCmdDesc(unitID, morphStopCmdDesc)
     spInsertUnitCmdDesc(unitID, morphPauseCmdDesc)
     spInsertUnitCmdDesc(unitID, morphQueueCmdDesc)
   end
@@ -757,7 +768,7 @@ local function StartMorph(unitID, morphDef, teamID) --, cmdID)
       spEditUnitCmdDesc(unitID, cmdDescID, {id=morphDef.cmd, disabled=true})
   end
 
-  local stopCmdDescID = spFindUnitCmdDesc(unitID, morphDef.stopCmd)
+  local stopCmdDescID = spFindUnitCmdDesc(unitID, CMD_MORPH_STOP)
   if stopCmdDescID then
       spEditUnitCmdDesc(unitID, stopCmdDescID, {disabled=false})
   end
@@ -857,7 +868,7 @@ local function QueueMorph(unitID, teamID, startCmdID)
 
   local queueDescID = spFindUnitCmdDesc(unitID, CMD_MORPH_QUEUE)
   if queueDescID then
-    spEditUnitCmdDesc(unitID, queueDescID, {disabled=true}) --TODO: Become "Unqueue"
+    spEditUnitCmdDesc(unitID, queueDescID, {disabled=true})
   end
 
   local pauseDescID = spFindUnitCmdDesc(unitID, CMD_MORPH_PAUSE)
@@ -908,9 +919,19 @@ local function StopMorph(unitID, morphData)
 
   SendToUnsynced("unit_morph_stop", unitID)
 
-  local cmdDescIdx = spFindUnitCmdDesc(unitID, morphData.def.stopCmd)
+  --local cmdDescIdx = spFindUnitCmdDesc(unitID, morphData.def.stopCmd) -- Currently only handling one stop_morph
+  --if cmdDescIdx then
+  --  spEditUnitCmdDesc(unitID, cmdDescIdx, { id=morphData.def.cmd, name=morphData.def.cmdname})
+  --end
+
+  local cmdDescIdx = spFindUnitCmdDesc(unitID, morphData.def.cmd)
   if cmdDescIdx then
-    spEditUnitCmdDesc(unitID, cmdDescIdx, { id=morphData.def.cmd, name=morphData.def.cmdname})
+    spEditUnitCmdDesc(unitID, cmdDescIdx, { id=morphData.def.cmd, disabled=false})
+  end
+
+  local queueDescID = spFindUnitCmdDesc(unitID, CMD_MORPH_STOP)
+  if queueDescID then
+    spEditUnitCmdDesc(unitID, queueDescID, {id=CMD_MORPH_STOP, disabled=true})
   end
 
   local queueDescID = spFindUnitCmdDesc(unitID, CMD_MORPH_QUEUE)
@@ -1517,14 +1538,14 @@ function gadget:AllowCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOpt
   local morphData = morphingUnits[unitID]   -- def = morphDef, progress = 0.0, increment = morphDef.increment,
   --                                           morphID = morphID, teamID = teamID, paused = false
   if morphData then
-    if cmdID == morphData.def.stopCmd then  -- or (cmdID == CMD.STOP)
+    if cmdID == CMD_MORPH_STOP then  -- or (cmdID == CMD.STOP)
 	  if not spGetUnitTransporter(unitID) then
         StopMorph(unitID, morphData)
         return false
 	  end
     elseif cmdID == CMD.ONOFF then
       return false
-	elseif cmdID == CMD.SELFD then
+	--elseif cmdID == CMD.SELFD then
 	  --StopMorph(unitID, morphData)
     elseif cmdID == CMD_MORPH_PAUSE then
       PauseMorph(unitID, morphData)
