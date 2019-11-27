@@ -750,11 +750,17 @@ local function StartMorph(unitID, morphDef, teamID) --, cmdID)
     paused = false,
   }
 
-  -- Rename Morph Button to Stop & disable queue button
+  -- Morph Started, disable Morph Button & enable stop morph button
   local cmdDescID = spFindUnitCmdDesc(unitID, morphDef.cmd)
   if cmdDescID then
-    spEditUnitCmdDesc(unitID, cmdDescID, {id=morphDef.stopCmd, name=RedStr.."Stop", disabled=false})
+    --spEditUnitCmdDesc(unitID, cmdDescID, {id=morphDef.stopCmd, name=RedStr.."Stop", disabled=false})
+      spEditUnitCmdDesc(unitID, cmdDescID, {id=morphDef.cmd, disabled=true})
   end
+
+  local stopCmdDescID = spFindUnitCmdDesc(unitID, morphDef.stopCmd)
+  if stopCmdDescID then
+      spEditUnitCmdDesc(unitID, stopCmdDescID, {disabled=false})
+  end    
 
   local queueDescID = spFindUnitCmdDesc(unitID, CMD_MORPH_QUEUE)
   if queueDescID then
