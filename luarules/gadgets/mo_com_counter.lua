@@ -66,7 +66,7 @@ function gadget:UnitDestroyed(unitID, unitDefID, teamID)
 	end
 end
 
--- BA does not allow sharing to enemy, so no need to check Given, Taken, etc
+-- TAP does not allow sharing to enemy, so no need to check Given, Taken, etc
 
 local function CountCommanders(teamID)
 	local count, teamComTypeCount = 0, nil

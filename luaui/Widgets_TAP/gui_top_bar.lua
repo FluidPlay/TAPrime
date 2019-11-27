@@ -1557,7 +1557,8 @@ function countComs()
 
     local newEnemyComCount = Spring.GetTeamRulesParam(myTeamID, "enemyComCount")
     if isnumber(newEnemyComCount) then
-        enemyComCount = newEnemyComCount
+        enemyComCount = tonumber(newEnemyComCount)
+        Spring.Echo("New enemy Com count: "..newEnemyComCount)
         if enemyComCount ~= prevEnemyComCount then
             comcountChanged = true
             prevEnemyComCount = enemyComCount
