@@ -386,14 +386,17 @@ function gadget:GameFrame(f)
         local clickPos = data.clickPos
         if f >= frame then
             --Spring.Echo("showing")
+            -- TODO: Check for nil unitID
             local px, py, pz = spGetUnitPosition(unitID)
-            --Spring.SetUnitPosition ( unitID, px, pz )
-            --Spring.Echo("Moving: "..unitID)
-            mcEnable(unitID)
-            mcSetPosition( unitID, px + math.random(-20,20), clickPos.y, pz + math.random(-20,20)) -- clickPos.y || px
-            mcDisable(unitID)
-            ShowUnit(unitID, true)
-            table.remove(queueMovePassengers, i)
+            if px ~= nil and py ~= nil and pz ~= nil then
+                --Spring.SetUnitPosition ( unitID, px, pz )
+                --Spring.Echo("Moving: "..unitID)
+                mcEnable(unitID)
+                mcSetPosition( unitID, px + math.random(-20,20), clickPos.y, pz + math.random(-20,20)) -- clickPos.y || px
+                mcDisable(unitID)
+                ShowUnit(unitID, true)
+                table.remove(queueMovePassengers, i)
+            end
         end
     end
 

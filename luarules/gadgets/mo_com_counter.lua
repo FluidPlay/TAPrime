@@ -115,5 +115,6 @@ function UpdateCount()
 		end
 		--Spring.Echo(teamID, teamComs[teamID], enemyComCount)
 		Spring.SetTeamRulesParam(teamID, "enemyComCount", enemyComCount, {private=true, allied=false})
+        --Spring.Echo("Set enemyComCount = "..enemyComCount.." to team "..teamID)
 	end
 end

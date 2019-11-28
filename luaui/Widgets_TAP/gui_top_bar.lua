@@ -252,7 +252,6 @@ function RectRound(px,py,sx,sy,cs)
 	gl.Texture(false)
 end
 
-
 local function short(n,f)
 	if (f == nil) then
 		f = 0
@@ -265,7 +264,6 @@ local function short(n,f)
 		return sformat("%."..f.."f",n)
 	end
 end
-
 
 local function updateRejoin()
 	local area = rejoinArea
@@ -323,7 +321,6 @@ local function updateRejoin()
 		WG['tooltip'].AddTooltip('rejoin', area, "Displays the catchup progress")
 	end
 end
-
 
 local function updateButtons()
 	local area = buttonsArea
@@ -1549,21 +1546,51 @@ function countComs()
 			end
 		end
 	end
-	comcountChanged = true  --|| Not sure why this was here.. commenting out (MaDDoX)
 	if allyComs ~= prevAllyComs then
 		comcountChanged = true
 		prevAllyComs = allyComs
 	end
 
-    local newEnemyComCount = Spring.GetTeamRulesParam(myTeamID, "enemyComCount")
-    if isnumber(newEnemyComCount) then
-        enemyComCount = tonumber(newEnemyComCount)
-        Spring.Echo("New enemy Com count: "..newEnemyComCount)
-        if enemyComCount ~= prevEnemyComCount then
-            comcountChanged = true
-            prevEnemyComCount = enemyComCount
+    --- Calculate enemy com count
+    enemyComCount = 0
+    --enemyComs = 0
+
+    local fullTeamList = Spring.GetTeamList()
+    for _,teamID in pairs(fullTeamList) do
+        local _,_,_,isAiTeam,_,thisAllyTeam = Spring.GetTeamInfo(teamID)
+        --local isLuaAI = (Spring.GetTeamLuaAI(teamID) ~= "")
+        --if isAiTeam or isLuaAi then
+        --end
+
+        -- If a team's allyTeam not equal to mine, it's an enemy team
+        if thisAllyTeam ~= myAllyTeamID then
+            for i = 1, #comDefIDs do
+                teamComTypeCount = Spring.GetTeamUnitDefCount(teamID, comDefIDs[i])
+                if isnumber(teamComTypeCount) then
+                    enemyComCount = enemyComCount + teamComTypeCount
+                end
+            end
         end
     end
+    enemyComs = enemyComCount
+    if enemyComCount ~= prevEnemyComCount then
+        comcountChanged = true
+        prevEnemyComCount = enemyComCount
+    end
+
+	comcountChanged = true  --|| Not sure why this was here.. but seems needed to make this work
+
+    --local newEnemyComCount = Spring.GetTeamRulesParam(myTeamID, "enemyComCount")
+    --if newEnemyComCount and isnumber(tonumber(newEnemyComCount)) then
+    --    enemyComCount = tonumber(newEnemyComCount)
+    --    Spring.Echo("New enemy Com count: "..newEnemyComCount)
+    --    if enemyComCount ~= prevEnemyComCount then
+    --        comcountChanged = true
+    --        prevEnemyComCount = enemyComCount
+    --    end
+    --else
+    --    Spring.Echo("Enemy com count not found")
+    --end
 
 	--if allyComs ~= prevAllyComs or enemyComs ~= prevEnemyComs then
 	--	comcountChanged = true
