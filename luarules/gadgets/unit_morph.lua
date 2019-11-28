@@ -1098,7 +1098,7 @@ end
 
 -- Here's where the Morph is updated
 local function UpdateMorph(unitID, morphData, bonus)
-  if not unitID then
+  if not unitID or not morphData or not morphData.def then
       return false end
   -- Morph is paused either explicity or when unit is not finished being built or is being transported
   if not isDone(unitID) or morphData.paused or spGetUnitTransporter(unitID) then
