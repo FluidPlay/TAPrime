@@ -70,6 +70,8 @@ local mcSetPosition         = Spring.MoveCtrl.SetPosition
 local mcDisable             = Spring.MoveCtrl.Disable
 local mcEnable              = Spring.MoveCtrl.Enable
 
+local rand = math.random
+
 local function sqr (x)
     return math.pow(x, 2)
 end
@@ -331,7 +333,7 @@ local function ShowUnit (unitID, enable)
     return
 end
 
-function gadget:UnitLoaded(unitID, unitDefID, unitTeam, transportID, transportTeam)
+local function UnitLoaded(unitID, unitDefID, unitTeam, transportID, transportTeam)
     ---- Let's ignore naval transports
     --local transportuDef = UnitDefs[transportID]
     --local minUnloadDistance = tonumber(transportuDef.customParams.minunloaddistance)
@@ -343,7 +345,7 @@ function gadget:UnitLoaded(unitID, unitDefID, unitTeam, transportID, transportTe
         passengers[transportID] = {}
     end
     table.insert(passengers[transportID], unitID)
-    --Spring.Echo("Count: "..#passengers[transportID])
+    Spring.Echo("Added: "..unitID)
     if currenttransportcapacity[transportID] then
         currenttransportcapacity[transportID] = currenttransportcapacity[transportID] - 1
     else
@@ -351,7 +353,7 @@ function gadget:UnitLoaded(unitID, unitDefID, unitTeam, transportID, transportTe
     end
 end
 
-function gadget:UnitUnloaded(unitID, unitDefID, unitTeam, transportID, transportTeam)
+local function UnitUnloaded(unitID, unitDefID, unitTeam, transportID, transportTeam)
     unitisintransport[unitID] = false
     ipairs_remove(passengers[transportID], unitID)
     --Spring.Echo("New count: "..#passengers[transportID] or "nil")
@@ -384,16 +386,15 @@ function gadget:GameFrame(f)
         local unitID = tonumber(data.unitID)
         local frame = tonumber(data.frame)
         local clickPos = data.clickPos
-        if f >= frame then
-            --Spring.Echo("showing")
-            -- TODO: Check for nil unitID
+        if f >= frame and IsValidUnit(unitID) then
+            Spring.Echo("showing "..unitID)
             local px, py, pz = spGetUnitPosition(unitID)
             if px ~= nil and py ~= nil and pz ~= nil then
-                --Spring.SetUnitPosition ( unitID, px, pz )
-                --Spring.Echo("Moving: "..unitID)
                 mcEnable(unitID)
-                mcSetPosition( unitID, px + math.random(-20,20), clickPos.y, pz + math.random(-20,20)) -- clickPos.y || px
+                -- Issue a move command instead of setting offset position directly (or units might get stuck)
+                mcSetPosition( unitID, px, clickPos.y, pz) -- clickPos.y || px
                 mcDisable(unitID)
+                spGiveOrderToUnit(unitID, CMD_MOVE, { px+ rand (-80,80), py, pz + rand (-80,80) }, {})
                 ShowUnit(unitID, true)
                 table.remove(queueMovePassengers, i)
             end
@@ -412,14 +413,16 @@ function gadget:GameFrame(f)
                 if distance <= tonumber(minUnloadDistance) then
                     -- actually unload all (for now) units
                     if passengers[transpUID] and #passengers[transpUID]>0 then
-                        Spring.Echo("passenger count: "..#passengers)
-                        for _, passengerUID in ipairs(passengers) do
+                        --table.insert(passengers[transportID], unitID)
+                        Spring.Echo("passenger count: "..#passengers[transpUID])
+                        for _, passengerUID in ipairs(passengers[transpUID]) do
                             spSetUnitLoadingTransport(passengerUID, transpUID) --disable collision temporarily
                             if transportuDef.isAirUnit then
                                 spUnitDetachFromAir(passengerUID)
                             else
                                 spUnitDetach(passengerUID)
                             end
+                            UnitUnloaded(passengerUID, spGetUnitDefID(passengerUID), spGetUnitTeam(passengerUID), transpUID) --, transportTeam)
                             --ipairs_remove(passengers[transpUID], passengerUID) -- Dont use, fired from unit_unload
                         end
                     end
@@ -445,6 +448,7 @@ function gadget:GameFrame(f)
                 spUnitAttach(transpUID, passengerUID, 0)          -- Currently only attach to the 'root' object
                 spSetUnitLoadingTransport(transpUID, thisuID)
                 loadtheseunits[passengerUID] = nil
+                UnitLoaded(thisuID, spGetUnitDefID(thisuID), spGetUnitTeam(thisuID), transpUID, spGetUnitTeam(transpUID))
                 --if (Spring.UnitScript.GetScriptEnv(unitID) == nil) then -- cob/bos compatibility
                 --    Spring.CallCOBScript( unitID, "TransportPickup", pUnitID)
                 --else

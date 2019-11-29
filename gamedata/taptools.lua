@@ -442,6 +442,14 @@ function LocalAlert(unitID, msg)
     spMarkerErasePosition(x,y,z)
 end
 
+function IsValidUnit(unitID)
+	local unitDefID = Spring.GetUnitDefID(unitID)
+	if unitDefID and Spring.ValidUnitID(unitID) then
+		return true
+	end
+	return false
+end
+
 
 --function indent(i, str)
 --	local result = ""
