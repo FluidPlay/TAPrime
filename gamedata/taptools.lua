@@ -102,6 +102,9 @@ function ipairs_len(table)
 end
 
 function pairs_len(table)
+    -- Alert: Line below prevent errors, but it won't be obvious to the caller if the table is nil
+    if table == nil or not istable(table) then
+        return 0 end
 	local numItems = 0
 	for _, v in pairs(table) do
         if v then
