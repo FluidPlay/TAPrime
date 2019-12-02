@@ -453,6 +453,29 @@ function IsValidUnit(unitID)
 	return false
 end
 
+function DistanceToPoint(unitID, px,py,pz)
+	if not Spring.ValidUnitID(unitID) then return end
+	if not px or not pz then return end
+
+	local ux, uy, uz = spGetUnitPosition(unitID)
+	local dx, dy ,dz = ux - px, uy - py, uz - pz
+	local dist = dx * dx + dy * dy + dz * dz
+	return dist
+end
+
+
+function Distance2D(unitID, px, pz)
+	if not Spring.ValidUnitID(unitID) then
+		return end
+	if not px or not pz then
+		Spring.Echo(" Invalid px or pz")
+		return end
+
+	local ux, _, uz = spGetUnitPosition(unitID)
+	local dx, dz = ux - px, uz - pz
+	local dist = dx * dx + dz * dz
+	return dist
+end
 
 --function indent(i, str)
 --	local result = ""

@@ -42,7 +42,7 @@ local loadtheseunits = {}               --// { [passengerUnitID] = transportID, 
     --- Whenever an unload is registered, this table holds which transports are moving towards unload range
 local transportstounload = {}             --// { [transportID]={ x, y, z, r }, ... } || r == nil  =>  unload click
 local passengermovingtoload = {}
-local transportmovingtoload = {}          --// { [transportID]=f, ...} || f = frame after when it should be tracked
+local transportmovingtoload = {}          --// { [transportID]={{x, y, z, r, f}, ...} || f = frame after when it should be tracked
     --- 'Assignable' changes after a load command is registered, transportcapacity only changes after actual loading
 local currentassignablecapacity = {}    --// { [transportID] = number, ...} should be made global in Initialize()
 local currenttransportcapacity = {}
@@ -161,15 +161,13 @@ function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdO
         --end
     end
 
-    --TODO: Set radius when cmdID == UNLOAD_UNITS
     if cmdID == CMD_UNLOAD_UNIT or cmdID == CMD_UNLOAD_UNITS then
         --Spring.Echo(DebugiTable(cmdParams))
-        local x = cmdParams[1] -- x position of click
-        local y = cmdParams[2] -- y-position of click
-        local z = cmdParams[3] -- z-position of click
+        local x, y, z = cmdParams[1], cmdParams[2], cmdParams[3] -- x, y, z position of click
         --local r = cmdParams[4] -- radius of the unload circle
-        transportstounload[unitID] = { x = x, y = y, z = z, r = nil }
-        --Spring.Echo("Added ttu: "..unitID)
+        -- Set radius when cmdID == UNLOAD_UNITS
+        transportstounload[unitID] = { x = x, y = y, z = z, r = (cmdID == CMD_UNLOAD_UNITS and cmdParams[4] or nil) }
+        Spring.Echo("Added ttu: "..unitID)
         return true
     -- Any command issued between issue-unload and actual unload has to update currentassignablecapacity
     end
@@ -191,7 +189,6 @@ function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdO
 
     -- LOAD UNITS     // check if it's a transporter
     if cmdID == CMD_LOAD_UNITS and transportcapacity > 0 then   --(75)
-        Spring.Echo("Taking load command")
         if hasCurrentCapacity(unitID) and hasAssignableCapacity(unitID) then
             local MyTeam = spGetUnitTeam(unitID)
             local movetype = (spGetUnitMoveTypeData(unitID)).name
@@ -200,7 +197,7 @@ function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdO
             local y = cmdParams[2] -- y-position of center of the load circle
             local z = cmdParams[3] -- z-position of center of the load circle
             local r = cmdParams[4] -- radius of the load circle
-            Spring.Echo("Load | Move Type: "..movetype)
+            --Spring.Echo("Load | Move Type: "..movetype)
             ------------------------------------BUNKER----------------------------------------------------
             if movetype == [[static]] then --is it a bunker?
                 if (r == nil) then	-------- load a single unit
@@ -237,8 +234,8 @@ function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdO
                 end
                 ------------------------------------MOBILE----------------------------------------------------
             else
-                --transportmovingtoload[unitID] = true -- the transporter will receive a move order anyway
-                transportmovingtoload[unitID] = spGetGameFrame()+1     -- start tracking it in n frames
+                transportmovingtoload[unitID] = { x = x, y = y, z = z, r = r, f = spGetGameFrame()+1 }   -- start tracking it in f frames
+                Spring.Echo("Transport "..unitID.." being watched")
                 -- load single unit
                 if r == nil then
                     local xUnitDefID = spGetUnitDefID(x)
@@ -261,7 +258,8 @@ function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdO
                         --    spGiveOrderToUnit(unitID, CMD_MOVE, {px,py,pz}, {})
                         --end
                     end
-                else -- load multiple units
+                else
+                    -- load multiple units
                     local UnitsAroundCommand = spGetUnitsInCylinder(x,z,r)
                     --GiveOrderToUnit(unitID,CMD_INSERT,{-1,CMD_CAPTURE,CMD_OPT_INTERNAL+1,unitID2},{"alt"});
                     --GiveOrderToUnit(unitID,CMD_INSERT,{cmd.tag,CMD_CAPTURE,CMD_OPT_INTERNAL+1,unitID2},{});
@@ -278,7 +276,7 @@ function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdO
                                     and currentassignablecapacity[unitID] > 0
                                     and not unitisintransport[cUnitID]
                                     and not loadtheseunits[cUnitID] then
-                                Spring.Echo("Got here. Unit to be loaded: "..unitID)
+                                Spring.Echo("Unit to be loaded: "..cUnitID)
                                 loadtheseunits[cUnitID] = unitID
                                 currentassignablecapacity[unitID] = currentassignablecapacity[unitID] - 1
                                 -- Spring.Echo(currentassigablecapacity[unitID])
@@ -305,11 +303,15 @@ function gadget:UnitIdle(unitID, unitDefID, unitTeam)
             passengermovingtoload[mpUnitID] = false	-- passenger arrived at pick-up point or was stopped
         end
     end
-    for mtUnitID, _ in pairs(transportmovingtoload) do -- remove arrived passengers
-        if (unitID == mtUnitID) then
-            transportmovingtoload[mtUnitID] = nil	-- transport arrived at pick-up point or was stopped
-        end
-    end
+    -- Obsolete: Idle is not sufficient / reliable condition to know if passenger/transport is close to pickup point.
+    --for mtUnitID, data in pairs(transportmovingtoload) do -- remove arrived passengers
+    --    local sqrDistanceFromTarget = Distance2D(mtUnitID, data.x, data.z)
+    --    Spring.Echo("Distance 2D: "..tostring(sqrDistanceFromTarget) or "nil")
+    --    if (unitID == mtUnitID and isnumber(sqrDistanceFromTarget) and sqrDistanceFromTarget < 160000) then
+    --        transportmovingtoload[mtUnitID] = nil	-- transport arrived at pick-up point or was stopped
+    --        Spring.Echo("Transport "..mtUnitID.." arrived")
+    --    end
+    --end
 end
 
 function gadget:UnitDestroyed(unitID, unitDefID, team, attacker)
@@ -393,7 +395,7 @@ function gadget:GameFrame(f)
         local frame = tonumber(data.frame)
         local clickPos = data.clickPos
         if f >= frame and IsValidUnit(unitID) then
-            Spring.Echo("trying to move "..unitID)
+            --Spring.Echo("trying to move "..unitID)
             local px, py, pz = spGetUnitPosition(unitID)
             if px ~= nil and py ~= nil and pz ~= nil then
                 mcEnable(unitID)
@@ -407,16 +409,17 @@ function gadget:GameFrame(f)
             end
         end
     end
-
+    -- Process Transports to Unload
     if f % 2 < .1 then
-        for transpUID, clickPos in pairs(transportstounload) do
+        for transpUID, data in pairs(transportstounload) do
             local tx, ty, tz = spGetUnitPosition(transpUID)
             local transportuDef = UnitDefs[spGetUnitDefID(transpUID)]
             --local minUnloadDistance = tonumber(transportuDef.loadingRadius) / 2 or 150
             local minUnloadDistance = transportuDef.customParams.minunloaddistance
             if (minUnloadDistance) then
-                local distance = math.sqrt(sqr(tx-clickPos.x) + sqr(ty-clickPos.y) + sqr(tz- clickPos.z))
-                --Spring.Echo("current/min: "..distance.." / "..minUnloadDistance)
+                -- TODO: and not movingToUnload[transportUID]
+                local distance = math.sqrt(sqr(tx- data.x) + sqr(ty- data.y) + sqr(tz- data.z))
+                Spring.Echo("current/min: "..distance.." / "..minUnloadDistance)
                 if distance <= tonumber(minUnloadDistance) then
                     -- actually unload all (for now) units
                     if passengers[transpUID] and pairs_len(passengers[transpUID])>0 then
@@ -437,9 +440,9 @@ function gadget:GameFrame(f)
             end
         end
     end
-
-    if f % 32 > .1 then     -- Run below code every 32 frames
-        Spring.Echo("load theseunits count: "..pairs_len(loadtheseunits))
+    -- Process Units to be Loaded
+    if f % 32 > .1 then
+        --Spring.Echo("load theseunits count: "..pairs_len(loadtheseunits))
         for passengerUID, transpUID in pairs(loadtheseunits) do ----// { [passengerUnitID] = transportID, ... }
         local x, y, z = spGetUnitPosition(transpUID) -- transport position
         local transportuDef = UnitDefs[spGetUnitDefID(transpUID)]
@@ -450,20 +453,12 @@ function gadget:GameFrame(f)
             local thisUDID = spGetUnitDefID(thisuID)
             if thisuID == passengerUID and canBeTransported(thisUDID) then
                 -- Actually "load" the unit:
-                --Spring.GetUnitPieceMap ( number unitID ) -> { "piecename1" = pieceNum1, ... , "piecenameN" = pieceNumN }
                 Spring.Echo("Trying to load: "..thisuID)
                 spSetUnitLoadingTransport(transpUID, thisuID)
                 spUnitAttach(transpUID, passengerUID, 0)          -- Currently only attach to the 'root' object
                 loadtheseunits[passengerUID] = nil
-                --UnitLoaded(thisuID, spGetUnitDefID(thisuID), spGetUnitTeam(thisuID), transpUID, spGetUnitTeam(transpUID))
-                --if (Spring.UnitScript.GetScriptEnv(unitID) == nil) then -- cob/bos compatibility
-                --    Spring.CallCOBScript( unitID, "TransportPickup", pUnitID)
-                --else
-                --    Spring.UnitScript.CallAsUnit(unitID,(Spring.UnitScript.GetScriptEnv(unitID).script.TransportPickup),pUnitID)
-                --end
-                local pud = UnitDefs[spGetUnitDefID(passengerUID)]
-                local prepairSpeed = pud.repairSpeed
-                if (prepairSpeed > 0) then -- builder units will automatically repair the transport / bunker
+                local p_uID = UnitDefs[spGetUnitDefID(passengerUID)]
+                if (p_uID.repairSpeed > 0) then -- builder units will automatically repair the transport / bunker
                     spGiveOrderToUnit(passengerUID, CMD_GUARD, { transpUID }, {})
                 end
             end
@@ -480,7 +475,7 @@ function gadget:GameFrame(f)
         end
     end
     end
-
+    -- Process queued MoveCommands
     for i, data in ipairs(queuedMoveCommands) do
         local unitID = tonumber(data.unitID)
         local shift = data.shift
