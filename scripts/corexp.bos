@@ -99,8 +99,8 @@ Create()
 	dont-cache arms;
 	dont-cache ear1;
 	dont-cache ear2;
-	dont-cache turret;
-	dont-cache sleeve;
+	hide turret; //dont-cache
+	hide sleeve; //dont-cache
 	dont-cache flare1;
 	dont-cache flare2;
 	dont-shade flare1;
@@ -190,6 +190,12 @@ QueryPrimary(piecenum)
 AimFromPrimary(piecenum)
 {
 	piecenum = sleeve;
+}
+
+ShowWeapon()
+{
+	show turret;
+	show sleeve;
 }
 
 Killed(severity, corpsetype)

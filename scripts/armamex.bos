@@ -119,9 +119,9 @@ Create()
 	
 	hide flare;
 	dont-cache flare;
-	dont-cache turret;
-	dont-cache sleeve;
-	dont-cache barrel;
+	hide turret; //dont-cache
+	hide sleeve;
+	hide barrel;
 	dont-shade flare;
 	dont-shade turret;
 	dont-shade sleeve;
@@ -186,6 +186,13 @@ HitByWeapon(Func_Var_1, Func_Var_2)
 	set ACTIVATION to 0;
 	sleep 8000;
 	set ACTIVATION to 100;
+}
+
+ShowWeapon()
+{
+	show turret; //dont-cache
+	show sleeve;
+	show barrel;
 }
 
 Killed(severity, corpsetype)

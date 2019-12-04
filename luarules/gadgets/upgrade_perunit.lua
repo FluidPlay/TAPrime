@@ -12,7 +12,7 @@ function gadget:GetInfo()
         license	= "GNU GPL, v2 or later",
         layer	= -1,
         enabled = true,
-        -- TODO: Currently only supports blocking/unblocking command fire weapons
+        -- TODO: Currently only supports blocking/unblocking command buttons
     }
 end
 
@@ -58,8 +58,10 @@ local unitRulesParamName = "upgrade"
 local oldFrame = 0
 
 -- Per-unit upgrade settings (TODO: Move to a separate file for better organization)
+local CMD_ATTACK = CMD.ATTACK
 local CMD_MANUALFIRE = CMD.MANUALFIRE
 local CMD_RESURRECT = CMD.RESURRECT
+
 CMD.UPG_DGUN = 41999
 CMD_UPG_DGUN = CMD.UPG_DGUN
 
@@ -75,6 +77,8 @@ CMD_UPG_RESURRECT = CMD.UPG_RESURRECT
 CMD.UPG_NEUTRONSTRIKE = 41995
 CMD_UPG_NEUTRONSTRIKE = CMD.UPG_NEUTRONSTRIKE
 
+CMD.UPG_UNLOCKWEAPON = 41994
+CMD_UPG_UNLOCKWEAPON = CMD.UPG_UNLOCKWEAPON
 
 -- TODO: Move to Separate file for better organization
 -- Unit Upgrades (as shown in a certain unit's command list)
@@ -100,6 +104,29 @@ UnitUpg = {
         type = "tech",          -- TODO: Currently unused. Should indicate special types (auras, debuffs, etc)
         alertWhenDone = true, -- [Optional] if true, fires an alert once completed
         buttonToUnlock = CMD_MANUALFIRE,
+        buttonToUnlockTooltip = "", --automatically fed when button is locked (@ unit create)
+    },
+    unlockweapon = {
+        id = "unlockweapon",
+        UpgradeCmdDesc = {
+            id      = CMD_UPG_UNLOCKWEAPON,
+            name    = '^ Weapon',
+            action  = 'unlockweaponupgrade',
+            cursor  = 'Morph',
+            type    = CMDTYPE.ICON,
+            tooltip = 'Unlock Weapon: Enables primary weapon [per unit]',
+            texture = 'luaui/images/upgrades/techunlockweapon.dds',
+            onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
+            --params = { '1', ' Fly ', 'Land'}
+        },
+        prereq = "Tech1",
+        metalCost = 150,
+        energyCost = 1000,
+        upgradeTime = 12 * 30, --12 seconds, in frames
+        type = "tech",          -- TODO: Currently unused. Should indicate special types (auras, debuffs, etc)
+        alertWhenDone = false, -- [Optional] if true, fires an alert once completed
+        buttonToUnlock = CMD_ATTACK,
         buttonToUnlockTooltip = "", --automatically fed when button is locked (@ unit create)
     },
     grenade = {     -- >> Peewee's Laser Grenade (Per Unit)
@@ -190,7 +217,8 @@ UnitUpg = {
 -- Value is used as key of PUU (Per-unit upgrade table)
 UnitResearchers = {
     [UnitDefNames["corcom"].id] = "dgun",
-    --[UnitDefNames["corcom2"].id] = "dgun",
+    [UnitDefNames["armamex"].id] = "unlockweapon",
+    [UnitDefNames["corexp"].id] = "unlockweapon",
     --[UnitDefNames["corcom3"].id] = "dgun",
     --[UnitDefNames["corcom4"].id] = "dgun",
     [UnitDefNames["armcom"].id] = "dgun",
@@ -219,23 +247,6 @@ local function startUpgrade(unitID, unitUpg, cmdParams)
     --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
     upgradingUnits[unitID] = { progress = 0, unitUpg = unitUpg, }
     spSetUnitRulesParam(unitID, unitRulesParamName, 0)
-
-    --TODO: Not working, cmdDesc.params can't be used to pass params to chili_buildordermenu
-    --local cmdDesc = unitUpg.UpgradeCmdDesc
-    --if not cmdDesc.params then
-    --    cmdDesc.params = {}
-    --end
-    --cmdDesc.params["upg"] = 1
-    ----Spring.Echo ("Updating CmdDesc Idx: "..cmdIdx)
-    --local cmdIdx = spFindUnitCmdDesc(unitID, cmdDesc.id)
-    --local cmdArray = { showUnique = true }
-    --cmdArray.params = { '1', ' Fly ', 'Land'}
-    --cmdArray.params[1] = cmdParams[1]
-    --Spring.EditUnitCmdDesc(unitID, cmdIdx, cmdArray) --unpack(cmdDesc.params),
-
-    --local cmdIdx = spFindUnitCmdDesc(unitID, unitUpg.buttonToUnlock)
-    --local cmdDesc = spGetUnitCmdDescs(unitID, cmdIdx, cmdIdx)[1]
-    --spEditUnitCmdDesc(unitID, cmdDesc.id, cmdDesc)
 end
 
 local function cancelUpgrade(unitID)
@@ -268,7 +279,6 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID, cmdParams, cmdOpti
             if HasTech(unitUpg.prereq, unitTeam) then
                 startUpgrade(unitID, unitUpg, cmdParams) end
             --BlockCmdID(unitID, cmdID, cmdDesc.tooltip, "Upgrading")
-            --TODO: Must update texture to "WIP" texture. buildordermenu is not helping.
             --cmdDesc.texture = cmdDesc.texture:gsub(".dds", "_wip.dds") -- "Upgrade in progress" texture
             --cmdDesc.params.refresh = "true"
             --AddUpdateCommand(unitID, cmdDesc)
@@ -309,6 +319,15 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
         if cmdDesc then
             unitUpg.buttonToUnlockTooltip = cmdDesc.tooltip end
 
+        -- If it should block the attack command, must also block its weapon to prevent auto-fire
+        if unitUpg.buttonToUnlock == CMD_ATTACK then
+            Spring.SetUnitWeaponState(unitID, 1, "range", 0)
+            --for weaponID, _ in pairs(UnitDefs[Spring.GetUnitDefID(unitID)].weapons) do
+            --    Spring.SetUnitWeaponState(unitID, weaponID, "range", 0)
+            --    --Spring.UnitWeaponHoldFire(unitID, weaponID)
+            --end
+        end
+
         -- Add upgrade Cmd, block & add it to watch list, if tech not yet available
         local block = not HasTech(unitUpg.prereq, unitTeam)
         AddUpdateCommand(unitID, unitUpg.UpgradeCmdDesc, block)
@@ -339,11 +358,23 @@ function gadget:UnitGiven(unitID, unitDefID, newTeamID, oldTeamID)
 end
 
 local function finishUpgrade(unitID, unitUpg)
+    -- If it should unblock the attack command, also unblock its weapons to re-allow auto-fire
+    if unitUpg.buttonToUnlock == CMD_ATTACK then
+        local weaponDefID = UnitDefs[Spring.GetUnitDefID(unitID)].weapons[1].weaponDef
+        local origRange = WeaponDefs[weaponDefID].range
+        Spring.Echo("Restored range to: "..origRange)
+        Spring.SetUnitWeaponState(unitID, 1, "range", origRange)
+    else
+        Spring.Echo "Not a weaponunlock upgrade"
+    end
+
     -- Disable upgrade button on this unit
     BlockCmdID(unitID, unitUpg.UpgradeCmdDesc.id, unitUpg.UpgradeCmdDesc.tooltip)  --, "Requires: "..unitUpg.id)
 
     -- Enable action & remove "Requires" red alert at bottom
     UnblockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip)
+
+
     upgradingUnits[unitID] = nil
     upgradeLockedUnits[unitID] = nil -- Once an unit upgrade is complete we can safely stop watching its prereqs
     upgradedUnits[unitID] = true
