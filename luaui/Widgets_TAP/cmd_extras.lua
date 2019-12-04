@@ -12,6 +12,7 @@ function widget:GetInfo()
 		license   = "GNU GPL, v2 or later",
 		layer     = 500,
 		enabled   = true, --  loaded by default?
+        handler   = true,   -- Allows this to run 'SendCommands'
 	}
 end
 
@@ -113,16 +114,18 @@ function widget:TextCommand(command)
 	if command == "restart" then
 		Spring.Reload(startscript)
 		return
-	end
-	if command == "cheatall" then
+	elseif command == "cheatall" then
 		if not Spring.IsCheatingEnabled() then
-			Spring.SendCommands{"cheat" }
-			Spring.SendCommands{"globallos" }
-			Spring.SendCommands{"godmode"}
+			Spring.SendCommands("cheat")
+			Spring.SendCommands("globallos")
+			Spring.SendCommands("godmode")
 		end
 		return
-	end
-	if (string.find(command, 'costmatch') == 1) then
+    elseif command == "setmaxspeed" and Spring.IsCheatingEnabled() then
+        Spring.SendCommands{"setmaxspeed 5"}
+    elseif command == "setminspeed" and Spring.IsCheatingEnabled() then
+        Spring.SendCommands("setmaxspeed 1")
+	elseif (string.find(command, 'costmatch') == 1) then
 		Costmatch(command)
 		return
 	end

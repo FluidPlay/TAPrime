@@ -100,7 +100,7 @@ VFS.Include("gamedata/taptools.lua")
 
 local CMD_MORPH = 31410
 local CMD_MORPH_STOP = 32410
---New buttons IDs (MaDDoX)
+-- New buttons IDs (MaDDoX)
 local CMD_MORPH_PAUSE = 33410
 local CMD_MORPH_QUEUE = 34410
 
@@ -178,7 +178,7 @@ include("LuaRules/colors.h.lua")
 
 local stopPenalty  = 0.667
 local morphPenaltyUnits = 1.5 --1.6
-local morphPenaltyStructures = 1.25
+local morphPenaltyStructures = 1.33 --1.25
 local morphtimePenaltyUnits = 1.5
 local minMorphTime, maxMorphTime = 10000, 600000
 -- Workertime to morph into targets @ tiers 0 (no tech requirement), 1, 2, 3 and 4
@@ -878,7 +878,6 @@ local function QueueMorph(unitID, teamID, startCmdID)
 
   --SendToUnsynced("unit_morph_start", unitID, unitDefID, morphDef.cmd)
 end
-
 
 -- This fires only after UnitDestroyed (or morph_stop), to resume morph queue
 local function checkQueue(unitID, teamID)
