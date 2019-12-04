@@ -413,7 +413,7 @@ function MakeBindsTable (swapYZ)
         "bind space deselect",
         "bind Ctrl+p pause",
         "bind Ctrl+Alt+z areamex",
-        "bind any+k cloak",
+        "bind any+k wantcloak", --cloak was deprecated in the engine
         "bind Alt+z select Visible+_InPrevSel+_ClearSelection_SelectAll+",
         "bind Any+f9 showhealthbars",
     }
