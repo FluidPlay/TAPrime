@@ -362,10 +362,9 @@ local function finishUpgrade(unitID, unitUpg)
     if unitUpg.buttonToUnlock == CMD_ATTACK then
         local weaponDefID = UnitDefs[Spring.GetUnitDefID(unitID)].weapons[1].weaponDef
         local origRange = WeaponDefs[weaponDefID].range
-        Spring.Echo("Restored range to: "..origRange)
+        --Spring.Echo("Restored range to: "..origRange)
         Spring.SetUnitWeaponState(unitID, 1, "range", origRange)
-    else
-        Spring.Echo "Not a weaponunlock upgrade"
+        Spring.CallCOBScript(unitID, "ShowWeapon", 0)
     end
 
     -- Disable upgrade button on this unit
