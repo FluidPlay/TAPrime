@@ -132,20 +132,30 @@ function gadget:GameFrame(f)
         --Spring.SetUnitVelocity(unitID, 0, 0, 0)
         --local dirx, diry, dirz = Spring.GetUnitDirection(unitID)
         --local h = math.asin(-dirx / math.sqrt(dirx*dirx + dirz*dirz))
-        local rotx, roty, rotz = Spring.GetUnitRotation(unitID)
+            --local rotx, roty, rotz = Spring.GetUnitRotation(unitID)
         local targetRotY = roty
         local dest = planeDestinations[unitID]
         if dest then
-            local dirx, dirz = dest.x - posx, dest.z - posz
-                    --targetRotY = math.asin(-dirx / math.sqrt(dirx*dirx + dirz*dirz))
-            targetRotY = math.atan2(dirz, dirx) --|| todeg => * 180 / math.pi
-            targetRotY = math.max(-2.5, (math.min(2.5, targetRotY)))
-            Spring.Echo("rot Y: "..roty.." target rot Y: "..targetRotY)
+            --rotx = math.deg(math.atan2(px, pz))
+                --roty = math.deg(math.atan2(px, pz))
+            --rotz = math.deg(math.atan2(py, px))
+                --local dirx, dirz = dest.x - posx, dest.z - posz
+                --        --targetRotY = math.asin(-dirx / math.sqrt(dirx*dirx + dirz*dirz))
+                --targetRotY = math.atan2(dirz, dirx) --|| todeg => * 180 / math.pi
+            --targetRotY = math.max(-2.5, (math.min(2.5, targetRotY)))
+                --Spring.Echo("rot Y: "..dy.." target rot Y: "..py)
+            local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- source Direction
+            local px, py, pz = dest.x - posx, dest.y - posy, dest.z - posz
+            Spring.SetUnitDirection(unitID, px, py, pz)             -- apply target Direction
+            local trx, try, trz = Spring.GetUnitRotation(unitID)    -- read back target Rotation
+            Spring.SetUnitRotation(unitID, lerp(rx, trx, 0.1), lerp(ry, try, 0.1), lerp(rz, trz, 0.1))
         end
-        Spring.SetUnitRotation(unitID, lerp(rotx, 0, 0.1),
-                --roty,
-                lerp(roty, targetRotY, 0.1),
-                lerp(rotz, 0, 0.1))
+            --Spring.SetUnitRotation(unitID, 0, targetRotY, 0)
+                --Spring.SetUnitRotation(unitID, rotx, roty, rotz)
+        --Spring.SetUnitRotation(unitID, lerp(rotx, 0, 0.1),
+        --        --roty,
+        --        lerp(roty, targetRotY, 0.1),
+        --        lerp(rotz, 0, 0.1))
 
         Spring.MoveCtrl.Enable(unitID)
         Spring.MoveCtrl.SetPosition(unitID, lerp(posx, data.targetPos.x + data.sourceVel.x * 10, 0.1),
