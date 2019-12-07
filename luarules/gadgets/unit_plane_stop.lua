@@ -22,6 +22,7 @@ VFS.Include("gamedata/taptools.lua")
 local EditUnitCmdDesc = Spring.EditUnitCmdDesc
 local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
 local spGetUnitCmdDescs = Spring.GetUnitCmdDescs
+local spGetUnitDefID = Spring.GetUnitDefID
 local InsertUnitCmdDesc = Spring.InsertUnitCmdDesc
 local GiveOrderToUnit = Spring.GiveOrderToUnit
 local SetUnitNeutral = Spring.SetUnitNeutral
@@ -39,9 +40,11 @@ local trackedUnits = {
 }
 
 local planes = {}
-local buildingUnits = {}
+local planesToPause, pausedPlanes, planesToUnpause = {}, {}, {}
+local planeDestinations = {}
 
 local CMD_STOP = CMD.STOP
+local CMD_MOVE = CMD.MOVE
 local CMD_IDLEMODE = CMD.IDLEMODE
 
 --TODO: Check if spawning (by group) fires UnitFinished, if not enable this
@@ -54,7 +57,10 @@ end
 
 function gadget:UnitFinished(unitID, unitDefID, unitTeam)
     if trackedUnits[unitDefID] then
-        planes[unitID] = true
+        local uDefID = spGetUnitDefID(unitID)
+        local uDef = UnitDefs[uDefID]
+        planes[unitID] = uDef
+        Spring.Echo("Alt: "..tostring(uDef.wantedHeight))
         --GiveOrderToUnit(unitID, CMD.IDLEMODE, { planes[builderID].landAt }, { })
     end
 end
@@ -70,20 +76,100 @@ local function isSetToFly(unitID)
         return false end
 end
 
-local function PauseFly(unitID)
-
-end
-
 function gadget:AllowCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOptions)
-    if planes[unitID] then
-        Spring.Echo("cmdID "..cmdID)
-        if cmdID == CMD_STOP then --TODO: And flyState == fly
-            if isSetToFly(unitID) then
-                PauseFly(unitID)
+    local planeuDefID = planes[unitID]
+    if planeuDefID then
+        --DebugTable(cmdOptions)
+        if cmdID == CMD_MOVE then
+            --for i = 1, #cmdParams do
+            --  Spring.Echo("   param "..i..": "..cmdParams[i])
+            --end
+            planeDestinations[unitID] = { x = cmdParams[1], y = cmdParams[2], z = cmdParams[3]}
+        end
+        if cmdID == CMD_STOP and not cmdOptions.shift then --TODO: And flyState == fly
+            if isSetToFly(unitID) and not pausedPlanes[unitID] then
+                local x, y, z = Spring.GetUnitPosition(unitID)
+                local velx, vely, velz= Spring.GetUnitVelocity(unitID)
+                planesToPause[unitID] = { wantedHeight = planeuDefID.wantedHeight,
+                                          targetPos = { x = x, y = y, z = z },
+                                          sourceVel = { x = velx, y = vely, z = velz }
+                                        }
+            else
+                if pausedPlanes[unitID] then
+                    planesToUnpause[unitID] = planeuDefID end
             end
+        else
+            if pausedPlanes[unitID] then
+                planesToUnpause[unitID] = planeuDefID end
         end
     end
     return true
+end
+
+local function sign(num)
+    return num/math.abs(num)
+end
+
+function gadget:GameFrame(f)
+    --if f%20 > 0.001 then
+    --    return end
+    for unitID, data in pairs(planesToPause) do
+        --planesToPause[unitID] = nil
+        --Spring.Echo("Pausing Plane: "..tostring(unitID))
+        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxAcc", 0)
+        --        Spring.MoveCtrl.SetAirMoveTypeData(unitID, "myGravity", 0)
+        --local x,y,z=Spring.GetUnitVectors(unitID)
+        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxPitch", 0)
+        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxElevator", 0)
+        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxRudder", 0)
+        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxAileron", 0)
+        local posx, posy, posz = Spring.GetUnitPosition(unitID)
+        --        local velx, vely, velz= Spring.GetUnitVelocity(unitID)
+        --        local currentAlt = posy - Spring.GetGroundHeight(posx, posz)
+        local relativeHeight = Spring.GetGroundHeight(posx, posz) + data.wantedHeight
+        --           Spring.SetUnitVelocity(unitID, 0, vely + sign(wantedAlt - currentAlt), 0)
+        --Spring.SetUnitVelocity(unitID, math.random(-0.5,0.5), 0, math.random(-0.5,0.5))
+        --Spring.SetUnitVelocity(unitID, 0, 0, 0)
+        --local dirx, diry, dirz = Spring.GetUnitDirection(unitID)
+        --local h = math.asin(-dirx / math.sqrt(dirx*dirx + dirz*dirz))
+        local rotx, roty, rotz = Spring.GetUnitRotation(unitID)
+        local targetRotY = roty
+        local dest = planeDestinations[unitID]
+        if dest then
+            local dirx, dirz = dest.x - posx, dest.z - posz
+                    --targetRotY = math.asin(-dirx / math.sqrt(dirx*dirx + dirz*dirz))
+            targetRotY = math.atan2(dirz, dirx) --|| todeg => * 180 / math.pi
+            targetRotY = math.max(-2.5, (math.min(2.5, targetRotY)))
+            Spring.Echo("rot Y: "..roty.." target rot Y: "..targetRotY)
+        end
+        Spring.SetUnitRotation(unitID, lerp(rotx, 0, 0.1),
+                --roty,
+                lerp(roty, targetRotY, 0.1),
+                lerp(rotz, 0, 0.1))
+
+        Spring.MoveCtrl.Enable(unitID)
+        Spring.MoveCtrl.SetPosition(unitID, lerp(posx, data.targetPos.x + data.sourceVel.x * 10, 0.1),
+                lerp(posy, relativeHeight, 0.025),
+                lerp(posz, data.targetPos.z + data.sourceVel.z * 10, 0.1))
+
+        ----if math.abs(currentAlt - wantedAlt) > 10 then
+        ----    --Spring.SetUnitVelocity(unitID, velx, vely +sign(wantedAlt - currentAlt), velz)
+        ----end
+        --
+        --if diry > 0 then
+        --end
+        pausedPlanes[unitID] = true
+    end
+    for unitID, uDef in pairs(planesToUnpause) do
+        Spring.MoveCtrl.Disable(unitID)
+        planesToPause[unitID] = nil
+        planesToUnpause[unitID] = nil
+        pausedPlanes[unitID] = nil
+
+        Spring.Echo("Unpausing Plane: "..tostring(unitID))
+        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxAcc", uDef.maxAcc)
+        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "myGravity", uDef.myGravity)
+    end
 end
 
 --------------------------------------------------------------------------------
@@ -100,11 +186,11 @@ end
 --        enabled = true
 --    }
 --end
---
---zeppelins={}
---zeppelin={}
---
-----SYNCED
+
+zeppelinuDefs ={}
+zeppelin={}
+
+--SYNCED
 --if (gadgetHandler:IsSyncedCode()) then
 --
 --    function gadget:Initialize()
@@ -112,7 +198,7 @@ end
 --            if unitDef.myGravity == 0 and
 --                    unitDef.maxElevator == 0 then
 --                Spring.Echo(unitDef.name.." is a zeppelin with cruisealt "..unitDef.wantedHeight)
---                zeppelins[id]={
+--                zeppelinuDefs[id]={
 --                    pitch=unitDef.maxPitch,
 --                    alt=unitDef.wantedHeight,
 --                    name= unitDef.name,
@@ -122,15 +208,15 @@ end
 --    end
 --
 --    function gadget:UnitCreated(UnitID, whatever)
---        local type=Spring.GetUnitDefID(UnitID);
---        if zeppelins[type] then
---            zeppelin[UnitID]=type
+--        local uDefID = Spring.GetUnitDefID(UnitID);
+--        if zeppelinuDefs[uDefID] then
+--            zeppelin[UnitID]= uDefID
 --        end
 --    end
 --
 --    function gadget:UnitDestroyed(UnitID, whatever)
---        local type=Spring.GetUnitDefID(UnitID);
---        if zeppelins[type] then
+--        local uDefID = Spring.GetUnitDefID(UnitID);
+--        if zeppelinuDefs[uDefID] then
 --            zeppelin[UnitID]=nil
 --        end
 --    end
@@ -141,20 +227,20 @@ end
 --
 --    function gadget:GameFrame(f)
 --        if f%20<1 then
---            for zid,zepp in pairs(zeppelin) do
---                local x,y,z=Spring.GetUnitVectors(zid)
---                local ux, uy, uz= Spring.GetUnitPosition(zid)
---                local vx, vy, vz= Spring.GetUnitVelocity(zid)
---                local dx, dy, dz=Spring.GetUnitDirection(zid)
---                local altitude=uy-Spring.GetGroundHeight(ux,uz)
---                local wanted=zeppelins[zepp].alt
+--            for unitID, uDefID in pairs(zeppelin) do
+--                local x,y,z=Spring.GetUnitVectors(unitID)
+--                local ux, uy, uz= Spring.GetUnitPosition(unitID)
+--                local vx, vy, vz= Spring.GetUnitVelocity(unitID)
+--                local dirx, diry, dirz = Spring.GetUnitDirection(unitID)
+--                local altitude = uy - Spring.GetGroundHeight(ux,uz)
+--                local wanted= zeppelinuDefs[uDefID].alt
 --                if math.abs(altitude-wanted)>10 then
---                    Spring.SetUnitVelocity(zid,vx,vy+sign(wanted-altitude),vz)
+--                    Spring.SetUnitVelocity(unitID, vx, vy+sign(wanted-altitude), vz)
 --                end
 --
---                if dy>0 then
---                    local h=math.asin(-dx/math.sqrt(dx*dx+dz*dz))
---                    Spring.SetUnitRotation(zid,0,h,0)
+--                if diry>0 then
+--                    local h = math.asin(-dirx / math.sqrt(dirx*dirx + dirz*dirz))
+--                    Spring.SetUnitRotation(unitID,0,h,0)
 --                end
 --            end--for
 --        end--iff
