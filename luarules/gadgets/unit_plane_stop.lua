@@ -42,9 +42,10 @@ local trackedUnits = {
 
 local planes = {}
 local planesToPause, pausedPlanes, planesToUnpause = {}, {}, {}, {}
-local planeDestinations, pausingPlanes  = {}, {}
+local planeDestinations, pausingPlanes, idlingPlanes  = {}, {}, {}
 
 local lerpFactor = 0.1 -- Interpolation factor for deceleration until pause. The lower the slower/smoother
+local idleUpdateRate = 20
 
 local CMD_STOP = CMD.STOP
 local CMD_MOVE = CMD.MOVE
@@ -63,7 +64,7 @@ function gadget:UnitFinished(unitID, unitDefID, unitTeam)
         local uDefID = spGetUnitDefID(unitID)
         local uDef = UnitDefs[uDefID]
         planes[unitID] = uDef
-        Spring.Echo("Alt: "..tostring(uDef.wantedHeight))
+        --Spring.Echo("Alt: "..tostring(uDef.wantedHeight))
         --GiveOrderToUnit(unitID, CMD.IDLEMODE, { planes[builderID].landAt }, { })
     end
 end
@@ -75,6 +76,7 @@ function gadget:UnitDestroyed(unitID, unitDefID, unitTeam)
     planesToUnpause[unitID] = nil
     planeDestinations[unitID] = nil
     pausingPlanes[unitID] = nil
+    idlingPlanes[unitID] = nil
 end
 
 local function isSetToFly(unitID)
@@ -93,6 +95,7 @@ function gadget:AllowCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOpt
     if planeuDefID then
         --DebugTable(cmdOptions)
         if cmdID == CMD_MOVE then
+            idlingPlanes[unitID] = nil
             --for i = 1, #cmdParams do
             --  Spring.Echo("   param "..i..": "..cmdParams[i])
             --end
@@ -119,7 +122,7 @@ function gadget:AllowCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOpt
 end
 
 local function verynear (a,b)
-    return math.abs(b-a) < 10
+    return math.abs(b-a) < 20
 end
 
 local function sign(num)
@@ -189,6 +192,7 @@ function gadget:GameFrame(f)
         --if diry > 0 then
         --end
     end
+
     for unitID, data in pairs(pausingPlanes) do
         local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- current Direction
         if rx and ry and rz then
@@ -200,22 +204,58 @@ function gadget:GameFrame(f)
 
             Spring.MoveCtrl.SetPosition(unitID, lerp(posx, data.targetPos.x, lerpFactor),
                     lerp(posy, data.relativeHeight , 0.025),
-                    lerp(posz, data.targetPos.z, 0.1))
+                    lerp(posz, data.targetPos.z, lerpFactor))
 
-            if verynear(posx, data.targetPos.x) and verynear(posz, data.targetPos.z) and verynear(posy, data.relativeHeight) then
-                Spring.Echo("Very near")
+            if not idlingPlanes[unitID] and
+                    verynear(posx, data.targetPos.x) and verynear(posz, data.targetPos.z) and verynear(posy, data.relativeHeight) then
+                Spring.Echo("Setting to idle: "..unitID)
+                idlingPlanes[unitID] = data
+            --    --local orx, ory, orz = Spring.GetUnitRotation(unitID)
+            --    --Spring.SetUnitRotation(unitID, 0, ry, 0) --lerp(rx, 0, lerpFactor)
+            --    --local rx, ry, rz = Spring.GetUnitRotation(unitID)
+            --    --data.pausedrot = { x = rx, y = ry, z = rz }
+            --    --Spring.SetUnitRotation(unitID, orx, ory, orz)
             end
         end
+    end
+
+    for unitID, data in pairs(idlingPlanes) do
+        local posx, posy, posz = Spring.GetUnitPosition(unitID)
+        if not data.idleNextFrame or f >= data.idleNextFrame then
+            data.idleNextFrame = f + idleUpdateRate
+            data.idleXoffset = math.random(-25,25)
+            data.idleYoffset = math.random(-25,25)
+            data.idleZoffset = math.random(-25,25)
+        end
+        Spring.MoveCtrl.SetPosition(unitID, lerp(posx, data.targetPos.x + data.idleXoffset, 0.01),
+                lerp(posy, data.relativeHeight + data.idleYoffset, 0.01),
+                lerp(posz, data.targetPos.z + data.idleZoffset, 0.01))
+        --local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- pitch(X), yaw(Y), roll(Z)
+        --if not data.pausedrot then
+        --    --Spring.Echo("added new pauseddir data")
+        --    local orx, ory, orz = Spring.GetUnitRotation(unitID)    -- orig rot
+        --    local dx, dy, dz = Spring.GetUnitDirection(unitID)
+        --
+        --    Spring.SetUnitDirection(unitID, dx, 0, dz)     -- set unit as "flat"
+        --    local rx, ry, rz = Spring.GetUnitRotation(unitID)
+        --    data.pausedrot = { x = rx, y = ry, z = rz }
+        --    Spring.SetUnitRotation(unitID, orx, ory, orz)      -- restores orig rotation
+        --end
+        --local pr = data.pausedrot
+        ----Spring.SetUnitRotation(unitID, lerp(rx, pr.x, lerpFactor), ry, rz) --lerp(rx, 0, lerpFactor)
+        --Spring.SetUnitRotation(unitID, lerp(rx, pr.x, lerpFactor), lerp(ry, pr.y, lerpFactor), lerp(rz, pr.z, lerpFactor)) --lerp(rx, 0, lerpFactor)
+        ----end
     end
 
     for unitID, uDef in pairs(planesToUnpause) do
         -- TODO: Store original rotation (before movectrl.enable) and interpolate/restore it around here
         Spring.MoveCtrl.Disable(unitID)
-        planesToPause[unitID] = nil
+        Spring.SetUnitVelocity(unitID, 0,0,0)
         planesToUnpause[unitID] = nil
+        pausingPlanes[unitID] = nil
         pausedPlanes[unitID] = nil
 
-        Spring.Echo("Unpausing Plane: "..tostring(unitID))
+        --Spring.Echo("Unpausing Plane: "..tostring(unitID))
         --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxAcc", uDef.maxAcc)
         --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "myGravity", uDef.myGravity)
     end
