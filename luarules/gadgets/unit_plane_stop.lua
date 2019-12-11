@@ -18,6 +18,7 @@ if (not gadgetHandler:IsSyncedCode()) then
 end
 
 VFS.Include("gamedata/taptools.lua")
+VFS.Include("LuaRules/Utilities/quaternion.lua")
 
 local EditUnitCmdDesc = Spring.EditUnitCmdDesc
 local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
@@ -136,19 +137,25 @@ function gadget:GameFrame(f)
         local targetRotY = roty
         local dest = planeDestinations[unitID]
         if dest then
-            --rotx = math.deg(math.atan2(px, pz))
-                --roty = math.deg(math.atan2(px, pz))
-            --rotz = math.deg(math.atan2(py, px))
-                --local dirx, dirz = dest.x - posx, dest.z - posz
-                --        --targetRotY = math.asin(-dirx / math.sqrt(dirx*dirx + dirz*dirz))
-                --targetRotY = math.atan2(dirz, dirx) --|| todeg => * 180 / math.pi
-            --targetRotY = math.max(-2.5, (math.min(2.5, targetRotY)))
-                --Spring.Echo("rot Y: "..dy.." target rot Y: "..py)
             local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- source Direction
             local px, py, pz = dest.x - posx, dest.y - posy, dest.z - posz
             Spring.SetUnitDirection(unitID, px, py, pz)             -- apply target Direction
-            local trx, try, trz = Spring.GetUnitRotation(unitID)    -- read back target Rotation
-            Spring.SetUnitRotation(unitID, lerp(rx, trx, 0.1), lerp(ry, try, 0.1), lerp(rz, trz, 0.1))
+            local drx, dry, drz = Spring.GetUnitRotation(unitID)    -- read back target Rotation
+
+            --local orgQ = Quaternion(0,0,0,1)
+
+            local orgQ = Quaternion(0, 0, 0, 1)
+            local destQ = Quaternion(0, 0, 0, 1)
+            local newQ = Quaternion(0, 0, 0, 1)
+            -- heading/yaw (around vertical Y), pitch/attitude (around X), roll (around depth Z)
+            orgQ = orgQ:AngleToQuat( {r=rz, p=rx, y=ry,} ) --// pitch (X), yaw (Y), roll (z)
+            --Spring.Echo("Quat element: "..orgQ.r)
+            destQ = destQ:AngleToQuat({ r=drz, p=drx, y=dry })
+            newQ = destQ:SlerpQuat(orgQ, destQ, 0.1)
+            ---- Convert back to a Vector3 ({x,y,z}) rotation
+            local newR = newQ:QuatToAngle()
+
+            Spring.SetUnitRotation(unitID, newR.x, newR.y, newR.z)
         end
             --Spring.SetUnitRotation(unitID, 0, targetRotY, 0)
                 --Spring.SetUnitRotation(unitID, rotx, roty, rotz)
