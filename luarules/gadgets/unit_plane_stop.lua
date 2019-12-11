@@ -41,8 +41,10 @@ local trackedUnits = {
 }
 
 local planes = {}
-local planesToPause, pausedPlanes, planesToUnpause = {}, {}, {}
-local planeDestinations = {}
+local planesToPause, pausedPlanes, planesToUnpause = {}, {}, {}, {}
+local planeDestinations, pausingPlanes  = {}, {}
+
+local lerpFactor = 0.1 -- Interpolation factor for deceleration until pause. The lower the slower/smoother
 
 local CMD_STOP = CMD.STOP
 local CMD_MOVE = CMD.MOVE
@@ -64,6 +66,15 @@ function gadget:UnitFinished(unitID, unitDefID, unitTeam)
         Spring.Echo("Alt: "..tostring(uDef.wantedHeight))
         --GiveOrderToUnit(unitID, CMD.IDLEMODE, { planes[builderID].landAt }, { })
     end
+end
+
+function gadget:UnitDestroyed(unitID, unitDefID, unitTeam)
+    planes[unitID] = nil
+    planesToPause[unitID] = nil
+    pausedPlanes[unitID] = nil
+    planesToUnpause[unitID] = nil
+    planeDestinations[unitID] = nil
+    pausingPlanes[unitID] = nil
 end
 
 local function isSetToFly(unitID)
@@ -107,6 +118,10 @@ function gadget:AllowCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOpt
     return true
 end
 
+local function verynear (a,b)
+    return math.abs(b-a) < 10
+end
+
 local function sign(num)
     return num/math.abs(num)
 end
@@ -115,48 +130,51 @@ function gadget:GameFrame(f)
     --if f%20 > 0.001 then
     --    return end
     for unitID, data in pairs(planesToPause) do
-        --planesToPause[unitID] = nil
-        --Spring.Echo("Pausing Plane: "..tostring(unitID))
-        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxAcc", 0)
-        --        Spring.MoveCtrl.SetAirMoveTypeData(unitID, "myGravity", 0)
-        --local x,y,z=Spring.GetUnitVectors(unitID)
-        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxPitch", 0)
-        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxElevator", 0)
-        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxRudder", 0)
-        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxAileron", 0)
         local posx, posy, posz = Spring.GetUnitPosition(unitID)
-        --        local velx, vely, velz= Spring.GetUnitVelocity(unitID)
-        --        local currentAlt = posy - Spring.GetGroundHeight(posx, posz)
         local relativeHeight = Spring.GetGroundHeight(posx, posz) + data.wantedHeight
-        --           Spring.SetUnitVelocity(unitID, 0, vely + sign(wantedAlt - currentAlt), 0)
-        --Spring.SetUnitVelocity(unitID, math.random(-0.5,0.5), 0, math.random(-0.5,0.5))
-        --Spring.SetUnitVelocity(unitID, 0, 0, 0)
-        --local dirx, diry, dirz = Spring.GetUnitDirection(unitID)
-        --local h = math.asin(-dirx / math.sqrt(dirx*dirx + dirz*dirz))
-            --local rotx, roty, rotz = Spring.GetUnitRotation(unitID)
+        data.relativeHeight = relativeHeight
+
         local targetRotY = roty
         local dest = planeDestinations[unitID]
+
         if dest then
-            local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- source Direction
-            local px, py, pz = dest.x - posx, dest.y - posy, dest.z - posz
-            Spring.SetUnitDirection(unitID, px, py, pz)             -- apply target Direction
-            local drx, dry, drz = Spring.GetUnitRotation(unitID)    -- read back target Rotation
+            --Spring.Echo("rot Y: "..dy.." target rot Y: "..py)
+            local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- source Rotation
+            local dx, dy, dz = dest.x - posx, dest.y - posy, dest.z - posz  -- target Direction
+            Spring.SetUnitDirection(unitID, dx, dy, dz)             -- apply target Direction
+            local trx, try, trz = Spring.GetUnitRotation(unitID)    -- read back target Rotation
+            Spring.SetUnitRotation(unitID, rx, ry, rz)              -- restores original rotation
 
-            --local orgQ = Quaternion(0,0,0,1)
-
-            local orgQ = Quaternion(0, 0, 0, 1)
-            local destQ = Quaternion(0, 0, 0, 1)
-            local newQ = Quaternion(0, 0, 0, 1)
-            -- heading/yaw (around vertical Y), pitch/attitude (around X), roll (around depth Z)
-            orgQ = orgQ:AngleToQuat( {r=rz, p=rx, y=ry,} ) --// pitch (X), yaw (Y), roll (z)
-            --Spring.Echo("Quat element: "..orgQ.r)
-            destQ = destQ:AngleToQuat({ r=drz, p=drx, y=dry })
-            newQ = destQ:SlerpQuat(orgQ, destQ, 0.1)
-            ---- Convert back to a Vector3 ({x,y,z}) rotation
-            local newR = newQ:QuatToAngle()
-
-            Spring.SetUnitRotation(unitID, newR.x, newR.y, newR.z)
+            data.targetRotation = { x = trx, y = try, z = trz }
+            -- Add some skidding, based off of velocity, so it isn't a totally instant pause
+            data.targetPos.x = data.targetPos.x + data.sourceVel.x * 10
+            data.targetPos.z = data.targetPos.z + data.sourceVel.z * 10
         end
+        planesToPause[unitID] = nil
+        pausingPlanes[unitID] = data
+        Spring.MoveCtrl.Enable(unitID)
+        pausedPlanes[unitID] = true
+        --if dest then
+        --    local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- source Direction
+        --    local px, py, pz = dest.x - posx, dest.y - posy, dest.z - posz
+        --    Spring.SetUnitDirection(unitID, px, py, pz)             -- apply target Direction
+        --    local drx, dry, drz = Spring.GetUnitRotation(unitID)    -- read back target Rotation
+        --
+        --    --local orgQ = Quaternion(0,0,0,1)
+        --
+        --    local orgQ = Quaternion(0, 0, 0, 1)
+        --    local destQ = Quaternion(0, 0, 0, 1)
+        --    local newQ = Quaternion(0, 0, 0, 1)
+        --    -- heading/yaw (around vertical Y), pitch/attitude (around X), roll (around depth Z)
+        --    orgQ = orgQ:AngleToQuat( {r=rz, p=rx, y=ry,} ) --// pitch (X), yaw (Y), roll (z)
+        --    --Spring.Echo("Quat element: "..orgQ.r)
+        --    destQ = destQ:AngleToQuat({ r=drz, p=drx, y=dry })
+        --    newQ = destQ:SlerpQuat(orgQ, destQ, 0.1)
+        --    ---- Convert back to a Vector3 ({x,y,z}) rotation
+        --    local newR = newQ:QuatToAngle()
+        --
+        --    Spring.SetUnitRotation(unitID, newR.x, newR.y, newR.z)
+        --end
             --Spring.SetUnitRotation(unitID, 0, targetRotY, 0)
                 --Spring.SetUnitRotation(unitID, rotx, roty, rotz)
         --Spring.SetUnitRotation(unitID, lerp(rotx, 0, 0.1),
@@ -164,20 +182,34 @@ function gadget:GameFrame(f)
         --        lerp(roty, targetRotY, 0.1),
         --        lerp(rotz, 0, 0.1))
 
-        Spring.MoveCtrl.Enable(unitID)
-        Spring.MoveCtrl.SetPosition(unitID, lerp(posx, data.targetPos.x + data.sourceVel.x * 10, 0.1),
-                lerp(posy, relativeHeight, 0.025),
-                lerp(posz, data.targetPos.z + data.sourceVel.z * 10, 0.1))
-
         ----if math.abs(currentAlt - wantedAlt) > 10 then
         ----    --Spring.SetUnitVelocity(unitID, velx, vely +sign(wantedAlt - currentAlt), velz)
         ----end
         --
         --if diry > 0 then
         --end
-        pausedPlanes[unitID] = true
     end
+    for unitID, data in pairs(pausingPlanes) do
+        local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- current Direction
+        if rx and ry and rz then
+            local posx, posy, posz = Spring.GetUnitPosition(unitID)
+
+            local tr = data.targetRotation -- target Rotation vector
+
+            Spring.SetUnitRotation(unitID, lerp(rx, tr.x, lerpFactor), lerp(ry, tr.y, lerpFactor), lerp(rz, tr.z, lerpFactor))
+
+            Spring.MoveCtrl.SetPosition(unitID, lerp(posx, data.targetPos.x, lerpFactor),
+                    lerp(posy, data.relativeHeight , 0.025),
+                    lerp(posz, data.targetPos.z, 0.1))
+
+            if verynear(posx, data.targetPos.x) and verynear(posz, data.targetPos.z) and verynear(posy, data.relativeHeight) then
+                Spring.Echo("Very near")
+            end
+        end
+    end
+
     for unitID, uDef in pairs(planesToUnpause) do
+        -- TODO: Store original rotation (before movectrl.enable) and interpolate/restore it around here
         Spring.MoveCtrl.Disable(unitID)
         planesToPause[unitID] = nil
         planesToUnpause[unitID] = nil
@@ -204,8 +236,8 @@ end
 --    }
 --end
 
-zeppelinuDefs ={}
-zeppelin={}
+--zeppelinuDefs ={}
+--zeppelin={}
 
 --SYNCED
 --if (gadgetHandler:IsSyncedCode()) then
