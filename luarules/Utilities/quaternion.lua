@@ -169,6 +169,7 @@ do
 
     -- x,y,z,w => r,i,j,k
     -- heading/yaw (around vertical Y), pitch/attitude (around X), roll (around depth Z)
+    --https://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
     function meta:QuatToAngle()
         --public void set(Quat4d q1) {
         local x, y, z
