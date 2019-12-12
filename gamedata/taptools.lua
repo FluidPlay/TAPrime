@@ -382,6 +382,21 @@ function minmax(n, min, max)
 	return n
 end
 
+function ParamBlend(t)	--here alpha =2 ; source: https://stackoverflow.com/questions/13462001/ease-in-and-ease-out-animation-formula
+	local sqt = math.pow(t, 2)
+	return sqt / (2.0 * (sqt - t) + 1.0)
+end
+
+--t = current time; b = start value; c = change in value; d = duration
+function easeInOutQuad (t, b, c, d)
+	t = t / (d/2);
+	if (t < 1) then
+		return c/2*t*t + b end
+	t = t-1
+	return -c/2 * (t*(t-2) - 1) + b
+end
+
+
 --////////////////////////
 --// UPGRADE FUNCTIONS
 --////////////////////////

@@ -15,11 +15,11 @@ local armorDefs = {
         "armlatnk","armfav","armjanus","armmlv","armkam","armsh","armspy","cordefiler","coresupp","corbw","corfav",
         "corlevlr","corsh","corvrad","decade","marauder","nsaclash",
 	},
-	supportveh = {"armfido","armmart","armmerl","corcat","armshock","corhrk","cormart","cormh","cormort","corvroc","corwolv","corjugg","shiva","tawf013","cortrem",},
+	supportveh = {"armfido","armmart","armsam", "cormist", "armmerl","corcat","armshock","corhrk","cormart","cormh","cormort","corvroc","corwolv","corjugg","shiva","tawf013","cortrem",},
 
 	heavyveh={"armanac","armbull","armcroc","armlun","armpincer","armscab","armseer","armst","armstump","armthovr","cordl",
               "coreter","corgarp","corgol","cormabm","cormlv","corparrow","corraid","correap","corseal","corsilo","corsnap",
-              "corsok","armintr","armsam", "cormist", "armmanni", "armjam", "corban",},
+              "corsok","armintr","armmanni", "armjam", "corban",},
 
     --++++==== Air
 	lightair={"armaca","armawac","armca","armcsa","armfig","armhawk","armsehak","armsfig","corawac","corca","corcsa","corhunt","corsfig","corvamp","corveng",},
