@@ -19,7 +19,7 @@ local damageMultipliers = {
                 structure = 0.8,resource = 0.8,     defense = 0.4,  defenseaa = 1.1,    commander = 0.4,
 	}
 ,
-	homing={ 	lightbot = 0.1, supportbot = 0.25, 	heavybot = 0.3, lightveh = 0.75,supportveh = 1.25, heavyveh = 3.2,
+	homing={ 	lightbot = 1,   supportbot = 0.25, 	heavybot = 0.3, lightveh = 0.75,supportveh = 1.25, heavyveh = 3.2,
 				lightair = 0.9, supportair = 3, 	heavyair = 2.5, lightship = 1.25,   supportship = 1.75,heavyship = 2.5,
                 structure = 0.6,resource = 0.75, 	defense = 0.75, defenseaa = 0.125,  commander = 0.2,
 	}
