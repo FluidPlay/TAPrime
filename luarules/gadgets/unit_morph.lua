@@ -717,7 +717,7 @@ end
 --------------------------------------------------------------------------------
 
 
-local function ReAssignAssists(newUnit,oldUnit)
+local function ReAssignAssists(newUnit, oldUnit)
     if newUnit == nil or oldUnit == nil then
         return end
     local ally = spGetUnitAllyTeam(newUnit)
@@ -965,7 +965,7 @@ local function FinishMorph(unitID, morphData)
     isBeingBuilt = true
     end
 
-    local newUnit
+    local newUnit = nil
     local face = HeadingToFacing(h)
 
     if udDst.isBuilding or udDst.isFactory then
@@ -997,23 +997,30 @@ local function FinishMorph(unitID, morphData)
           spSetUnitRulesParam(unitID, "morphedinto", 1)
       end
     end
+    -- Below is consumed in update (without it, last commander-ends might be triggered by mistake (!))
+    unitsToDestroy[unitID] = spGetGameFrame() + 1   -- Set frame for the unit to be removed from game
 
-    if (extraUnitMorphDefs[unitID] ~= nil) then
-    -- nothing here for now
-    end
+    -- Safe check. All code below should only run if new unit was successfully created
+    if newUnit == nil then
+        return end
+
+    --if (extraUnitMorphDefs[unitID] ~= nil) then
+    ---- nothing here for now
+    --end
+
     if (hostName ~= nil) and PWUnits[unitID] then
-    -- send planetwars deployment message
-    PWUnit = PWUnits[unitID]
-    PWUnit.currentDef=udDst
-    local data = PWUnit.owner..","..defName..","..math.floor(px)..","..math.floor(pz)..",".."S"
-    spSendCommands("w "..hostName.." pwmorph:"..data)
-    extraUnitMorphDefs[unitID] = nil
-    GG.PlanetWars.units[unitID] = nil
-    GG.PlanetWars.units[newUnit] = PWUnit
-    SendToUnsynced('PWCreate', unitTeam, newUnit)
+        -- send planetwars deployment message
+        PWUnit = PWUnits[unitID]
+        PWUnit.currentDef=udDst
+        local data = PWUnit.owner..","..defName..","..math.floor(px)..","..math.floor(pz)..",".."S"
+        spSendCommands("w "..hostName.." pwmorph:"..data)
+        extraUnitMorphDefs[unitID] = nil
+        GG.PlanetWars.units[unitID] = nil
+        GG.PlanetWars.units[newUnit] = PWUnit
+        SendToUnsynced('PWCreate', unitTeam, newUnit)
     elseif (not morphData.def.facing) then  -- set rotation only if unit is not planetwars and facing is not true
-    --Spring.Echo(morphData.def.facing)
-    --Spring.SetUnitRotation(newUnit, 0, -h * math.pi / 32768, 0)
+        --Spring.Echo(morphData.def.facing)
+        --Spring.SetUnitRotation(newUnit, 0, -h * math.pi / 32768, 0)
     end
 
     --//copy experience & group
@@ -1043,16 +1050,16 @@ local function FinishMorph(unitID, morphData)
     --//copy some state
     local states = spGetUnitStates(unitID)
     spGiveOrderArrayToUnitArray({ newUnit }, {
-    { CMD.FIRE_STATE, { states.firestate },             { } },
-    { CMD.MOVE_STATE, { states.movestate },             { } },
-    { CMD.REPEAT,     { states["repeat"] and 1 or 0 },  { } },
-    { CMD.CLOAK,      { states.cloak     and 1 or udDst.initCloaked },  { } },
-    { CMD.ONOFF,      { 1 },                            { } },
-    { CMD.TRAJECTORY, { states.trajectory and 1 or 0 }, { } },
+        { CMD.FIRE_STATE, { states.firestate },             { } },
+        { CMD.MOVE_STATE, { states.movestate },             { } },
+        { CMD.REPEAT,     { states["repeat"] and 1 or 0 },  { } },
+        { CMD.CLOAK,      { states.cloak     and 1 or udDst.initCloaked },  { } },
+        { CMD.ONOFF,      { 1 },                            { } },
+        { CMD.TRAJECTORY, { states.trajectory and 1 or 0 }, { } },
     })
 
     --//Copy command queue        [deprecated]FIX : removed 04/2012, caused erros
-    --Now copies only move/patrol commands from queue, shouldn't pose any issues
+    -- Now copies only move/patrol commands from queue, shouldn't pose any issues
     local cmdqueuesize = Spring.GetUnitCommands(unitID, 0)
     if type(cmdqueuesize) == "number" then
         local cmds = Spring.GetUnitCommands(unitID,100)
@@ -1071,7 +1078,7 @@ local function FinishMorph(unitID, morphData)
     end
 
     --//reassign assist commands to new unit
-    ReAssignAssists(newUnit,unitID)
+    ReAssignAssists(newUnit, unitID)
 
     --// copy health
     local oldHealth,oldMaxHealth,_,_,buildProgress = spGetUnitHealth(unitID)
@@ -1083,7 +1090,7 @@ local function FinishMorph(unitID, morphData)
     --// copy shield power
     local enabled,oldShieldState = spGetUnitShieldState(unitID)
     if oldShieldState and spGetUnitShieldState(newUnit) then
-    spSetUnitShieldState(newUnit, enabled,oldShieldState)
+        spSetUnitShieldState(newUnit, enabled,oldShieldState)
     end
 
     --// FIXME: - re-attach to current transport?
@@ -1091,8 +1098,6 @@ local function FinishMorph(unitID, morphData)
     SendToUnsynced("unit_morph_finished", unitID, newUnit)
 
     spSetUnitBlocking(newUnit, true)
-    -- Below is consumed in update (without it, last commander-ends might be triggered by mistake (!))
-    unitsToDestroy[unitID] = spGetGameFrame() + 1   -- Set frame for the unit to be removed from game
 end
 
 -- Here's where the Morph is updated

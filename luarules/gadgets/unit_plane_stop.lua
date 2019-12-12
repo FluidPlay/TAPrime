@@ -94,14 +94,11 @@ function gadget:AllowCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOpt
     local planeuDefID = planes[unitID]
     if planeuDefID then
         --DebugTable(cmdOptions)
+        if cmdID == CMD_MOVE or cmdID == CMD.PATROL or cmdID == CMD.ATTACK then
+            idlingPlanes[unitID] = nil end
         if cmdID == CMD_MOVE then
-            idlingPlanes[unitID] = nil
-            --for i = 1, #cmdParams do
-            --  Spring.Echo("   param "..i..": "..cmdParams[i])
-            --end
-            planeDestinations[unitID] = { x = cmdParams[1], y = cmdParams[2], z = cmdParams[3]}
-        end
-        if cmdID == CMD_STOP and not cmdOptions.shift then --TODO: And flyState == fly
+            planeDestinations[unitID] = { x = cmdParams[1], y = cmdParams[2], z = cmdParams[3] }
+        elseif cmdID == CMD_STOP and not cmdOptions.shift then --TODO: And flyState == fly
             if isSetToFly(unitID) and not pausedPlanes[unitID] then
                 local x, y, z = Spring.GetUnitPosition(unitID)
                 local velx, vely, velz= Spring.GetUnitVelocity(unitID)
@@ -113,9 +110,8 @@ function gadget:AllowCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOpt
                 if pausedPlanes[unitID] then
                     planesToUnpause[unitID] = planeuDefID end
             end
-        else
-            if pausedPlanes[unitID] then
-                planesToUnpause[unitID] = planeuDefID end
+        elseif pausedPlanes[unitID] then
+                planesToUnpause[unitID] = planeuDefID
         end
     end
     return true
