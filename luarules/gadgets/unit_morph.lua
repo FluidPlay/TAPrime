@@ -786,7 +786,6 @@ local function StartMorph(unitID, morphDef, teamID) --, cmdID)
   SendToUnsynced("unit_morph_start", unitID, spGetUnitDefID(unitID), morphDef.cmd)
 end
 
-
 local function StartQueue(teamID)
   local queuedUnits = teamQueuedUnits[teamID]
   if queuedUnits and #queuedUnits > 0 then
@@ -1119,16 +1118,16 @@ local function UpdateMorph(unitID, morphData, bonus)
   local currentM, _, pullM = spGetTeamResources(teamID, "metal") --currentLevel, storage, pull, income, expense
   local currentE, _, pullE = spGetTeamResources(teamID, "energy")
   --Spring.Echo("currentLevel, storage, pull, income, expense: ",currentM, storage, pullM, income, expense)
-  if (not isTechStructure(spGetUnitDefID(unitID)))
-      and (currentM < pullM or currentE < pullE) then
+  if (currentM < pullM or currentE < pullE) then --and (not isTechStructure(spGetUnitDefID(unitID)))
+      -- Prioritizes metal deficit, otherwise checks for energy deficit
       local deficit = currentM < pullM and pullM - currentM or pullE - currentE
-      -- Calculate sum of metal and energy increments for this unit team's morphing units
+      -- deficitFactor goes from 1 (zero deficit) up to 0.25 (-3000 deficit onwards)
       local deficitFactor = lerp(1, 0.25, inverselerp(0, 3000, minmax(deficit, 0, 3000)))
-      bonus = deficitFactor * bonus
+      bonus = bonus * deficitFactor
   end
-  if bonus > 0 and spUseUnitResource(unitID, { ["m"] = morphData.def.resTable.m * bonus,
-                                             ["e"] = morphData.def.resTable.e * bonus }) then
-    --if (Spring.UseUnitResource(unitID, morphData.def.resTable)) then
+  -- To implement proper "upkeep" when on deficit, cost is consistent, only progress is reduced.
+  if bonus > 0 and spUseUnitResource(unitID, { ["m"] = morphData.def.resTable.m, -- * bonus
+                                             ["e"] = morphData.def.resTable.e }) then -- * bonus
     morphData.progress = morphData.progress + (morphData.increment * bonus)
   end
   if morphData.progress >= 1.0 then

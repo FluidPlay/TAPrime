@@ -19,7 +19,7 @@ local damageTypes = {
 
 	hflaser={"armllt","corllt","armhlt","corhlt","corexp","corhllt","armfhlt","corfhlt",},
 
-	flak={"armdeva","armyork","corsent","corshred","corhrk",},
+	flak={"armdeva","armyork","corsent","corshred","corhrk","cordefiler",},
 
 	neutron={"armmanni","corcan",},
 
@@ -29,7 +29,7 @@ local damageTypes = {
 
 	homing={"armrl","corrl","corsumo","armfav","armcir","armsam","coratl","cormist","armatl","armmercury","corscreamer","armsfig","corsfig","corvamp","armsh","marauder","armorco","coresupp","armdecade","corsh","nsaclash","armmlv",},
 
-	plasma={"armbeamer","armanni","cordefiler","corbhmth","cortoast","cordoom","corthud","armham","armraz","corkarg","krogtaar","armamb","armepoch","corbats","armbats","corblackhy","corlevlr","cormexp","cortrem",},
+	plasma={"armbeamer","armanni","corbhmth","cortoast","cordoom","corthud","armham","armraz","corkarg","krogtaar","armamb","armepoch","corbats","armbats","corblackhy","corlevlr","cormexp","cortrem",},
 
 	explosive={"armfboy","armthund","armpnix","corhurc","corshad","armguard","corpun","corban",},
 

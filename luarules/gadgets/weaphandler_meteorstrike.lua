@@ -6,7 +6,7 @@ if not gadgetHandler:IsSyncedCode() then
 
 function gadget:GetInfo()
     return {
-        name      = "Weapon Handler - Meteor Strike",
+        name      = "Weapon Handler - Neutron Strike",
         desc      = "Spawns a bunch of minor meteors around the point where the tagger hit",
         author    = "MaDDoX",
         date      = "23 October 2019",
@@ -31,12 +31,13 @@ local spSetWatchWeapon = Script.SetWatchWeapon
 local spSetUnitNoDraw = Spring.SetUnitNoDraw
 local spSetUnitStealth = Spring.SetUnitStealth
 local spSetUnitSonarStealth = Spring.SetUnitSonarStealth
+local spSetUnitNeutral = Spring.SetUnitNeutral
 local spGetGameFrame = Spring.GetGameFrame
 local minSpawnDelay = 1.25 * 30 -- n seconds in frames  --TODO: Make static
 local maxSpawnDelay = 2 * 30    -- n seconds in frames
 
 local meteoriteDefID =  UnitDefNames["meteorite"].id
-local METEOR_EXPLOSION = WeaponDefNames["meteorite_weapon"].id
+--local METEOR_EXPLOSION = WeaponDefNames["meteorite_weapon"].id
 
 local meteroiteSpawnRadius = 250
 local rnd = math.random
@@ -75,6 +76,7 @@ function gadget:GameFrame(f)
             spSetUnitNoDraw(unitID, true)
             spSetUnitStealth(unitID, true)
             spSetUnitSonarStealth(unitID, true)
+            spSetUnitNeutral(unitID, true)
             table.remove(spawnList, i)
         end
         --spawnList[i]=nil

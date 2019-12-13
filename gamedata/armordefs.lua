@@ -2,7 +2,7 @@ local armorDefs = {
     lightbot={"armack","armch","armck","armfark","armpw","armrectr","armsubk","armconsul","coraca","corack","corak",
               "coramph","corch","corck","cornecro","corspy","corsub","corvoyr","armfast", "corsktl", "armspid",
               "cormando", "corpyro",},
-    supportbot={"armaak","armah","armjeth","armmh","armrock","coraak","corah","corcrash","corstorm",},
+    supportbot={"armaak","armah","armjeth","armmh","armrock","coraak","corhrk","corah","corcrash","corstorm",},
 
     heavybot={"corkrog","armmav","armsptk","armsnipe", "armmark", "armzeus", "armfboy", "cortermite", "corsumo","armbanth",
               "armham","armorco","armraz","armvader","armwar","corcan","corkarg","corroach","corthud","corthovr","krogtaar",
@@ -15,7 +15,7 @@ local armorDefs = {
         "armlatnk","armfav","armjanus","armmlv","armkam","armsh","armspy","cordefiler","coresupp","corbw","corfav",
         "corlevlr","corsh","corvrad","decade","marauder","nsaclash",
 	},
-	supportveh = {"armfido","armmart","armsam", "cormist", "armmerl","corcat","armshock","corhrk","cormart","cormh","cormort","corvroc","corwolv","corjugg","shiva","tawf013","cortrem",},
+	supportveh = {"armfido","armmart","armsam", "cormist", "armmerl","corcat","armshock","cormart","cormh","cormort","corvroc","corwolv","corjugg","shiva","tawf013","cortrem",},
 
 	heavyveh={"armanac","armbull","armcroc","armlun","armpincer","armscab","armseer","armst","armstump","armthovr","cordl",
               "coreter","corgarp","corgol","cormabm","cormlv","corparrow","corraid","correap","corseal","corsilo","corsnap",

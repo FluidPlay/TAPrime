@@ -22,14 +22,8 @@ local spSetGroundMoveTypeData = Spring.MoveCtrl.SetGroundMoveTypeData
 local spGetUnitHealth = Spring.GetUnitHealth
 local spSetUnitRulesParam = Spring.SetUnitRulesParam
 
---local FLASH = {
---    [UnitDefNames["armflash"].id] = true,
---    [UnitDefNames["corgator"].id] = true,
---    [UnitDefNames["armatlas"].id] = true,
---}
-
 local trackedUnits = {} -- Ground vehicles
-local damagedUnits = {} -- Ground vehicles
+local damagedUnits = {}
 
 local slowdownHealthThreshold = 0.3  -- 0.35
 
@@ -57,7 +51,6 @@ function gadget:UnitDestroyed(unitID, unitDefID, unitTeam)
 end
 
 function gadget:UnitDamaged(unitID, unitDefID, unitTeam, damage, paralyzer)
-    --Spring.Echo("Damage registered")
     if trackedUnits[unitID] then
         local unitHealth, maxHealth, paralyzeDamage = spGetUnitHealth(unitID)
         if paralyzer or not unitHealth or not maxHealth then
@@ -76,8 +69,6 @@ function gadget:UnitDamaged(unitID, unitDefID, unitTeam, damage, paralyzer)
                     maxSpeed = newMaxSpeed,
                     maxReverseSpeed = newRevSpeed,
                 })
-                --Spring.Echo("turnRate="..turnrateReductionFactor * trackedUnits[unitID].orgturnrate.." maxSpeed: "..
-                --            newMaxSpeed )
                 -- Below will be read by unit_reverse_move
                 spSetUnitRulesParam(unitID, "damagedSpeed", newMaxSpeed)
                 spSetUnitRulesParam(unitID, "damagedrSpeed", newRevSpeed)
@@ -109,35 +100,3 @@ function gadget:GameFrame(frame)
         end
     end
 end
-
---function gadget:AllowCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOptions)
---
---    if isVehicle(unitDefID) then
---    --if FLASH[unitDefID] then
---        if (cmdID == CMD_SET_TR) then
---            local mt = spGetUnitMoveTypeData(unitID)
---            Spring.Echo("turnRate="..tostring(mt.turnRate))
---            --if mt.name ~= "ground" and mt.name ~= "gunship" then return false end
---            --local cmdDescID = FindUnitCmdDesc(unitID, CMD_SET_TR)
---            --Spring.Echo("cmdparams[1]=" .. tostring(cmdParams[1]))
---            if mt.name == "ground" then
---                spSetGroundMoveTypeData(unitID, {
---                    turnRate=(1+cmdParams[1]) * trackedUnits[unitID].orgturnrate,
---                    maxSpeed= trackedUnits[unitID].orgspeed / (1+cmdParams[1])
---                })
---            elseif mt.name == "gunship" then
---                -- setting maxSpeed on gunships should automatically adjust
---                -- brakeDistance
---                spSetGunshipMoveTypeData(unitID, {
---                    turnRate=(1+cmdParams[1]) * trackedUnits[unitID].orgturnrate,
---                    maxSpeed= trackedUnits[unitID].orgspeed / (1+cmdParams[1])
---                })
---            end
---            turnCmd.params[1] = cmdParams[1]
---            EditUnitCmdDesc(unitID, cmdDescID, turnCmd)
---            turnCmd.params[1] = 1
---            return false
---        end
---    end
---    return true
---end

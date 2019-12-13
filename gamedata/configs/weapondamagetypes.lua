@@ -204,7 +204,7 @@ local weaponDamageTypes = {
 	armhawk = { ["HawkBeamer"] = "thermo", ["HawkBeamerA2G"] = "homing", },
 	corsfig = { ["GuidedMissiles"] = "homing", },
 	corthud = { ["PlasmaCannon"] = "plasma", },
-    cordefiler = { ["PlasmaCannon"] = "plasma", },
+    cordefiler = { ["FlakCannon"] = "flak", },
 	armscab = { ["Rocket"] = "omni", },
 	cortron = { ["TacticalNuke"] = "nuke", },
 	corcrash = { ["Missiles"] = "rocket", },
