@@ -95,7 +95,10 @@ function gadget:AllowCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOpt
     if planeuDefID then
         --DebugTable(cmdOptions)
         if cmdID == CMD_MOVE or cmdID == CMD.PATROL or cmdID == CMD.ATTACK then
-            idlingPlanes[unitID] = nil end
+            idlingPlanes[unitID] = nil
+            if pausedPlanes[unitID] then
+                planesToUnpause[unitID] = planeuDefID end
+        end
         if cmdID == CMD_MOVE then
             planeDestinations[unitID] = { x = cmdParams[1], y = cmdParams[2], z = cmdParams[3] }
         elseif cmdID == CMD_STOP and not cmdOptions.shift then --TODO: And flyState == fly
@@ -204,7 +207,7 @@ function gadget:GameFrame(f)
 
             if not idlingPlanes[unitID] and
                     verynear(posx, data.targetPos.x) and verynear(posz, data.targetPos.z) and verynear(posy, data.relativeHeight) then
-                Spring.Echo("Setting to idle: "..unitID)
+                --Spring.Echo("Setting to idle: "..unitID)
                 idlingPlanes[unitID] = data
             --    --local orx, ory, orz = Spring.GetUnitRotation(unitID)
             --    --Spring.SetUnitRotation(unitID, 0, ry, 0) --lerp(rx, 0, lerpFactor)

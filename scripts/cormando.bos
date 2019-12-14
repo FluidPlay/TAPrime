@@ -455,8 +455,8 @@ AimFromPrimary(piecenum)
 AimPrimary(heading, pitch)
 {
 	signal 2;
-	turn gun to x-axis <55.000000>-pitch speed <95.000000>;
-	turn torso to y-axis heading speed <300.000000>;
+	turn gun to x-axis <55.000000>-pitch speed <185.000000>; //95
+	turn torso to y-axis heading speed <700.000000>; //300
 	if (((get ABS(wpn1_lasthead - heading)) > 65536) OR(((get ABS(wpn1_lasthead - heading)) > 1300) AND ((get ABS(wpn1_lasthead - heading)) < 64236)))
 	{
 		wpn1_lasthead = 1000000;
@@ -505,16 +505,16 @@ QueryTransport(piecenum)
 Killed(severity, corpsetype)
 {
 	corpsetype = 3;
-	explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4 | NOHEATCLOUD;
-	explode larm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5 | NOHEATCLOUD;
-	explode rlathe type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1 | NOHEATCLOUD;
-	explode lfoot type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2 | NOHEATCLOUD;
-	explode lleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3 | NOHEATCLOUD;
-	explode luparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4 | NOHEATCLOUD;
-	explode rarm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5 | NOHEATCLOUD;
-	explode rfoot type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1 | NOHEATCLOUD;
-	explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2 | NOHEATCLOUD;
-	explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3 | NOHEATCLOUD;
-	explode torso type SHATTER | EXPLODE_ON_HIT | BITMAP5 | NOHEATCLOUD;
+	explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+	explode larm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5; // | NOHEATCLOUD
+	explode rlathe type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+	explode lfoot type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
+	explode lleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
+	explode luparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+	explode rarm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+	explode rfoot type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+	explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
+	explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
+	explode torso type SHATTER | EXPLODE_ON_HIT | BITMAP5;
 	return corpsetype;
 }

@@ -1,10 +1,10 @@
 local armorDefs = {
     lightbot={"armack","armch","armck","armfark","armpw","armrectr","armsubk","armconsul","coraca","corack","corak",
               "coramph","corch","corck","cornecro","corspy","corsub","corvoyr","armfast", "corsktl", "armspid",
-              "cormando", "corpyro",},
-    supportbot={"armaak","armah","armjeth","armmh","armrock","coraak","corhrk","corah","corcrash","corstorm",},
+              "cormando", "corpyro", },
+    supportbot={"armaak","armah","armjeth","armsptk","cordefiler","armmh","armrock","coraak","corhrk","corah","corcrash","corstorm",},
 
-    heavybot={"corkrog","armmav","armsptk","armsnipe", "armmark", "armzeus", "armfboy", "cortermite", "corsumo","armbanth",
+    heavybot={"corkrog","armmav","armsnipe", "armmark", "armzeus", "armfboy", "cortermite", "corsumo","armbanth",
               "armham","armorco","armraz","armvader","armwar","corcan","corkarg","corroach","corthud","corthovr","krogtaar",
               "meteor","tawf009",},
 
@@ -12,7 +12,7 @@ local armorDefs = {
 	lightveh = {
 		"armflash", "armyork", "corsent", "cormuskrat", "cormls", "armacv", "armcv", "armmls", "coracv", "corfast",
 		"critter_ant", "critter_duck", "critter_goldfish", "critter_gull", "critter_penguin", "corcv", "corgator",
-        "armlatnk","armfav","armjanus","armmlv","armkam","armsh","armspy","cordefiler","coresupp","corbw","corfav",
+        "armlatnk","armfav","armjanus","armmlv","armkam","armsh","armspy","coresupp","corbw","corfav",
         "corlevlr","corsh","corvrad","decade","marauder","nsaclash",
 	},
 	supportveh = {"armfido","armmart","armsam", "cormist", "armmerl","corcat","armshock","cormart","cormh","cormort","corvroc","corwolv","corjugg","shiva","tawf013","cortrem",},
