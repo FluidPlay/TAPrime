@@ -3,7 +3,7 @@ function gadget:GetInfo()
     return {
         name      = 'Juno Damage',
         desc      = 'Handles Juno damage',
-        author    = 'Niobium, Bluestone',
+        author    = 'Niobium, Bluestone, MaDDoX',
         version   = 'v2.0',
         date      = '05/2013',
         license   = 'GNU GPL, v2 or later',
@@ -11,6 +11,9 @@ function gadget:GetInfo()
         enabled   = true
     }
 end
+
+--== MaDDoX: added area-spotting ability to its explosion. Spawns the "spotter" unit
+--== Check its def; Default LOS of the remote-viewer unit = 400
 
 ----------------------------------------------------------------
 -- Synced only
@@ -21,40 +24,43 @@ if gadgetHandler:IsSyncedCode() then
 -- Config
 ----------------------------------------------------------------
 local tokillUnits = {
-    [UnitDefNames.armarad.id] = true,
-    [UnitDefNames.armaser.id] = true,
-    [UnitDefNames.armason.id] = true,
-    [UnitDefNames.armeyes.id] = true,
-    [UnitDefNames.armfrad.id] = true,
-    [UnitDefNames.armjam.id] = true,
-    [UnitDefNames.armjamt.id] = true,
-    [UnitDefNames.armmark.id] = true,
-    [UnitDefNames.armrad.id] = true,
-    [UnitDefNames.armseer.id] = true,
-    [UnitDefNames.armsjam.id] = true,
-    [UnitDefNames.armsonar.id] = true,
-    [UnitDefNames.armveil.id] = true,
-    [UnitDefNames.corarad.id] = true,
-    [UnitDefNames.corason.id] = true,
-    [UnitDefNames.coreter.id] = true,
-    [UnitDefNames.coreyes.id] = true,
-    [UnitDefNames.corfrad.id] = true,
-    [UnitDefNames.corjamt.id] = true,
-    [UnitDefNames.corrad.id] = true,
-    [UnitDefNames.corshroud.id] = true,
-    [UnitDefNames.corsjam.id] = true,
-    [UnitDefNames.corsonar.id] = true,
+    [UnitDefNames.armmine1.id] = true,
+    [UnitDefNames.armmine3.id] = true,
+    [UnitDefNames.cormine3.id] = true,
+    --[UnitDefNames.armarad.id] = true,
+    --[UnitDefNames.armaser.id] = true,
+    --[UnitDefNames.armason.id] = true,
+    --[UnitDefNames.armeyes.id] = true,
+    --[UnitDefNames.armfrad.id] = true,
+    --[UnitDefNames.armjam.id] = true,
+    --[UnitDefNames.armjamt.id] = true,
+    --[UnitDefNames.armmark.id] = true,
+    --[UnitDefNames.armrad.id] = true,
+    --[UnitDefNames.armseer.id] = true,
+    --[UnitDefNames.armsjam.id] = true,
+    --[UnitDefNames.armsonar.id] = true,
+    --[UnitDefNames.armveil.id] = true,
+    --[UnitDefNames.corarad.id] = true,
+    --[UnitDefNames.corason.id] = true,
+    --[UnitDefNames.coreter.id] = true,
+    --[UnitDefNames.coreyes.id] = true,
+    --[UnitDefNames.corfrad.id] = true,
+    --[UnitDefNames.corjamt.id] = true,
+    --[UnitDefNames.corrad.id] = true,
+    --[UnitDefNames.corshroud.id] = true,
+    --[UnitDefNames.corsjam.id] = true,
+    --[UnitDefNames.corsonar.id] = true,
     --[UnitDefNames.corspec.id] = true,
     --[UnitDefNames.corvoyr.id] = true,
-    [UnitDefNames.corvrad.id] = true,
-	
-    [UnitDefNames.corfav.id] = true, 
-    [UnitDefNames.armfav.id] = true,
+    --[UnitDefNames.corvrad.id] = true,
+    --
+    --[UnitDefNames.corfav.id] = true,
+    --[UnitDefNames.armfav.id] = true,
     --[UnitDefNames.armflea.id] = true,
 }
 
 local todenyUnits = {
-    [UnitDefNames.corfav.id] = true, 
+    [UnitDefNames.corvrad.id] = true,
     [UnitDefNames.armfav.id] = true,
     --[UnitDefNames.armflea.id] = true,
 }
@@ -67,12 +73,20 @@ local fadetime = 2 --how long fade in/out effect lasts, in seconds
 
 --locals
 local SpGetGameSeconds = Spring.GetGameSeconds
+local spGetUnitTeam = Spring.GetUnitTeam
 local SpGetUnitsInCylinder = Spring.GetUnitsInCylinder
 local SpDestroyUnit = Spring.DestroyUnit
 local SpGetUnitDefID = Spring.GetUnitDefID
 local SpValidUnitID = Spring.ValidUnitID
+local spCreateUnit = Spring.CreateUnit
+local spSetUnitNoDraw = Spring.SetUnitNoDraw
+local spSetUnitStealth = Spring.SetUnitStealth
+local spSetUnitSonarStealth = Spring.SetUnitSonarStealth
+local spSetUnitNeutral = Spring.SetUnitNeutral
+local spValidUnitID = Spring.ValidUnitID
+local spGetGameFrame = Spring.GetGameFrame
+local spDestroyUnit = Spring.DestroyUnit
 local Mmin = math.min
-
 
 -- kill appropriate things from initial juno blast --
 
@@ -80,6 +94,10 @@ local junoWeapons = {
     [WeaponDefNames.armjuno_juno_pulse.id] = true,
     [WeaponDefNames.corjuno_juno_pulse.id] = true,
 }
+
+local spottersToDestroy = {} -- { unitID = f, ... }
+local spotterDefID =  UnitDefNames["spotter"].id
+local lifetime = 12     -- Spotter Lifetime
 
 function gadget:UnitDamaged(uID, uDefID, uTeam, damage, paralyzer, weaponID, projID, aID, aDefID, aTeam)
     if junoWeapons[weaponID] and tokillUnits[uDefID] then
@@ -93,6 +111,10 @@ function gadget:UnitDamaged(uID, uDefID, uTeam, damage, paralyzer, weaponID, pro
 	end
 end
 
+function gadget:UnitDestroyed(unitID)
+    spottersToDestroy[unitID] = nil
+end
+
 -- area denial --
 
 local centers = {} --table of where juno missiles hit etc
@@ -103,12 +125,25 @@ function gadget:Initialize()
 	Script.SetWatchWeapon(WeaponDefNames.corjuno_juno_pulse.id, true)
 end
 
+local function CreateSpotter(firingUnitID, pos)
+    local teamID = spGetUnitTeam(firingUnitID)
+    local unitID = spCreateUnit(spotterDefID, pos.x, pos.y, pos.z, "north", teamID)
+    --Spring.Echo("Spawned "..unitID.." at: "..c.x..", "..c.y..", "..c.z)
+    spSetUnitNoDraw(unitID, true)
+    spSetUnitStealth(unitID, true)
+    spSetUnitSonarStealth(unitID, true)
+    spSetUnitNeutral(unitID, true)
+    -- Time limit
+    if spValidUnitID(unitID) then
+        spottersToDestroy[unitID] = spGetGameFrame() + (lifetime * 30) end
+end
 
 function gadget:Explosion(weaponID, px, py, pz, ownerID)
 	if junoWeapons[weaponID] then
 		local curtime = SpGetGameSeconds()
 		local junoExpl = {x=px, y=py, z=pz, t=curtime, o=ownerID}
 		centers[counter] = junoExpl
+        CreateSpotter(ownerID, {x=px, y=py, z=pz})
 		SendToUnsynced("AddToCenters",counter,px,py,pz,curtime)
 		counter = counter + 1 		
 	end
@@ -121,7 +156,7 @@ local update = true
 
 function gadget:GameFrame(frame)
 
-	if frame == 10 then --seems that SendToUnsynced has to happen after
+	if frame == 10 then --seems that SendToUnsynced has to happen after ~10 game frames
 		SendToUnsynced("RecieveConstants",width,radius,effectlength,fadetime)
 	end
 	
@@ -137,6 +172,7 @@ function gadget:GameFrame(frame)
 			local unitIDsBig   = SpGetUnitsInCylinder(expl.x, expl.z, q*radius)
 			local unitIDsSmall = SpGetUnitsInCylinder(expl.x, expl.z, q*(radius-width))
 
+            -- If no denial unit found in larger radius, destroy the mines
 			for _,unitID in pairs(unitIDsBig) do
 				local unitDefID = SpGetUnitDefID(unitID)
 				if todenyUnits[unitDefID] then
@@ -147,7 +183,6 @@ function gadget:GameFrame(frame)
 							break
 						end
 					end
-				
 					if (not foundmatch) then					
 						if unitID and SpValidUnitID(unitID) then
 							SpDestroyUnit(unitID,true,false) 
@@ -164,12 +199,19 @@ function gadget:GameFrame(frame)
 			update = true -- fast update during fade in/out
 		end
 	end
+
+    for unitID, frameToDie in pairs (spottersToDestroy) do
+        --Spring.Echo("Cur, todie: "..frame..", "..frameToDie)
+        if frame >= frameToDie then
+            spDestroyUnit(unitID, false, true) -- selfd = false, reclaimed = true
+        end
+    end
 	
-	if ((#centers ~= 0) and (curtime - lastupdate > 1)) then --slow update (to re-match ground in unsync)
+	if (#centers ~= 0) and (curtime - lastupdate > 1) then --slow update (to re-match ground in unsync)
 		update = true
 	end
 	
-	if ((update==true) and (curtime - lastupdate > updategrain)) then 
+	if (update == true) and (curtime - lastupdate > updategrain) then
 		lastupdate = curtime	
 		SendToUnsynced("UpdateList", curtime)
 		update = false
@@ -273,7 +315,6 @@ function RemoveFromCenters(_,counter)
 	table.remove(centers,counter)
 end
 
-
 --set up x and z coords for circle drawing
 function SetupCircles()
 	--compute coords for drawing small circles
@@ -291,7 +332,6 @@ function SetupCircles()
 	
 	--set up list with small circle
 	FadedCircle = DrawCircle(alpha)
-
 	
 	--compute incremental coords for placing small circles to draw a big circle
 	x = radius - (width + fadedist) / 2
@@ -407,7 +447,6 @@ function UpdateList(_,curtime)
 	end)
 
 end
-
 
 --draw
 function gadget:DrawWorldPreUnit()
