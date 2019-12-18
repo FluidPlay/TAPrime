@@ -1115,19 +1115,30 @@ local function UpdateMorph(unitID, morphData, bonus)
 
   --- If we're stalled on E or M and it's a mobile unit, don't move on
   --- Workaround, without it multiple simultaneous morphs might complete without sufficient resources
-  local currentM, _, pullM = spGetTeamResources(teamID, "metal") --currentLevel, storage, pull, income, expense
-  local currentE, _, pullE = spGetTeamResources(teamID, "energy")
+  local currentM, storageM, pullM = spGetTeamResources(teamID, "metal") --currentLevel, storage, pull, income, expense
+  local currentE, storageE, pullE = spGetTeamResources(teamID, "energy")
   --Spring.Echo("currentLevel, storage, pull, income, expense: ",currentM, storage, pullM, income, expense)
-  if (currentM < pullM or currentE < pullE) then --and (not isTechStructure(spGetUnitDefID(unitID)))
-      -- Prioritizes metal deficit, otherwise checks for energy deficit
-      local deficit = currentM < pullM and pullM - currentM or pullE - currentE
-      -- deficitFactor goes from 1 (zero deficit) up to 0.25 (-3000 deficit onwards)
-      local deficitFactor = lerp(1, 0.25, inverselerp(0, 3000, minmax(deficit, 0, 3000)))
-      bonus = bonus * deficitFactor
+
+  local deficitFactor = 1
+  -- If we're below 2% of metal, or energy, apply deficit to slow down morphs
+  if currentM / storageM < 0.02 then
+    local pullM = pullM - currentM
+    local deficitMin, deficitMax = 0, 300
+    -- First we make sure pullM is in the desired range, then we find the deficitFactor interpolator, from 0.01 to 1
+    deficitFactor = lerp(1, 0.01, inverselerp(deficitMin, deficitMax, minmax(pullM, deficitMin, deficitMax)))
+  elseif currentE / storageE < 0.02 then
+    local pullE = pullE - currentE
+    local deficitMin, deficitMax = 0, 3000
+    deficitFactor = lerp(1, 0.01, inverselerp(deficitMin, deficitMax, minmax(pullE, deficitMin, deficitMax)))
   end
-  -- To implement proper "upkeep" when on deficit, cost is consistent, only progress is reduced.
-  if bonus > 0 and spUseUnitResource(unitID, { ["m"] = morphData.def.resTable.m, -- * bonus
-                                             ["e"] = morphData.def.resTable.e }) then -- * bonus
+  if deficitFactor ~= 1 then
+    --Spring.Echo("Deficit factor: "..deficitFactor)
+    bonus = bonus * deficitFactor
+  end
+
+  -- To implement proper "upkeep" when on deficit, reduce costs and progress proportionally.
+  if bonus > 0 and spUseUnitResource(unitID, { ["m"] = morphData.def.resTable.m * bonus,
+                                             ["e"] = morphData.def.resTable.e * bonus }) then
     morphData.progress = morphData.progress + (morphData.increment * bonus)
   end
   if morphData.progress >= 1.0 then
