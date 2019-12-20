@@ -81,6 +81,7 @@ local tips = {
 	--"Spread buildings to prevent chain explosions.\nPress ALT+Z and ALT+X to adjust auto-spacing.",
 	--"It is effective to move your units in spread formations.\nDrag your mouse while initiating a move order to draw multiple waypoints.",
     "armmart.dds ".."Some tanks and long-ranged vehicles can move in reverse if you press 'Ctrl' while issuing a move order behind it. Use this to keep firing while retreating.",
+    "corshad.dds ".."Use the air freeze ability (move then stop, set to 'fly') of bombers to group them close and looking at the enemy's direction. This way they'll all hit the target at the same time, maximizing efficiency.",
 	--"T2 factories are expensive. Reclaim your T1 lab for metal to fund it",
 	--"Air strikes and airdrops may come at any time, always have at least one anti-air unit in your base.",
 	--"With ~(tilde)+doubleclick you can place a label with text on the map.\n~(tilde)+middle mouse button for an empty label.\n~(tilde)+mouse drag to draw lines",
@@ -125,7 +126,7 @@ local tips = {
 local titleColor = "\255\215\255\215"
 local contentColor = "\255\255\255\255"
 local unit_descs = {
-    "corjuno.dds "..titleColor.."Pro Tip: \n"..contentColor.."Junos weapon gives generous and non-counterable line of sight at the impact spot. Aim it at hill tops whenever it makes sense, for even wider line of sight.",
+    "corjuno.dds "..titleColor.."Pro Tip: \n"..contentColor.."Junos weapon gives generous and non-counterable line of sight at the impact spot. Aim it at hill tops whenever it makes sense, for even wider line of sight. Get some Energy Storages first, that weapon is e-hungry.",
     "outpost.dds "..titleColor.."Pro Tip: \n"..contentColor.."Morphs in progress won't be interrupted if the Tech Center is destroyed. Start morphing an outpost to Tier 2 (if you didn't yet) if you feel you can't save the Tech Center.",
     "armtech.dds "..titleColor.."Pro Tip: \n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
     "armack.dds "..titleColor.."Adv. Builder (ARM T2):\n"..contentColor.."Advanced Builders can assist factory production, just like outposts, commanders and FARKs. Building (or morphing) a couple beforehand might save you from total disaster if you lose your T2 Tech Center.",
