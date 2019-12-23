@@ -1,6 +1,7 @@
 # TAPrime
 
-Total Annihilation Prime, a Spring Engine mod. Established in 2017 :) 
-Basically TA units with a C&C hard-countering system (rockets >> tanks >> anti-infantry vehicles >> rifles >> rockets)
+Total Annihilation Prime, a fan game for the Spring Engine. Established in 2017 ^_^
 
-Gameplay Guide (WIP): https://docs.google.com/presentation/d/11HHqHrW_9m2lHzW59tjQ1KCPDk47vBUWP0hBuJusiHs/edit?usp=sharing
+TA physics-based combat meets a C&C-style hard-countering system (rockets bots >> tanks >> anti-mech vehicles >> rifle bots >> rocket bots), with multiple upgrading systems, powerful unit abilities and a diversified Tech Tree.
+
+Install & Gameplay Guide: https://www.fluidplay.co/taprime.html
