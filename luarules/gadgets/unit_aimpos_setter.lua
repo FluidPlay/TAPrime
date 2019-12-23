@@ -47,15 +47,18 @@ local unitsToEdit = { [UnitDefNames.armllt.id] = 13,
                       [UnitDefNames.corshred.id] = 13,
                       [UnitDefNames.corrl.id] = 13,
                       [UnitDefNames.armrl.id] = 13,
-                      [UnitDefNames.armflak.id] = 13,
+                      --[UnitDefNames.armflak.id] = 13,
+                      [UnitDefNames.corrad.id] = 15,    -- Model bugfix
+                      [UnitDefNames.armcir.id] = 13,
+                      [UnitDefNames.corerad.id] = 13,
                       [UnitDefNames.armmercury.id] = 13,
                       [UnitDefNames.corscreamer.id] = 13,
                       [UnitDefNames.armpw.id] = 15,
                       [UnitDefNames.corak.id] = 15,
                       [UnitDefNames.armoutpost.id] = 13, [UnitDefNames.armoutpost2.id] = 13, [UnitDefNames.armoutpost3.id] = 15, [UnitDefNames.armoutpost4.id] = 15,
                       [UnitDefNames.coroutpost.id] = 13, [UnitDefNames.coroutpost2.id] = 13, [UnitDefNames.coroutpost3.id] = 15, [UnitDefNames.coroutpost4.id] = 15,
-                      [UnitDefNames.armtech.id] = 13, [UnitDefNames.armtech2.id] = 13, [UnitDefNames.armtech3.id] = 15, [UnitDefNames.armtech4.id] = 15,
-                      [UnitDefNames.cortech.id] = 13, [UnitDefNames.cortech2.id] = 13, [UnitDefNames.cortech3.id] = 15, [UnitDefNames.cortech4.id] = 15,
+                      [UnitDefNames.armtech.id] = 13, [UnitDefNames.armtech1.id] = 13, [UnitDefNames.armtech2.id] = 13, [UnitDefNames.armtech3.id] = 15, [UnitDefNames.armtech4.id] = 15,
+                      [UnitDefNames.cortech.id] = 13, [UnitDefNames.armtech1.id] = 13, [UnitDefNames.cortech2.id] = 13, [UnitDefNames.cortech3.id] = 15, [UnitDefNames.cortech4.id] = 15,
 }
 
 --SYNCED
