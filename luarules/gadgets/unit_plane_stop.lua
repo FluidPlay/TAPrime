@@ -20,13 +20,13 @@ end
 VFS.Include("gamedata/taptools.lua")
 VFS.Include("LuaRules/Utilities/quaternion.lua")
 
-local EditUnitCmdDesc = Spring.EditUnitCmdDesc
+--local EditUnitCmdDesc = Spring.EditUnitCmdDesc
 local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
 local spGetUnitCmdDescs = Spring.GetUnitCmdDescs
 local spGetUnitDefID = Spring.GetUnitDefID
-local InsertUnitCmdDesc = Spring.InsertUnitCmdDesc
-local GiveOrderToUnit = Spring.GiveOrderToUnit
-local SetUnitNeutral = Spring.SetUnitNeutral
+--local InsertUnitCmdDesc = Spring.InsertUnitCmdDesc
+--local GiveOrderToUnit = Spring.GiveOrderToUnit
+--local SetUnitNeutral = Spring.SetUnitNeutral
 
 local trackedUnits = {
     [UnitDefNames["armfig"].id] = true,
@@ -36,8 +36,9 @@ local trackedUnits = {
     [UnitDefNames["armhawk"].id] = true,
     [UnitDefNames["corvamp"].id] = true,
     [UnitDefNames["armpnix"].id] = true,
-    --[UnitDefNames["armaap"].id] = true,
-    --[UnitDefNames["armplat"].id] = true
+    [UnitDefNames["corhurc"].id] = true,
+    [UnitDefNames["armliche"].id] = true,
+    [UnitDefNames["corstil"].id] = true,
 }
 
 local planes = {}
@@ -156,40 +157,6 @@ function gadget:GameFrame(f)
         pausingPlanes[unitID] = data
         Spring.MoveCtrl.Enable(unitID)
         pausedPlanes[unitID] = true
-        --if dest then
-        --    local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- source Direction
-        --    local px, py, pz = dest.x - posx, dest.y - posy, dest.z - posz
-        --    Spring.SetUnitDirection(unitID, px, py, pz)             -- apply target Direction
-        --    local drx, dry, drz = Spring.GetUnitRotation(unitID)    -- read back target Rotation
-        --
-        --    --local orgQ = Quaternion(0,0,0,1)
-        --
-        --    local orgQ = Quaternion(0, 0, 0, 1)
-        --    local destQ = Quaternion(0, 0, 0, 1)
-        --    local newQ = Quaternion(0, 0, 0, 1)
-        --    -- heading/yaw (around vertical Y), pitch/attitude (around X), roll (around depth Z)
-        --    orgQ = orgQ:AngleToQuat( {r=rz, p=rx, y=ry,} ) --// pitch (X), yaw (Y), roll (z)
-        --    --Spring.Echo("Quat element: "..orgQ.r)
-        --    destQ = destQ:AngleToQuat({ r=drz, p=drx, y=dry })
-        --    newQ = destQ:SlerpQuat(orgQ, destQ, 0.1)
-        --    ---- Convert back to a Vector3 ({x,y,z}) rotation
-        --    local newR = newQ:QuatToAngle()
-        --
-        --    Spring.SetUnitRotation(unitID, newR.x, newR.y, newR.z)
-        --end
-            --Spring.SetUnitRotation(unitID, 0, targetRotY, 0)
-                --Spring.SetUnitRotation(unitID, rotx, roty, rotz)
-        --Spring.SetUnitRotation(unitID, lerp(rotx, 0, 0.1),
-        --        --roty,
-        --        lerp(roty, targetRotY, 0.1),
-        --        lerp(rotz, 0, 0.1))
-
-        ----if math.abs(currentAlt - wantedAlt) > 10 then
-        ----    --Spring.SetUnitVelocity(unitID, velx, vely +sign(wantedAlt - currentAlt), velz)
-        ----end
-        --
-        --if diry > 0 then
-        --end
     end
 
     for unitID, data in pairs(pausingPlanes) do
@@ -207,13 +174,7 @@ function gadget:GameFrame(f)
 
             if not idlingPlanes[unitID] and
                     verynear(posx, data.targetPos.x) and verynear(posz, data.targetPos.z) and verynear(posy, data.relativeHeight) then
-                --Spring.Echo("Setting to idle: "..unitID)
                 idlingPlanes[unitID] = data
-            --    --local orx, ory, orz = Spring.GetUnitRotation(unitID)
-            --    --Spring.SetUnitRotation(unitID, 0, ry, 0) --lerp(rx, 0, lerpFactor)
-            --    --local rx, ry, rz = Spring.GetUnitRotation(unitID)
-            --    --data.pausedrot = { x = rx, y = ry, z = rz }
-            --    --Spring.SetUnitRotation(unitID, orx, ory, orz)
             end
         end
     end
@@ -229,21 +190,6 @@ function gadget:GameFrame(f)
         Spring.MoveCtrl.SetPosition(unitID, lerp(posx, data.targetPos.x + data.idleXoffset, 0.01),
                 lerp(posy, data.relativeHeight + data.idleYoffset, 0.01),
                 lerp(posz, data.targetPos.z + data.idleZoffset, 0.01))
-        --local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- pitch(X), yaw(Y), roll(Z)
-        --if not data.pausedrot then
-        --    --Spring.Echo("added new pauseddir data")
-        --    local orx, ory, orz = Spring.GetUnitRotation(unitID)    -- orig rot
-        --    local dx, dy, dz = Spring.GetUnitDirection(unitID)
-        --
-        --    Spring.SetUnitDirection(unitID, dx, 0, dz)     -- set unit as "flat"
-        --    local rx, ry, rz = Spring.GetUnitRotation(unitID)
-        --    data.pausedrot = { x = rx, y = ry, z = rz }
-        --    Spring.SetUnitRotation(unitID, orx, ory, orz)      -- restores orig rotation
-        --end
-        --local pr = data.pausedrot
-        ----Spring.SetUnitRotation(unitID, lerp(rx, pr.x, lerpFactor), ry, rz) --lerp(rx, 0, lerpFactor)
-        --Spring.SetUnitRotation(unitID, lerp(rx, pr.x, lerpFactor), lerp(ry, pr.y, lerpFactor), lerp(rz, pr.z, lerpFactor)) --lerp(rx, 0, lerpFactor)
-        ----end
     end
 
     for unitID, uDef in pairs(planesToUnpause) do
@@ -253,85 +199,5 @@ function gadget:GameFrame(f)
         planesToUnpause[unitID] = nil
         pausingPlanes[unitID] = nil
         pausedPlanes[unitID] = nil
-
-        --Spring.Echo("Unpausing Plane: "..tostring(unitID))
-        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "maxAcc", uDef.maxAcc)
-        --Spring.MoveCtrl.SetAirMoveTypeData(unitID, "myGravity", uDef.myGravity)
     end
 end
-
---------------------------------------------------------------------------------
---------------------------------------------------------------------------------
-
---function gadget:GetInfo()
---    return {
---        name = "Zeppelin Physics",
---        desc = "Forces Zeppelin-type units to obey their cruisealt and prevents them from pitching",
---        author = "Анархид",
---        date = "2.2.2009",
---        license = "None",
---        layer = 50,
---        enabled = true
---    }
---end
-
---zeppelinuDefs ={}
---zeppelin={}
-
---SYNCED
---if (gadgetHandler:IsSyncedCode()) then
---
---    function gadget:Initialize()
---        for id,unitDef in pairs(UnitDefs) do
---            if unitDef.myGravity == 0 and
---                    unitDef.maxElevator == 0 then
---                Spring.Echo(unitDef.name.." is a zeppelin with cruisealt "..unitDef.wantedHeight)
---                zeppelinuDefs[id]={
---                    pitch=unitDef.maxPitch,
---                    alt=unitDef.wantedHeight,
---                    name= unitDef.name,
---                }
---            end
---        end
---    end
---
---    function gadget:UnitCreated(UnitID, whatever)
---        local uDefID = Spring.GetUnitDefID(UnitID);
---        if zeppelinuDefs[uDefID] then
---            zeppelin[UnitID]= uDefID
---        end
---    end
---
---    function gadget:UnitDestroyed(UnitID, whatever)
---        local uDefID = Spring.GetUnitDefID(UnitID);
---        if zeppelinuDefs[uDefID] then
---            zeppelin[UnitID]=nil
---        end
---    end
---
---    local function sign(num)
---        return num/math.abs(num)
---    end
---
---    function gadget:GameFrame(f)
---        if f%20<1 then
---            for unitID, uDefID in pairs(zeppelin) do
---                local x,y,z=Spring.GetUnitVectors(unitID)
---                local ux, uy, uz= Spring.GetUnitPosition(unitID)
---                local vx, vy, vz= Spring.GetUnitVelocity(unitID)
---                local dirx, diry, dirz = Spring.GetUnitDirection(unitID)
---                local altitude = uy - Spring.GetGroundHeight(ux,uz)
---                local wanted= zeppelinuDefs[uDefID].alt
---                if math.abs(altitude-wanted)>10 then
---                    Spring.SetUnitVelocity(unitID, vx, vy+sign(wanted-altitude), vz)
---                end
---
---                if diry>0 then
---                    local h = math.asin(-dirx / math.sqrt(dirx*dirx + dirz*dirz))
---                    Spring.SetUnitRotation(unitID,0,h,0)
---                end
---            end--for
---        end--iff
---    end--fn
---
---end--sync

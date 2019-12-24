@@ -55,6 +55,8 @@ local tips = {
     "armfav.dds ".."Arm Pokers and Core Levelers are excellent at running over lighter (rifle, missile) kbots. Keep this in mind if opponent decides to spam those cheaper units like there's no tomorrow - then make sure he's right. ;)",
 	"armrl.dds ".."Missile towers can shoot at both ground and air units, but their anti-air range and damage is much higher than when firing on land units. Nevertheless, they're the best early static response to assault vehicles and tanks.",
     "armsam.dds ".."The Arm Samson has a special ability, the Fire Rain. It's researched per-unit (requires Tier1 Tech) and lobs multiple fire shells, damaging kbots and vehicles in a wide area. Hit 'D' and left-click on target to use it.",
+    "corvrad.dds ".."The Core Informer special ability is the Neutron Strike. It's researched per-unit (requires Tier1 Tech) and requires 400 metal to fire, but it's absolutely devastating against vehicles. Not to mention the psychological effect on the enemy.",
+    "corvrad.dds ".."Core's Informer, besides its amazing line of sight, can also resurrect units. To unlock it, simply research the Global 'resurrect' upgrade in a Tier 1 Tech Center.",
     "armpw.dds ".."Peewees may acquire a special ability once you get to Tier 1, the laser grenade. It's researched per-unit and lobs a mid-range bouncing projectile, quite effective vs kbots and defenses. To use it, Hit 'D' and left-click on target.",
     "armpnix.dds ".."Advanced Bombers (Tier 2, 3 and 4) cruise flight is higher than the Tier 0 and Tier 1 AA range. You can use this to safely fly over most defenses and scout or hit deep within enemy territory.",
 	"armmex.dds ".."Metal Extractors can be morphed into Adv. Metal Extractors at Tier 1, Moho Mexes at Tier 2 and Uber Mexes at Tier 3, with increasingly higher metal output",
@@ -81,6 +83,7 @@ local tips = {
 	--"Spread buildings to prevent chain explosions.\nPress ALT+Z and ALT+X to adjust auto-spacing.",
 	--"It is effective to move your units in spread formations.\nDrag your mouse while initiating a move order to draw multiple waypoints.",
     "armmart.dds ".."Some tanks and long-ranged vehicles can move in reverse if you press 'Ctrl' while issuing a move order behind it. Use this to keep firing while retreating.",
+    "corshad.dds ".."Use the air freeze ability (set to 'fly', move then stop) of bombers to group them close and looking at the enemy's direction. This way they'll all hit the target at the same time, maximizing efficiency.",
 	--"T2 factories are expensive. Reclaim your T1 lab for metal to fund it",
 	--"Air strikes and airdrops may come at any time, always have at least one anti-air unit in your base.",
 	--"With ~(tilde)+doubleclick you can place a label with text on the map.\n~(tilde)+middle mouse button for an empty label.\n~(tilde)+mouse drag to draw lines",
@@ -125,7 +128,7 @@ local tips = {
 local titleColor = "\255\215\255\215"
 local contentColor = "\255\255\255\255"
 local unit_descs = {
-    "corjuno.dds "..titleColor.."Pro Tip: \n"..contentColor.."Junos weapon gives generous and non-counterable line of sight at the impact spot. Aim it at hill tops whenever it makes sense, for even wider line of sight.",
+    "corjuno.dds "..titleColor.."Pro Tip: \n"..contentColor.."Junos weapon gives generous and non-counterable line of sight at the impact spot. Aim it at hill tops whenever it makes sense, for even wider line of sight. Get some Energy Storages first, that weapon is e-hungry.",
     "outpost.dds "..titleColor.."Pro Tip: \n"..contentColor.."Morphs in progress won't be interrupted if the Tech Center is destroyed. Start morphing an outpost to Tier 2 (if you didn't yet) if you feel you can't save the Tech Center.",
     "armtech.dds "..titleColor.."Pro Tip: \n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
     "armack.dds "..titleColor.."Adv. Builder (ARM T2):\n"..contentColor.."Advanced Builders can assist factory production, just like outposts, commanders and FARKs. Building (or morphing) a couple beforehand might save you from total disaster if you lose your T2 Tech Center.",
