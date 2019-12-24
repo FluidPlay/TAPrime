@@ -19,7 +19,7 @@ local bgcorner = "LuaUI/Images/bgcorner.png"
 local bgMargin = 6
 
 local closeButtonSize = 30
-local screenHeight = 520-bgMargin-bgMargin
+local screenHeight = 720-bgMargin-bgMargin --520
 local screenWidth = 1050-bgMargin-bgMargin
 
 local customScale = 1

@@ -1,1 +1,11 @@
-﻿0.997 => Merge with new lua core and BA10
+﻿v1.0 (First Public Release) changelog:
+* Fixed Destroyed Airpads showing wrong wreckage model
+* Fighters and bombers now set to'fly' mode automatically after being built
+* Fixed and added missing build pics
+* Tier 3 and Tier 4 commanders shields are now less effective
+* Fixed Core Radar being too hard to fire at by some units
+* Core Shredder (Flak Tower) cost now 600 (was 700), max health reduced by 10%
+* Fixed multiple defense collider sizes
+* Big bertha and Intimidator (Long-range artillery) footprint sensibly increased to match their T4 morph sizes
+* Arm and Core Juno Towers are now "floaty", can be built on water
+* Fixed ctrl+shift+c shortcut to select+center camera on commander

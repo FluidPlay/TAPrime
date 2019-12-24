@@ -380,6 +380,7 @@ function MakeBindsTable (swapYZ)
         "bind alt+Y canceltarget",
         "bind shift+q morphqueue",
         "bind shift+alt+q morphpause",
+        "bind shift+alt+ctrl+q morphstop",
         "bind m morph",
 
         "bind j buildunit_armdrag",
