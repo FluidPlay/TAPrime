@@ -13,9 +13,9 @@ return {
 		soundstart = "largegun",
 		weaponvelocity = 1200, --250
 		damage = {
-			default = 1250,
+			default = 12500,
 			--mines = 0.5,
 		},
-		customparams = { damagetype = "rocket"},
+		customparams = { damagetype = "neutron"},
 	},
 }

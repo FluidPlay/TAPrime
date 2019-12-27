@@ -1219,7 +1219,7 @@ definitions['genericshellexplosion-meteor'].clouddust = nil
 --definitions['genericshellexplosion-meteor'].groundclouddust.properties.alwaysvisible = true
 --definitions['genericshellexplosion-meteor'].kickedupwater.properties.alwaysvisible = true
 
-definitions['genericshellexplosion-meteorite'] = deepcopy(definitions[root.."-meteor"])
+definitions['genericshellexplosion-meteorite'] = deepcopy(definitions["genericshellexplosion-meteor"])
 definitions['genericshellexplosion-meteorite'].explosion.properties.particlespeed = 0.75
 definitions['genericshellexplosion-meteorite'].explosion.properties.particlespeedspread = 6
 

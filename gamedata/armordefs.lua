@@ -1,12 +1,13 @@
 local armorDefs = {
     lightbot={"armack","armch","armck","armfark","armpw","armrectr","armsubk","armconsul","coraca","corack","corak",
               "coramph","corch","corck","cornecro","corspy","corsub","corvoyr","armfast", "corsktl", "armspid",
-              "cormando", "corpyro", },
-    supportbot={"armaak","armah","armjeth","armsptk","cordefiler","armmh","armrock","coraak","corhrk","corah","corcrash","corstorm",},
+              "corpyro",},
+    supportbot={"armaak","armah","armjeth","armsptk","armmh","armrock","coraak","corhrk","corah","corcrash",
+				"cormort","corstorm","armfboy","cortermite", "cordefiler","armsnipe", },
 
-    heavybot={"corkrog","armmav","armsnipe", "armmark", "armzeus", "armfboy", "cortermite", "corsumo","armbanth",
+    heavybot={"corkrog","armmark", "armzeus", "corsumo","armbanth",
               "armham","armorco","armraz","armvader","armwar","corcan","corkarg","corroach","corthud","corthovr","krogtaar",
-              "meteor","tawf009",},
+              "meteor","tawf009","cormando","armmav",},
 
     --++++==== Vehicles
 	lightveh = {
@@ -15,11 +16,12 @@ local armorDefs = {
         "armlatnk","armfav","armjanus","armmlv","armkam","armsh","armspy","coresupp","corbw","corfav",
         "corlevlr","corsh","corvrad","decade","marauder","nsaclash",
 	},
-	supportveh = {"armfido","armmart","armsam", "cormist", "armmerl","corcat","armshock","cormart","cormh","cormort","corvroc","corwolv","corjugg","shiva","tawf013","cortrem",},
+	supportveh = {"armfido","armmart","armsam", "cormist", "armmerl","corcat","armshock","cormart","cormh","corvroc",
+				  "corwolv","corjugg","shiva","tawf013","cortrem", "corban",},
 
 	heavyveh={"armanac","armbull","armcroc","armlun","armpincer","armscab","armseer","armst","armstump","armthovr","cordl",
               "coreter","corgarp","corgol","cormabm","cormlv","corparrow","corraid","correap","corseal","corsilo","corsnap",
-              "corsok","armintr","armmanni", "armjam", "corban",},
+              "corsok","armintr","armmanni", "armjam",},
 
     --++++==== Air
 	lightair={"armaca","armawac","armca","armcsa","armfig","armhawk","armsehak","armsfig","corawac","corca","corcsa","corhunt","corsfig","corvamp","corveng",},

@@ -214,7 +214,7 @@ function WeaponDef_Post(name, wDef, udName)
 		damageType = (wDef.customParams and wDef.customParams.damagetype)
 				and wDef.customParams.damagetype or "none"
 		--if damageType ~= "none" then
-		--	Spring.Echo("Standalone Weapon: "..name.." "..wDef.name.." type: "..damageType)
+			Spring.Echo("Standalone Weapon: "..name.." "..wDef.name.." type: "..damageType)
 		--end
 	elseif (weaponDmgTypes[udName] ~= nil) then				-- otherwise, check if it's defined in weaponDmgTypes
 		damageType = weaponDmgTypes[udName][wDef.name]
