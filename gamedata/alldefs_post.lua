@@ -213,8 +213,9 @@ function WeaponDef_Post(name, wDef, udName)
 	if (udName == nil) then									-- It's a standalone weapon, check customparams
 		damageType = (wDef.customParams and wDef.customParams.damagetype)
 				and wDef.customParams.damagetype or "none"
+		--TODO: Fix this report
 		--if damageType ~= "none" then
-			Spring.Echo("Standalone Weapon: "..name.." "..wDef.name.." type: "..damageType)
+			--Spring.Echo("Standalone Weapon: "..name.." "..wDef.name.." type: "..damageType)
 		--end
 	elseif (weaponDmgTypes[udName] ~= nil) then				-- otherwise, check if it's defined in weaponDmgTypes
 		damageType = weaponDmgTypes[udName][wDef.name]
