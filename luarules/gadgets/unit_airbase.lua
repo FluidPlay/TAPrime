@@ -86,6 +86,10 @@ local snapDist = 60 -- default snap distance, if not found in table
 
 local cmd_fly = 145  -- Fly/Land command button ID
 
+local function isAirBase(unitDefID)
+    return airbaseDefIDs[unitDefID] ~= nil
+end
+
 
 --------------------------------------------------------------------------------
 -- Synced
@@ -630,6 +634,10 @@ if (gadgetHandler:IsSyncedCode()) then
             end
         end
 
+        local function isAirFrozen(unitID)
+            return spGetUnitRulesParam(unitID, "airfrozen") == 1
+        end
+
         -- fly towards pad; once 'close enough' snap into pads, then move into landedPlanes
         local function updateLandingPlanes()
             for unitID, t in pairs(landingPlanes) do
@@ -655,7 +663,7 @@ if (gadgetHandler:IsSyncedCode()) then
                     else
                         -- fly towards pad (the pad may move!)
                         local uDefID = spGetUnitDefID(unitID)
-                        if UnitDefs[uDefID].canFly then
+                        if UnitDefs[uDefID].canFly and not isAirFrozen(unitID) then
                             spSetUnitLandGoal(unitID, px, py, pz, r)
                         end
                     end
@@ -722,7 +730,7 @@ if (gadgetHandler:IsSyncedCode()) then
         gadgetHandler:RegisterGlobal("RequestRearm", RequestRearm)
 
         for unitDefID, unitDef in pairs(UnitDefs) do
-            if unitDef.isAirBase then
+            if isAirBase(unitDef.id) then
                 airbaseDefIDs[unitDefID] = airbaseDefIDs[unitDefID] or snapDist
             end
         end
@@ -795,7 +803,7 @@ else
         end
 
         local targetDefID = spGetUnitDefID(targetID)
-        if not (UnitDefs[targetDefID].isAirBase or airbaseDefIDs[targetDefID]) then
+        if not (isAirBase(targetDefID) or airbaseDefIDs[targetDefID]) then
             return false
         end
 

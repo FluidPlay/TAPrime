@@ -1,6 +1,6 @@
 function gadget:GetInfo()
     return {
-        name      = "Plane Stop",
+        name      = "Plane Air Freeze",
         desc      = "Fighters and Bombers set to flight mode freeze mid-air when stopped",
         author    = "MaDDoX",
         date      = "6 Dec 2019",
@@ -24,6 +24,7 @@ VFS.Include("LuaRules/Utilities/quaternion.lua")
 local spFindUnitCmdDesc = Spring.FindUnitCmdDesc
 local spGetUnitCmdDescs = Spring.GetUnitCmdDescs
 local spGetUnitDefID = Spring.GetUnitDefID
+local spSetUnitRulesParam = Spring.SetUnitRulesParam
 --local InsertUnitCmdDesc = Spring.InsertUnitCmdDesc
 --local GiveOrderToUnit = Spring.GiveOrderToUnit
 --local SetUnitNeutral = Spring.SetUnitNeutral
@@ -156,6 +157,7 @@ function gadget:GameFrame(f)
         planesToPause[unitID] = nil
         pausingPlanes[unitID] = data
         Spring.MoveCtrl.Enable(unitID)
+        spSetUnitRulesParam(unitID, "airfrozen", 1)
         pausedPlanes[unitID] = true
     end
 
@@ -195,6 +197,7 @@ function gadget:GameFrame(f)
     for unitID, uDef in pairs(planesToUnpause) do
         -- TODO: Store original rotation (before movectrl.enable) and interpolate/restore it around here
         Spring.MoveCtrl.Disable(unitID)
+        spSetUnitRulesParam(unitID, "airfrozen", 0)
         Spring.SetUnitVelocity(unitID, 0,0,0)
         planesToUnpause[unitID] = nil
         pausingPlanes[unitID] = nil

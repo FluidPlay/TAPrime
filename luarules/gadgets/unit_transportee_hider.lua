@@ -37,7 +37,6 @@ function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdO
     return true
 end
 
-
 function gadget:UnitCreated(unitID, unitDefID, teamID)
     local unitDef = UnitDefs[unitDefID]
     local maxMass = unitDef.transportMass
@@ -60,6 +59,25 @@ local function TransportIsFull(transportID)
     end
 end
 
+local airbaseDefIDs = {
+    --Arm
+    [UnitDefNames["armasp"].id] = true,
+    [UnitDefNames["armpad"].id] = true,
+    [UnitDefNames["armap"].id] = true,
+    [UnitDefNames["armaap"].id] = true,
+    [UnitDefNames["armcarry"].id] = true,
+    --Core
+    [UnitDefNames["corasp"].id] = true,
+    [UnitDefNames["corpad"].id] = true,
+    [UnitDefNames["corap"].id] = true,
+    [UnitDefNames["coraap"].id] = true,
+    [UnitDefNames["corcarry"].id] = true,
+}
+
+local function isAirBase(unitDefID)
+    return airbaseDefIDs[unitDefID]
+end
+
 function gadget:UnitLoaded(unitID, unitDefID, unitTeam, transportID, transportTeam)
     --Spring.Echo("UnitLoaded", unitDefID, transportID)
     if ((not unitDefID) or (not transportID)) then return end
@@ -71,7 +89,7 @@ function gadget:UnitLoaded(unitID, unitDefID, unitTeam, transportID, transportTe
     if massLeft[transportID] == 0 then
         TransportIsFull(transportID)
     end
-    if (not transportDef.springCategories.vtol) and (not transportDef.isAirBase) then 
+    if (not transportDef.springCategories.vtol) and not isAirBase(GetUnitDefID(transportID)) then
         SetUnitNoDraw(unitID, true)
         SetUnitStealth(unitID, true)
         SetUnitSonarStealth(unitID, true)
@@ -85,7 +103,7 @@ function gadget:UnitUnloaded(unitID, unitDefID, teamID, transportID)
     local unitDef = UnitDefs[unitDefID]
     if not massLeft[transportID] then return end
     massLeft[transportID] = massLeft[transportID] + unitDef.mass
-    if (not transportDef.springCategories.vtol) and (not transportDef.isAirBase) then 
+    if (not transportDef.springCategories.vtol) and (not isAirBase(GetUnitDefID(transportID))) then
         SetUnitNoDraw(unitID, false)
         SetUnitStealth(unitID, false)
         SetUnitSonarStealth(unitID, false)

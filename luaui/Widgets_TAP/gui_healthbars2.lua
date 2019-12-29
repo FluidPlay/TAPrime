@@ -100,11 +100,6 @@ local messages = {
 --    end
 --end
 
---- [Deprecated] new lua core is now in the project
---Spring.Utilities = Spring.Utilities or {}
---VFS.Include("LuaRules/Utilities/utilities_emul.lua")
-
-
 --------------------------------------------------------------------------------
 -- OPTIONS
 --------------------------------------------------------------------------------

@@ -1,4 +1,3 @@
-
 ShardUnitType = class(function(a, id)
 	a.id = id
 	a.def = UnitDefs[id]
@@ -152,7 +151,27 @@ function ShardUnitType:CanSelfRepair()
 end
 
 function ShardUnitType:IsAirbase()
-	return self.def.isAirbase
+	local airbaseDefIDs = {
+		--Arm
+		[UnitDefNames["armasp"].id] = true,
+		[UnitDefNames["armpad"].id] = true,
+		[UnitDefNames["armap"].id] = true,
+		[UnitDefNames["armaap"].id] = true,
+		[UnitDefNames["armcarry"].id] = true,
+		--Core
+		[UnitDefNames["corasp"].id] = true,
+		[UnitDefNames["corpad"].id] = true,
+		[UnitDefNames["corap"].id] = true,
+		[UnitDefNames["coraap"].id] = true,
+		[UnitDefNames["corcarry"].id] = true,
+	}
+
+	local function isAirBase(unitDefID)
+		return airbaseDefIDs[unitDefID]
+	end
+
+	--return self.def.isAirbase
+	return isAirBase(self.def.id)
 end
 
 function ShardUnitType:CanHover()
