@@ -14,10 +14,10 @@ local armorDefs = {
 		"armflash", "armyork", "corsent", "cormuskrat", "cormls", "armacv", "armcv", "armmls", "coracv", "corfast",
 		"critter_ant", "critter_duck", "critter_goldfish", "critter_gull", "critter_penguin", "corcv", "corgator",
         "armlatnk","armfav","armjanus","armmlv","armkam","armsh","armspy","coresupp","corbw","corfav",
-        "corlevlr","corsh","corvrad","decade","marauder","nsaclash",
+        "corlevlr","corsh","decade","marauder","nsaclash",
 	},
 	supportveh = {"armfido","armmart","armsam", "cormist", "armmerl","corcat","armshock","cormart","cormh","corvroc",
-				  "corwolv","corjugg","shiva","tawf013","cortrem", "corban",},
+				  "corwolv","corjugg","shiva","tawf013","cortrem", "corban","corvrad",},
 
 	heavyveh={"armanac","armbull","armcroc","armlun","armpincer","armscab","armseer","armst","armstump","armthovr","cordl",
               "coreter","corgarp","corgol","cormabm","cormlv","corparrow","corraid","correap","corseal","corsilo","corsnap",
