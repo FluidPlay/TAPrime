@@ -1,4 +1,18 @@
-﻿v1.0 (First Public Release) changelog:
+﻿v1.01 changelog:
+* Plasma damage type multiplier vs supportbot armor type now 0.75 (was 0.45), vs heavybot 0.3 (was 1) and heavyveh 0.5 (was 0.8), vs supportveh 0.45 (was 0.65)
+* Flak vs supportbot 0.65 (was 0.5), vs lightbot 0.5 (was 0.75), vs lightveh 0.45 (was 0.75)
+* Fatboy damage now 512 (was 600)
+* Core Commando Cost 800 (was 900), main weapon reload now 2.1 (was 1.5)
+* Removed "isAirbase" checks from gadgets (deprecated in Spring 101, removed in recent engine release)
+* Arm Freedom (T0 fighter) air-to-ground range now 550 (was 630)
+* Flak damage type vs lightveh armor type multiplier now 0.35 (was 0.45)
+* Core Commando and Arm Zipper damage types now Rail (was thermo)
+* Rail damage type multiplier vs supportbot armor now 2.4 (was 1.4), vs heavybot now 1 (was 0.6)
+* Rocket damage type multiplier vs supportbot armor now 0.35 (was 0.5)
+* Core Defiler cost 900 (was 1200), max health 1540 (was 2800)
+* Cannon damage type multiplier vs heavybot armor now 0.6 (was 0.4)
+
+v1.0 (First Public Release) changelog:
 * Fixed Destroyed Airpads showing wrong wreckage model
 * Fighters and bombers now set to'fly' mode automatically after being built
 * Fixed and added missing build pics

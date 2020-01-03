@@ -1,7 +1,7 @@
 return {
 	-- Used by the Commando
 	mine_medium = {
-		areaofeffect = 250,
+		areaofeffect = 360, --250,
 		craterboost = 0,
 		cratermult = 0,
 		edgeeffectiveness = 0.60000002384186,
@@ -14,7 +14,7 @@ return {
 		soundstart = "largegun",
 		weaponvelocity = 1200, --250
 		damage = {
-			default = 1000,
+			default = 10000, --1000,
 			--mines = 0.5,
 		},
 		customparams = { damagetype = "explosive"},

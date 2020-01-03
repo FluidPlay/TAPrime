@@ -1,6 +1,6 @@
 return {
 	mine_heavy = {
-		areaofeffect = 300,
+		areaofeffect = 160, --300,
 		craterboost = 0,
 		cratermult = 0,
 		edgeeffectiveness = 0.69999998807907,
