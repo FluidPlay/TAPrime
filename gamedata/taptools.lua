@@ -433,6 +433,7 @@ function SetCmdIDEnable(unitID, cmdID, block, orgTooltip, suffix)
 		return end
 
     local disable = (block == true or block == nil) -- default: disabled (blocked)
+	--Spring.Echo(cmdID.." Disabled: "..tostring(disable))
     local cmdArray = { disabled = disable }
 
     if disable and suffix then
@@ -440,8 +441,10 @@ function SetCmdIDEnable(unitID, cmdID, block, orgTooltip, suffix)
     else
         cmdArray.tooltip = orgTooltip
     end
+    if not disable then
+        Spring.Echo("Enabled tooltip: "..cmdArray.tooltip)
+    end
 
-	--Spring.Echo(cmdID.." Disabled: "..tostring(disable))
 	spEditUnitCmdDesc(unitID, cmdDescId, cmdArray)
 end
 
@@ -449,7 +452,7 @@ function BlockCmdID(unitID, cmdID, orgTooltip, suffix)
     SetCmdIDEnable(unitID, cmdID, true, orgTooltip, suffix)
 end
 
-function UnblockCmdID(unitID, cmdID, orgTooltip, suffix)
+function UnblockCmdID(unitID, cmdID, orgTooltip)
     SetCmdIDEnable(unitID, cmdID, false, orgTooltip)
 end
 

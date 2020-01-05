@@ -236,15 +236,23 @@ local function applyHighlightHandler(button, cmd)
                 return false
             end
             local upgPerc = spGetUnitRulesParam(unitID, "upgrade")
-            return isnumber(upgPerc)
+            if upgPerc == nil then
+                return false
             end
+            upgPerc = tonumber(upgPerc)
+            return upgPerc > 0 and upgPerc < 1
+        end
         if cmd.disabled then
             tryApplyColor(disabled)
             if button.state.hovered then
                 tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
             end
+        --- Using cmd.showUnique for per-unit upgrade buttons
         elseif cmd.showUnique then
             --Spring.Echo("Show Unique found!")
+            if button.state.hovered then
+                tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
+            end
             local selectedUnit = spGetSelectedUnits()[1]
             if selectedUnit and isUpgrading(selectedUnit) then
                 tryApplyColor(upgrading)

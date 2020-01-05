@@ -1640,9 +1640,9 @@ else
 --------------------------------------------------------------------------------
 
 --// 75b2 compability (removed it in the next release)
-if (Spring.GetTeamColor==nil) then
-  Spring.GetTeamColor = function(teamID) local _,_,_,_,_,_,r,g,b = Spring.GetTeamInfo(teamID); return r,g,b end
-end
+--if (Spring.GetTeamColor==nil) then
+--  Spring.GetTeamColor = function(teamID) local _,_,_,_,_,_,r,g,b = Spring.GetTeamInfo(teamID); return r,g,b end
+--end
 
 --
 -- speed-ups

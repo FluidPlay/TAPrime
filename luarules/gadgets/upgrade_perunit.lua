@@ -373,7 +373,6 @@ local function finishUpgrade(unitID, unitUpg)
     -- Enable action & remove "Requires" red alert at bottom
     UnblockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip)
 
-
     upgradingUnits[unitID] = nil
     upgradeLockedUnits[unitID] = nil -- Once an unit upgrade is complete we can safely stop watching its prereqs
     upgradedUnits[unitID] = true
@@ -395,8 +394,12 @@ function gadget:GameFrame(n)
     --Watch all prereq blocked units to see if their prereqs are done/lost, block/unblock accordingly
     for unitID, data in pairs(upgradeLockedUnits) do
         local hasTech = HasTech(data.prereq, spGetUnitTeam(unitID))
-        if not upgradingUnits[unitID] then
-            SetCmdIDEnable(unitID, data.upgradeButton, not hasTech, data.orgTooltip, "Requires: "..data.prereq )
+        Spring.Echo("HasTech "..data.prereq..": "..tostring(hasTech))
+        if hasTech then
+            UnblockCmdID(unitID, data.upgradeButton, data.orgTooltip)
+            --SetCmdIDEnable(unitID, data.upgradeButton, false, data.orgTooltip, "Requires: "..data.prereq )
+        elseif not upgradingUnits[unitID] then  -- won't block button if it's already upgrading
+            BlockCmdID(unitID, data.upgradeButton, data.orgTooltip, "Requires: "..data.prereq )
         end
     end
 
@@ -417,8 +420,6 @@ function gadget:GameFrame(n)
         end
     end
 end
-
-
 
 --local function isUpgrading(unitID)
 --    for idx = 1, #upgradingUnits do

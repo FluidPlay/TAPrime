@@ -439,7 +439,6 @@ if (gadgetHandler:IsSyncedCode()) then
 	end
 
 	function gadget:Initialize()
-
 		for _, uDef in pairs(UnitDefs) do
 			local cparms = uDef.customParams
 			if cparms then
