@@ -71,10 +71,12 @@ local necroDefs = {
 }
 local builders = {}
 local idleBuilders = {}
-local stoppedUnits = {}
+local assistStoppedUnits = {}
 local cancelAutoassistForUIDs = {} -- { frame = unitID }
 local internalCommandUIDs = {}
 local guardingUnits = {}    -- TODO: Commanders guarding factories, we('ll) use it to stop guarding when we're out of resources
+local orderRemovalDelay = 10    -- 10 frames of delay before removing commands, to prevent the engine from removing just given orders
+local autoassistEnableDelay = 60
 
 function widget:PlayerChanged()
     if Spring.GetSpectatingState() and Spring.GetGameFrame() > 0 then
@@ -118,27 +120,31 @@ end
 function widget:UnitIdle(unitID, unitDefID, unitTeam)
     if not builders[unitID] then
         return end
---	if myTeamID==getUnitTeam(unitID) then					--check if unit is mine
---		local factoryType = UnitDefs[unitDefID].isFactory	--***
---		if factoryType then
---            return end						--no factories ***
-    --Spring.Echo("unitDef.name: "..UnitDefs[unitDefID].name.." is builder: "..tostring(UnitDefs[unitDefID]["isBuilder"]))
---        if UnitDefs[unitDefID]["canReclaim"] then		--check if unit can reclaim
-    idleBuilders[unitID]=true					--add unit to register
+    if myTeamID == spGetUnitTeam(unitID) then					--check if unit is mine
+        --		local factoryType = UnitDefs[unitDefID].isFactory	--***
+        --		if factoryType then
+        --            return end						--no factories ***
+        --Spring.Echo("unitDef.name: "..UnitDefs[unitDefID].name.." is builder: "..tostring(UnitDefs[unitDefID]["isBuilder"]))
+        --        if UnitDefs[unitDefID]["canReclaim"] then		--check if unit can reclaim
+        idleBuilders[unitID]=true					--add unit to register
+        assistStoppedUnits[unitID] = false
+        Spring.Echo("Re-enabling assist for ".. unitID)
+        cancelAutoassistForUIDs[unitID] = nil
+    end
             --Spring.Echo("<auto_reclaim_heal_assist>: registering unit "..unitID.." as idle "..UnitDefs[unitDefID].name)
 --		end
 --	end
 end
 
-function widget:CommandNotify(cmdID, cmdParams, cmdOpts)
-    --Spring.Echo("CmdID: "..cmdID)
-    --if (cmdID == CMD_RECLAIM) then --and (cmdParams[1] == 0)
-    --    --spGiveOrder(CMD_INSERT, {0, CMD_STOP, 0}, {"alt"})
-    --    --Spring.Echo("Reclaim found")
-    --end
-    return false
-end
---
+--function widget:CommandNotify(cmdID, cmdParams, cmdOpts)
+--    --Spring.Echo("CmdID: "..cmdID)
+--    --if (cmdID == CMD_RECLAIM) then --and (cmdParams[1] == 0)
+--    --    --spGiveOrder(CMD_INSERT, {0, CMD_STOP, 0}, {"alt"})
+--    --    --Spring.Echo("Reclaim found")
+--    --end
+--    return false
+--end
+
 --Unregister reclaimer once it is given a command
 function widget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdOpts, cmdParams)
 
@@ -150,21 +156,19 @@ function widget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdOpts, cmdPara
 		end
 	end
     if cmdID < 0 then
-        --local nearFuture = Spring.GetGameFrame()+10
-        ------ cancelAutoassistForUIDs[unitID] = { frame = Spring.GetGameFrame(), cmdID = cmdID, cmdOpts = cmdOpts, cmdParams = cmdParams }
-        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
-        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
-        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
-        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
-        spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
-        idleBuilders[unitID] = nil
-        stoppedUnits[unitID] = true
+        local nearFuture = Spring.GetGameFrame()+orderRemovalDelay
+        cancelAutoassistForUIDs[unitID] = { frame = nearFuture, cmdID = cmdID, cmdOpts = cmdOpts, cmdParams = cmdParams }
+        --spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+        --spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
+        --spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
+        --spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+        --spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
     end
 end
 --
 function widget:UnitDestroyed(unitID)
     idleBuilders[unitID] = nil
-    stoppedUnits[unitID] = nil
+    assistStoppedUnits[unitID] = nil
     builders[unitID] = nil
 end
 
@@ -178,7 +182,7 @@ end
 --    --TODO: If it's an air builder, threshold should be much higher
 --    return unitMoveSpeed < 0.01
 --end
---
+
 --local function UnitHasNoOrders(unitID)
 --    local buildQueueSize = spGetCommandQueue(unitID, 0) -- 0 => returns cmdqueuesize
 --    --Spring.Echo("Command queue size: "..buildQueueSize)
@@ -265,19 +269,27 @@ end
 function widget:GameFrame(n)
     --cancelAutoassistForUIDs[unitID] = { frame = nearFuture, cmdID = cmdID, cmdOpts = cmdOpts, cmdParams = cmdParams }
     for unitID, data in pairs(cancelAutoassistForUIDs) do
-        if data.frame >= n then
-            --Spring.Echo("Removing assist from ".. unitID)
+        -- First we check the re-enable delay
+        --if data.frame + autoassistEnableDelay >= n  then
+        --    assistStoppedUnits[unitID] = false
+        --    Spring.Echo("Re-enabling assist for ".. unitID)
+        --    cancelAutoassistForUIDs[unitID] = nil
+        -- And now the actual assist removal (from direct orders)
+        if (not assistStoppedUnits[unitID]) and data.frame >= n then
+            Spring.Echo("Removing assist from ".. unitID)
             --spGiveOrderToUnit(uID, CMD_REMOVE, {CMD_PATROL, CMD_GUARD, CMD_RECLAIM, CMD_REPAIR}, {"alt"})
+            --spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
             spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
             spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
             spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
             spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
-            spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
+            spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_FIGHT }, { "alt"})
+            idleBuilders[unitID] = nil
+            assistStoppedUnits[unitID] = true
             --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
             --Spring.Echo("cmdID: "..data.cmdID.." opts: "..(unpack(data.cmdOpts) or "nil").." params: "..(unpack(data.cmdParams) or "nil"))
             --TODO: Fix
             --spGiveOrderToUnit(unitID, CMD_INSERT, {0, data.cmdID, (unpack(data.cmdOpts) or {}), (unpack(data.cmdParams) or {})} ,{"alt"})
-            cancelAutoassistForUIDs[unitID] = nil
         end
     end
 
@@ -294,7 +306,7 @@ function widget:GameFrame(n)
     --    guardingUnits[unitID] = false
     --end
     for unitID in pairs(idleBuilders) do
-        if not stoppedUnits[unitID] then
+        if not assistStoppedUnits[unitID] then
             Spring.Echo("idle Builder unitID: "..unitID)
             local unitDef = UnitDefs[spGetUnitDefID(unitID)]
             --if unitDef then
