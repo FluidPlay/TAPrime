@@ -71,6 +71,7 @@ local necroDefs = {
 }
 local builders = {}
 local idleBuilders = {}
+local stoppedUnits = {}
 local cancelAutoassistForUIDs = {} -- { frame = unitID }
 local internalCommandUIDs = {}
 local guardingUnits = {}    -- TODO: Commanders guarding factories, we('ll) use it to stop guarding when we're out of resources
@@ -130,7 +131,7 @@ function widget:UnitIdle(unitID, unitDefID, unitTeam)
 end
 
 function widget:CommandNotify(cmdID, cmdParams, cmdOpts)
-    Spring.Echo("CmdID: "..cmdID)
+    --Spring.Echo("CmdID: "..cmdID)
     --if (cmdID == CMD_RECLAIM) then --and (cmdParams[1] == 0)
     --    --spGiveOrder(CMD_INSERT, {0, CMD_STOP, 0}, {"alt"})
     --    --Spring.Echo("Reclaim found")
@@ -145,19 +146,25 @@ function widget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdOpts, cmdPara
 	for builderID in pairs(idleBuilders) do
 		if (builderID == unitID) then
             idleBuilders[builderID]=nil
-			--Spring.Echo("<auto_reclaim_heal_assist>: unregistering unit ".. builderID .." as idle")
+			Spring.Echo("<auto_reclaim_heal_assist>: unregistering unit ".. builderID .." as idle")
 		end
 	end
     if cmdID < 0 then
-        local nearFuture = Spring.GetGameFrame()+10
-        --cancelAutoassistForUIDs[nearFuture] = unitID
-        cancelAutoassistForUIDs[unitID] = { frame = nearFuture, cmdID = cmdID, cmdOpts = cmdOpts, cmdParams = cmdParams }
+        --local nearFuture = Spring.GetGameFrame()+10
+        ------ cancelAutoassistForUIDs[unitID] = { frame = Spring.GetGameFrame(), cmdID = cmdID, cmdOpts = cmdOpts, cmdParams = cmdParams }
+        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
+        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
+        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+        spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
         idleBuilders[unitID] = nil
+        stoppedUnits[unitID] = true
     end
 end
 --
 function widget:UnitDestroyed(unitID)
     idleBuilders[unitID] = nil
+    stoppedUnits[unitID] = nil
     builders[unitID] = nil
 end
 
@@ -259,15 +266,15 @@ function widget:GameFrame(n)
     --cancelAutoassistForUIDs[unitID] = { frame = nearFuture, cmdID = cmdID, cmdOpts = cmdOpts, cmdParams = cmdParams }
     for unitID, data in pairs(cancelAutoassistForUIDs) do
         if data.frame >= n then
-            Spring.Echo("Removing assist from ".. unitID)
+            --Spring.Echo("Removing assist from ".. unitID)
             --spGiveOrderToUnit(uID, CMD_REMOVE, {CMD_PATROL, CMD_GUARD, CMD_RECLAIM, CMD_REPAIR}, {"alt"})
-            --spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
-            --spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
-            --spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
-            --spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
-            --spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
-            spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
-            Spring.Echo("cmdID: "..data.cmdID.." opts: "..(unpack(data.cmdOpts) or "nil").." params: "..(unpack(data.cmdParams) or "nil"))
+            spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+            spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
+            spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
+            spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+            spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
+            --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
+            --Spring.Echo("cmdID: "..data.cmdID.." opts: "..(unpack(data.cmdOpts) or "nil").." params: "..(unpack(data.cmdParams) or "nil"))
             --TODO: Fix
             --spGiveOrderToUnit(unitID, CMD_INSERT, {0, data.cmdID, (unpack(data.cmdOpts) or {}), (unpack(data.cmdParams) or {})} ,{"alt"})
             cancelAutoassistForUIDs[unitID] = nil
@@ -281,19 +288,19 @@ function widget:GameFrame(n)
         return end
 
     --TODO: Finish below
-    if guardingUnits[unitID] and not enoughEconomy() then
-        --Spring.Echo("Stopping auto-guard")
-        spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )  --spGiveOrder(CMD_INSERT, {0, CMD_STOP, 0}, {"alt"})
-        guardingUnits[unitID] = false
-    end
+    --if guardingUnits[unitID] and not enoughEconomy() then
+    --    --Spring.Echo("Stopping auto-guard")
+    --    spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )  --spGiveOrder(CMD_INSERT, {0, CMD_STOP, 0}, {"alt"})
+    --    guardingUnits[unitID] = false
+    --end
     for unitID in pairs(idleBuilders) do
-        Spring.Echo("idle Builder unitID: "..unitID)
-        local unitDef = UnitDefs[spGetUnitDefID(unitID)]
-        --if unitDef then
-        --    if UnitNotMoving(unitID) and UnitHasNoOrders(unitID) then
-        --        idleBuilders[unitID] = true
-        AutoAssist(unitID, unitDef)
-        --    end
-        --end
+        if not stoppedUnits[unitID] then
+            Spring.Echo("idle Builder unitID: "..unitID)
+            local unitDef = UnitDefs[spGetUnitDefID(unitID)]
+            --if unitDef then
+            --    if UnitNotMoving(unitID) and UnitHasNoOrders(unitID) then
+            --        idleBuilders[unitID] = true
+            AutoAssist(unitID, unitDef)
+        end
     end
 end
