@@ -394,7 +394,7 @@ function gadget:GameFrame(n)
     --Watch all prereq blocked units to see if their prereqs are done/lost, block/unblock accordingly
     for unitID, data in pairs(upgradeLockedUnits) do
         local hasTech = HasTech(data.prereq, spGetUnitTeam(unitID))
-        Spring.Echo("HasTech "..data.prereq..": "..tostring(hasTech))
+        --Spring.Echo("HasTech "..data.prereq..": "..tostring(hasTech))
         if hasTech then
             UnblockCmdID(unitID, data.upgradeButton, data.orgTooltip)
             --SetCmdIDEnable(unitID, data.upgradeButton, false, data.orgTooltip, "Requires: "..data.prereq )
