@@ -1,41 +1,19 @@
------------------------------------
--- Author: Johan Hanssen Seferidis
---
--- Comments: Sets all idle units that are not selected to fight. That has as effect to reclaim if there is low metal
---					 , repair nearby units and assist in building if they have the possibility.
---					 If you select the unit while it is being idle the widget is not going to take effect on the selected unit.
---
--------------------------------------------------------------------------------------
-
--- TODO: Rewrite this P-O-S like so:
---builders = {}
---farks = {}
---necros = {}
---trackedUnits = {}
---
---create / destroy <=> add, remove from trackedUnits
---
---update {
-    --if not (every n seconds) then
-    --return end
-    --
-    --for (unitID) in trackedUnits {
-        --if UnitNotMoving(unitID) and UnitHasNoOrders(unitID) then
-    --AutoAssist(unitID)
---end
---}
---}
+---------------------------------------------------------------------------------------------------------------------
+-- Comments: Sets all idle units that are not selected to fight. That has as effect to reclaim if there is low metal,
+--	repair nearby units and assist in building if they have the possibility.
+--	New: If you shift+drag a build order it will interrupt the current assist (from auto assist)
+---------------------------------------------------------------------------------------------------------------------
 
 function widget:GetInfo()
-	return {
-		name = "Auto Reclaim/Heal/Assist",
-		desc = "Makes idle unselected builders/rez/com/nanos to reclaim metal if metal bar is not full, repair nearby units and assist in building",
-		author = "Pithikos",
-		date = "Nov 21, 2010", --Nov 7, 2013
-		license = "GPLv3",
-		layer = 0,
-		enabled = true,
-	}
+    return {
+        name = "Auto Assister",
+        desc = "Makes idle construction units and structures reclaim, repair nearby units and assist building",
+        author = "MaDDoX, based on Johan Hanssen Seferidis' unit_auto_reclaim_heal_assist",
+        date = "Jul 27, 2019",
+        license = "GPLv3",
+        layer = 0,
+        enabled = true,
+    }
 end
 
 local spGetAllUnits = Spring.GetAllUnits
@@ -131,9 +109,9 @@ function widget:UnitIdle(unitID, unitDefID, unitTeam)
         Spring.Echo("Re-enabling assist for ".. unitID)
         cancelAutoassistForUIDs[unitID] = nil
     end
-            --Spring.Echo("<auto_reclaim_heal_assist>: registering unit "..unitID.." as idle "..UnitDefs[unitDefID].name)
---		end
---	end
+    --Spring.Echo("<auto_reclaim_heal_assist>: registering unit "..unitID.." as idle "..UnitDefs[unitDefID].name)
+    --		end
+    --	end
 end
 
 --function widget:CommandNotify(cmdID, cmdParams, cmdOpts)
@@ -148,13 +126,13 @@ end
 --Unregister reclaimer once it is given a command
 function widget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdOpts, cmdParams)
 
-	--echo("<auto_reclaim_heal_assist>: unit "..unitID.." got a command") --¤debug
-	for builderID in pairs(idleBuilders) do
-		if (builderID == unitID) then
+    --echo("<auto_reclaim_heal_assist>: unit "..unitID.." got a command") --¤debug
+    for builderID in pairs(idleBuilders) do
+        if (builderID == unitID) then
             idleBuilders[builderID]=nil
-			Spring.Echo("<auto_reclaim_heal_assist>: unregistering unit ".. builderID .." as idle")
-		end
-	end
+            Spring.Echo("<auto_reclaim_heal_assist>: unregistering unit ".. builderID .." as idle")
+        end
+    end
     if cmdID < 0 then
         local nearFuture = Spring.GetGameFrame()+orderRemovalDelay
         cancelAutoassistForUIDs[unitID] = { frame = nearFuture, cmdID = cmdID, cmdOpts = cmdOpts, cmdParams = cmdParams }
