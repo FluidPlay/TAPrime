@@ -6,7 +6,7 @@
 
 function widget:GetInfo()
     return {
-        name = "Auto Assister",
+        name = "Auto Assist",
         desc = "Makes idle construction units and structures reclaim, repair nearby units and assist building",
         author = "MaDDoX, based on Johan Hanssen Seferidis' unit_auto_reclaim_heal_assist",
         date = "Jul 27, 2019",
