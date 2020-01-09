@@ -196,14 +196,14 @@ function MakeBindsTable (swapYZ)
         "bind shift+v buildunit_coreyes",
 
         -- Outposts
-        "bind v buildunit_armoutpost",
-        "bind shift+v buildunit_armoutpost",
-        "bind v buildunit_coroutpost",
-        "bind shift+v buildunit_coroutpost",
         "bind v buildunit_armoutpost2",
         "bind shift+v buildunit_armoutpost2",
         "bind v buildunit_coroutpost2",
         "bind shift+v buildunit_coroutpost2",
+        "bind v buildunit_armoutpost",
+        "bind shift+v buildunit_armoutpost",
+        "bind v buildunit_coroutpost",
+        "bind shift+v buildunit_coroutpost",
 
         -- Tech Centers
         "bind v buildunit_armtech",

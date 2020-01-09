@@ -1,4 +1,24 @@
-﻿v1.01 changelog:
+﻿v1.02 changelog:
+* Missile Towers metal cost now 175 (was 80), weapon range 450 (was 475), now drain 25 energy / tick to run
+* Core Pulverizer (Missile Tower) max health now 750 (was 1000)
+* Arm Defender (Missile Tower) max health now 800 (was 950)
+* LLT (light laser towers) cost increased to 125 (was 90), damage reduced by 20%
+* Plasma damage type multiplier vs DefenseAA armor now 1 (was 0.6)
+* Core Dominator (T2 flak artillery) range now 725 (was 800)
+* Homing damage type multiplier vs Defense armor now 0.5 (was 0.75)
+* Fixed enabled per-unit upgrade buttons not showing their tooltips
+* Updated auto_reclaim_heal_assist to stop auto-assist when a direct shift+build order is issued
+* Fixed Core Intimidator (Long Range Siege Cannon) not being built by Adv. Outposts
+* Core Sumo max health now 11,550 (was 14k)
+* Core Krow metal cost now 4700 (was 5100), max velocity now 3.335 (was 3.1)
+* Arm Maverick now accelerates 2x faster
+* Core Catapult (T4 missile kbot) damage now 560 / missile (was 450)
+* Arm DEVA base damage now 5x120 (was 5x100), fire reload now 2.22s (was 3.33), DPS doubled
+* Core Shredder DPS adjusted to match Arm DEVA's, with faster reload for ground weapon
+* Fixed Core Advanced Builders not being able to build T0 & T1 structures
+* Core Catalyst (Tactical Nuke Launcher) weapon damage now 3750 (was 2500)
+
+v1.01 changelog:
 * Plasma damage type multiplier vs supportbot armor type now 0.75 (was 0.45), vs heavybot 0.3 (was 1) and heavyveh 0.5 (was 0.8), vs supportveh 0.45 (was 0.65)
 * Flak vs supportbot 0.65 (was 0.5), vs lightbot 0.5 (was 0.75), vs lightveh 0.45 (was 0.75)
 * Fatboy damage now 512 (was 600)
