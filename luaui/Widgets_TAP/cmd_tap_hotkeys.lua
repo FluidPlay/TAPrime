@@ -353,6 +353,16 @@ function MakeBindsTable (swapYZ)
         "bind alt+i buildunit_corfgate",	-- floating
         "bind alt+shift+i buildunit_corfgate",
 
+        -- Air Pads
+        "bind p buildunit_armpad",
+        "bind shift+p buildunit_armpad",
+        "bind p buildunit_corpad",
+        "bind shift+p buildunit_corpad",
+        "bind p buildunit_armasp",
+        "bind shift+p buildunit_armasp",
+        "bind p buildunit_corasp",
+        "bind shift+p buildunit_corasp",
+
         -- Build Spacing
         "bind any+t buildspacing inc",
         "bind shift+t buildspacing inc",

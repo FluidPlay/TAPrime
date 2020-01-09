@@ -66,6 +66,7 @@ function widget:UnitFinished(unitID, unitDefID, unitTeam)
     if myTeamID==spGetUnitTeam(unitID) then					--check if unit is mine
         if UnitDefs[unitDefID].isBuilder then
             builders[unitID] = true
+            widget:UnitIdle(unitID, unitDefID, unitTeam)
             --Spring.Echo("Registering unit "..unitID.." as builder "..UnitDefs[unitDefID].name)
         end
     end
@@ -91,7 +92,7 @@ function widget:Initialize()
     end
 end
 
-----Add reclaimer to the register
+----Add builder to the register
 function widget:UnitIdle(unitID, unitDefID, unitTeam)
     if not builders[unitID] then
         return end
@@ -160,7 +161,7 @@ local function enoughEconomy()
     --else
     --    Spring.Echo("NOPS eco!")
     --end
-    return currentM > currentMstorage * 0.3 and currentE > currentEstorage * 0.3
+    return currentM > currentMstorage * 0.1 and currentE > currentEstorage * 0.1 --0.3
 end
 
 --- We use this to make sure patrol works, issuing two nearby patrol points
@@ -176,7 +177,7 @@ local function nearestFactoryAround(unitID, pos, unitDef)
     local function sqrDistance (pos1, pos2)
         return (pos2.x - pos1.x)^2 + (pos2.z - pos1.z)^2
     end
-    local radius = unitDef.buildDistance
+    local radius = unitDef.buildDistance * 1.2
     --local sqrRadius = radius ^ 2 -- commander build range (squared, to ease calculation)
     local nearestSqrDistance = 999999
     local nearestUnitID = nil
@@ -206,12 +207,17 @@ local function AutoAssist(unitID, unitDef)
     elseif necroDefs[unitDef.name] then
         spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, { "alt", "shift" })   --'alt' autoressurects if available --Spring.Echo("Necroing")
     else
-        -- Commanders have weapons, thus 'fight' won't work here. Need to find nearest factory, if any, and guard it
+        -- TODO: To further test widget exploits, uncomment lines below:
+        --local offsetPos = patrolOffset(x, y, z)
+        --spGiveOrderToUnit(unitID, CMD_PATROL, { offsetPos.x, y, offsetPos.z }, {"meta"} ) --shift
+        --spGiveOrderToUnit(unitID, CMD_REPAIR, { offsetPos.x, y, offsetPos.z, 160 }, {"meta"} ) --shift
+        ---- Commanders have weapons, thus 'fight' won't work here. Need to find nearest factory, if any, and guard it
         if unitDef.customParams and unitDef.customParams.iscommander then
             local unitPos = { x = x, y = y, z = z }
-            local nearestFactoryAround = nearestFactoryAround(unitID, unitPos, unitDef)
-            if nearestFactoryAround and enoughEconomy() then
-                spGiveOrderToUnit(unitID, CMD_GUARD, { nearestFactoryAround }, {} )
+            local nearestFactoryUnitID = nearestFactoryAround(unitID, unitPos, unitDef)
+            --Spring.Echo ("comm autoassist factory: "..(nearestFactoryUnitID or "nil").." has eco: "..tostring(enoughEconomy()))
+            if nearestFactoryUnitID and enoughEconomy() then
+                spGiveOrderToUnit(unitID, CMD_GUARD, { nearestFactoryUnitID }, {} )
                 guardingUnits[unitID] = true
             else
                 local offsetPos = patrolOffset(x, y, z)
@@ -222,6 +228,9 @@ local function AutoAssist(unitID, unitDef)
         end
     end
 end
+
+-- @Ivand: every frame mod 15 you should check builders queue (probably preselected set of builders who had guard/patrol command issued for them) and remove unwanted repair/reclaim etc from the front of the queue
+-- or reimplement guard/partol kludges in Lua
 
 ----Give idle builders an assist command every n frames
 function widget:GameFrame(n)
