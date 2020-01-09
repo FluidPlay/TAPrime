@@ -441,9 +441,9 @@ function SetCmdIDEnable(unitID, cmdID, block, orgTooltip, suffix)
     else
         cmdArray.tooltip = orgTooltip
     end
-    if not disable then
-        Spring.Echo("Enabled tooltip: "..cmdArray.tooltip)
-    end
+    --if not disable then
+    --    Spring.Echo("Enabled tooltip: "..cmdArray.tooltip)
+    --end
 
 	spEditUnitCmdDesc(unitID, cmdDescId, cmdArray)
 end
@@ -486,7 +486,7 @@ function Distance2D(unitID, px, pz)
 	if not Spring.ValidUnitID(unitID) then
 		return end
 	if not px or not pz then
-		Spring.Echo(" Invalid px or pz")
+		--Spring.Echo(" Invalid px or pz")
 		return end
 
 	local ux, _, uz = spGetUnitPosition(unitID)
