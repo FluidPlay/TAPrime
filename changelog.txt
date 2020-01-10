@@ -1,4 +1,15 @@
-﻿v1.02 changelog:
+﻿v1.03 changelog: (WIP)
+* Improved auto-assist logic for just-built builders & FARKs
+* Added "P" shortcut to build Air Pads and Adv. Air Pads
+* Core Leveler weapon damage now 72 (was 100)
+* Bullet damage multiplier vs defense armor type now 0.18 (was 0.263), vs defenseAA 0.25 (was 0.35)
+* Arm Guardian and Core Punisher now deal explosive damage type (was Plasma)
+* Fixed Toaster and Ambusher morphs requiring Tier 3 (now T2)
+* Explosive damage multiplier vs SupportBot and SupportVeh armor types now 0.65 (was 0.75)
+* Arm Poker missile final speed now 340 (was 290)
+* Plasma damage multiplier vs LightVeh armor type now 0.9 (was 0.8)
+
+v1.02 changelog:
 * Missile Towers metal cost now 175 (was 80), weapon range 450 (was 475), now drain 25 energy / tick to run
 * Core Pulverizer (Missile Tower) max health now 750 (was 1000)
 * Arm Defender (Missile Tower) max health now 800 (was 950)
