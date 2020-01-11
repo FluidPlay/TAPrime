@@ -184,7 +184,7 @@ local function nearestFactoryAround(unitID, pos, unitDef)
     for _,targetID in pairs(spGetUnitsInSphere(pos.x, pos.y, pos.z, radius, myTeamID)) do
         local targetDefID = spGetUnitDefID(targetID)
         local targetDef = targetDefID and UnitDefs[targetDefID] or nil
-        if targetDef and targetDef.isFactory then
+        if targetDef and targetDef.isFactory and IsValidUnit(unitID) then
             local x, y, z = spGetUnitPosition(unitID)
             local targetPos = { x = x, y = y, z = z }
             if sqrDistance(pos, targetPos) < nearestSqrDistance then

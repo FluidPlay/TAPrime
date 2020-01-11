@@ -8,6 +8,9 @@ local spFindUnitCmdDesc     = Spring.FindUnitCmdDesc
 local spInsertUnitCmdDesc     = Spring.InsertUnitCmdDesc
 local spEditUnitCmdDesc     = Spring.EditUnitCmdDesc
 local spGetUnitPosition = Spring.GetUnitPosition
+local spValidUnitID = Spring.ValidUnitID
+local spGetUnitDefID = Spring.GetUnitDefID
+
 local spMarkerAddPoint = Spring.MarkerAddPoint
 local spMarkerErasePosition = Spring.MarkerErasePosition
 
@@ -464,15 +467,15 @@ function LocalAlert(unitID, msg)
 end
 
 function IsValidUnit(unitID)
-	local unitDefID = Spring.GetUnitDefID(unitID)
-	if unitDefID and Spring.ValidUnitID(unitID) then
+	local unitDefID = spGetUnitDefID(unitID)
+	if unitDefID and spValidUnitID(unitID) then
 		return true
 	end
 	return false
 end
 
 function DistanceToPoint(unitID, px,py,pz)
-	if not Spring.ValidUnitID(unitID) then return end
+	if not spValidUnitID(unitID) then return end
 	if not px or not pz then return end
 
 	local ux, uy, uz = spGetUnitPosition(unitID)

@@ -292,13 +292,6 @@ function MakeBindsTable (swapYZ)
         "bind f buildunit_coruwadvms",
         "bind shift+f buildunit_coruwadvms",
 
-        -- build spacing
-        --"bind any+b buildspacing inc",
-        --"bind b buildunit_armdrag",			--dragon teeth
-        --"bind shift+b buildunit_armdrag",
-        --"bind b buildunit_cordrag",
-        --"bind shift+b buildunit_cordrag",
-
         -- Energy defense, laser defense, heavy laser
         --"bind b buildunit_tawf001",
         --"bind shift+b buildunit_tawf001",
@@ -314,19 +307,23 @@ function MakeBindsTable (swapYZ)
         --"bind shift+b buildunit_corhlt",
 
         -- Ambusher, annihilator, bigbertha (Arm)
+        "bind b buildunit_armguard",
+        "bind shift+b buildunit_armguard",
         "bind b buildunit_armamb",
         "bind shift+b buildunit_armamb",
-        "bind b buildunit_armanni",
-        "bind shift+b buildunit_armanni",
-        "bind b buildunit_armbrtha",
-        "bind shift+b buildunit_armbrtha",
+        "bind alt+b buildunit_armanni",
+        "bind alt+shift+b buildunit_armanni",
+        "bind alt+b buildunit_armbrtha",
+        "bind alt+shift+b buildunit_armbrtha",
         -- Toaster, Doomsday Machine, Intimidator (Core)
+        "bind b buildunit_corpun",
+        "bind shift+b buildunit_corpun",
         "bind b buildunit_cortoast",
         "bind shift+b buildunit_cortoast",
-        "bind b buildunit_cordoom",
-        "bind shift+b buildunit_cordoom",
-        "bind b buildunit_corint",
-        "bind shift+b buildunit_corint",
+        "bind alt+b buildunit_cordoom",
+        "bind alt+shift+b buildunit_cordoom",
+        "bind alt+b buildunit_corint",
+        "bind alt+shift+b buildunit_corint",
 
         -- Nukes, Anti-nukes and LOLcannons :)
         "bind i buildunit_armsilo",
