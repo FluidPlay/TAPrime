@@ -1,4 +1,4 @@
-﻿v1.03 changelog: (WIP)
+﻿v1.03 changelog:
 * Improved auto-assist logic for just-built builders & FARKs
 * Added "P" shortcut to build Air Pads and Adv. Air Pads
 * Core Leveler weapon damage now 72 (was 100)
@@ -8,6 +8,21 @@
 * Explosive damage multiplier vs SupportBot and SupportVeh armor types now 0.65 (was 0.75)
 * Arm Poker missile final speed now 340 (was 290)
 * Plasma damage multiplier vs LightVeh armor type now 0.9 (was 0.8)
+* Bullet damage multiplier vs LightBot armor type now 1.1 (was 1)
+* Pyro metal cost 225 (was 200), max health now 966 (was 1047), attack burst reduced to 16 (was 22)
+* Warrior cost 275 (was 250)
+* Arm & Core basic missile Towers energy buildcost reduced by 35%
+* Sumo morph metal cost now 2,100 (was 1,900)
+* Core Krogoth max health reduced by 35%
+* Commanders level 3 and 4 morph metal costs increased by 25%
+* Core Leveler range now 395 (was 410)
+* Fort Walls cost now 70 (was 40), Dragon Teeth can now be morphed into them
+* Arm Guardian metal cost now 750 (was 850)
+* Core Punisher metal cost now 800 (was 950)
+* Arm Bantha heavy rockets now deal explosive damage-type (was rocket)
+* Arm Razorback now deals laser damage-type (was plasma)
+* Arm Juggernaut laser weaponry fixed to deal laser damage-type (was omni), health reduced to 150k (was 300k)
+* Core Karganeth Head Weapon is now a Flak Launcher
 
 v1.02 changelog:
 * Missile Towers metal cost now 175 (was 80), weapon range 450 (was 475), now drain 25 energy / tick to run
