@@ -159,6 +159,9 @@ function MakeBindsTable (swapYZ)
         "bind c buildunit_corrad",		
         "bind shift+c buildunit_corrad",
 
+        "bind alt+c capture",
+        "bind alt+shift+c capture",
+
         "bind c buildunit_armdeva",         -- adv infantry defense
         "bind shift+c buildunit_armdeva",
         "bind c buildunit_corshred",
