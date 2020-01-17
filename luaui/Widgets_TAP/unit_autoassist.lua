@@ -16,8 +16,11 @@ function widget:GetInfo()
     }
 end
 
+VFS.Include("gamedata/taptools.lua")
+
 local spGetAllUnits = Spring.GetAllUnits
 local spGetUnitDefID = Spring.GetUnitDefID
+local spGetGameFrame = Spring.GetGameFrame
 local spGetUnitPosition = Spring.GetUnitPosition
 local spGetUnitVelocity = Spring.GetUnitVelocity
 local spGetCommandQueue = Spring.GetCommandQueue
@@ -124,7 +127,7 @@ function widget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdOpts, cmdPara
         end
     end
     if cmdID < 0 then
-        local nearFuture = Spring.GetGameFrame()+orderRemovalDelay
+        local nearFuture = spGetGameFrame() + orderRemovalDelay
         cancelAutoassistForUIDs[unitID] = { frame = nearFuture, cmdID = cmdID, cmdOpts = cmdOpts, cmdParams = cmdParams }
     end
 end
@@ -156,6 +159,8 @@ local function enoughEconomy()
     -- Validate for resources. If it's above 70% metal or energy, abort
     local currentM, currentMstorage = spGetTeamResources(myTeamID, "metal") --currentLevel, storage, pull, income, expense
     local currentE, currentEstorage = spGetTeamResources(myTeamID, "energy")
+    if not isnumber(currentM) or not isnumber(currentE) then
+        return false end
     --if currentM > currentMstorage * 0.3 and currentE > currentEstorage * 0.3 then
     --    Spring.Echo("Enough Eco!")
     --else
@@ -181,15 +186,21 @@ local function nearestFactoryAround(unitID, pos, unitDef)
     --local sqrRadius = radius ^ 2 -- commander build range (squared, to ease calculation)
     local nearestSqrDistance = 999999
     local nearestUnitID = nil
-    for _,targetID in pairs(spGetUnitsInSphere(pos.x, pos.y, pos.z, radius, myTeamID)) do
-        local targetDefID = spGetUnitDefID(targetID)
-        local targetDef = targetDefID and UnitDefs[targetDefID] or nil
-        if targetDef and targetDef.isFactory and IsValidUnit(unitID) then
-            local x, y, z = spGetUnitPosition(unitID)
-            local targetPos = { x = x, y = y, z = z }
-            if sqrDistance(pos, targetPos) < nearestSqrDistance then
-                nearestUnitID = targetID
-                nearestSqrDistance = sqrDistance
+    local unitsAround = spGetUnitsInSphere(pos.x, pos.y, pos.z, radius, myTeamID)
+    if not istable(unitsAround) then
+        return nil
+    end
+    for _,targetID in pairs(unitsAround) do
+        if IsValidUnit(targetID) then
+            local targetDefID = spGetUnitDefID(targetID)
+            local targetDef = (targetDefID ~= nil) and UnitDefs[targetDefID] or nil
+            if targetDef and targetDef.isFactory then
+                local x, y, z = spGetUnitPosition(unitID)
+                local targetPos = { x = x, y = y, z = z }
+                if sqrDistance(pos, targetPos) < nearestSqrDistance then
+                    nearestUnitID = targetID
+                    nearestSqrDistance = sqrDistance
+                end
             end
         end
     end
@@ -236,7 +247,7 @@ end
 function widget:GameFrame(n)
     for unitID, data in pairs(cancelAutoassistForUIDs) do
         -- Actual assist removal (a few frames after being issued)
-        if (not assistStoppedUnits[unitID]) and data.frame >= n then
+        if IsValidUnit(unitID) and (not assistStoppedUnits[unitID]) and data.frame >= n then
             --Spring.Echo("Removing assist from ".. unitID)
             --spGiveOrderToUnit(uID, CMD_REMOVE, {CMD_PATROL, CMD_GUARD, CMD_RECLAIM, CMD_REPAIR}, {"alt"})
             --spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
@@ -263,7 +274,7 @@ function widget:GameFrame(n)
     --    guardingUnits[unitID] = false
     --end
     for unitID in pairs(idleBuilders) do
-        if not assistStoppedUnits[unitID] then
+        if IsValidUnit(unitID) and not assistStoppedUnits[unitID] then
             --Spring.Echo("idle Builder unitID: "..unitID)
             local unitDef = UnitDefs[spGetUnitDefID(unitID)]
             AutoAssist(unitID, unitDef)
