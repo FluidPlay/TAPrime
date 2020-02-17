@@ -167,7 +167,7 @@ UnitUpg = {
         metalCost = 250,
         energyCost = 1500, --960
         upgradeTime = 10 * 30, --10 seconds, in frames
-        type = "perunit",
+        type = "perunit", --CMDTYPE.ICON_MAP
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "",
     },
@@ -188,7 +188,7 @@ UnitUpg = {
         metalCost = 150,
         energyCost = 960, --960
         upgradeTime = 10 * 30, --10 seconds, in frames
-        type = "perunit",
+        type = "perunit", --CMDTYPE.ICON_MAP
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "",
     },
