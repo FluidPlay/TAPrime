@@ -76,10 +76,10 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
     else
         Spring.Echo("Cmd Descs found")
     end
-    cmdDesc.texture = 'luaui/images/gfxbuttons/cmd_attack.dds' --GfxButtons.CMD_ATTACK.texture
-    cmdDesc.onlyTexture = true --GfxButtons.CMD_ATTACK.onlyTexture
-    AddUpdateCommand(unitID, cmdDesc)
-    --spEditUnitCmdDesc(unitID, cmdIdx, cmdDesc)
+    cmdDesc.texture = 'luaui/images/gfxbuttons/cmd_attack.png' --GfxButtons.CMD_ATTACK.texture
+    --cmdDesc.onlyTexture = true --GfxButtons.CMD_ATTACK.onlyTexture
+    --AddUpdateCommand(unitID, cmdDesc)
+    spEditUnitCmdDesc(unitID, cmdId, cmdDesc)
 
     --for cmdID, cmdDesc in pairs(GfxButtons) do
     --    if GfxButtons[thisCmdID] then
