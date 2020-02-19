@@ -92,7 +92,7 @@ UnitUpg = {
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
             tooltip = 'D-Gun Upgrade: Enables D-gun weapon [per unit]',
-            texture = 'luaui/images/upgrades/techdgun.dds',
+            texture = 'luaui/images/upgrades/cmd_upgdgun.png',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
             --params = { '1', ' Fly ', 'Land'}
@@ -138,7 +138,7 @@ UnitUpg = {
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
             tooltip = 'Laser Grenade upgrade: Enables manual-fire Grenade weapon [per unit]',
-            texture = 'luaui/images/upgrades/techexplosives.dds',
+            texture = 'luaui/images/upgrades/techdgun.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },

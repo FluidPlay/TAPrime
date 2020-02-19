@@ -39,6 +39,8 @@ local GfxButtons = {
     [15] = { cmd = CMD.WAIT, texture = 'luaui/images/gfxbuttons/cmd_wait.png', },
 
     [16] = { cmd = CMD.REPEAT, texture = 'luaui/images/gfxbuttons/cmd_repeat.png', },
+    [17] = { cmd = CMD.CLOAK, texture = 'luaui/images/gfxbuttons/cmd_cloak.png', },
+
 }
 
 function gadget:UnitCreated(unitID, unitDefID, unitTeam)

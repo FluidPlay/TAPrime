@@ -286,6 +286,7 @@ local morphStopCmdDesc = {
   id     = CMD_MORPH_STOP,
   type   = CMDTYPE.ICON,
   name   = 'Stop\nMorph',
+  texture = 'luaui/images/gfxbuttons/cmd_morphstop.png',
   cursor = 'Morph',
   action = 'morph',
 }
@@ -294,6 +295,7 @@ local morphQueueCmdDesc = {
   id     = CMD_MORPH_QUEUE, -- might be added by the calling function if/when supports more than one option
   type   = CMDTYPE.ICON,
   name   = 'Queue',
+  texture = 'luaui/images/gfxbuttons/cmd_morphqueue.png',
   cursor = 'Morph',  -- add with LuaUI?
   action = 'morphqueue',
 }
@@ -302,6 +304,7 @@ local morphPauseCmdDesc = {
   id     = CMD_MORPH_PAUSE,
   type   = CMDTYPE.ICON,
   name   = 'Pause',
+  texture = 'luaui/images/gfxbuttons/cmd_morphpause.png',
   cursor = 'Morph',  -- add with LuaUI?
   action = 'morphpause',
 }
