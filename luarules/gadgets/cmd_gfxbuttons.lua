@@ -22,17 +22,7 @@ if not gadgetHandler:IsSyncedCode() then
     return end
 
 local GfxButtons = {
-    [1] = { cmd = CMD.ATTACK, texture = 'luaui/images/gfxbuttons/cmd_attack.png', }, --{
-    --id      = CMD_ATTACK,
-    --name    = 'ATTACK',
-    --action  = 'upgradecapture',
-    --cursor  = 'Morph',
-    --type    = CMDTYPE.ICON,
-    --tooltip = 'Unlocks the Capture ability of all builder units',
-    --texture = 'luaui/images/gfxbuttons/cmd_attack.png',
-    --onlyTexture = true,
-    --showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
-    --}
+    [1] = { cmd = CMD.ATTACK, texture = 'luaui/images/gfxbuttons/cmd_attack.png', },
     [2] = { cmd = CMD_UNIT_CANCEL_TARGET, texture = 'luaui/images/gfxbuttons/cmd_canceltarget.png', },
     [3] = { cmd = CMD.CAPTURE, texture = 'luaui/images/gfxbuttons/cmd_capture.png', },
     [4] = { cmd = CMD.FIGHT, texture = 'luaui/images/gfxbuttons/cmd_fight.png', },
@@ -40,15 +30,15 @@ local GfxButtons = {
     [6] = { cmd = CMD.MANUALFIRE, texture = 'luaui/images/gfxbuttons/cmd_manualfire.png', },
     [7] = { cmd = CMD.MOVE, texture = 'luaui/images/gfxbuttons/cmd_move.png', },
     [8] = { cmd = CMD.PATROL, texture = 'luaui/images/gfxbuttons/cmd_patrol.png', },
-
     [9] = { cmd = CMD.RECLAIM, texture = 'luaui/images/gfxbuttons/cmd_reclaim.png', },
     [10] = { cmd = CMD.REPAIR, texture = 'luaui/images/gfxbuttons/cmd_repair.png', },
-    --[8] = { cmd = CMD.REPEAT, texture = 'luaui/images/gfxbuttons/cmd_patrol.png', },
     [11] = { cmd = CMD.RESTORE, texture = 'luaui/images/gfxbuttons/cmd_restore.png', },
     [12] = { cmd = CMD.SELFD, texture = 'luaui/images/gfxbuttons/cmd_restore.png', },
     [13] = { cmd = CMD_UNIT_SET_TARGET, texture = 'luaui/images/gfxbuttons/cmd_settarget.png', },
     [14] = { cmd = CMD.STOP, texture = 'luaui/images/gfxbuttons/cmd_stop.png', },
     [15] = { cmd = CMD.WAIT, texture = 'luaui/images/gfxbuttons/cmd_wait.png', },
+
+    [16] = { cmd = CMD.REPEAT, texture = 'luaui/images/gfxbuttons/cmd_repeat.png', },
 }
 
 function gadget:UnitCreated(unitID, unitDefID, unitTeam)

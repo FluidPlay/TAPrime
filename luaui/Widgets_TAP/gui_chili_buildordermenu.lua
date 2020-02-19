@@ -354,8 +354,8 @@ local function addOrderCommand(cmd)
             --cmdID = cmd.id,
             width = '95%', height = '95%',
             file = cmd.texture,
-            padding = {0, 0, 0, 0},
-            margin = {4, 4, 4, 4},
+            padding = {1, 1, 1, 1}, -- spacing around "blocked/unavailable" dark rectangle
+            margin = {0, 0, 0, 0}, -- 4,4,4,4 top, bottom, left, right
             --OnClick = {ActionCommand},
         }
         chiliCache['button' .. cmd.id .. 'texture'] = image
@@ -368,7 +368,7 @@ local function addOrderCommand(cmd)
             caption = '',
             textPadding = 8, -- (MaDDoX)
             padding = {0, 0, 0, 0},
-            margin = {2, 2, 2, 2},
+            margin = {1, 1, 1, 1}, --2,2,2,2 (separation between buttons)
             OnMouseUp = {ActionCommand},
         }
         if not image.parent then
@@ -399,16 +399,44 @@ local function addOrderCommand(cmd)
 end --addOrderCommand
 
 local function addStateCommand(cmd)
-    local button = chiliCache['button' .. cmd.id] or Button:New{
-        name = 'button' .. cmd.id,
-        cmdID = cmd.id,
-        caption = cmd.params[cmd.params[1] + 2],
-        textPadding = 12, --8,
-        padding = {0, 0, 0, 0},
-        margin = {2, 2, 2, 2},
-        OnMouseUp = {ActionCommand},
-    }
-    button:SetCaption(cmd.params[cmd.params[1] + 2])
+    local button
+    if cmd.texture and cmd.texture ~= "" then
+        local image = chiliCache['button' .. cmd.id .. 'texture'] or Image:New{
+            name = 'button' .. cmd.id .. 'texture',
+            --cmdID = cmd.id,
+            width = '95%', height = '95%',
+            file = cmd.texture,
+            padding = {0, 0, 0, 0},
+            margin = {4, 4, 4, 4},
+            --OnClick = {ActionCommand},
+        }
+        chiliCache['button' .. cmd.id .. 'texture'] = image
+
+        button = chiliCache['button' .. cmd.id] or Button:New{
+            name = 'button' .. cmd.id,
+            --parent = orderGrid,
+            cmdID = cmd.id,
+            image = image,
+            caption = '',
+            textPadding = 8, -- (MaDDoX)
+            padding = {0, 0, 0, 0},
+            margin = {2, 2, 2, 2},
+            OnMouseUp = {ActionCommand},
+        }
+        if not image.parent then
+            button:AddChild(image)
+        end
+    else button = chiliCache['button' .. cmd.id] or Button:New{
+            name = 'button' .. cmd.id,
+            cmdID = cmd.id,
+            caption = cmd.params[cmd.params[1] + 2],
+            textPadding = 12, --8,
+            padding = {0, 0, 0, 0},
+            margin = {2, 2, 2, 2},
+            OnMouseUp = {ActionCommand},
+        }
+        button:SetCaption(cmd.params[cmd.params[1] + 2])
+    end
     chiliCache['button' .. cmd.id] = button
     local s = (btWidth - button.textPadding * 2) / glGetTextWidth(button.caption)
     button.font:SetSize(mathmin(s, Config.labels.captionFontMaxSize)+fontSizeOffset)
