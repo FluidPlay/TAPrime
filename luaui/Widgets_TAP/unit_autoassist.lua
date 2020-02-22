@@ -197,7 +197,8 @@ local function nearestFactoryAround(unitID, pos, unitDef)
             if targetDef and targetDef.isFactory then
                 local x, y, z = spGetUnitPosition(unitID)
                 local targetPos = { x = x, y = y, z = z }
-                if sqrDistance(pos, targetPos) < nearestSqrDistance then
+                local thisSqrDist = sqrDistance(pos, targetPos)
+                if isnumber(thisSqrDist) and thisSqrDist < nearestSqrDistance then
                     nearestUnitID = targetID
                     nearestSqrDistance = sqrDistance
                 end
