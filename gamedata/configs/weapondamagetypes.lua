@@ -162,7 +162,7 @@ local weaponDamageTypes = {
 	corcut = { ["RiotCannon"] = "bullet", },
 	packo = { ["AA2Missile"] = "rocket", },
 	armbrawl = { ["Machinegun"] = "thermo", },
-	corexp = { ["LightLaser"] = "hflaser", },
+	corexp = { ["LightLaser"] = "bullet", },
 	cortl = { ["Level1TorpedoLauncher"] = "homing", },
 	armanac = { ["MediumPlasmaCannon"] = "cannon", },
 	armflak = { ["FlakCannon"] = "cannon", },

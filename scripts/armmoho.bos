@@ -87,7 +87,7 @@ Create()
 {
 	dont-shade extractor;
 	dont-cache extractor;
-	RotateSpeed = 500;
+	RotateSpeed = 6000;//500
 	call-script InitState();
 	start-script SmokeUnit();
 	start-script Activate();	//Morph fix
@@ -98,11 +98,11 @@ Deactivate()
 	start-script RequestState(1);
 }
 
-SetSpeed(Func_Var_1)
-{
-	RotateSpeed = Func_Var_1 * 15; //*10
-	//RotateSpeed = 500;
-}
+//SetSpeed(Func_Var_1)
+//{
+//	RotateSpeed = Func_Var_1 * 15; //*10
+//	//RotateSpeed = 500;
+//}
 
 SweetSpot(piecenum)
 {

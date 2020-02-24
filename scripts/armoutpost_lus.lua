@@ -104,8 +104,9 @@ local function DisableTowers()
 end
 
 local function Go()
-  Signal(SIG_STATECHG)
-  SetSignalMask(SIG_STATECHG)    
+  Spring.UnitScript.Signal(SIG_STATECHG)
+  Spring.UnitScript.SetSignalMask(SIG_STATECHG)
+    --Spring.Echo("armoutpost_lus: Going")
 	EnableTowers()
 	WaitOneFrame()
 	Turn( aim , y_axis, HeadingAngle, Rad(160.00000) )
@@ -114,8 +115,9 @@ local function Go()
 end
 
 local function Stop()
-  Signal(SIG_STATECHG)
-  SetSignalMask(SIG_STATECHG)  
+  Spring.UnitScript.Signal(SIG_STATECHG)
+  Spring.UnitScript.SetSignalMask(SIG_STATECHG)
+    --Spring.Echo("armoutpost_lus: Stopping")
 	SetUnitValue(COB.INBUILDSTANCE, 0)	--set INBUILDSTANCE to 0
 	--DisableTowers() :: Removed to prevent 'bouncing towers' after building etc
 	WaitOneFrame()
@@ -130,8 +132,8 @@ local function RequestState(requestedstate, currentstate)
 	statechg_StateChanging = true
 	currentstate = statechg_DesiredState
 	statechg_DesiredState = requestedstate
-	while  statechg_DesiredState ~= currentstate  do
-		if  statechg_DesiredState == 0  then
+	while statechg_DesiredState ~= currentstate  do
+		if statechg_DesiredState == 0 then
 			StartThread(Go)
 			currentstate = 0
 		elseif statechg_DesiredState == 1 then
@@ -186,6 +188,7 @@ function script.Create()
 end
 
 function script.Activate()
+    HeadingAngle = 0
 	StartThread(RequestState, 0)
 end
 

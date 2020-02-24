@@ -4,7 +4,6 @@ local armorDefs = {
               "corpyro",},
     supportbot={"armaak","armah","armjeth","armsptk","armmh","armrock","coraak","corhrk","corah","corcrash",
 				"cormort","corstorm","cortermite", "cordefiler","armsnipe", },
-
     heavybot={"corkrog","armmark", "armzeus", "corsumo","armbanth", "armfboy",
               "armham","armorco","armraz","armvader","armwar","corcan","corkarg","corroach","corthud","corthovr","krogtaar",
               "meteor","tawf009","cormando","armmav",},

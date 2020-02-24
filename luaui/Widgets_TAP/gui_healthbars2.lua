@@ -658,7 +658,7 @@ do
         paralyzeDamage = GetUnitRulesParam(unitID, "real_para") or paralyzeDamage
 
         local empHP = ((not paralyzeOnMaxHealth) and health) or maxHealth
-        emp = (paralyzeDamage or 0)/empHP
+        emp = (paralyzeDamage or 0)/(empHP or 1)
         hp  = (health or 0)/maxHealth
         morph = UnitMorphs[unitID]
 
