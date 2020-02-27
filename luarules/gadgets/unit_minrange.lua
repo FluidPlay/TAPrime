@@ -38,7 +38,8 @@ local trackedUnits = {}
 
 function gadget:UnitFinished(unitID, unitDefID, unitTeam)
     local ud = UnitDefs[unitDefID]
-    if not ud.customParams or not ud.customParams.minrange then
+    if not ud.customParams or not ud.customParams.minrange
+        or not ud.weapons or not ud.weapons[1] then
         return end
     -- Store min range and default reload for later processing
     local weapDef = WeaponDefs[ud.weapons[1].weaponDef]
