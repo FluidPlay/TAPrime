@@ -20,8 +20,14 @@ local showConversionSlider = true
 local bladeSpeedMultiplier = 0.22
 local resourcebarBgTint = true		-- will background of resourcebar get colored when overflowing or low on energy?
 
-local comDefIDs = { UnitDefNames.armcom.id, UnitDefNames.armcom2.id, UnitDefNames.armcom3.id, UnitDefNames.armcom4.id,
-					UnitDefNames.corcom.id, UnitDefNames.corcom2.id, UnitDefNames.corcom3.id, UnitDefNames.corcom4.id,}
+local comDefIDs = { [1] = { id = UnitDefNames.armcom.id },
+                    [2] = { id = UnitDefNames.armcom2.id },
+                    [3] = { id = UnitDefNames.armcom3.id },
+                    [4] = { id = UnitDefNames.armcom4.id },
+					[5] = { id = UnitDefNames.corcom.id },
+                    [6] = { id = UnitDefNames.corcom2.id },
+                    [7] = { id = UnitDefNames.corcom3.id },
+                    [8] = { id = UnitDefNames.corcom4.id },}
 
 --local armcomDefID = UnitDefNames.armcom.id
 --local corcomDefID = UnitDefNames.corcom.id
@@ -72,6 +78,9 @@ local spGetTeamResources = Spring.GetTeamResources
 local spGetMyTeamID = Spring.GetMyTeamID
 local sformat = string.format
 local spGetMouseState = Spring.GetMouseState
+local spGetTeamList = Spring.GetTeamList
+local spGetTeamUnitDefCount = Spring.GetTeamUnitDefCount
+local spGetTeamRulesParam = Spring.GetTeamRulesParam
 
 local spec = spGetSpectatingState()
 local myAllyTeamID = Spring.GetMyAllyTeamID()
@@ -1531,75 +1540,42 @@ function isCom(unitID,unitDefID)
 end
 
 function countComs()
-	-- recount my own ally team coms
-	local prevAllyComs = allyComs
-	local prevEnemyComs = enemyComs
-	allyComs = 0
-	local teamComTypeCount = nil
-	local myAllyTeamList = Spring.GetTeamList(myAllyTeamID)
-	for _,teamID in ipairs(myAllyTeamList) do
-		--allyComs = allyComs + Spring.GetTeamUnitDefCount(teamID, armcomDefID) + Spring.GetTeamUnitDefCount(teamID, corcomDefID)
-		for i = 1, #comDefIDs do
-			teamComTypeCount = Spring.GetTeamUnitDefCount(teamID, comDefIDs[i])
-			if isnumber(teamComTypeCount) then
-				allyComs = allyComs + teamComTypeCount
-			end
-		end
-	end
-	if allyComs ~= prevAllyComs then
-		comcountChanged = true
-		prevAllyComs = allyComs
-	end
+    -- recount my own ally team coms
+    local prevAllyComs = allyComs
+    local prevEnemyComs = enemyComs
+    allyComs = 0
+    local myAllyTeamList = spGetTeamList(myAllyTeamID)
 
-    --- Calculate enemy com count
-    enemyComCount = 0
-    --enemyComs = 0
-
-    local fullTeamList = Spring.GetTeamList()
-    for _,teamID in pairs(fullTeamList) do
-        local _,_,_,isAiTeam,_,thisAllyTeam = Spring.GetTeamInfo(teamID)
-        --local isLuaAI = (Spring.GetTeamLuaAI(teamID) ~= "")
-        --if isAiTeam or isLuaAi then
-        --end
-
-        -- If a team's allyTeam not equal to mine, it's an enemy team
-        if thisAllyTeam ~= myAllyTeamID then
-            for i = 1, #comDefIDs do
-                teamComTypeCount = Spring.GetTeamUnitDefCount(teamID, comDefIDs[i])
-                if isnumber(teamComTypeCount) then
-                    enemyComCount = enemyComCount + teamComTypeCount
-                end
+    local teamComTypeCount = 0
+    for _,teamID in ipairs(myAllyTeamList) do
+       --comDefIDs = { [1] = { id = UnitDefNames.armcom.id },
+        for i, data in ipairs(comDefIDs) do
+            teamComTypeCount = spGetTeamUnitDefCount(teamID, data.id)
+            if isnumber(teamComTypeCount) then
+                allyComs = allyComs + teamComTypeCount
             end
         end
     end
-    enemyComs = enemyComCount
-    if enemyComCount ~= prevEnemyComCount then
-        comcountChanged = true
-        prevEnemyComCount = enemyComCount
+    comcountChanged = true
+
+    local newEnemyComCount = spGetTeamRulesParam(myTeamID, "enemyComCount")
+    if type(newEnemyComCount) == 'number' then
+        enemyComCount = newEnemyComCount
+        if enemyComCount ~= prevEnemyComCount then
+            comcountChanged = true
+            prevEnemyComCount = enemyComCount
+        end
     end
 
-	comcountChanged = true  --|| Not sure why this was here.. but seems needed to make this work
+    if allyComs ~= prevAllyComs or enemyComs ~= prevEnemyComs then
+        comcountChanged = true
+    end
 
-    --local newEnemyComCount = Spring.GetTeamRulesParam(myTeamID, "enemyComCount")
-    --if newEnemyComCount and isnumber(tonumber(newEnemyComCount)) then
-    --    enemyComCount = tonumber(newEnemyComCount)
-    --    Spring.Echo("New enemy Com count: "..newEnemyComCount)
-    --    if enemyComCount ~= prevEnemyComCount then
-    --        comcountChanged = true
-    --        prevEnemyComCount = enemyComCount
-    --    end
-    --else
-    --    Spring.Echo("Enemy com count not found")
-    --end
-
-	--if allyComs ~= prevAllyComs or enemyComs ~= prevEnemyComs then
-	--	comcountChanged = true
-	--end
-
-	if comcountChanged then
-		updateComs()
-	end
+    if comcountChanged then
+        updateComs()
+    end
 end
+
 
 function widget:UnitCreated(unitID, unitDefID, unitTeam)
 	if not isCom(unitID,unitDefID) then

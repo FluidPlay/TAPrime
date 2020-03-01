@@ -9,12 +9,17 @@
 --
 local damageMultipliers = {
 
-	bullet={ 	lightbot = 1.1,	supportbot = 1.8,	heavybot = 0.7, lightveh = 0.25,    supportveh = 0.5,   heavyveh = 0.5,
+	bullet={ 	lightbot = 1.1,	supportbot = 1.8,	heavybot = 0.8, lightveh = 0.25,    supportveh = 0.5,   heavyveh = 0.5,
 				lightair = 0.7,	supportair = 2,	    heavyair = 1.5, lightship = 0.75,   supportship = 1,    heavyship = 0.25,
                 structure = 0.75,resource = 0.25, 	defense = 0.18, defenseaa = 0.25,   commander = 0.3,
 	}
 ,
-	rocket={ 	lightbot = 0.22,supportbot = 0.35,  heavybot = 0.35,lightveh = 0.4,     supportveh = 0.85,	heavyveh = 4,
+    laser={     lightbot = 1.5, supportbot = 1.6,   heavybot = 0.9, lightveh = 0.6,     supportveh = 0.65,  heavyveh = 0.42,
+                lightair = 1.25,supportair = 1.25,  heavyair = 1,   lightship = 1.25,   supportship = 2,    heavyship = 0.5,
+                structure = 1.1,resource = 0.5,     defense = 0.7,  defenseaa = 0.8,    commander = 0.68,
+    }
+,
+	rocket={ 	lightbot = 0.22,supportbot = 0.35,  heavybot = 0.35,lightveh = 0.65,    supportveh = 0.85,	heavyveh = 4,
 				lightair = 0.3, supportair = 2.55,  heavyair = 0.5, lightship = 0.45,   supportship = 0.75, heavyship = 1.6,
                 structure = 0.8,resource = 0.8,     defense = 0.4,  defenseaa = 0.85,   commander = 0.4,
 	}
@@ -22,11 +27,6 @@ local damageMultipliers = {
 	homing={ 	lightbot = 1,   supportbot = 0.25, 	heavybot = 0.3, lightveh = 0.75,    supportveh = 1.25,  heavyveh = 3.2,
 				lightair = 0.9, supportair = 3, 	heavyair = 2.5, lightship = 1.25,   supportship = 1.75, heavyship = 2.5,
                 structure = 0.6,resource = 0.75, 	defense = 0.5,  defenseaa = 0.125,  commander = 0.2,
-	}
-,
-	laser={     lightbot = 1.5, supportbot = 1.6,   heavybot = 0.82,lightveh = 0.6,     supportveh = 0.65,  heavyveh = 0.42,
-                lightair = 1.25,supportair = 1.25,  heavyair = 1,   lightship = 1.25,   supportship = 2,    heavyship = 0.5,
-                structure = 1.1,resource = 0.5,     defense = 0.7,  defenseaa = 0.8,    commander = 0.68,
 	}
 ,
 	hflaser={   lightbot = 1.5,  supportbot = 1.2,	heavybot = 0.45,lightveh = 0.55,    supportveh = 0.3,   heavyveh = 0.225,
@@ -39,7 +39,7 @@ local damageMultipliers = {
                 structure = 1,  resource = 1, 		defense = 0.275,defenseaa = 0.6,    commander = 1.33,
 	}
 ,
-	cannon={ 	lightbot = 0.5, supportbot = 0.25,  heavybot = 0.6, lightveh = 1.6, 	    supportveh = 2,        heavyveh = 1,
+	cannon={ 	lightbot = 0.5, supportbot = 0.25,  heavybot = 0.75,lightveh = 1.6, 	    supportveh = 2,        heavyveh = 1,
                 lightair = 1.5, supportair = 2, 	heavyair = 1.25,lightship = 2,      supportship = 0.5,    heavyship = 1,
                 structure = 1,  resource = 1, 		defense = 1.2, 	defenseaa = 0.22, 	commander = 0.75,
 	}
@@ -59,7 +59,7 @@ local damageMultipliers = {
                 structure = 1, 	resource = 1,	    defense = 1, 	defenseaa = 0.75, 	commander = 0.1,
 	}
 ,
-	explosive={ lightbot = 1.2, supportbot = 0.65, heavybot = 0.85,lightveh = 1,       supportveh = 0.65,  heavyveh = 1.25,
+	explosive={ lightbot = 1.2, supportbot = 0.65,  heavybot = 0.85, lightveh = 1.1,     supportveh = 0.65,  heavyveh = 1.25,
                 lightair = 0.5, supportair = 0.5, 	heavyair = 0.5, lightship = 3,      supportship = 1.5,  heavyship = 4,
                 structure = 2,  resource = 1.25,	defense = 1.5, 	defenseaa = 0.75,   commander = 0.3,
 	}

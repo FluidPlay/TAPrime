@@ -26,11 +26,22 @@ if not (gadgetHandler:IsSyncedCode()) then --synced only
 	return false
 end
 
+local spGetTeamList = Spring.GetTeamList
+local spGetTeamUnitDefCount = Spring.GetTeamUnitDefCount
+local spSetTeamRulesParam = Spring.GetTeamRulesParam
+local spGetTeamInfo = Spring.GetTeamInfo
+
 local teamComs = {} -- format is enemyComs[teamID] = total # of coms in enemy teams
 
 -- This could be improved by initializing the array automatically, with the isCom method
-local comDefIDs = { UnitDefNames.armcom.id, UnitDefNames.armcom2.id, UnitDefNames.armcom3.id, UnitDefNames.armcom4.id,
-					UnitDefNames.corcom.id, UnitDefNames.corcom2.id, UnitDefNames.corcom3.id, UnitDefNames.corcom4.id,}
+local comDefIDs = { [1] = { id = UnitDefNames.armcom.id },
+                    [2] = { id = UnitDefNames.armcom2.id },
+                    [3] = { id = UnitDefNames.armcom3.id },
+                    [4] = { id = UnitDefNames.armcom4.id },
+                    [5] = { id = UnitDefNames.corcom.id },
+                    [6] = { id = UnitDefNames.corcom2.id },
+                    [7] = { id = UnitDefNames.corcom3.id },
+                    [8] = { id = UnitDefNames.corcom4.id },}
 
 local countChanged  = true 
 
@@ -70,8 +81,8 @@ end
 
 local function CountCommanders(teamID)
 	local count, teamComTypeCount = 0, nil
-	for i = 1, #comDefIDs do
-		teamComTypeCount = Spring.GetTeamUnitDefCount(teamID, comDefIDs[i])
+    for i, data in ipairs(comDefIDs) do
+		teamComTypeCount = spGetTeamUnitDefCount(teamID, data.id)
 		if isnumber(teamComTypeCount) then
 			count = count + teamComTypeCount
 		end
@@ -81,7 +92,7 @@ end
 
 local function ReCheck()
 	-- occasionally, recheck just to make sure...
-	local teamList = Spring.GetTeamList()
+	local teamList = spGetTeamList()
 	for _,teamID in pairs(teamList) do
 		local newCount = CountCommanders(teamID) --Spring.GetTeamUnitDefCount(teamID, armcomDefID) + Spring.GetTeamUnitDefCount(teamID, corcomDefID)
 		if newCount ~= teamComs[teamID] then
@@ -103,18 +114,32 @@ function gadget:GameFrame(n)
 end
 
 function UpdateCount()
-	-- for each teamID, set a TeamRulesParam containing the # of coms in enemy allyteams
-	for teamID,_ in pairs(teamComs) do
-		local enemyComCount = 0
-		local _,_,_,_,_,allyTeamID = Spring.GetTeamInfo(teamID)
-		for otherTeamID,val in pairs(teamComs) do -- count all coms in enemy teams, to get enemy allyteam com count
-			local _,_,_,_,_,otherAllyTeamID = Spring.GetTeamInfo(otherTeamID)
-			if otherAllyTeamID ~= allyTeamID then
-				enemyComCount = enemyComCount + teamComs[otherTeamID]
-			end
-		end
-		--Spring.Echo(teamID, teamComs[teamID], enemyComCount)
-		Spring.SetTeamRulesParam(teamID, "enemyComCount", enemyComCount, {private=true, allied=false})
-        --Spring.Echo("Set enemyComCount = "..enemyComCount.." to team "..teamID)
-	end
+    -- for each teamID, set a TeamRulesParam containing the # of coms in enemy allyteams
+    for teamID,_ in pairs(teamComs) do
+        local enemyComCount = 0
+        local _,_,_,_,_,allyTeamID = spGetTeamInfo(teamID)
+        for otherTeamID,val in pairs(teamComs) do -- count all coms in enemy teams, to get enemy allyteam com count
+            local _,_,_,_,_,otherAllyTeamID = spGetTeamInfo(otherTeamID)
+            if otherAllyTeamID ~= allyTeamID then
+                enemyComCount = enemyComCount + teamComs[otherTeamID]
+            end
+        end
+        spSetTeamRulesParam(teamID, "enemyComCount", enemyComCount, {private=true, allied=false})
+    end
 end
+
+--function UpdateCount()
+--	-- for each teamID, set a TeamRulesParam containing the # of coms in enemy allyteams
+--	for teamID,_ in pairs(teamComs) do
+--		local enemyComCount = 0
+--		local _,_,_,_,_,allyTeamID = Spring.GetTeamInfo(teamID)
+--		for otherTeamID,val in pairs(teamComs) do -- count all coms in enemy teams, to get enemy allyteam com count
+--			local _,_,_,_,_,otherAllyTeamID = Spring.GetTeamInfo(otherTeamID)
+--			if otherAllyTeamID ~= allyTeamID then
+--				enemyComCount = enemyComCount + teamComs[otherTeamID]
+--			end
+--		end
+----( number teamID, string paramName, number|string paramValue [, table losAccess] )
+--		Spring.SetTeamRulesParam(teamID, "comcount", enemyComCount, {public=true})
+--	end
+--end
