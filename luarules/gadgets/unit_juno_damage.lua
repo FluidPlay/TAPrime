@@ -119,14 +119,16 @@ end
 
 local centers = {} --table of where juno missiles hit etc
 local counter = 1 --index each explosion of juno missile with this counter
+local gaiaTeamID = 1    -- initialized on.. erm.. Initialize.
 
 function gadget:Initialize()
 	Script.SetWatchWeapon(WeaponDefNames.armjuno_juno_pulse.id, true)
 	Script.SetWatchWeapon(WeaponDefNames.corjuno_juno_pulse.id, true)
+    gaiaTeamID = Spring.GetGaiaTeamID()
 end
 
 local function CreateSpotter(firingUnitID, pos)
-    local teamID = spGetUnitTeam(firingUnitID)
+    local teamID = firingUnitID and spGetUnitTeam(firingUnitID) or gaiaTeamID
     local unitID = spCreateUnit(spotterDefID, pos.x, pos.y, pos.z, "north", teamID)
     --Spring.Echo("Spawned "..unitID.." at: "..c.x..", "..c.y..", "..c.z)
     spSetUnitNoDraw(unitID, true)
