@@ -29,14 +29,14 @@ local damageMultipliers = {
                 structure = 0.6,resource = 0.75, 	defense = 0.5,  defenseaa = 0.125,  commander = 0.2,
 	}
 ,
-	hflaser={   lightbot = 1.5,  supportbot = 1.2,	heavybot = 0.45,lightveh = 0.55,    supportveh = 0.3,   heavyveh = 0.225,
+	hflaser={   lightbot = 1.5,  supportbot = 1.2,	heavybot = 0.45,lightveh = 0.55,    supportveh = 0.3,   heavyveh = 0.65,
                 lightair = 1.25, supportair = 0.5,	heavyair = 1,   lightship = 1.5,    supportship = 0.75, heavyship = 0.25,
                 structure = 0.75,resource = 0.75,	defense = 0.6,  defenseaa = 0.5,    commander = 0.85,
 	}
 ,
     plasma={ 	lightbot = 1.0, supportbot = 0.75,  heavybot = 0.6, lightveh = 0.9,     supportveh = 0.45,  heavyveh = 0.4,
                 lightair = 0.75,supportair = 1.25,  heavyair = 1.5, lightship = 1.75,   supportship = 0.75, heavyship = 1.5,
-                structure = 1,  resource = 1, 		defense = 0.275,defenseaa = 0.6,    commander = 1.33,
+                structure = 1,  resource = 1, 		defense = 0.275,defenseaa = 0.6,    commander = 1.27,
 	}
 ,
 	cannon={ 	lightbot = 0.5, supportbot = 0.25,  heavybot = 0.75,lightveh = 1.6, 	supportveh = 2,        heavyveh = 1,
