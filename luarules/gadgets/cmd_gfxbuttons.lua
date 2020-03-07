@@ -33,7 +33,7 @@ local GfxButtons = {
     [9] = { cmd = CMD.RECLAIM, texture = 'luaui/images/gfxbuttons/cmd_reclaim.png', },
     [10] = { cmd = CMD.REPAIR, texture = 'luaui/images/gfxbuttons/cmd_repair.png', },
     [11] = { cmd = CMD.RESTORE, texture = 'luaui/images/gfxbuttons/cmd_restore.png', },
-    [12] = { cmd = CMD.SELFD, texture = 'luaui/images/gfxbuttons/cmd_restore.png', },
+    [12] = { cmd = CMD.SELFD, texture = 'luaui/images/gfxbuttons/cmd_selfd.png', },
     [13] = { cmd = CMD_UNIT_SET_TARGET, texture = 'luaui/images/gfxbuttons/cmd_settarget.png', },
     [14] = { cmd = CMD.STOP, texture = 'luaui/images/gfxbuttons/cmd_stop.png', },
     [15] = { cmd = CMD.WAIT, texture = 'luaui/images/gfxbuttons/cmd_wait.png', },
