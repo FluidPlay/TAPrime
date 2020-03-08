@@ -244,10 +244,10 @@ local function SetCount(set)
   return count
 end
 
-local function getSqrDistance(x1,z1,x2,z2)
-  local dx,dz = x1-x2,z1-z2
-  return (dx*dx)+(dz*dz)
-end
+--local function getSqrDistance(x1,z1,x2,z2)
+--  local dx,dz = x1-x2,z1-z2
+--  return (dx*dx)+(dz*dz)
+--end
 
 
 --------------------------------------------------------------------------------
