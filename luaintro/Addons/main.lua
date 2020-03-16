@@ -254,7 +254,8 @@ if k%2 == 1 then
 end
 
 local loadedFontSize = 70
-local font = gl.LoadFont("FreeSansBold.otf", 70, 22, 1.15)
+--gl.LoadFont( fontfile , size = 14, outlinewidth = 2, outlineweight = 15)
+local font = gl.LoadFont("LuaUI/Fonts/Uplifting-dYeE.ttf", 70, 32, 1.15)--glyphsize=70,size=22; FreeSansBold.otf, Rex-Bold.otf,WatchtowerMiddle-LM6Z.otf
 
 function DrawRectRound(px,py,sx,sy,cs)
 
@@ -458,7 +459,7 @@ function addon.DrawLoadScreen()
 		end
 		local numLines = 1
 		local image_text = nil
-		local fontSize = barTextSize * 0.77
+		local fontSize = barTextSize * 1 --0.77
 		local image_size = 0.0485
 		local height = 0.123
 

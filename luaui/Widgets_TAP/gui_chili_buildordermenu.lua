@@ -47,16 +47,16 @@ local Config = {
         name = 'ordermenu',
         rows = 5, columns = 4,
         x = '0%', y = '25%',
-        width = '17%', height = '16.25%', --width 14, height 20%
+        width = '17%', height = '17.5%', --width 14, height 20%
         orientation = 'horizontal',
         maxWidth = 490, --420
         padding = {2, 2, 2, 2},     -- outer panel
     },
     buildmenu = {
         name = 'buildmenu',
-        rows = 4, columns = 5,
-        x = '0%', y = '41%',
-        width = '17%', height = '15%',  -- button width/height within the area (20,20)
+        rows = 3, columns = 5,
+        x = '0%', y = '42.5%',
+        width = '17%', height = '14%', --was 15 -- button width/height within the area (20,20)
         orientation = 'horizontal',
         maxWidth = 490,
         padding = {5, 5, 5, 5},
@@ -64,9 +64,9 @@ local Config = {
     },
     buildmenuAdv = {
         name = 'buildmenuAdv',
-        rows = 4, columns = 5,
-        x = '0%', y = '64.5%',
-        width = '17%', height = '15%', -- 20, 20
+        rows = 3, columns = 5,
+        x = '0%', y = '57%', --64.5
+        width = '17%', height = '14%', -- 20, 20
         orientation = 'horizontal',
         maxWidth = 490,
         padding = {5, 5, 5, 5},
@@ -74,9 +74,9 @@ local Config = {
     },
     labels = {
         --captionFontMinSize = 12, -- test, not being used currently
-        captionFontMaxSize = 10, --18,
-        queueFontSize = 18, --32 (MaDDoX)
-        costFontSize = 9,
+        captionFontMaxSize = 18, --10, --18,
+        queueFontSize = 24, --18, --32 (MaDDoX)
+        costFontSize = 15, --9,
         showMetalCost = true,
         showEnergyCost = false, --true
     },
@@ -307,9 +307,15 @@ local function applyStateHandler(button, cmd)
 end --applyStateHandler
 --------------------------------------------------------------------------------
 local function InitializeControls()
-    orderGrid, orderWindow = createGridWindow(Config.ordermenu)
-    buildGrid, buildWindow = createGridWindow(Config.buildmenu)
-    buildGridAdv, buildWindowAdv = createGridWindow(Config.buildmenuAdv)
+    if not orderGrid or not orderWindow then
+        orderGrid, orderWindow = createGridWindow(Config.ordermenu)
+    end
+    if not buildGrid or not buildWindow then
+        buildGrid, buildWindow = createGridWindow(Config.buildmenu)
+    end
+    if not buildGridAdv or not buildWindowAdv then
+        buildGridAdv, buildWindowAdv = createGridWindow(Config.buildmenuAdv)
+    end
 end --InitializeControls
 
 ---- One of the selected units is an upgrading tech center, block left-click at it
@@ -627,6 +633,8 @@ function widget:Initialize()
 
     btWidth = processRelativeCoord(Config.ordermenu.width, vsx/Config.ordermenu.columns)
 
+    chiliCache = {}
+
     InitializeControls()
 end --Initialize
 
@@ -648,11 +656,32 @@ end --WorldTooltip
 
 function widget:ViewResize(newX,newY)
     -- TODO: implement config for this resize and make a reusable helper function to handle it
-    Config.buildmenu.height = buildWindow.width * (Config.buildmenu.rows / Config.buildmenu.columns)
-    buildWindow:SetPos(nil, nil, nil, Config.buildmenu.height)
+    --widget:Shutdown()
 
-    Config.buildmenuAdv.height = buildWindowAdv.width * (Config.buildmenuAdv.rows / Config.buildmenuAdv.columns)
-    buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.height)
+    btWidth = processRelativeCoord(Config.ordermenu.width, vsx/Config.ordermenu.columns)
+
+    chiliCache = {}
+
+    InitializeControls()
+
+    --Config.ordermenu.height = '17.5%'
+    --Config.ordermenu.y = '25%'
+    --orderWindow:SetPos(nil, nil, nil, Config.ordermenu.y)
+    --
+    --Config.buildmenu.height = '14%'
+    --Config.buildmenu.y = '42.5%'
+    --buildWindow:SetPos(nil, nil, nil, Config.buildmenu.y)
+    --
+    --Config.buildmenuAdv.height = '14%'
+    --Config.buildmenuAdv.y = '61.5%'
+    --buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.y)
+
+
+    --Config.buildmenu.height = buildWindow.width * (Config.buildmenu.rows / Config.buildmenu.columns)
+    --buildWindow:SetPos(nil, nil, nil, Config.buildmenu.height)
+    --
+    --Config.buildmenuAdv.height = buildWindowAdv.width * (Config.buildmenuAdv.rows / Config.buildmenuAdv.columns)
+    --buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.height)
 end --ViewResize
 
 function widget:Shutdown()
