@@ -14,7 +14,16 @@ local skin = {
 
 skin.general = {
   --font        = "FreeSansBold.ttf",
-  fontsize    = 13,
+  --fontsize    = 13,
+  font = {
+      font    = "LuaUI/Fonts/Uplifting-dYeE.ttf",
+      color        = {1,1,1,1},
+      outlineColor = {0.05,0.05,0.05,0.9},
+      outline = false,
+      shadow  = true,
+      size    = 13,
+  },
+
   textColor   = {1.0, 1.0, 1.0, 1.0},
   focusColor   = {0.35, 0.35, 1.0, 0.9},
   borderColor  = {1.0, 1.0, 1.0, 1.0},
@@ -22,11 +31,11 @@ skin.general = {
   --padding         = {5, 5, 5, 5}, --// padding: left, top, right, bottom
   backgroundColor = {0.1, 0.1, 0.1, 0.7},
 
-  font = {
-    outlineColor     = {0.2,0.2,0.2,0.3},
-    --autoOutlineColor = false,
-    --shadow           = true,
-  },
+  --font = {
+  --  outlineColor     = {0.2,0.2,0.2,0.3},
+  --  --autoOutlineColor = false,
+  --  --shadow           = true,
+  --},
 }
 
 skin.icons = {
@@ -34,6 +43,7 @@ skin.icons = {
 }
 
 skin.button = {
+
   TileImageFG = ":cl:glassFG.png",
   TileImageBK = ":cl:glassBK.png",
   tiles       = {6,6,6,6},
