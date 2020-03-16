@@ -47,7 +47,7 @@ local Config = {
         name = 'ordermenu',
         rows = 5, columns = 4,
         x = '0%', y = '25%',
-        width = '17%', height = '17.5%', --width 14, height 20%
+        width = '17%', height = '14%', --'17.5%', --width 14, height 20%
         orientation = 'horizontal',
         maxWidth = 490, --420
         padding = {2, 2, 2, 2},     -- outer panel
@@ -59,7 +59,7 @@ local Config = {
         width = '17%', height = '14%', --was 15 -- button width/height within the area (20,20)
         orientation = 'horizontal',
         maxWidth = 490,
-        padding = {5, 5, 5, 5},
+        padding = {2,2,2,2}, --5, 5, 5, 5},
         --sortBy = 'customParams.tier',
     },
     buildmenuAdv = {
@@ -69,7 +69,7 @@ local Config = {
         width = '17%', height = '14%', -- 20, 20
         orientation = 'horizontal',
         maxWidth = 490,
-        padding = {5, 5, 5, 5},
+        padding = {2,2,2,2}, --5, 5, 5, 5},
         --sortBy = 'customParams.tier',
     },
     labels = {
@@ -658,11 +658,11 @@ function widget:ViewResize(newX,newY)
     -- TODO: implement config for this resize and make a reusable helper function to handle it
     --widget:Shutdown()
 
-    btWidth = processRelativeCoord(Config.ordermenu.width, vsx/Config.ordermenu.columns)
-
-    chiliCache = {}
-
-    InitializeControls()
+        --btWidth = processRelativeCoord(Config.ordermenu.width, vsx/Config.ordermenu.columns)
+        --
+        --chiliCache = {}
+        --
+        --InitializeControls()
 
     --Config.ordermenu.height = '17.5%'
     --Config.ordermenu.y = '25%'
@@ -677,11 +677,14 @@ function widget:ViewResize(newX,newY)
     --buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.y)
 
 
-    --Config.buildmenu.height = buildWindow.width * (Config.buildmenu.rows / Config.buildmenu.columns)
-    --buildWindow:SetPos(nil, nil, nil, Config.buildmenu.height)
-    --
-    --Config.buildmenuAdv.height = buildWindowAdv.width * (Config.buildmenuAdv.rows / Config.buildmenuAdv.columns)
-    --buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.height)
+    Config.ordermenu.height = orderWindow.width * (Config.ordermenu.rows / Config.ordermenu.columns)
+    orderWindow:SetPos(nil, nil, nil, Config.ordermenu.height)
+
+    Config.buildmenu.height = buildWindow.width * (Config.buildmenu.rows / Config.buildmenu.columns)
+    buildWindow:SetPos(nil, nil, nil, Config.buildmenu.height)
+
+    Config.buildmenuAdv.height = buildWindowAdv.width * (Config.buildmenuAdv.rows / Config.buildmenuAdv.columns)
+    buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.height)
 end --ViewResize
 
 function widget:Shutdown()

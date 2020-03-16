@@ -20,6 +20,7 @@ if (Spring.GetConfigInt("LoadscreenTips",1) or 1) == 0 then
 end
 
 local lastLoadMessage = ""
+local fontPath = "LuaUI/Fonts/Kelson Sans Regular.otf" --Rajdhani-SemiBold.ttf" --Uplifting-dYeE.ttf"
 
 function addon.LoadProgress(message, replaceLastLine)
 	lastLoadMessage = message
@@ -253,9 +254,12 @@ if k%2 == 1 then
 --	random_tip_or_desc = quotes[((math.ceil(k/3)) % #quotes) + 1]
 end
 
-local loadedFontSize = 70
+local loadedFontSize = 45 --56 --70
 --gl.LoadFont( fontfile , size = 14, outlinewidth = 2, outlineweight = 15)
-local font = gl.LoadFont("LuaUI/Fonts/Uplifting-dYeE.ttf", 70, 32, 1.15)--glyphsize=70,size=22; FreeSansBold.otf, Rex-Bold.otf,WatchtowerMiddle-LM6Z.otf
+--local fontPath = "LuaUI/Fonts/Uplifting-dYeE.ttf"
+-- fontName, size, outwidth, outweight
+local font = gl.LoadFont(fontPath, loadedFontSize, 16, 1.15) --glyphsize=70,size=22; FreeSansBold.otf, Rex-Bold.otf,WatchtowerMiddle-LM6Z.otf
+local fontSizeMult = 0.7 --0.8
 
 function DrawRectRound(px,py,sx,sy,cs)
 
@@ -449,7 +453,7 @@ function addon.DrawLoadScreen()
 
 	if showTips then
 		-- In this format, there can be an optional image before the tip/description.
-		-- Any image ends in .dss, so if such a text piece is found, we extract that and show it as an image.
+		-- Any image ends in .dds, so if such a text piece is found, we extract that and show it as an image.
 		local text_to_show = random_tip_or_desc
 		yPos = yPosTips
 		if random_tip_or_desc[2] then
@@ -459,7 +463,7 @@ function addon.DrawLoadScreen()
 		end
 		local numLines = 1
 		local image_text = nil
-		local fontSize = barTextSize * 1 --0.77
+		local fontSize = barTextSize * fontSizeMult --0.77
 		local image_size = 0.0485
 		local height = 0.123
 
@@ -492,6 +496,7 @@ function addon.DrawLoadScreen()
 		end
 
 		if random_tip_or_desc[2] then
+			--font:Print(name, posX, posY, fontSize, "con")
 			font:Print('\255\255\222\155'..random_tip_or_desc[2], vsx * 0.79, (vsy * ((yPos-0.0175)-height)) +(fontSize*2.66) , fontSize, "oar")
 		end
 		gl.PopMatrix()
