@@ -66,6 +66,7 @@ local exceptionArray = {
   coroutpost = true, coroutpost2 = true, coroutpost3 = true, coroutpost4 = true,
   armck = true, armcv = true, armca = true, armack = true, armacv = true, armaca = true,
   corck = true, corcv = true, corca = true, corack = true, coracv = true, coraca = true,
+  corcrw = true,
 }
 ----------------------------------------------
 ------------------------------------------
