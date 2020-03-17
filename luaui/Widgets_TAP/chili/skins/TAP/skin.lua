@@ -9,6 +9,8 @@ local skin = {
   }
 }
 
+VFS.Include("gamedata/taptools.lua")
+
 --//=============================================================================
 --//
 
@@ -16,7 +18,7 @@ skin.general = {
   --font        = "FreeSansBold.ttf",
   --fontsize    = 13,
   font = {
-      font    = "LuaUI/Fonts/Uplifting-dYeE.ttf",
+      font    = FontPath, --"LuaUI/Fonts/Uplifting-dYeE.ttf",
       color        = {1,1,1,1},
       outlineColor = {0.05,0.05,0.05,0.9},
       outline = false,

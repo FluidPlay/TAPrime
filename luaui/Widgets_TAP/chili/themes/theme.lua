@@ -9,7 +9,7 @@ theme.name = "default"
 --//=============================================================================
 --// Define default skins
 
-local defaultSkin = "TAP" --lima
+local defaultSkin = "TAP"
 --local defaultSkin = "Robocracy"
 --local defaultSkin = "DarkGlass"
 

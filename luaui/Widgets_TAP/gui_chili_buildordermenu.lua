@@ -26,11 +26,12 @@ local spGetSelectedUnits = Spring.GetSelectedUnits
 local stringfind = string.find
 local stringsub = string.sub
 local stringgsub = string.gsub
-local mathceil = math.ceil
-local mathmax = math.max
-local mathmin = math.min
+local ceil = math.ceil
+local max = math.max
+local min = math.min
 
 local fontSizeOffset = 0 -- -5 || Buttons' font size offset (anything but zero is breaking with small screen sizes)
+local minSideMenuWidth = 280
 
 local glGetTextWidth = gl.GetTextWidth
 
@@ -46,17 +47,18 @@ local Config = {
     ordermenu = {
         name = 'ordermenu',
         rows = 5, columns = 4,
-        x = '0%', y = '25%',
-        width = '17%', height = '14%', --'17.5%', --width 14, height 20%
+        x = '0%', y = vsy*0.25, --'25%',
+        width = max(vsx*0.14, minSideMenuWidth), height = vsy*0.14, --'14%', --'17.5%', --width 14, height 20%
         orientation = 'horizontal',
         maxWidth = 490, --420
+        minWidth = 280,
         padding = {2, 2, 2, 2},     -- outer panel
     },
     buildmenu = {
         name = 'buildmenu',
         rows = 3, columns = 5,
-        x = '0%', y = '42.5%',
-        width = '17%', height = '14%', --was 15 -- button width/height within the area (20,20)
+        x = '0%', y = vsy*0.41, --'41%',
+        width = max(vsx*0.14,minSideMenuWidth), height = vsy*0.14, --was 15 -- button width/height within the area (20,20)
         orientation = 'horizontal',
         maxWidth = 490,
         padding = {2,2,2,2}, --5, 5, 5, 5},
@@ -65,8 +67,8 @@ local Config = {
     buildmenuAdv = {
         name = 'buildmenuAdv',
         rows = 3, columns = 5,
-        x = '0%', y = '57%', --64.5
-        width = '17%', height = '14%', -- 20, 20
+        x = '0%', y = vsy*0.57, --'57%', --64.5
+        width = max(vsx*0.14,minSideMenuWidth), height = vsy*0.14, -- 20, 20
         orientation = 'horizontal',
         maxWidth = 490,
         padding = {2,2,2,2}, --5, 5, 5, 5},
@@ -182,7 +184,7 @@ local function createGridWindow(config)
     }
 
     local function updateGrid()
-        local rowsNeeded = mathceil(#grid.children / grid.columns)
+        local rowsNeeded = ceil(#grid.children / grid.columns)
         if rowsNeeded > grid.rows then
             local ratio = (gridWindow.height / config.rows) / (gridWindow.width / config.columns)
             grid:SetPos(nil, nil, nil, (grid.width / grid.columns) * ratio * rowsNeeded)
@@ -250,6 +252,7 @@ local function applyHighlightHandler(button, cmd)
         --- Using cmd.showUnique for per-unit upgrade buttons
         elseif cmd.showUnique then
             --Spring.Echo("Show Unique found!")
+            -- TODO: Add upgrade cost ~ here
             if button.state.hovered then
                 tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
             end
@@ -261,7 +264,7 @@ local function applyHighlightHandler(button, cmd)
         elseif button.cmdID == cmdID then
             tryApplyColor(selected)
         elseif button.state.hovered then
-            tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
+            --tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
             tryApplyColor(hovered)
         else tryApplyColor(out)
         end
@@ -397,7 +400,7 @@ local function addOrderCommand(cmd)
         end
         button:SetCaption(truncName) --cmd.name
         local s = (btWidth - button.textPadding * 2) / glGetTextWidth(button.caption)
-        button.font:SetSize(mathmin(s, Config.labels.captionFontMaxSize) + fontSizeOffset)
+        button.font:SetSize(min(s, Config.labels.captionFontMaxSize) + fontSizeOffset)
     end
     chiliCache['button' .. cmd.id] = button
     applyHighlightHandler(button, cmd)
@@ -445,7 +448,7 @@ local function addStateCommand(cmd)
     end
     chiliCache['button' .. cmd.id] = button
     local s = (btWidth - button.textPadding * 2) / glGetTextWidth(button.caption)
-    button.font:SetSize(mathmin(s, Config.labels.captionFontMaxSize)+fontSizeOffset)
+    button.font:SetSize(min(s, Config.labels.captionFontMaxSize)+fontSizeOffset)
     applyHighlightHandler(button, cmd)
     applyStateHandler(button, cmd)
     orderGrid:AddChild(button)
@@ -556,7 +559,7 @@ local function processAllCommands()
     for _,cmd in ipairs(lastCommands) do
         if cmd.name ~= '' and not (Config.hiddenCMDs[cmd.name] or Config.hiddenCMDs[cmd.action]) then
             local grid = processCommand(cmd)
-            haveCmd = mathmax(haveCmd, grid)
+            haveCmd = max(haveCmd, grid)
             commands[grid][#commands[grid]+1] = cmd
         end
     end
@@ -656,35 +659,46 @@ end --WorldTooltip
 
 function widget:ViewResize(newX,newY)
     -- TODO: implement config for this resize and make a reusable helper function to handle it
+
+    --Spring.SendCommands("luaui reload")
+
+    --vsx, vsy = newX, newY
+    --btWidth = processRelativeCoord(Config.ordermenu.width, vsx/Config.ordermenu.columns)
     --widget:Shutdown()
 
-        --btWidth = processRelativeCoord(Config.ordermenu.width, vsx/Config.ordermenu.columns)
-        --
-        --chiliCache = {}
-        --
-        --InitializeControls()
-
-    --Config.ordermenu.height = '17.5%'
-    --Config.ordermenu.y = '25%'
-    --orderWindow:SetPos(nil, nil, nil, Config.ordermenu.y)
+    --chiliCache = {}
     --
-    --Config.buildmenu.height = '14%'
-    --Config.buildmenu.y = '42.5%'
-    --buildWindow:SetPos(nil, nil, nil, Config.buildmenu.y)
+    --InitializeControls()
+
+
     --
-    --Config.buildmenuAdv.height = '14%'
-    --Config.buildmenuAdv.y = '61.5%'
-    --buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.y)
+    --Config.ordermenu.width = max(vsx*0.14,minSideMenuWidth)
+    --Config.ordermenu.height = vsy*0.14
+    --Config.ordermenu.y = vsy*0.25
+    ---- x, y, width, height
+    --orderWindow:SetPos(nil, Config.ordermenu.y, Config.ordermenu.width, Config.buildmenuAdv.height)
+    ----
+    --Config.buildmenu.width = max(vsx*0.14,minSideMenuWidth)
+    --Config.buildmenu.height = vsy*0.14
+    --Config.buildmenu.y = vsy*0.41
+    --buildWindow:SetPos(nil, Config.buildmenu.y, Config.buildmenu.width, Config.buildmenuAdv.height)
+    ----
+    --Config.buildmenuAdv.width = max(vsx*0.14,minSideMenuWidth)
+    --Config.buildmenuAdv.height = vsy*0.14
+    --Config.buildmenuAdv.y = vsy*0.57
+    --buildWindowAdv:SetPos(nil, Config.buildmenuAdv.y, Config.buildmenuAdv.width, Config.buildmenuAdv.height)
+    --
+    --updateRequired = true
 
-
-    Config.ordermenu.height = orderWindow.width * (Config.ordermenu.rows / Config.ordermenu.columns)
-    orderWindow:SetPos(nil, nil, nil, Config.ordermenu.height)
-
-    Config.buildmenu.height = buildWindow.width * (Config.buildmenu.rows / Config.buildmenu.columns)
-    buildWindow:SetPos(nil, nil, nil, Config.buildmenu.height)
-
-    Config.buildmenuAdv.height = buildWindowAdv.width * (Config.buildmenuAdv.rows / Config.buildmenuAdv.columns)
-    buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.height)
+--[Original]
+--    Config.ordermenu.height = orderWindow.width * (Config.ordermenu.rows / Config.ordermenu.columns)
+--    orderWindow:SetPos(nil, nil, nil, Config.ordermenu.height)
+--
+--    Config.buildmenu.height = buildWindow.width * (Config.buildmenu.rows / Config.buildmenu.columns)
+--    buildWindow:SetPos(nil, nil, nil, Config.buildmenu.height)
+--
+--    Config.buildmenuAdv.height = buildWindowAdv.width * (Config.buildmenuAdv.rows / Config.buildmenuAdv.columns)
+--    buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.height)
 end --ViewResize
 
 function widget:Shutdown()

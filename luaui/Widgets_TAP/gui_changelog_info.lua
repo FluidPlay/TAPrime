@@ -12,8 +12,10 @@ end
 
 --local show = true
 
+VFS.Include("gamedata/taptools.lua")
+
 local loadedFontSize = 32
-local font = gl.LoadFont("LuaUI/Fonts/FreeSansBold.otf", loadedFontSize, 16,2)
+local font = gl.LoadFont(FontPath, loadedFontSize, 24,2) --"LuaUI/Fonts/FreeSansBold.otf"
 
 local bgcorner = "LuaUI/Images/bgcorner.png"
 
@@ -218,7 +220,7 @@ function DrawTextarea(x,y,width,height,scrollbar)
 	
 	local fontSizeTitle				= 17		-- is version number
 	local fontSizeDate				= 13
-	local fontSizeLine				= 15
+	local fontSizeLine				= 18--15
 	local lineSeparator				= 2
 	
 	local fontColorTitle			= {1,1,1,1}

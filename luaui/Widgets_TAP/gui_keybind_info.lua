@@ -11,8 +11,10 @@ return {
 }
 end
 
+VFS.Include("gamedata/taptools.lua")
+
 local loadedFontSize = 32
-local font = gl.LoadFont("LuaUI/Fonts/FreeSansBold.otf", loadedFontSize, 16,2)
+local font = gl.LoadFont(FontPath, loadedFontSize, 16,2)
 
 local bgcorner = "LuaUI/Images/bgcorner.png"
 
@@ -154,14 +156,16 @@ function DrawTextTable(t,x,y)
         -- title line
         local title = t[1] or ""
         local line = " " .. titleColor .. title -- a WTF whitespace is needed here, the colour doesn't show without it...
-        gl.Text(line, x+4, y-((13)*j)+5, 14)
+        --gl.Text(line, x+4, y-((13)*j)+5, 14)
+          font:Print(line, x+4, y-((13)*j)+5, 14)
 		screenWidth = math.max(glGetTextWidth(line)*13,screenWidth)
       else
         -- keybind line
         local bind = string.upper(t[1]) or ""
         local effect = t[2] or ""
         local line = " " .. bindColor .. bind .. "   " .. descriptionColor .. effect
-        gl.Text(line, x+14, y-(13)*j, 11)
+        --gl.Text(line, x+14, y-(13)*j, 11)
+          font:Print(line, x+14, y-(13)*j, 11)
 		width = math.max(glGetTextWidth(line)*11,width)
       end
       height = height + 13
@@ -199,7 +203,7 @@ function DrawWindow()
 	
 	-- title background
     local title = "Keybinds"
-    local titleFontSize = 18
+    local titleFontSize = 24 --18
     gl.Color(0,0,0,0.8)
     titleRect = {x-bgMargin, y+bgMargin, x-bgMargin+(glGetTextWidth(title)*titleFontSize)+27, y+37}
 	RectRound(titleRect[1], titleRect[2], titleRect[3], titleRect[4], 8, 1,1,0,0)
@@ -217,7 +221,7 @@ function DrawWindow()
     DrawTextTable(Units_III,x,y-24)
 	
     gl.Color(1,1,1,1)
-    gl.Text("These keybinds are set by default. If you remove/replace hotkey widgets, or use your own uikeys, they might stop working!", screenX+12, y-screenHeight + 14, 12.5)
+    font:Print("These keybinds are set by default. If you remove/replace hotkey widgets, or use your own uikeys, they might stop working!", screenX+12, y-screenHeight + 14, 16) --size:12.5
 end
 
 

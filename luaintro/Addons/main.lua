@@ -20,7 +20,7 @@ if (Spring.GetConfigInt("LoadscreenTips",1) or 1) == 0 then
 end
 
 local lastLoadMessage = ""
-local fontPath = "LuaUI/Fonts/Kelson Sans Regular.otf" --Rajdhani-SemiBold.ttf" --Uplifting-dYeE.ttf"
+local fontPath = "LuaUI/Fonts/Kelson Sans Regular.otf" --"Rajdhani-SemiBold.ttf" --"Uplifting-dYeE.ttf"
 
 function addon.LoadProgress(message, replaceLastLine)
 	lastLoadMessage = message
