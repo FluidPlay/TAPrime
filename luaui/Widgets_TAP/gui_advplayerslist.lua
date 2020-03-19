@@ -43,6 +43,9 @@ end
 -- v20   (Floris): added /alwayshidespecs + fixed drawing when playerlist is at the leftside of the screen
 -- v21   (Floris): toggles LoS and /specfullview when camera tracking a player
 -- v22   (Floris): added auto collapse function
+-- v23   (MaDDoX): added custom font
+
+VFS.Include("gamedata/taptools.lua")
 
 --------------------------------------------------------------------------------
 -- Config
@@ -57,6 +60,8 @@ local alwaysHideSpecs = false
 local lockcameraHideEnemies = true 			-- specfullview
 local lockcameraLos = true					-- togglelos
 local collapsable = false
+local loadedFontSize = 32
+local font = gl.LoadFont(FontPath, loadedFontSize, 24, 1.25) --"LuaUI/Fonts/FreeSansBold.otf"
 
 --------------------------------------------------------------------------------
 -- SPEED UPS
@@ -94,18 +99,23 @@ local GetCameraNames = Spring.GetCameraNames
 local gl_Texture		= gl.Texture
 local gl_Rect			= gl.Rect
 local gl_TexRect	 	= gl.TexRect
+--local gl_Text			= gl.Text
 local gl_Color			= gl.Color
 local gl_CreateList		= gl.CreateList
 local gl_BeginEnd		= gl.BeginEnd
 local gl_DeleteList		= gl.DeleteList
 local gl_CallList		= gl.CallList
-local gl_Text			= gl.Text
 local gl_GetTextWidth	= gl.GetTextWidth
 local gl_GetTextHeight	= gl.GetTextHeight
 
 --------------------------------------------------------------------------------
 -- IMAGES
 --------------------------------------------------------------------------------
+
+local function SetColor(r,g,b,a)
+    gl_Color(r,g,b,a)
+    font:SetTextColor(r,g,b,a)
+end
 
 local imageDirectory  = ":n:LuaUI/Images/advplayerslist/"
 
@@ -797,10 +807,10 @@ function PlayerDataBroadcast(playerName, msg)
 					gl.Translate(screenshotPosX, screenshotPosY,0)
 					gl.Scale(widgetScale,widgetScale,0)
 
-					gl_Color(0,0,0,0.66)
+					SetColor(0,0,0,0.66)
 					local margin = 2
 					RectRound(-margin,-margin,screenshotWidth+margin+margin,screenshotHeight+15+margin+margin, 6, true)
-					gl_Color(1,1,1,0.025)
+					SetColor(1,1,1,0.025)
 					RectRound(0,0,screenshotWidth,screenshotHeight+12+margin+margin, 4.5, true)
 
 					gl.Text(screenshotPlayer, 4, screenshotHeight+6.5, 11, "on")
@@ -1949,22 +1959,22 @@ function CreateBackground()
 		WG['guishader_api'].InsertRect(absLeft,absBottom,absRight,absTop,'advplayerlist')
 	end
 	Background = gl_CreateList(function()
-		gl_Color(0,0,0,ui_opacity)
+		SetColor(0,0,0,ui_opacity)
 		RectRound(BLcornerX,BLcornerY,TRcornerX,TRcornerY,6)
 		
 		local padding = 2.75
-		gl_Color(1,1,1,ui_opacity*0.04)
+		SetColor(1,1,1,ui_opacity*0.04)
 		RectRound(BLcornerX+padding,BLcornerY+padding,TRcornerX-padding,TRcornerY-padding,padding,true)
 
 		if collapsed then
 			local text = 'Playerlist'
 			local yOffset = collapsedHeight*0.5
 			local xOffset = collapsedHeight/6
-			gl_Color(0,0,0,0.2)
-			gl_Text(text, widgetPosX - 1 + xOffset, TRcornerY-padding -yOffset, 13, "")
-			gl_Text(text, widgetPosX + 1 + xOffset, TRcornerY-padding -yOffset, 13, "")
-			gl_Color(0.9,0.9,0.9,0.75)
-			gl_Text(text, widgetPosX + xOffset, TRcornerY-padding -yOffset+0.8, 13, "n")
+			SetColor(0,0,0,0.2)
+			font:Print(text, widgetPosX - 1 + xOffset, TRcornerY-padding -yOffset, 13, "")
+			font:Print(text, widgetPosX + 1 + xOffset, TRcornerY-padding -yOffset, 13, "")
+			SetColor(0.9,0.9,0.9,0.75)
+			font:Print(text, widgetPosX + xOffset, TRcornerY-padding -yOffset+0.8, 13, "n")
 		end
 		--DrawRect(BLcornerX,BLcornerY,TRcornerX,TRcornerY)
 		-- draws highlight (top and left sides)
@@ -1972,7 +1982,7 @@ function CreateBackground()
 		--gl_Rect(widgetPosX-margin-1,					widgetPosY + widgetHeight +margin, 	widgetPosX + widgetWidth+margin, 			widgetPosY + widgetHeight-1+margin)
 		--gl_Rect(widgetPosX-margin-1 , 					widgetPosY-margin, 					widgetPosX-margin, 							widgetPosY-margin + widgetHeight + 1  - 1+margin+margin)
 		
-		gl_Color(1,1,1,1)
+		SetColor(1,1,1,1)
 	end)
 
 end
@@ -2100,11 +2110,11 @@ function DrawLabel(text, vOffset, drawSeparator)
 	if widgetWidth < 67 then
 		text = string.sub(text, 0, 1)
 	end
-	gl_Color(0,0,0,0.2)
-	gl_Text(text, widgetPosX - 1, widgetPosY + widgetHeight -vOffset+6.6, 12, "")
-	gl_Text(text, widgetPosX + 1, widgetPosY + widgetHeight -vOffset+6.6, 12, "")
-	gl_Color(0.9,0.9,0.9,0.75)
-	gl_Text(text, widgetPosX, widgetPosY + widgetHeight -vOffset+7.5, 12, "n")
+	SetColor(0,0,0,0.2)
+	font:Print(text, widgetPosX - 1, widgetPosY + widgetHeight -vOffset+6.6, 12, "")
+	font:Print(text, widgetPosX + 1, widgetPosY + widgetHeight -vOffset+6.6, 12, "")
+	SetColor(0.9,0.9,0.9,0.75)
+	font:Print(text, widgetPosX, widgetPosY + widgetHeight -vOffset+7.5, 12, "n")
 	
 	if drawSeparator then
 		--DrawSeparator(vOffset)
@@ -2115,11 +2125,11 @@ function DrawLabelTip(text, vOffset, xOffset)
 	if widgetWidth < 67 then
 		text = string.sub(text, 0, 1)
 	end
-	gl_Color(0,0,0,0.08)
-	gl_Text(text, widgetPosX + xOffset - 1, widgetPosY + widgetHeight -vOffset+6.8, 10, "")
-	gl_Text(text, widgetPosX + xOffset + 1, widgetPosY + widgetHeight -vOffset+6.8, 10, "")
-	gl_Color(0.9,0.9,0.9,0.35)
-	gl_Text(text, widgetPosX + xOffset, widgetPosY + widgetHeight -vOffset+7.5, 10, "n")
+	SetColor(0,0,0,0.08)
+	font:Print(text, widgetPosX + xOffset - 1, widgetPosY + widgetHeight -vOffset+6.8, 10, "")
+	font:Print(text, widgetPosX + xOffset + 1, widgetPosY + widgetHeight -vOffset+6.8, 10, "")
+	SetColor(0.9,0.9,0.9,0.35)
+	font:Print(text, widgetPosX + xOffset, widgetPosY + widgetHeight -vOffset+7.5, 10, "n")
 end
 
 function DrawSeparator(vOffset)
@@ -2133,8 +2143,8 @@ end
 
 function DrawLabelRightside(text, vOffset)
 	local textLength = (gl_GetTextWidth(text)*12)*widgetScale
-	gl_Color(1,1,1,0.13)
-	gl_Text(text, widgetRight - textLength, widgetPosY + widgetHeight -vOffset+7.5, 12, "n")
+	SetColor(1,1,1,0.13)
+	font:Print(text, widgetRight - textLength, widgetPosY + widgetHeight -vOffset+7.5, 12, "n")
 end
 
 
@@ -2421,8 +2431,8 @@ end
 
 function DrawChips(playerID, posY)
 	local xPos = m_name.posX + widgetPosX - 6
-	gl_Color(0.75,0.75,0.75,0.8)
-	gl_Text(playerScores[playerID].score, xPos-5, posY+4, 9.5, "r")
+	SetColor(0.75,0.75,0.75,0.8)
+	font:Print(playerScores[playerID].score, xPos-5, posY+4, 9.5, "r")
 	gl_Color(1,1,1,1)
 	gl_Texture(pics["chipPic"])
 	DrawRect(xPos+4, posY+3.5, xPos-2.5, posY + 10)
@@ -2609,13 +2619,13 @@ function DrawName(name, team, posY, dark, playerID)
 		DrawState(playerID, m_name.posX + widgetPosX, posY)
 	end
 	if (nameColourR + nameColourG*1.2 + nameColourB*0.4) < 0.8 then
-		gl_Text(colourNames(team) .. nameText, m_name.posX + widgetPosX + 3 + xPadding, posY + 4, 14, "o") -- draws name
+		font:Print(colourNames(team) .. nameText, m_name.posX + widgetPosX + 3 + xPadding, posY + 4, 14, "o") -- draws name
 	else
-		gl_Color(0,0,0,0.45)
-		gl_Text(nameText, m_name.posX + widgetPosX + 2 + xPadding, posY + 3, 14, "n") -- draws name
-		gl_Text(nameText, m_name.posX + widgetPosX + 4 + xPadding, posY + 3, 14, "n") -- draws name
-		gl_Color(nameColourR,nameColourG,nameColourB,1)
-		gl_Text(nameText, m_name.posX + widgetPosX + 3 + xPadding, posY + 4, 14, "n") -- draws name
+		SetColor(0,0,0,0.45)
+		font:Print(nameText, m_name.posX + widgetPosX + 2 + xPadding, posY + 3, 14, "n") -- draws name
+		font:Print(nameText, m_name.posX + widgetPosX + 4 + xPadding, posY + 3, 14, "n") -- draws name
+		SetColor(nameColourR,nameColourG,nameColourB,1)
+		font:Print(nameText, m_name.posX + widgetPosX + 3 + xPadding, posY + 4, 14, "n") -- draws name
 	end
 	if ignored then
 		gl_Color(1,1,1,0.9)	
@@ -2650,20 +2660,20 @@ function DrawSmallName(name, team, posY, dark, playerID, alpha)
 	if playerSpecs[playerID] ~= nil then
 		nameColourR,nameColourG,nameColourB,nameColourA = Spring_GetTeamColor(team)
 		if (nameColourR + nameColourG*1.2 + nameColourB*0.4) < 0.8 then
-			gl_Text(colourNames(team) .. name, m_name.posX + textindent + explayerindent + widgetPosX + 3, posY + 4, 11, "o")
+			font:Print(colourNames(team) .. name, m_name.posX + textindent + explayerindent + widgetPosX + 3, posY + 4, 11, "o")
 		else
-			gl_Color(0,0,0,0.3)
-			gl_Text(name, m_name.posX + textindent + explayerindent + widgetPosX + 2, posY + 3.2, 11, "n") -- draws name
-			gl_Text(name, m_name.posX + textindent + explayerindent + widgetPosX + 4, posY + 3.2, 11, "n") -- draws name
-			gl_Color(nameColourR,nameColourG,nameColourB,0.78)
-			gl_Text(name, m_name.posX + textindent + explayerindent + widgetPosX + 3, posY + 4, 11, "n")
+			SetColor(0,0,0,0.3)
+			font:Print(name, m_name.posX + textindent + explayerindent + widgetPosX + 2, posY + 3.2, 11, "n") -- draws name
+			font:Print(name, m_name.posX + textindent + explayerindent + widgetPosX + 4, posY + 3.2, 11, "n") -- draws name
+			SetColor(nameColourR,nameColourG,nameColourB,0.78)
+			font:Print(name, m_name.posX + textindent + explayerindent + widgetPosX + 3, posY + 4, 11, "n")
 		end
 	else
-		gl_Color(0,0,0,0.3)
-		gl_Text(name, m_name.posX + textindent + widgetPosX + 2.2, posY + 3.3, 10, "n")
-		gl_Text(name, m_name.posX + textindent + widgetPosX + 3.8, posY + 3.3, 10, "n")
-		gl_Color(1,1,1,alpha)
-		gl_Text(name, m_name.posX + textindent + widgetPosX + 3, posY + 4, 10, "n")
+		SetColor(0,0,0,0.3)
+		font:Print(name, m_name.posX + textindent + widgetPosX + 2.2, posY + 3.3, 10, "n")
+		font:Print(name, m_name.posX + textindent + widgetPosX + 3.8, posY + 3.3, 10, "n")
+		SetColor(1,1,1,alpha)
+		font:Print(name, m_name.posX + textindent + widgetPosX + 3, posY + 4, 10, "n")
 	end
 	if ignored then
 		gl_Color(1,1,1,0.7)	
@@ -2687,23 +2697,25 @@ function DrawID(playerID, posY, dark, dead)
 	if dead then
 		fontSize = 8
 		deadspace = 1.5
-		gl_Color(0,0,0,0.4)
+		SetColor(0,0,0,0.4)
 	else
-		gl_Color(0,0,0,0.6)
+		SetColor(0,0,0,0.6)
 	end
 	--gl_Text(colourNames(playerID) .. " ".. playerID .. "", m_ID.posX + widgetPosX+4.5, posY + 5, 11, "o")
-	gl_Text(spacer .. playerID .. "", m_ID.posX + deadspace + widgetPosX+4.5, posY + 4.1, fontSize, "n")
+	font:Print(spacer .. playerID .. "", m_ID.posX + deadspace + widgetPosX+4.5, posY + 4.1, fontSize, "n")
 	if dead then
-		gl_Color(1,1,1,0.33)
+		SetColor(1,1,1,0.33)
 	else
-		gl_Color(1,1,1,0.5)
+		SetColor(1,1,1,0.5)
 	end
-	gl_Text(spacer .. playerID .. "", m_ID.posX + deadspace + widgetPosX+4.5, posY + 5, fontSize, "n")
+	font:Print(spacer .. playerID .. "", m_ID.posX + deadspace + widgetPosX+4.5, posY + 5, fontSize, "n")
+    SetColor(1,1,1,1)
 	gl_Color(1,1,1)
 end
 
 function DrawSkill(skill, posY, dark)
-	gl_Text(skill, m_skill.posX + widgetPosX + m_skill.width - 2, posY + 5.3, 9.5, "or")
+	font:Print(skill, m_skill.posX + widgetPosX + m_skill.width - 2, posY + 5.3, 9.5, "or")
+    SetColor(1,1,1,1)
 	gl_Color(1,1,1)
 end
 
@@ -2726,16 +2738,17 @@ function DrawPingCpu(pingLvl, cpuLvl, posY, spec, alpha, cpu, fps)
 				cpu = 99
 			end
 			if spec then
-				gl_Color(0,0,0,0.1+(grayvalue*0.4))
-				gl_Text(cpu, m_cpuping.posX + widgetPosX+11, posY + 4.3, 9, "r")
-				gl_Color(grayvalue,grayvalue,grayvalue,0.66*alpha*grayvalue)
-				gl_Text(cpu, m_cpuping.posX + widgetPosX+11, posY + 5.3, 9, "r")
+				SetColor(0,0,0,0.1+(grayvalue*0.4))
+				font:Print(cpu, m_cpuping.posX + widgetPosX+11, posY + 4.3, 9, "r")
+				SetColor(grayvalue,grayvalue,grayvalue,0.66*alpha*grayvalue)
+				font:Print(cpu, m_cpuping.posX + widgetPosX+11, posY + 5.3, 9, "r")
 			else
-				gl_Color(0,0,0,0.12+(grayvalue*0.44))
-				gl_Text(cpu, m_cpuping.posX + widgetPosX+11, posY + 4.3, 9.5, "r")
-				gl_Color(grayvalue,grayvalue,grayvalue,0.8*alpha*grayvalue)
-				gl_Text(cpu, m_cpuping.posX + widgetPosX+11, posY + 5.3, 9.5, "r")
+				SetColor(0,0,0,0.12+(grayvalue*0.44))
+				font:Print(cpu, m_cpuping.posX + widgetPosX+11, posY + 4.3, 9.5, "r")
+				SetColor(grayvalue,grayvalue,grayvalue,0.8*alpha*grayvalue)
+				font:Print(cpu, m_cpuping.posX + widgetPosX+11, posY + 5.3, 9.5, "r")
 			end
+            SetColor(1,1,1,1)
 			gl_Color(1,1,1)
 		end
 	else
@@ -2750,16 +2763,17 @@ function DrawPingCpu(pingLvl, cpuLvl, posY, spec, alpha, cpu, fps)
 				greyvalue = 1
 			end
 			if spec then
-				gl_Color(0,0,0,0.1+(grayvalue*0.4))
-				gl_Text(fps, m_cpuping.posX + widgetPosX+11, posY + 4.3, 9, "r")
-				gl_Color(grayvalue,grayvalue,grayvalue,0.77*alpha*grayvalue)
-				gl_Text(fps, m_cpuping.posX + widgetPosX+11, posY + 5.3, 9, "r")
+				SetColor(0,0,0,0.1+(grayvalue*0.4))
+				font:Print(fps, m_cpuping.posX + widgetPosX+11, posY + 4.3, 9, "r")
+				SetColor(grayvalue,grayvalue,grayvalue,0.77*alpha*grayvalue)
+				font:Print(fps, m_cpuping.posX + widgetPosX+11, posY + 5.3, 9, "r")
 			else
-				gl_Color(0,0,0,0.12+(grayvalue*0.44))
-				gl_Text(fps, m_cpuping.posX + widgetPosX+11, posY + 4.3, 9.5, "r")
-				gl_Color(grayvalue,grayvalue,grayvalue,alpha*grayvalue)
-				gl_Text(fps, m_cpuping.posX + widgetPosX+11, posY + 5.3, 9.5, "r")
+				SetColor(0,0,0,0.12+(grayvalue*0.44))
+				font:Print(fps, m_cpuping.posX + widgetPosX+11, posY + 4.3, 9.5, "r")
+				SetColor(grayvalue,grayvalue,grayvalue,alpha*grayvalue)
+				font:Print(fps, m_cpuping.posX + widgetPosX+11, posY + 5.3, 9.5, "r")
 			end
+            SetColor(1,1,1,1)
 			gl_Color(1,1,1)
 		else
 			gl_Texture(pics["cpuPic"])
@@ -2973,9 +2987,9 @@ function DrawTip(mouseX, mouseY)
 		for i, line in ipairs(textLines) do
 
 			if right then
-				gl_Text('\255\244\244\244'..line, mouseX+xoffset+(8*widgetScale)-tw, mouseY+(8*widgetScale)+ycorrection+th, fontSize, "o")
+				font:Print('\255\244\244\244'..line, mouseX+xoffset+(8*widgetScale)-tw, mouseY+(8*widgetScale)+ycorrection+th, fontSize, "o")
 			else
-				gl_Text('\255\244\244\244'..line, mouseX+xoffset+(8*widgetScale), mouseY+(8*widgetScale)+ycorrection+th, fontSize, "o")
+				font:Print('\255\244\244\244'..line, mouseX+xoffset+(8*widgetScale), mouseY+(8*widgetScale)+ycorrection+th, fontSize, "o")
 			end
 			th = th - lineHeight
 		end
@@ -3011,11 +3025,11 @@ function CreateShareSlider()
 		if right == true then
 			DrawRect(m_share.posX + widgetPosX  - 28,posY-1+sliderPosition, m_share.posX + widgetPosX  + 19,posY+17+sliderPosition)
 			gl_Texture(false)
-			gl_Text(amountEM.."", m_share.posX + widgetPosX  - 5,posY+3+sliderPosition)
+			font:Print(amountEM.."", m_share.posX + widgetPosX  - 5,posY+3+sliderPosition)
 		else
 			DrawRect(m_share.posX + widgetPosX  + 76,posY-1+sliderPosition, m_share.posX + widgetPosX  + 31,posY+17+sliderPosition)
 			gl_Texture(false)
-			gl_Text(amountEM.."", m_share.posX + widgetPosX  + 55,posY+3+sliderPosition)				
+			font:Print(amountEM.."", m_share.posX + widgetPosX  + 55,posY+3+sliderPosition)
 		end
 	elseif metalPlayer ~= nil then
 		posY = widgetPosY + widgetHeight - metalPlayer.posY
@@ -3027,11 +3041,11 @@ function CreateShareSlider()
 		if right == true then
 			DrawRect(m_share.posX + widgetPosX  - 12,posY-1+sliderPosition, m_share.posX + widgetPosX  + 35,posY+17+sliderPosition)
 			gl_Texture(false)
-			gl_Text(amountEM.."", m_share.posX + widgetPosX  + 11,posY+3+sliderPosition)
+			font:Print(amountEM.."", m_share.posX + widgetPosX  + 11,posY+3+sliderPosition)
 		else
 			DrawRect(m_share.posX + widgetPosX  + 88,posY-1+sliderPosition, m_share.posX + widgetPosX  + 47,posY+17+sliderPosition)
 			gl_Texture(false)
-			gl_Text(amountEM.."", m_share.posX + widgetPosX  + 71,posY+3+sliderPosition)
+			font:Print(amountEM.."", m_share.posX + widgetPosX  + 71,posY+3+sliderPosition)
 		end
 	end
 	

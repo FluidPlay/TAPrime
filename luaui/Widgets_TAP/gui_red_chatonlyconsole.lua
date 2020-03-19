@@ -424,7 +424,6 @@ end
 
 local function processLine(line,g,cfg,newlinecolor)
 
-	
 	g.vars.nextupdate = 0
 
 	local roster = sGetPlayerRoster()
