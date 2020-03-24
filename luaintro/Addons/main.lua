@@ -130,7 +130,7 @@ local tips = {
 local titleColor = "\255\215\255\215"
 local contentColor = "\255\255\255\255"
 local unit_descs = {
-    "corjuno.dds "..titleColor.."Pro Tip: \n"..contentColor.."Junos weapon gives generous and non-counterable line of sight at the impact spot. Aim it at hill tops whenever it makes sense, for even wider line of sight. Get some Energy Storages first, that weapon is e-hungry.",
+    "corjuno.dds "..titleColor.."Pro Tip: \n"..contentColor.."Junos weapon provides generous and non-counterable line of sight at the impact spot. Aim it at hill tops whenever it makes sense, for even wider line of sight. Each missile fired costs metal and energy, try using 'Set Target' if you're low on any of those.",
     "outpost.dds "..titleColor.."Pro Tip: \n"..contentColor.."Morphs in progress won't be interrupted if the Tech Center is destroyed. Start morphing an outpost to Tier 2 (if you didn't yet) if you feel you can't save the Tech Center.",
     "armtech.dds "..titleColor.."Pro Tip: \n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
     "armack.dds "..titleColor.."Adv. Builder (ARM T2):\n"..contentColor.."Advanced Builders can assist factory production, just like outposts, commanders and FARKs. Building (or morphing) a couple beforehand might save you from total disaster if you lose your T2 Tech Center.",
