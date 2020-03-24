@@ -65,6 +65,15 @@ local DISARM_DECAY_FRAMES = 1200
 
 local spGetGameFrame = Spring.GetGameFrame
 
+local loadedFontSize = 32
+local font = gl.LoadFont(FontPath, loadedFontSize, 24, 1.25)
+local gl_Color			= gl.Color
+
+local function SetColor(r,g,b,a)
+    gl_Color(r,g,b,a)
+    font:SetTextColor(r,g,b,a)
+end
+
 --------------------------------------------------------------------------------
 -- LOCALISATION
 --------------------------------------------------------------------------------
@@ -506,7 +515,7 @@ do
 
     function DrawStockpile(numStockpiled,numStockpileQued, freeStockpile)
         --// DRAW STOCKPILED MISSLES
-        glColor(1,1,1,1)
+        SetColor(1,1,1,1)
         glTexture("LuaUI/Images/nuke.png")
         local xoffset = barWidth+16
         for i=1,((numStockpiled>3) and 3) or numStockpiled do
@@ -515,9 +524,9 @@ do
         end
         glTexture(false)
         if freeStockpile then
-            glText(numStockpiled,barWidth+1.7,-(11*barHeight-2)-16,7.5,"cno")
+            font:Print(numStockpiled,barWidth+1.7,-(11*barHeight-2)-16,7.5,"cno")
         else
-            glText(numStockpiled..'/'..numStockpileQued,barWidth+1.7,-(11*barHeight-2)-16,7.5,"cno")
+            font:Print(numStockpiled..'/'..numStockpileQued,barWidth+1.7,-(11*barHeight-2)-16,7.5,"cno")
         end
     end
 
@@ -564,12 +573,12 @@ do
                     glMyText(1)
                 end
                 if (drawBarPercentages) then
-                    glColor(1,1,1,barAlpha)
-                    glText(barInfo.text,barStart,yoffset,4,"r")
+                    SetColor(1,1,1,barAlpha)
+                    font:Print(barInfo.text,barStart,yoffset,4,"r")
                 end
                 if (drawBarTitles) then
-                    glColor(1,1,1,titlesAlpha)
-                    glText(barInfo.title,0,yoffset,2.5,"cd")
+                    SetColor(1,1,1,titlesAlpha)
+                    font:Print(barInfo.title,0,yoffset,2.5,"cd")
                 end
                 if (barShader) then glMyText(0) end
             end
@@ -589,12 +598,12 @@ do
                     glMyText(1)
                 end
                 if (drawBarPercentages) then
-                    glColor(1,1,1,featureBarAlpha)
-                    glText(barInfo.text,fBarStart,yoffset,4,"r")
+                    SetColor(1,1,1,featureBarAlpha)
+                    font:Print(barInfo.text,fBarStart,yoffset,4,"r")
                 end
                 if (drawBarTitles) then
-                    glColor(1,1,1,featureTitlesAlpha)
-                    glText(barInfo.title,0,yoffset,2.5,"cd")
+                    SetColor(1,1,1,featureTitlesAlpha)
+                    font:Print(barInfo.title,0,yoffset,2.5,"cd")
                 end
                 if (barShader) then glMyText(0) end
             end

@@ -1,4 +1,3 @@
-
 if addon.InGetInfo then
 	return {
 		name    = "Main",
@@ -12,6 +11,7 @@ if addon.InGetInfo then
 	}
 end
 
+VFS.Include("gamedata/taptools.lua")
 ------------------------------------------
 
 local showTips = true
@@ -20,7 +20,6 @@ if (Spring.GetConfigInt("LoadscreenTips",1) or 1) == 0 then
 end
 
 local lastLoadMessage = ""
-local fontPath = "LuaUI/Fonts/Kelson Sans Regular.otf" --"Rajdhani-SemiBold.ttf" --"Uplifting-dYeE.ttf"
 
 function addon.LoadProgress(message, replaceLastLine)
 	lastLoadMessage = message
@@ -256,9 +255,8 @@ end
 
 local loadedFontSize = 45 --56 --70
 --gl.LoadFont( fontfile , size = 14, outlinewidth = 2, outlineweight = 15)
---local fontPath = "LuaUI/Fonts/Uplifting-dYeE.ttf"
 -- fontName, size, outwidth, outweight
-local font = gl.LoadFont(fontPath, loadedFontSize, 16, 1.15) --glyphsize=70,size=22; FreeSansBold.otf, Rex-Bold.otf,WatchtowerMiddle-LM6Z.otf
+local font = gl.LoadFont(FontPath, loadedFontSize, 16, 1.15) --glyphsize=70,size=22; FreeSansBold.otf, Rex-Bold.otf,WatchtowerMiddle-LM6Z.otf
 local fontSizeMult = 0.7 --0.8
 
 function DrawRectRound(px,py,sx,sy,cs)

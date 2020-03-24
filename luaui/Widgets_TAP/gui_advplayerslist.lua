@@ -61,7 +61,7 @@ local lockcameraHideEnemies = true 			-- specfullview
 local lockcameraLos = true					-- togglelos
 local collapsable = false
 local loadedFontSize = 32
-local font = gl.LoadFont(FontPath, loadedFontSize, 24, 1.25) --"LuaUI/Fonts/FreeSansBold.otf"
+local font = gl.LoadFont(FontPath, loadedFontSize, 24, 1.25)
 
 --------------------------------------------------------------------------------
 -- SPEED UPS
