@@ -451,7 +451,7 @@ function widget:DrawScreen()
 
 	cY = cY - fontSize
 
-	local uExp = spGetUnitExperience(uID)
+	local uExp = uID and spGetUnitExperience(uID) or 0
 	------------------------------------------------------------------------------------
 	-- Armor
 	------------------------------------------------------------------------------------
