@@ -7,9 +7,36 @@ function widget:GetInfo()
     license   = "none",
 	handler   = false,
     layer     = 1,
-    enabled   = false, --true,  --  loaded by default?
+    enabled   = true,  --  loaded by default?
   }
 end
+
+--TODO: Add 'disable collision' after unit is build
+--Spring.SetUnitCollisionVolumeData
+--
+-- ( number unitID, number scaleX, number scaleY, number scaleZ,
+--   number offsetX, number offsetY, number offsetX,
+--   number vType, number tType, number Axis
+-- ) -> nil
+-- enum COLVOL_TYPES {
+--     COLVOL_TYPE_DISABLED = -1,
+--     COLVOL_TYPE_ELLIPSOID = 0,
+--     COLVOL_TYPE_CYLINDER,
+--     COLVOL_TYPE_BOX,
+--     COLVOL_TYPE_SPHERE,
+--     COLVOL_NUM_TYPES       // number of non-disabled collision volume types
+--   };
+--   enum COLVOL_TESTS {
+--     COLVOL_TEST_DISC = 0,
+--     COLVOL_TEST_CONT = 1,
+--     COLVOL_NUM_TESTS = 2   // number of tests
+--   };
+--   enum COLVOL_AXES {
+--     COLVOL_AXIS_X   = 0,
+--     COLVOL_AXIS_Y   = 1,
+--     COLVOL_AXIS_Z   = 2,
+--     COLVOL_NUM_AXES = 3    // number of collision volume axes
+--   };
 
 --Note: Widget became less relevant for Spring 95+ because unit will always go out from factory in Spring 95+.
 VFS.Include("LuaRules/Configs/customcmds.h.lua")

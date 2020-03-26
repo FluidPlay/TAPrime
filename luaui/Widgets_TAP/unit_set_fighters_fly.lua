@@ -29,7 +29,8 @@ local function switchToFlyMode(unitID, unitDefID)
             unitDefID == UnitDefNames["corshad"].id or unitDefID == UnitDefNames["armthund"].id or
             unitDefID == UnitDefNames["corhurc"].id or unitDefID == UnitDefNames["armpnix"].id or
             unitDefID == UnitDefNames["armca"].id or unitDefID == UnitDefNames["corca"].id or
-            unitDefID == UnitDefNames["armaca"].id or unitDefID == UnitDefNames["coraca"].id
+            unitDefID == UnitDefNames["armaca"].id or unitDefID == UnitDefNames["coraca"].id or
+            unitDefID == UnitDefNames["armliche"].id or unitDefID == UnitDefNames["corstil"].id
     then
         spGiveOrderToUnit(unitID, cmdFly, { 0 }, {}) end
 end
