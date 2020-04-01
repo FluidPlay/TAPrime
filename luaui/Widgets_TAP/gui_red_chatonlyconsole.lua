@@ -11,10 +11,15 @@ function widget:GetInfo()
 	date      = "29 may 2015",
 	license   = "GNU GPL, v2 or later",
 	layer     = 0,
-	enabled   = false, --true, --enabled by default
+	enabled   = true, --enabled by default
 	handler   = true, --can use widgetHandler:x()
 	}
 end
+
+VFS.Include("gamedata/taptools.lua")
+
+local font = gl.LoadFont(FontPath, loadedFontSize, 24, 1.25)
+
 local vsx, vsy = gl.GetViewSizes()
 local widgetScale = (1 + (vsx*vsy / 4000000))
 

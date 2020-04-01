@@ -264,7 +264,7 @@ local function applyHighlightHandler(button, cmd)
         elseif button.cmdID == cmdID then
             tryApplyColor(selected)
         elseif button.state.hovered then
-            --tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
+            tooltip = stringgsub(cmd.tooltip, "Metal cost %d*\nEnergy cost %d*\n", "")
             tryApplyColor(hovered)
         else tryApplyColor(out)
         end

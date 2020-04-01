@@ -36,6 +36,7 @@ PerUnitUpgrades [made by unit]
 		* Weapon Switcher (disables primary, enables secondary weapon)
 ]]
 
+include("LuaRules/colors.h.lua")
 VFS.Include("gamedata/taptools.lua")
 
 --local spGetUnitDefID        = Spring.GetUnitDefID
@@ -91,7 +92,8 @@ UnitUpg = {
             action  = 'dgunupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'D-Gun Upgrade: Enables D-gun weapon [per unit]',
+            tooltip = 'D-Gun Upgrade: Enables D-gun weapon [per unit]\n'..
+                    GreenStr..'time:10\n'..CyanStr..'metal: 200\n'..YellowStr..'energy: 1200',
             texture = 'luaui/images/upgrades/cmd_upgdgun.png',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
@@ -114,7 +116,8 @@ UnitUpg = {
             action  = 'unlockweaponupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Unlock Weapon: Enables primary weapon [per unit]',
+            tooltip = 'Unlock Weapon: Enables primary weapon [per unit]\n'..
+                      GreenStr..'time:9\n'..CyanStr..'metal: 150\n'..YellowStr..'energy: 1000',
             texture = 'luaui/images/upgrades/techunlockweapon.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
@@ -137,7 +140,8 @@ UnitUpg = {
             action  = 'grenadeupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Laser Grenade upgrade: Enables manual-fire Grenade weapon [per unit]',
+            tooltip = 'Laser Grenade upgrade: Enables manual-fire Grenade weapon [per unit]'..
+                      GreenStr..'time:5\n'..CyanStr..'metal: 80\n'..YellowStr..'energy: 480',
             texture = 'luaui/images/upgrades/techdgun.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
@@ -158,7 +162,8 @@ UnitUpg = {
             action  = 'firerainupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Fire Rain upgrade: Enables manual-fire Fire Rain weapon [per unit]',
+            tooltip = 'Fire Rain upgrade: Enables manual-fire Fire Rain weapon [per unit]\n'..
+                       GreenStr..'time:10\n'..CyanStr..'metal: 250\n'..YellowStr..'energy: 1500',
             texture = 'luaui/images/upgrades/techfirerain.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
@@ -179,7 +184,8 @@ UnitUpg = {
             action  = 'neutronstrikeupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Neutron Strike upgrade: Enables manual-fire Neutron Strike weapon [per unit]',
+            tooltip = 'Neutron Strike upgrade: Enables manual-fire Neutron Strike weapon [per unit]\n'..
+                      GreenStr..'time:10\n'..CyanStr..'metal: 150\n'..YellowStr..'energy: 960',
             texture = 'luaui/images/upgrades/techfirerain.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
@@ -200,7 +206,8 @@ UnitUpg = {
             action  = 'resurrectupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Resurrect upgrade: Enables ressurect ability [per unit]',
+            tooltip = 'Resurrect upgrade: Enables ressurect ability [per unit]\n'..
+                       GreenStr..'time:10\n'..CyanStr..'metal: 160\n'..YellowStr..'energy: 960',
             texture = 'luaui/images/upgrades/techresurrect.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
