@@ -129,8 +129,12 @@ local tips = {
 local titleColor = "\255\215\255\215"
 local contentColor = "\255\255\255\255"
 local unit_descs = {
+    "armraz.dds "..titleColor.."Experimental Assault Kbot: \n"..contentColor.."Razorbacks are extremely mobile and the best counters to super units. Bear in mind that its rapid-fire rail weaponry doesn't make it well suited against tanks.",
+    "corkarg.dds "..titleColor.."Experimental Assault Kbot: \n"..contentColor.."Karganeths are relatively cheap and excellent vs tanks especially if you take advantage of their range. They're very good against super units 'en masse', but don't fare well against Razorbacks and Flak vehicles",
+    "corkrog.dds "..titleColor.."Experimental Very Heavy Kbot: \n"..contentColor.."Albeit slow, the Krogoth is the largest experimental kbot of all, and may win a war by itself - especially if it doesn't try to face too many experimental assault kbots, that'd be a huge waste of metal.",
+    "corjugg.dds "..titleColor.."Experimental Ultra Heavy Kbot: \n"..contentColor.."Barely mobile, the Juggernaut pack the heaviest weapon of all the experimental kbots, able to take out mobs of units, Banthas and Krogoths with ease. Watch out for long-ranged, heavy damage weaponry, they totally ruin a Jugg's day.",
     "corjuno.dds "..titleColor.."Pro Tip: \n"..contentColor.."Junos weapon provides generous and non-counterable line of sight at the impact spot. Aim it at hill tops whenever it makes sense, for even wider line of sight. Each missile fired costs metal and energy, try using 'Set Target' if you're low on any of those.",
-    "outpost.dds "..titleColor.."Pro Tip: \n"..contentColor.."Morphs in progress won't be interrupted if the Tech Center is destroyed. Start morphing an outpost to Tier 2 (if you didn't yet) if you feel you can't save the Tech Center.",
+    "outpost.dds "..titleColor.."Pro Tip: \n"..contentColor.."Morphs in progress won't be interrupted if the Tech Center is destroyed. Start morphing a distant outpost to Tier 2 (if you didn't yet) if you feel you can't save the Tech Center at main.",
     "armtech.dds "..titleColor.."Pro Tip: \n"..contentColor.."Losing your Tier2+ Tech Center won't throw you back to the stone age if you managed to morph at least one Outpost to Tier 2. (and keep it alive, ofc!)",
     "armack.dds "..titleColor.."Adv. Builder (ARM T2):\n"..contentColor.."Advanced Builders can assist factory production, just like outposts, commanders and FARKs. Building (or morphing) a couple beforehand might save you from total disaster if you lose your T2 Tech Center.",
     "corca.dds "..titleColor.."Construction Plane (CORE T1):\n"..contentColor.."Differently from their ground counterparts, basic Construction Planes can build both missile and laser defenses.",
