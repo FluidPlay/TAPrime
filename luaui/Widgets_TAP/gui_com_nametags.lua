@@ -26,7 +26,7 @@ local shadowOpacity			= 0.35
 
 local loadedFontSize = 55
 local font = gl.LoadFont(FontPath, loadedFontSize, 10, 10)
-local shadowFont = gl.LoadFont("LuaUI/Fonts/FreeSansBold.otf", loadedFontSize, 38, 1.6)
+local shadowFont = gl.LoadFont(FontPath, loadedFontSize, 38, 1.6)
 
 local vsx, vsy = Spring.GetViewGeometry()
 

@@ -1,16 +1,28 @@
 function widget:GetInfo()
 	return {
-	version   = "9",
-	name      = "Red_UI_Framework",
-	desc      = "Red UI Framework",
-	author    = "Regret (enhanced by Floris)",
-	date      = "29 may 2015",
-	license   = "GNU GPL, v2 or later",
-	layer     = -99999, --lowest go first
-	enabled   = true, --loaded by default
-	handler   = true, --access to handler
+        version   = "9",
+        name      = "Red_UI_Framework",
+        desc      = "Red UI Framework",
+        author    = "Regret (enhanced by Floris)",
+        date      = "29 may 2015",
+        license   = "GNU GPL, v2 or later",
+        layer     = -99999, --lowest go first
+        enabled   = true, --loaded by default
+        handler   = true, --access to handler
 	}
 end
+
+VFS.Include("gamedata/taptools.lua")
+
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+
+local vsx,vsy = Spring.GetViewGeometry()
+local fontfileScale = (0.7 + (vsx*vsy / 7000000))
+local fontfileSize = 44
+local fontfileOutlineSize = 10
+local fontfileOutlineStrength = 1.4
+local font = gl.LoadFont(FontPath, fontfileScale, 24, 1.25)
 
 local useRoundedRectangles = true
 local roundedSizeMultiplier = 1
@@ -38,13 +50,21 @@ local vsx,vsy = widgetHandler:GetViewSizes()
 if (vsx == 1) then --hax for windowed mode
 	vsx,vsy = Spring.GetWindowGeometry()
 end
+
 function widget:ViewResize(viewSizeX, viewSizeY)
-	vsx,vsy = widgetHandler:GetViewSizes()
+    vsx,vsy = Spring.GetViewGeometry()
+
+    local newFontfileScale = (0.5 + (vsx*vsy / 5700000))
+    if (fontfileScale ~= newFontfileScale) then
+        fontfileScale = newFontfileScale
+        font = gl.LoadFont(fontfile, fontfileSize*fontfileScale, fontfileOutlineSize*fontfileScale, fontfileOutlineStrength)
+        WG[TN].font = font
+    end
+
 	Main.vsx,Main.vsy = vsx,vsy
 	Main.Screen.vsx,Main.Screen.vsy = vsx,vsy
 	usedRoundedSize = 4 + math.floor((((vsx*vsy) / 900000))) * roundedSizeMultiplier
 end
-
 
 --helper functions
 local type = type
@@ -82,8 +102,8 @@ local function copytable(t,copyeverything)
 	end
 	return r
 end
--------------------------
 
+-------------------------
 
 --Objects
 local F = {
@@ -583,6 +603,7 @@ function widget:Initialize()
 	WG[TN] = {{}}
 	Main = WG[TN]
 	Main.Version = version
+    Main.font = font
 	Main.vsx,Main.vsy = vsx,vsy
 	Main.Screen = {vsx=vsx,vsy=vsy}
 	Main.Copytable = copytable

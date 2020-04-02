@@ -12,7 +12,12 @@ function widget:GetInfo()
 	}
 end
 
+VFS.Include("gamedata/taptools.lua")
+
+local font
 local bgcorner				= "LuaUI/Images/bgcorner.png"
+local vsx,vsy = Spring.GetViewGeometry()
+local fontfileScale = (0.5 + (vsx*vsy / 5700000))
 
 local speedbuttons={} --the 1x 2x 3x etc buttons
 local buttons={}	--other buttons (atm only pause/play)
@@ -21,7 +26,15 @@ local speeds = {0.5, 1, 2, 3, 4, 5, 10, 20}
 wPos = {x=0.00, y=0.15}
 local isPaused = false
 local isActive = true --is the widget shown and reacts to clicks?
-local sceduleUpdate = true
+local scheduleUpdate = true
+local loadedFontSize = 55
+
+local gl_Color = gl.Color
+
+local function SetColor(r,g,b,a)
+    gl_Color(r,g,b,a)
+    font:SetTextColor(r,g,b,a)
+end
 
 function widget:Initialize()	
 	if (not Spring.IsReplay()) then
@@ -29,8 +42,11 @@ function widget:Initialize()
 		widgetHandler:RemoveWidget(self)
 		return
 	end
-	
-	local dy = 0
+
+    --local font = gl.LoadFont(FontPath, loadedFontSize, 10, 10)
+    font = gl.LoadFont ( FontPath, loadedFontSize, 24, 1.25 ) -- 24, 1.25
+
+    local dy = 0
 	local h = 0.033
 	for i = 1, #speeds do	
 		dy=dy+h
@@ -70,14 +86,14 @@ function widget:DrawScreen()
 	end
 	
 	if not isActive then return end
-	if sceduleUpdate then
+	if scheduleUpdate then
 		if speedButtonsList then
 			gl.DeleteList(speedButtonsList)
 			gl.DeleteList(buttonsList)
 		end
 		speedButtonsList = gl.CreateList(draw_buttons, speedbuttons)
 		buttonsList = gl.CreateList(draw_buttons, buttons)
-		sceduleUpdate = false
+		scheduleUpdate = false
 	end
 	if speedButtonsList then
 		gl.CallList(speedButtonsList)
@@ -89,7 +105,7 @@ function widget:DrawScreen()
 	if point_in_rect (buttons[1].x, buttons[1].y, b[topbutton].x+b[topbutton].w, b[topbutton].y+b[topbutton].h,  uiX(mousex), uiY(mousey)) then
 		for i = 1, #b, 1 do
 			if (point_in_rect (b[i].x, b[i].y, b[i].x+b[i].w, b[i].y+b[i].h,  uiX(mousex), uiY(mousey)) or i == active_button) then
-				gl.Color (0.4,0.4,0.4,0.6)
+                SetColor (0.4,0.4,0.4,0.6)
 				uiRect (b[i].x, b[i].y, b[i].x+b[i].w, b[i].y+b[i].h)
 				uiText (b[i].text, b[i].x, b[i].y+b[i].h/2, (0.0115), 'vo')
 			end
@@ -97,7 +113,7 @@ function widget:DrawScreen()
 		b = buttons
 		for i = 1, #b, 1 do
 			if (point_in_rect (b[i].x, b[i].y, b[i].x+b[i].w, b[i].y+b[i].h,  uiX(mousex), uiY(mousey)) or i == active_button) then
-				gl.Color (0.4,0.4,0.4,0.6)
+                SetColor (0.4,0.4,0.4,0.6)
 				uiRect (b[i].x, b[i].y, b[i].x+b[i].w, b[i].y+b[i].h)
 				uiText (b[i].text, b[i].x, b[i].y+b[i].h/2, (0.0115), 'vo')
 			end
@@ -114,7 +130,7 @@ function widget:MousePress(x,y,button)
 			speedbuttons[i].color = speedButtonColor (i)
 		end
 		speedbuttons[i].color = {0.75,0,0,0.66 }
-		sceduleUpdate = true
+		scheduleUpdate = true
 	end
 	
 	local cb,i = clicked_button (buttons)	
@@ -133,7 +149,7 @@ function widget:MousePress(x,y,button)
 			Spring.SendCommands ("skip 1")
 			buttons[i].text = "  ||"
 		end
-		sceduleUpdate = true
+		scheduleUpdate = true
 	end	
 end
 
@@ -191,7 +207,14 @@ end
 function widget:ViewResize(viewSizeX, viewSizeY)
 	vsx = viewSizeX
 	vsy = viewSizeY
-    sceduleUpdate = true
+    scheduleUpdate = true
+    local newFontfileScale = (0.5 + (vsx*vsy / 5700000))
+    if (fontfileScale ~= newFontfileScale) then
+        fontfileScale = newFontfileScale
+        gl.DeleteFont(font)
+        font = gl.LoadFont ( FontPath, loadedFontSize, 24, 1.25 ) -- 24, 1.25
+        --font = gl.LoadFont(fontfile, fontfileSize*fontfileScale, fontfileOutlineSize*fontfileScale, fontfileOutlineStrength)
+    end
 end
 ----zeichen funktionen---------
 function uiRect (x,y,x2,y2)
@@ -201,7 +224,7 @@ end
 
 function uiText (text, x,y,s,options)
 	if (text==" " or text=="  ") then return end --archivement: unlock +20 fps
-	glText (text, sX(x), sY(y), sX(s), options)
+    font:Print(text, sX(x), sY(y), sX(s), options)
 end
 --------------------------------
 -----message boxxy-----
@@ -221,35 +244,35 @@ end
 
 function drawmessage_simple (message, x, y, s)
 	offx=0
-	if (message.frame) then		
-		glText (frame2time (message.frame), sX(x+offx), sY(y), sX(s/2), 'vo')
+	if (message.frame) then
+        font:Print (frame2time (message.frame), sX(x+offx), sY(y), sX(s/2), 'vo')
 		offx=offx+(2*s)
-	end	
-	glText (message.text, sX(x+offx), sY(y), sX(s), 'vo')	
+	end
+    font:Print (message.text, sX(x+offx), sY(y), sX(s), 'vo')
 end
 
 --X, Y and size in UI scale
 function drawmessage (message, x, y, s)	
-	if (message.bgcolor) then 
-		gl.Color (unpack(message.bgcolor))
+	if (message.bgcolor) then
+        SetColor (unpack(message.bgcolor))
 		uiRect (x,y+s/2, x+1, y-s/2)
 	end	
 	offx=0
-	if (message.frame) then		
-		glText (frame2time (message.frame), sX(x+offx), sY(y), sX(s/2), 'vo')
+	if (message.frame) then
+        font:Print (frame2time (message.frame), sX(x+offx), sY(y), sX(s/2), 'vo')
 		offx=offx+(2*s)
 	end
 	if (message.icon) then		
 		--****!!! irgendwie malt er danach keine Rechtecke mehr
 		--gl.PushMatrix()
-		gl.Color (1,1,1,1)
+        SetColor (1,1,1,1)
 		gl.Texture(message.icon)		
 		gl.TexRect(sX(x+s*1.9),sY(y-s*0.8), sX(x+s*2.9),sY(y+s*0.8)  )		
 		gl.Texture(false)
 		--gl.PopMatrix()
 		offx=offx+(s)
-	end	
-	glText (message.text, sX(x+offx), sY(y), sX(s), 'vo')	
+	end
+    font:Print (message.text, sX(x+offx), sY(y), sX(s), 'vo')
 end
 
 
@@ -289,11 +312,11 @@ end
 function draw_buttons (b)
 	local mousex, mousey = Spring.GetMouseState()
 	for i = 1, #b, 1 do	
-		if (b[i].color) then gl.Color (unpack(b[i].color)) else gl.Color (1 ,0,0,0.66) end
+		if (b[i].color) then SetColor (unpack(b[i].color)) else SetColor (1 ,0,0,0.66) end
 		--if (point_in_rect (b[i].x, b[i].y, b[i].x+b[i].w, b[i].y+b[i].h,  uiX(mousex), uiY(mousey)) or i == active_button) then
 		--	gl.Color (0.4,0.4,0.4,0.6)
 		--end
-		if (b[i].name == selected_missionid) then gl.Color (0,1,1,0.66) end --highlight selected mission, bit unnice this way w/e
+		if (b[i].name == selected_missionid) then SetColor (0,1,1,0.66) end --highlight selected mission, bit unnice this way w/e
 		
 		uiRect (b[i].x, b[i].y, b[i].x+b[i].w, b[i].y+b[i].h)
 		uiText (b[i].text, b[i].x, b[i].y+b[i].h/2, (0.0115), 'vo')
@@ -303,9 +326,9 @@ end
 
 
 function add_button (buttonlist, x,y, w, h, text, name, color)
-	local new_button = {}
-	new_button.x=x new_button.y=y new_button.w=w new_button.h=h new_button.text=text new_button.name=name
-	if(color) then new_button.color=color end
+	local new_button = {x=x, y=y, w=w, h=h, text=text, name=name}
+	if(color) then
+        new_button.color=color end
 	table.insert (buttonlist, new_button)
 end
 

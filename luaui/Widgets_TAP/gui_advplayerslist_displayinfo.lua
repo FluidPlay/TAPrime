@@ -23,17 +23,19 @@ function widget:GetInfo()
 	}
 end
 
+VFS.Include("gamedata/taptools.lua")
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
-
+local loadedFontSize = 32
+local font = gl.LoadFont(FontPath, loadedFontSize, 36, 1.25)
 local vsx, vsy   = widgetHandler:GetViewSizes()
 
 local ui_opacity = Spring.GetConfigFloat("ui_opacity",0.66)
 local bgcorner				= ":n:LuaUI/Images/bgcorner.png"
 
 local widgetScale = 1
-local glText         = gl.Text
+--local glText         = gl.Text
 local glPushMatrix   = gl.PushMatrix
 local glPopMatrix	   = gl.PopMatrix
 local glColor        = gl.Color
@@ -50,6 +52,11 @@ local volume
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
+
+local function SetColor(r,g,b,a)
+    glColor(r,g,b,a)
+    font:SetTextColor(r,g,b,a)
+end
 
 function widget:Initialize()
 	updatePosition()
@@ -158,8 +165,8 @@ local function updateValues()
 		end
 		local time = minutes..':'..seconds
 
-		glColor(0.45,0.45,0.45,1)
-		glText(titleColor..'time  '..valueColor..time..titleColor..'      speed  '..valueColor..gamespeed..titleColor..'      fps  '..valueColor..fps, left+textXPadding, bottom+textYPadding, textsize, 'no')
+		SetColor(0.45,0.45,0.45,1)
+		font:Print(titleColor..'time  '..valueColor..time..titleColor..'             speed  '..valueColor..gamespeed..titleColor..'             fps  '..valueColor..fps, left+textXPadding, bottom+textYPadding, textsize, 'no')
 	end)
 end
 
@@ -171,11 +178,11 @@ local function createList()
 		WG['guishader_api'].InsertRect(left, bottom, right, top, 'displayinfo')
 	end
 	drawlist[1] = glCreateList( function()
-		glColor(0, 0, 0, ui_opacity)
+		SetColor(0, 0, 0, ui_opacity)
 		RectRound(left, bottom, right, top, 5.5*widgetScale)
 		
 		local borderPadding = 2.75*widgetScale
-		glColor(1,1,1,ui_opacity*0.04)
+		SetColor(1,1,1,ui_opacity*0.04)
 		RectRound(left+borderPadding, bottom+borderPadding, right-borderPadding, top-borderPadding, 4.4*widgetScale)
 		
 	end)
