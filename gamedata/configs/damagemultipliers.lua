@@ -61,7 +61,7 @@ local damageMultipliers = {
 ,
 	explosive={ lightbot = 1.2, supportbot = 0.65,  heavybot = 0.85, lightveh = 1.1,     supportveh = 0.65,  heavyveh = 1.25,
                 lightair = 0.5, supportair = 0.5, 	heavyair = 0.5, lightship = 3,      supportship = 1.5,  heavyship = 4,
-                structure = 1.5,resource = 1.25,	defense = 1.5, 	defenseaa = 0.75,   commander = 0.3,
+                structure = 2, resource = 1.25,	defense = 1.5, 	defenseaa = 0.75,   commander = 0.3,
 	}
 ,
 	flak={ 		lightbot = 0.5, supportbot = 0.65, 	heavybot = 1.2, lightveh = 0.35,    supportveh = 0.75,  heavyveh = 0.275,
