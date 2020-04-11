@@ -404,9 +404,11 @@ if (gadgetHandler:IsSyncedCode()) then
     function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions)
         -- If out of ammo, ignore the combat command
         local ammo, maxAmmo = getAmmo(unitID)
-        if combatCommands[cmdID] and ammo and ammo < 1 then
         --if combatCommands[cmdID] and isnumber(ammo) and ammo < 1 then --or cmdID == CMD.STOP
-            return false
+        if combatCommands[cmdID] and (ammo ~= nil) then
+            local n_ammo = tonumber(ammo)
+            if n_ammo and (n_ammo < 1) then
+                return false end
         end
         -- If command == return to airbase (any) and the unit is at full health & armed, ignore
         -- This way, if you select a bunch of planes and tell them to return, only the right ones will
