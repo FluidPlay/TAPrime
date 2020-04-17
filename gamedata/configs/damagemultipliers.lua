@@ -10,12 +10,12 @@
 local damageMultipliers = {
 
 	bullet={ 	lightbot = 1.1,	supportbot = 2.5,	heavybot = 0.8, lightveh = 0.25,    supportveh = 0.5,   heavyveh = 0.5,
-				lightair = 0.7,	supportair = 2,	    heavyair = 1.5, lightship = 0.75,   supportship = 1,    heavyship = 0.25,
+				lightair = 0.7,	supportair = 1,	    heavyair = 1.5, lightship = 0.75,   supportship = 1,    heavyship = 0.25,
                 structure = 0.75,resource = 0.25, 	defense = 0.18, defenseaa = 0.25,   commander = 0.3,
 	}
 ,
     laser={     lightbot = 1.3, supportbot = 2.5,   heavybot = 0.9, lightveh = 0.6,     supportveh = 0.65,  heavyveh = 0.42,
-                lightair = 1.25,supportair = 1.25,  heavyair = 1,   lightship = 1.25,   supportship = 2,    heavyship = 0.5,
+                lightair = 1.25,supportair = 0.75,  heavyair = 1,   lightship = 1.25,   supportship = 2,    heavyship = 0.5,
                 structure = 1.1,resource = 0.5,     defense = 0.7,  defenseaa = 0.8,    commander = 0.68,
     }
 ,
@@ -34,9 +34,9 @@ local damageMultipliers = {
                 structure = 0.75,resource = 0.75,	defense = 0.6,  defenseaa = 0.5,    commander = 0.85,
 	}
 ,
-    plasma={ 	lightbot = 1.0, supportbot = 0.75,  heavybot = 0.6, lightveh = 0.9,     supportveh = 0.45,  heavyveh = 0.4,
-                lightair = 0.75,supportair = 1.25,  heavyair = 1.5, lightship = 1.75,   supportship = 0.75, heavyship = 1.5,
-                structure = 1,  resource = 1, 		defense = 0.275,defenseaa = 0.6,    commander = 1.27,
+    plasma={ 	lightbot = 1.125,supportbot = 0.75,  heavybot = 0.6, lightveh = 0.9,     supportveh = 0.45,  heavyveh = 0.4,
+                lightair = 0.75,supportair = 2,     heavyair = 1.5, lightship = 1.75,   supportship = 0.75, heavyship = 1.5,
+                structure = 1,  resource = 1, 		defense = 0.275,defenseaa = 0.6,    commander = 1.15,
 	}
 ,
 	cannon={ 	lightbot = 0.2, supportbot = 0.25,  heavybot = 0.75,lightveh = 1.6, 	supportveh = 2,        heavyveh = 1,
@@ -79,7 +79,7 @@ local damageMultipliers = {
                 structure = 0.5,resource = 0.75, 	defense = 0.15, defenseaa = 0.1, 	commander = 0.2,
 	}
 ,
-	omni={ 	    lightbot = 1.01,supportbot = 0.95, 	heavybot = 1, 	lightveh = 1,       supportveh = 1.5,   heavyveh = 2,
+	omni={ 	    lightbot = 1.01,supportbot = 0.95, 	heavybot = 1.1, lightveh = 1,       supportveh = 1.5,   heavyveh = 2,
 				lightair = 2, 	supportair = 2, 	heavyair = 2,   lightship = 1.25,   supportship = 0.75,heavyship = 2.5,
                 structure = 1,  resource = 1, 		defense = 0.5, 	defenseaa = 0.5, 	commander = 1.5,
 	}
