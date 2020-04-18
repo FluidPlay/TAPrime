@@ -140,7 +140,7 @@ local weaponDamageTypes = {
 	armfhlt = { ["HighEnergyLaser"] = "neutron", },
 	armseap = { ["TorpedoLauncher"] = "homing", },
 	corshad = { ["Bombs"] = "explosive", },
-	armsam = { ["Missiles"] = "rocket", ["AAMissiles"] = "rocket", ["firerain"] = "rail", },
+	armsam = { ["Missiles"] = "rocket", ["AAMissiles"] = "homing", ["firerain"] = "rail", },
 	armcir = { ["ExplosiveRockets"] = "homing", ["ExplosiveRocketsAA"] = "homing", },
 	corhrk = { ["HeavyFlak"] = "flak", },
 	armfast = { ["ThermoBurst"] = "rail", },
