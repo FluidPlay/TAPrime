@@ -67,6 +67,10 @@ function widget:ViewResize()
         font = gl.LoadFont(fontfile, fontfileSize*fontfileScale, fontfileOutlineSize*fontfileScale, fontfileOutlineStrength)
         setEngineFont()
     end
+    --MaDD: test for chobby
+    local interfaceRoot = WG.Chobby.interfaceRoot
+    local interfaceHolder = interfaceRoot.GetIngameInterfaceHolder()
+    interfaceHolder.switchToMenuButton.right = 100 --2
     --if windowList then gl.DeleteList(windowList) end
     --windowList = gl.CreateList(DrawWindow)
 end
