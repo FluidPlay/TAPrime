@@ -40,8 +40,8 @@ local selecthoverclick = 'LuaUI/Sounds/hover.wav'
 local toggleonclick = 'LuaUI/Sounds/switchon.wav'
 local toggleoffclick = 'LuaUI/Sounds/switchoff.wav'
 
-local loadedFontSize = 32
-local font = gl.LoadFont(FontPath, loadedFontSize, 16, 2)
+local loadedFontSize = 128 --32
+local font = gl.LoadFont(FontPath, loadedFontSize, 48, 2) --16, 2
 
 local bgcorner = "LuaUI/Images/bgcorner.png"
 local bgcorner1 = ":n:".."LuaUI/Images/bgcorner1.png" -- only used to draw dropdown arrow
@@ -225,7 +225,7 @@ local presets = {
 		treeradius = 800,
 		treewind = true,
 		advsky = true,
-		outline = true,
+		outline = false, --true,
 		guishader = true,
 		shadows = true,
 		advmapshading = true,
@@ -316,7 +316,6 @@ elseif Game and Game.version then
 	engineVersion = tonumber(Game.version)
 end
 
-
 local function DrawRectRound(px,py,sx,sy,cs, tl,tr,br,bl)
 	gl.TexCoord(0.8,0.8)
 	gl.Vertex(px+cs, py, 0)
@@ -377,6 +376,7 @@ local function DrawRectRound(px,py,sx,sy,cs, tl,tr,br,bl)
 	gl.TexCoord(1-offset,o)
 	gl.Vertex(sx, sy-cs, 0)
 end
+
 function RectRound(px,py,sx,sy,cs, tl,tr,br,bl)		-- (coordinates work differently than the RectRound func in other widgets)
 	gl.Texture(bgcorner)
 	gl.BeginEnd(GL.QUADS, DrawRectRound, px,py,sx,sy,cs, tl,tr,br,bl)
@@ -441,7 +441,6 @@ function getOptionByID(id)
 	end
 	return false
 end
-
 
 function orderOptions()
 	local groupOptions = {}
@@ -734,7 +733,6 @@ function DrawWindow()
 		end
 	end
 end
-
 
 function correctMouseForScaling(x,y)
 	local interfaceScreenCenterPosX = (screenX+(screenWidth/2))/vsx
@@ -1507,7 +1505,6 @@ function loadPreset(preset)
 	windowList = gl.CreateList(DrawWindow)
 end
 
-
 function widget:KeyPress(key)
 	if key == 27 then	-- ESC
 		show = false
@@ -1521,7 +1518,6 @@ function IsOnRect(x, y, BLcornerX, BLcornerY,TRcornerX,TRcornerY)
 	                      and y >= BLcornerY
 	                      and y <= TRcornerY
 end
-
 
 function round(num, numDecimalPlaces)
     local mult = 10^(numDecimalPlaces or 0)
@@ -1572,7 +1568,6 @@ end
 function widget:MouseRelease(x, y, button)
 	return mouseEvent(x, y, button, true)
 end
-
 
 function mouseEvent(x, y, button, release)
 	if spIsGUIHidden() then return false end
@@ -1821,7 +1816,6 @@ function loadWidgetData(widgetName, optionId, configVar)
 		end
 	end
 end
-
 
 -- loads values via stored game config in luaui/configs
 function loadAllWidgetData()
@@ -2461,7 +2455,6 @@ function init()
 	options = processedOptions
 end
 
-
 function deletePreset(name)
 	Spring.Echo('deleted preset:  '..name)
 	customPresets[name] = nil
@@ -2506,7 +2499,6 @@ function savePreset(name)
 	end
 end
 
-
 function widget:Initialize()
 	if tonumber(Spring.GetConfigInt("MaxParticles",1) or 10000) <= 10000 then
 		Spring.SetConfigInt("MaxParticles",10000)
@@ -2549,7 +2541,6 @@ function widget:Shutdown()
 	end
 	WG['options'] = nil
 end
-
 
 local function Split(s, separator)
 	local results = {}
@@ -2621,7 +2612,6 @@ function getSelectKey(i, value)
 	end
 	return false
 end
-
 
 function widget:GetConfigData(data)
 	savedTable = {}

@@ -9,17 +9,17 @@
 --
 local damageMultipliers = {
 
-	bullet={ 	lightbot = 1.1,	supportbot = 2.5,	heavybot = 0.8, lightveh = 0.25,    supportveh = 0.5,   heavyveh = 0.5,
+	bullet={ 	lightbot = 1.1,	supportbot = 2.5,	heavybot = 0.8, lightveh = 0.3,     supportveh = 0.5,   heavyveh = 0.5,
 				lightair = 0.7,	supportair = 1,	    heavyair = 1.5, lightship = 0.75,   supportship = 1,    heavyship = 0.25,
                 structure = 0.75,resource = 0.25, 	defense = 0.18, defenseaa = 0.25,   commander = 0.3,
 	}
 ,
-    laser={     lightbot = 1.3, supportbot = 2.5,   heavybot = 0.9, lightveh = 0.6,     supportveh = 0.65,  heavyveh = 0.42,
+    laser={     lightbot = 1.3, supportbot = 2.5,   heavybot = 0.9, lightveh = 0.72,    supportveh = 0.65,  heavyveh = 0.42,
                 lightair = 1.25,supportair = 0.75,  heavyair = 1,   lightship = 1.25,   supportship = 2,    heavyship = 0.5,
                 structure = 1.1,resource = 0.5,     defense = 0.7,  defenseaa = 0.8,    commander = 0.68,
     }
 ,
-	rocket={ 	lightbot = 0.175,supportbot = 0.35,  heavybot = 0.35,lightveh = 0.65,    supportveh = 0.85,	heavyveh = 4,
+	rocket={ 	lightbot = 0.175,supportbot = 0.35,  heavybot = 0.35,lightveh = 0.65,   supportveh = 0.85,	heavyveh = 4,
 				lightair = 0.3, supportair = 2.55,  heavyair = 0.5, lightship = 0.45,   supportship = 0.75, heavyship = 1.6,
                 structure = 0.8,resource = 0.8,     defense = 0.275,defenseaa = 0.85,   commander = 0.4,
 	}

@@ -346,11 +346,11 @@ local function updateButtons()
 	local totalWidth = area[3] - area[1]
 
 	local text = '    '
-    if (WG['teamstats'] ~= nil) then text = text..'Stats    ' end
+    if (WG['teamstats'] ~= nil) then text = text..'Stats     ' end
     if (WG['commands'] ~= nil) then text = text..'Cmd    ' end
     if (WG['keybinds'] ~= nil) then text = text..'Keys    ' end
-    if (WG['changelog'] ~= nil) then text = text..'Changes    ' end
-    if (WG['options'] ~= nil) then text = text..'Options    ' end
+    if (WG['changelog'] ~= nil) then text = text..'Changes     ' end
+    if (WG['options'] ~= nil) then text = text..'Options       ' end
     text = text..'Quit    '
 
 	local fontsize = totalWidth / glGetTextWidth(text)
