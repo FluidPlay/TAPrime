@@ -28,7 +28,7 @@ local Chili, Window, TextBox, Image, Button, Grid, Label, ScrollPanel, color2inc
 local tooltipWindow, tooltipTextBox
 local vsx, vsy = sGetWindowGeometry()
 local fontfileScale = (0.75 + (vsx*vsy / 7000000))
-local fontfileSize = 18 -- 40?
+local fontfileSize = 15 -- 40; 18
 
 local Config = {
     tooltip = {
