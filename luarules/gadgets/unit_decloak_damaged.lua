@@ -4,7 +4,7 @@
 function gadget:GetInfo()
     return {
         name      = "Decloak when damaged",
-        desc      = "Decloaks units when they are damged",
+        desc      = "Decloaks units when they are damaged or trying to capture",
         author    = "Google Frog",
         date      = "Nov 25, 2009", -- Major rework 12 Feb 2014
         license   = "GNU GPL, v2 or later",
@@ -123,7 +123,6 @@ function PokeDecloakUnit(unitID, duration)
         spSetUnitCloak(unitID, 0)
         recloakUnit[unitID] = duration or DEFAULT_DECLOAK_TIME
     end
-
 end
 
 GG.PokeDecloakUnit = PokeDecloakUnit
@@ -195,6 +194,22 @@ function gadget:GameFrame(n)
         end
     end
 end
+
+--local function iscommander(uDefID)
+--    local cParms = UnitDefs[uDefID].customParams
+--    if cParms and cParms.iscommander then
+--        return true
+--    end
+--    return false
+--end
+--
+--function gadget:AllowCommand(unitID, uDefID, unitTeam, cmdID, cmdParams, cmdOptions, cmdTag, synced)
+--    if cmdID and cmdID == CMD_CAPTURE then
+--        if iscommander(uDefID) then
+--            PokeDecloakUnit(uDefID) end
+--    end
+--    return true
+--end
 
 -- Only called with enemyID if an enemy is within decloak radius.
 function gadget:AllowUnitCloak(unitID, enemyID)
