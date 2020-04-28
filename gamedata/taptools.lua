@@ -161,17 +161,18 @@ end
 
 -- Debug ipairs containing table keys and values, up to three nested levels
 function DebugiTable(tbl)
-	--Spring.Echo("Debugitable")
-	if type(tbl) == 'table' then
-		local s = '{ '
-		for k,v in pairs(tbl) do
-			if type(k) ~= 'number' then k = '"'..k..'"' end
-			s = s .. '['..k..'] = ' .. DebugiTable(v) .. ','
-		end
-		return s .. '} '
-	else
-		return tostring(tbl)
-	end
+	---Just use DebugTable, below implementation doesn't work
+    DebugTable(tbl)
+	--if type(tbl) == 'table' then
+	--	local s = '{ '
+	--	for k,v in pairs(tbl) do
+	--		if type(k) ~= 'number' then k = '"'..k..'"' end
+	--		s = s .. '['..k..'] = ' .. DebugiTable(v) .. ','
+	--	end
+	--	return s .. '} '
+	--else
+	--	return tostring(tbl)
+	--end
 end
 
 -- Returns true if a table (tab) contains a certain value (searchVal)

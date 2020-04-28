@@ -190,7 +190,6 @@ local function checkTarget(unitID, target)
 	return (tonumber(target) and spValidUnitID(target) and not AreUnitsAllied(unitID,target)) or (not tonumber(target) and target )
 end
 
-
 local function setTarget(unitID, targetData)
 	local unitData = unitTargets[unitID]
 	if not TargetCanBeReached(unitID, unitData.teamID, unitData.weapons, targetData.target) then

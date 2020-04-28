@@ -68,7 +68,7 @@ local function SetupUnit(unitID)
 	end
 end
 
-function maybeRemoveSelf()
+function removeSelfCheck()
     if Spring.GetSpectatingState() and (Spring.GetGameFrame() > 0 or gameStarted) then
         widgetHandler:RemoveWidget(self)
     end
@@ -76,16 +76,16 @@ end
 
 function widget:GameStart()
     gameStarted = true
-    maybeRemoveSelf()
+    removeSelfCheck()
 end
 
 function widget:PlayerChanged(playerID)
-    maybeRemoveSelf()
+    removeSelfCheck()
 end
 
 function widget:Initialize()
     if Spring.IsReplay() or Spring.GetGameFrame() > 0 then
-        maybeRemoveSelf()
+        removeSelfCheck()
     end
 	for _,unitID in ipairs(spGetTeamUnits(spGetMyTeamID())) do
 		local unitDefID = spGetUnitDefID(unitID)
