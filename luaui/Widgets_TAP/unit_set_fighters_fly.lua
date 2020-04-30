@@ -2,7 +2,7 @@
 --------------------------------------------------------------------------------
 function widget:GetInfo()
     return {
-        name      = "Set fighters & bombers to Fly mode",
+        name      = "Set fighters, drones & bombers to Fly mode",
         desc      = "Setting fighters & bombers to Fly mode",
         author    = "Floris (original unit_air_allways_fly widget by [teh]Decay)",
         date      = "july 2017",
@@ -25,12 +25,13 @@ local cmdFly = 145
 
 local function switchToFlyMode(unitID, unitDefID)
     if unitDefID == UnitDefNames["armfig"].id  or unitDefID == UnitDefNames["armsfig"].id or unitDefID == UnitDefNames["armhawk"].id or
-            unitDefID == UnitDefNames["corveng"].id or unitDefID == UnitDefNames["corsfig"].id or unitDefID == UnitDefNames["corvamp"].id or
-            unitDefID == UnitDefNames["corshad"].id or unitDefID == UnitDefNames["armthund"].id or
-            unitDefID == UnitDefNames["corhurc"].id or unitDefID == UnitDefNames["armpnix"].id or
-            unitDefID == UnitDefNames["armca"].id or unitDefID == UnitDefNames["corca"].id or
-            unitDefID == UnitDefNames["armaca"].id or unitDefID == UnitDefNames["coraca"].id or
-            unitDefID == UnitDefNames["armliche"].id or unitDefID == UnitDefNames["corstil"].id
+       unitDefID == UnitDefNames["corveng"].id or unitDefID == UnitDefNames["corsfig"].id or unitDefID == UnitDefNames["corvamp"].id or
+       unitDefID == UnitDefNames["corbw"].id or unitDefID == UnitDefNames["armkam"].id or
+       unitDefID == UnitDefNames["corshad"].id or unitDefID == UnitDefNames["armthund"].id or
+       unitDefID == UnitDefNames["corhurc"].id or unitDefID == UnitDefNames["armpnix"].id or
+       unitDefID == UnitDefNames["armca"].id or unitDefID == UnitDefNames["corca"].id or
+       unitDefID == UnitDefNames["armaca"].id or unitDefID == UnitDefNames["coraca"].id or
+       unitDefID == UnitDefNames["armliche"].id or unitDefID == UnitDefNames["corstil"].id
     then
         spGiveOrderToUnit(unitID, cmdFly, { 0 }, {}) end
 end

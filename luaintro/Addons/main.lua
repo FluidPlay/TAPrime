@@ -49,7 +49,7 @@ local tips = {
     "outpost.dds ".."Outposts can speed up any construction, but they're less cost effective for that than FARKs (built by the outpost) and they spend energy continuously.",
 	"armtech.dds ".."To tech up, build a Tech Center, then upgrade it progressively until Tech Tier4. This unlocks high-tier upgrades in factories and outposts as well.",
 	"armtech.dds ".."When under attack, Tech Centers can become 70% more resistant if disabled (ON/OFF button or Ctrl+X shortcut)",
-    "corraid.dds ".."Vehicles become sensibly slower when they drop below 30% health. Use that for your advantage, to prevent them from using hit-and-run tactics effectively.",
+    "corraid.dds ".."Vehicles become progressively slower when they drop below 45% health. Use that for your advantage, to prevent them from using hit-and-run tactics effectively.",
 	"corgat.dds ".."Gatlings and Flashes are terrific anti-kbot vehicles, very EMP-resistant and moderately effective against lighter gunships. When facing tanks or combos of plasma and missile kbots, don't expect them to last long.",
     "corlevlr.dds ".."Core Lancers and Arm Pokers are early game assault units. One of their unique abilities is the capacity to dodge kbot missiles when properly microed and kept moving at their top speed. Levelers can also transport kbots, including builders",
     "corlevlr.dds ".."The Core Lancer, besides having a weapon with good splash, is able to transport up to two light kbots - including builders. Hint: even allied builders can be transported.",

@@ -103,7 +103,7 @@ function widget:CommandNotify(id, params, options)
             AssignSetTarget(params[1], options)
         else                    -- Targetted ground position
             --TODO: #SNAP# If enemy unit is within cylinder/radius of clicked position, assign it as target
-            DebugTable(params)
+            --DebugTable(params)
             local click = { x = params[1], z = params[3] }
             local minSqrDist = 999999999 -- sqrDists usually have 8 digits or more.. :o
             local closestEnemyID = nil
@@ -114,7 +114,6 @@ function widget:CommandNotify(id, params, options)
                     local eUnitPos = {}
                     eUnitPos.x, eUnitPos.z = spGetUnitPosition(unitID)
                     local sqrDist = sqrDistance(click.x, click.z, eUnitPos.x, eUnitPos.z)
-                    Spring.Echo("SqrDist: "..sqrDist)
                     if (sqrDist < minSqrDist) then
                         closestEnemyID = unitID
                         minSqrDist = sqrDist
