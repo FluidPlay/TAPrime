@@ -61,10 +61,10 @@ function widget:Initialize()
     widgetHandler:RemoveWidget()
     return true
   end
-  for i, v in pairs(unitArray["radarunitArray"]) do
+  for _, v in pairs(unitArray["radarunitArray"]) do
     radarunitSet[v] = true
   end
-  for i, v in pairs(unitArray["jammerunitArray"]) do
+  for _, v in pairs(unitArray["jammerunitArray"]) do
     jammerunitSet[v] = true
   end
 end
