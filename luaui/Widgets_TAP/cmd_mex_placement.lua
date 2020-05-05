@@ -15,6 +15,7 @@ end
 
 VFS.Include("LuaRules/Configs/customcmds.h.lua")
 VFS.Include("gamedata/taptools.lua")
+VFS.Include("LuaRules/Utilities/glVolumes.lua")
 
 --local fontfile = LUAUI_DIRNAME .. "fonts/" .. Spring.GetConfigString("ui_font", "JosefinSans-SemiBold.ttf")
 --local fontfile2 = LUAUI_DIRNAME .. "fonts/" .. Spring.GetConfigString("ui_font2", "JosefinSans-Bold.ttf")
@@ -653,7 +654,7 @@ function DrawMexList()
 			if y < 0 then y = 0 end
 			local mexColor = getSpotColor(x,y+45,z,i,specatate,1)
 			local metal = spot.metal or 0
-            metal = math.max(spot.metal, 0.1) --min = 0.1
+            metal = math.max(metal, 0.1) --min = 0.1
 			
 			glPushMatrix()	
 				glTranslate(x,y,z)
