@@ -15,7 +15,7 @@ end
 
 VFS.Include("LuaRules/Configs/customcmds.h.lua")
 VFS.Include("gamedata/taptools.lua")
-VFS.Include("LuaRules/Utilities/glVolumes.lua")
+--VFS.Include("LuaRules/Utilities/glVolumes.lua")
 
 --local fontfile = LUAUI_DIRNAME .. "fonts/" .. Spring.GetConfigString("ui_font", "JosefinSans-SemiBold.ttf")
 --local fontfile2 = LUAUI_DIRNAME .. "fonts/" .. Spring.GetConfigString("ui_font2", "JosefinSans-Bold.ttf")

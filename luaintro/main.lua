@@ -51,10 +51,6 @@ end
 
 VFS.Include("LuaHandler/Utilities/utils.lua", nil, VFS.DEF_MODE)
 
---WG = {}
---Spring.Utilities = {}
-VFS.Include("LuaRules/Utilities/glvolumes.lua")
-
 --// the addon handler
 include "LuaHandler/handler.lua"
 
