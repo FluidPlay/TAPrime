@@ -76,7 +76,7 @@ local tips = {
     "cormist.dds ".."Missile Trucks (Arm Samson & Core Slasher) are very expensive but a) never miss, b) outrange some defenses and c) are the best early-game mobile counters to air units.",
     --"cormist.dds ".."Missile Trucks (Arm Samson & Core Slasher) are very expensive but a) never miss, b) outrange some defenses and d) are the best early-game mobile counters to air units.",
     "corrad.dds ".."To know what enemy units are vulnerable to a certain unit you have, point to that unit and hold SHIFT. Colored circles will show up below units on screen. Green means vulnerable to the pointed unit, Red means resistant to it, and so on.",
-    "armmark.dds ".."The highest relatively to the ground a unit is, the further it can see (LOS). The T1 Marky is one of the best scouts in the game, able to climb steep hills and easily acquire a nice vantage point.",
+    "armmark.dds ".."The highest relatively to the ground a unit is, the further it can see (LOS). The T1 Marky is one of the best scouts in the game, besides cloaking he's able to climb steep hills and easily acquire a nice vantage point.",
     "armhawk.dds ".."You can 'air freeze' your fighters and bombers if they're set to 'Fly' mode. Simply issue a move order and hit 'S' (Stop). They'll turn to that position and hover on the spot.",
 	--"To see detailed info about each unit in-game switch on \"Extensive unit info\" via Options menu",
 	--"In general, vehicles are a good choice for flat and open battlefields. Kbots are better on hills.",
