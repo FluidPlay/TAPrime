@@ -162,21 +162,24 @@ function gadget:GameFrame(f)
     end
 
     for unitID, data in pairs(pausingPlanes) do
-        local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- current Direction
-        if rx and ry and rz then
-            local posx, posy, posz = Spring.GetUnitPosition(unitID)
+        if IsValidUnit(unitID) then
+            local rx, ry, rz = Spring.GetUnitRotation(unitID)       -- current Direction
+            if rx and ry and rz then
+                local posx, posy, posz = Spring.GetUnitPosition(unitID)
 
-            local tr = data.targetRotation -- target Rotation vector
+                local tr = data.targetRotation -- target Rotation vector
+                if tr and tr.x and tr.y then
+                    Spring.SetUnitRotation(unitID, lerp(rx, tr.x, lerpFactor), lerp(ry, tr.y, lerpFactor), lerp(rz, tr.z, lerpFactor))
 
-            Spring.SetUnitRotation(unitID, lerp(rx, tr.x, lerpFactor), lerp(ry, tr.y, lerpFactor), lerp(rz, tr.z, lerpFactor))
+                    Spring.MoveCtrl.SetPosition(unitID, lerp(posx, data.targetPos.x, lerpFactor),
+                            lerp(posy, data.relativeHeight , 0.025),
+                            lerp(posz, data.targetPos.z, lerpFactor))
+                end
 
-            Spring.MoveCtrl.SetPosition(unitID, lerp(posx, data.targetPos.x, lerpFactor),
-                    lerp(posy, data.relativeHeight , 0.025),
-                    lerp(posz, data.targetPos.z, lerpFactor))
-
-            if not idlingPlanes[unitID] and
-                    verynear(posx, data.targetPos.x) and verynear(posz, data.targetPos.z) and verynear(posy, data.relativeHeight) then
-                idlingPlanes[unitID] = data
+                if not idlingPlanes[unitID] and
+                        verynear(posx, data.targetPos.x) and verynear(posz, data.targetPos.z) and verynear(posy, data.relativeHeight) then
+                    idlingPlanes[unitID] = data
+                end
             end
         end
     end

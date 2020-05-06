@@ -56,6 +56,7 @@ local glText             = gl.Text
 local glGetTextWidth     = gl.GetTextWidth
 local glPolygonMode      = gl.PolygonMode
 local glDrawGroundCircle = gl.DrawGroundCircle
+local glDrawGroundRect   = gl.Utilities.DrawGroundRectangle
 local glDrawCircle
 local glUnitShape        = gl.UnitShape
 local glDepthTest        = gl.DepthTest
@@ -113,6 +114,7 @@ local allyTeams = {}	-- [id] = {team1, team2, ...}
 local previousOsClock = os.clock()
 local currentRotationAngle = 0
 local currentRotationAngleOpposite = 0
+local drawIncome = false -- Should we draw the income estimation?
 
 ------------------------------------------------------------
 -- Config
@@ -623,16 +625,18 @@ function calcMainMexDrawList(valuesonly)
 					glRotate(270,1,0,0)
 	  				glColor(1,1,1)
 					glTranslate(x,-z-70-options.size.value, y)
-					
-					font:Begin()
-					font:SetTextColor(1,1,1)
-					font:SetOutlineColor(0,0,0)
-					if options.drawcustomincomeamount.value ~= true then
-						font:Print(("%."..options.rounding.value.."f"):format(metal*options.multiplier.value), 0, 0, options.size.value, "con")
-					else
-						font:Print(("%."..options.rounding.value.."f"):format(options.customamount.value), 0, 0, options.size.value, "con")
-					end
-					font:End()
+
+                    if drawIncome then
+                        font:Begin()
+                        font:SetTextColor(1,1,1)
+                        font:SetOutlineColor(0,0,0)
+                        if options.drawcustomincomeamount.value ~= true then
+                            font:Print(("%."..options.rounding.value.."f"):format(metal*options.multiplier.value), 0, 0, options.size.value, "con")
+                        else
+                            font:Print(("%."..options.rounding.value.."f"):format(options.customamount.value), 0, 0, options.size.value, "con")
+                        end
+                        font:End()
+                    end
 				end	
 		
 				glPopMatrix()	
@@ -655,20 +659,23 @@ function DrawMexList()
 			local mexColor = getSpotColor(x,y+45,z,i,specatate,1)
 			local metal = spot.metal or 0
             metal = math.max(metal, 0.1) --min = 0.1
-			
-			glPushMatrix()	
-				glTranslate(x,y,z)
+
+			glPushMatrix()
+                glScale(0.5,1,0.5)  -- Remove this to properly align the fancy circles (from circleList)
+
+                glTranslate(x,y,z)
 				--glColor(0,0,0,1) Black Solid
                 glColor(0.53, 0.77, 0.89, 0.9)
-				glRotate(currentRotationAngle,0,1,0)
-				glScale(0.9,1,0.9)
-				glCallList(circleList)
-				--mexColor[4] = 0.8
-				--glColor(mexColor)
-				glColor(1,1,1,(metal or 0) * 0.5)
-				glScale(0.9,1,0.9)
-				glCallList(circleList)
-				glRotate(-currentRotationAngle,0,1,0)
+				--glRotate(currentRotationAngle,0,1,0)
+				--glScale(0.9,1,0.9)
+                glDrawGroundRect(x-80, z-80, x+80, z+80)
+				--glCallList(circleList)
+				----mexColor[4] = 0.8
+				----glColor(mexColor)
+				--glColor(1,1,1,(metal or 0) * 0.5)
+				--glScale(0.9,1,0.9)
+				--glCallList(circleList)
+				--glRotate(-currentRotationAngle,0,1,0)
 				
 				--glRotate(currentRotationAngleOpposite,0,1,0)
 				--glRotate(180,1,0,0)

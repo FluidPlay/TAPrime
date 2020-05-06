@@ -3,7 +3,7 @@ options = {
 	drawincome = {
 		name = 'Should income be drawn below the mex spot?',
 		type = 'bool',
-		value = true,
+		value = false, --true,
 		tooltip = "When disabled, this will prevent income from being drawn below the mex spot.",
 		OnChange = function() updateMexDrawList() end
 	},	
