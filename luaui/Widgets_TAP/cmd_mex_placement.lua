@@ -661,15 +661,16 @@ function DrawMexList()
             metal = math.max(metal, 0.1) --min = 0.1
 
 			glPushMatrix()
-                glScale(0.5,1,0.5)  -- Remove this to properly align the fancy circles (from circleList)
+                --glScale(0.5,1,0.5)  -- Remove this to properly align the fancy circles (from circleList)
 
                 glTranslate(x,y,z)
 				--glColor(0,0,0,1) Black Solid
                 glColor(0.53, 0.77, 0.89, 0.9)
-				--glRotate(currentRotationAngle,0,1,0)
-				--glScale(0.9,1,0.9)
-                glDrawGroundRect(x-80, z-80, x+80, z+80)
-				--glCallList(circleList)
+
+                glRotate(currentRotationAngle,0,1,0)
+				glScale(0.9,1,0.9)
+                -- glDrawGroundRect(x-80, z-80, x+80, z+80) -- enable this to show the quads (WIP)
+				glCallList(circleList)
 				----mexColor[4] = 0.8
 				----glColor(mexColor)
 				--glColor(1,1,1,(metal or 0) * 0.5)
