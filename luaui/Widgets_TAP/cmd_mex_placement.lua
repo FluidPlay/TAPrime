@@ -171,10 +171,11 @@ local animShaderFS = [[
 		vec4 c0 = texture(colorAtlas, samplingBias.xy + uv);
 		vec4 c1 = texture(colorAtlas, samplingBias.zw + uv);
 
-		vec4 n0 = texture(colorAtlas, samplingBias.xy + uv);
-		vec4 n1 = texture(colorAtlas, samplingBias.zw + uv);
+		// unused yet
+		//vec4 n0 = texture(colorAtlas, samplingBias.xy + uv);
+		//vec4 n1 = texture(colorAtlas, samplingBias.zw + uv);
 
-		gl_FragColor = c0;
+		gl_FragColor = mix(c0, c1, blendFactor);
 	}
 ]]
 
@@ -744,6 +745,7 @@ function DrawMexList()
 	local gf = spGetGameFrame() + spGetFrameTimeOffset();
 
 	gl.Texture(0, "bitmaps/default/metalshimmer_color.dds")
+	--gl.Blending(GL.ONE, GL.ONE)
 
 	if WG.metalSpots and circleList then
 		for i = 1, #WG.metalSpots do
@@ -794,6 +796,7 @@ function DrawMexList()
 		end
 	end
 
+	--gl.Blending(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA)
 	gl.Texture(0, false)
 end
 
