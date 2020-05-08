@@ -738,7 +738,6 @@ end
 
 -- only used when animating
 local animRate = 30
-local animRateD = animRate - 1
 function DrawMexList()
 	local specatate = spGetSpectatingState()
 
@@ -767,7 +766,7 @@ function DrawMexList()
 				--glRotate(currentRotationAngle,0,1,0)
 				--glScale(0.9,1,0.9)
 				gl.UseShader(animShader)
-				gl.Uniform(animProgressLoc, (gf % animRate) / animRateD)
+				gl.Uniform(animProgressLoc, (gf % animRate) / animRate)
 				glRotate(90, 1, 0, 0)
 				gl.TexRect(x-80, z-80, x+80, z+80)
 				--glDrawGroundRect(x-80, z-80, x+80, z+80)
