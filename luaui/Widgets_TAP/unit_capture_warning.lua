@@ -40,7 +40,7 @@ local vsx,vsy      = gl.GetViewSizes()
 local px --used to prevent com from "travelling" when escaping naps
 local py
 local pz
-local enemytranslist={}  --keep track of enemy transports
+local enemycomlist ={}  --keep track of enemy commanders
 local allycomlist={}     --and of allied coms
 
 local lastwarn=0
@@ -81,25 +81,29 @@ end
 
 function widget:UnitEnteredLos(unitID, unitTeam)
     local unitDef = GetUnitDefID(unitID)
-    if ((unitDef ~= nil) and UnitDefs[unitDef]["isTransport"]
+    if ((unitDef ~= nil) and UnitDefs[unitDef].customParams.iscommander --["isTransport"]
             and not(AreTeamsAllied(myTeamID, unitTeam))
-            and (enemytranslist[unitID]==nil)) then
-        enemytranslist[unitID]=0
+            and (enemycomlist[unitID]==nil)) then
+        enemycomlist[unitID]=0
         --	Echo("spotted enemy trans")
     end
 end
 
--- both following functions clear the enemytranslist var, but they are not necessary,
+function widget:UnitEnteredRadar(unitID, unitTeam)
+    widget:UnitEnteredLos(unitID, unitTeam)
+end
+
+-- both following functions clear the enemycomlist var, but they are not necessary,
 -- as <widget:GameFrame(..)> will delete any ids where the position is not accessible
 --[[
 function widget:UnitLeftLos(unitID, unitTeam)
-  if (enemytranslist[unitID]~=nil) then
-    enemytranslist[unitID]=nil
+  if (enemycomlist[unitID]~=nil) then
+    enemycomlist[unitID]=nil
   end
 end
 function widget:UnitDestroyed(unitID, unitDefID, unitTeam)
-  if (enemytranslist[unitID]~=nil) then
-    enemytranslist[unitID]=nil
+  if (enemycomlist[unitID]~=nil) then
+    enemycomlist[unitID]=nil
   end
 end
 --]]
@@ -204,18 +208,18 @@ function widget:GameFrame(frameNum)
             if(x==nil) then
                 allycomlist[ComUnitID]=nil
             else
-                for unitID,lastframe in pairs(enemytranslist) do
+                for unitID,lastframe in pairs(enemycomlist) do
                     local ex, ey, ez = GetUnitPosition(unitID)
                     if(ex==nil) then
                         if ((frameNum-lastframe)>64) then --delete after three seconds out of sight
-                            enemytranslist[unitID]=nil
+                            enemycomlist[unitID]=nil
                         end
                     else
                         local dist = ((x-ex)^2 + (y-ey)^2 +(z-ez)^2)^0.5
                         if ((frameNum-lastframe)>800) then
                             if (dist<1000) then --1000 is the current warning distance (for allies mostly)
-                                MarkerAddPoint(ex,ey,ez,"comnap warning!!")
-                                enemytranslist[unitID]=frameNum
+                                MarkerAddPoint(ex,ey,ez,"Nearby commander alert!")
+                                enemycomlist[unitID]=frameNum
                                 lastwarn=30
                             end
                         end
