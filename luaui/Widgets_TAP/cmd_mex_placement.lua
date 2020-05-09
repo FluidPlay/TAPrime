@@ -117,6 +117,11 @@ local currentRotationAngle = 0
 local currentRotationAngleOpposite = 0
 local drawIncome = false -- Should we draw the income estimation?
 
+-- only used when animating a spreadsheet/atlas texture
+local animRate = 60      -- That's actually the reverse of animrate, the lower it is the faster the animation goes
+local texturewidth = 140 --160
+local textureYoffset = 2 --10
+
 --------------------
 
 local animShader = nil
@@ -736,15 +741,13 @@ function calcMainMexDrawList(valuesonly)
 	end
 end
 
--- only used when animating
-local animRate = 30
 function DrawMexList()
 	local specatate = spGetSpectatingState()
 
 	local gf = spGetGameFrame() + spGetFrameTimeOffset();
 
 	gl.Texture(0, "bitmaps/default/metalshimmer_color.dds")
-	--gl.Blending(GL.ONE, GL.ONE)
+	gl.Blending(GL.ONE, GL.ONE) -- "hellish" look (1/2)
 
 	if WG.metalSpots and circleList then
 		for i = 1, #WG.metalSpots do
@@ -760,7 +763,7 @@ function DrawMexList()
 				--glLoadIdentity()
 
 				--glTranslate(x,y + 100,z)
-				glTranslate(0, y + 10, 0)
+				glTranslate(0, y + textureYoffset, 0)
 				--glColor(0,0,0,1) Black Solid
 				glColor(0.53, 0.77, 0.89, 0.9)
 				--glRotate(currentRotationAngle,0,1,0)
@@ -768,7 +771,7 @@ function DrawMexList()
 				gl.UseShader(animShader)
 				gl.Uniform(animProgressLoc, (gf % animRate) / animRate)
 				glRotate(90, 1, 0, 0)
-				gl.TexRect(x-80, z-80, x+80, z+80)
+				gl.TexRect(x-texturewidth, z-texturewidth, x+texturewidth, z+texturewidth)
 				--glDrawGroundRect(x-80, z-80, x+80, z+80)
 				gl.UseShader(0)
 				--glCallList(circleList)
@@ -795,7 +798,7 @@ function DrawMexList()
 		end
 	end
 
-	--gl.Blending(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA)
+	gl.Blending(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA) --Hellish look (2/2)
 	gl.Texture(0, false)
 end
 
