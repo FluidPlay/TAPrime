@@ -15,7 +15,7 @@ end
 
 VFS.Include("LuaRules/Configs/customcmds.h.lua")
 VFS.Include("gamedata/taptools.lua")
---VFS.Include("LuaRules/Utilities/glVolumes.lua")
+VFS.Include("LuaRules/Utilities/glVolumes.lua")
 
 --local fontfile = LUAUI_DIRNAME .. "fonts/" .. Spring.GetConfigString("ui_font", "JosefinSans-SemiBold.ttf")
 --local fontfile2 = LUAUI_DIRNAME .. "fonts/" .. Spring.GetConfigString("ui_font2", "JosefinSans-Bold.ttf")
@@ -35,16 +35,17 @@ local spGetUnitHealth       = Spring.GetUnitHealth
 local spGetSelectedUnits    = Spring.GetSelectedUnits
 local spInsertUnitCmdDesc   = Spring.InsertUnitCmdDesc
 local spGiveOrderToUnit     = Spring.GiveOrderToUnit
-local spGetUnitPosition     = Spring.GetUnitPosition 
+local spGetUnitPosition     = Spring.GetUnitPosition
 local spGetTeamUnits        = Spring.GetTeamUnits
 local spGetMyTeamID         = Spring.GetMyTeamID
 local spTestBuildOrder      = Spring.TestBuildOrder
 local spGetUnitsInRectangle = Spring.GetUnitsInRectangle
-local spGiveOrder           = Spring.GiveOrder	
+local spGiveOrder           = Spring.GiveOrder
 local spGetGroundInfo       = Spring.GetGroundInfo
 local spGetGroundHeight     = Spring.GetGroundHeight
 local spGetMapDrawMode      = Spring.GetMapDrawMode
 local spGetGameFrame        = Spring.GetGameFrame
+local spGetFrameTimeOffset  = Spring.GetFrameTimeOffset
 local spGetSpectatingState  = Spring.GetSpectatingState
 local spGetAllUnits         = Spring.GetAllUnits
 local spGetPositionLosState = Spring.GetPositionLosState
@@ -83,7 +84,7 @@ local GL_GREATER         = GL.GREATER
 local floor = math.floor
 local min, max = math.min, math.max
 local strFind = string.find
-local strFormat = string.format	
+local strFormat = string.format
 
 local CMD_OPT_SHIFT = CMD.OPT_SHIFT
 
@@ -115,6 +116,70 @@ local previousOsClock = os.clock()
 local currentRotationAngle = 0
 local currentRotationAngleOpposite = 0
 local drawIncome = false -- Should we draw the income estimation?
+
+--------------------
+
+local animShader = nil
+local animProgressLoc = -1
+
+local animShaderVS = [[
+	#version 150 compatibility
+	#line 100126
+
+	uniform ivec2 numImages;
+	uniform float animProgress; //0 to 1
+
+	out vec4 samplingBias;
+	out vec2 uv;
+	out float blendFactor;
+
+	void main() {
+		float ap = fract(animProgress); //sanitize inputs
+		int maxImgIdx = numImages.x * numImages.y - 1;
+		ap *= float(maxImgIdx);
+
+		int i0 = int(floor(ap));
+		int i1 = i0 + 1;
+		blendFactor = fract(ap);
+
+		samplingBias = vec4(
+			float(i0 / numImages.x),
+			float(i0 % numImages.x),
+			float(i1 / numImages.x),
+			float(i1 % numImages.x)
+		);
+
+		samplingBias /= vec4(numImages.xyxy);
+		uv = gl_MultiTexCoord0.xy / vec2(numImages.xy);
+
+		gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+	}
+]]
+
+local animShaderFS = [[
+	#version 150 compatibility
+	#line 200161
+
+	uniform sampler2D colorAtlas;
+	uniform sampler2D normAtlas;
+
+	in vec4 samplingBias;
+	in vec2 uv;
+	in float blendFactor;
+
+	void main() {
+		vec4 c0 = texture(colorAtlas, samplingBias.xy + uv);
+		vec4 c1 = texture(colorAtlas, samplingBias.zw + uv);
+
+		// unused yet
+		//vec4 n0 = texture(colorAtlas, samplingBias.xy + uv);
+		//vec4 n1 = texture(colorAtlas, samplingBias.zw + uv);
+
+		gl_FragColor = mix(c0, c1, blendFactor);
+	}
+]]
+
+--------------------
 
 ------------------------------------------------------------
 -- Config
@@ -154,7 +219,7 @@ end
 local mexBuilder = {}
 
 local mexBuilderDefs = {}
-for udid, ud in ipairs(UnitDefs) do 
+for udid, ud in ipairs(UnitDefs) do
 	if ud.customParams.area_mex_def then
 		mexBuilderDefs[udid] = UnitDefNames[ud.customParams.area_mex_def].id
 	end
@@ -190,7 +255,7 @@ end
 local function GetClosestMetalSpot(x, z) --is used by single mex placement, not used by areamex
 	local bestSpot
 	local bestDist = math.huge
-	local bestIndex 
+	local bestIndex
 	for i = 1, #WG.metalSpots do
 		local spot = WG.metalSpots[i]
 		local dx, dz = x - spot.x, z - spot.z
@@ -212,24 +277,24 @@ end
 
 local function IntegrateMetal(x, z, forceUpdate)
 	local newCenterX, newCenterZ
-	
+
 	newCenterX = (floor( x / METAL_MAP_SQUARE_SIZE) + 0.5) * METAL_MAP_SQUARE_SIZE
 	newCenterZ = (floor( z / METAL_MAP_SQUARE_SIZE) + 0.5) * METAL_MAP_SQUARE_SIZE
-	
-	if (centerX == newCenterX and centerZ == newCenterZ and not forceUpdate) then 
-		return 
+
+	if (centerX == newCenterX and centerZ == newCenterZ and not forceUpdate) then
+		return
 	end
-	
+
 	centerX = newCenterX
 	centerZ = newCenterZ
-	
+
 	local startX = floor((centerX - MEX_RADIUS) / METAL_MAP_SQUARE_SIZE)
 	local startZ = floor((centerZ - MEX_RADIUS) / METAL_MAP_SQUARE_SIZE)
 	local endX = floor((centerX + MEX_RADIUS) / METAL_MAP_SQUARE_SIZE)
 	local endZ = floor((centerZ + MEX_RADIUS) / METAL_MAP_SQUARE_SIZE)
 	startX, startZ = max(startX, 0), max(startZ, 0)
 	endX, endZ = min(endX, MAP_SIZE_X_SCALED - 1), min(endZ, MAP_SIZE_Z_SCALED - 1)
-	
+
 	local mult = Spring.GetGameRulesParam("base_extraction")
 	local result = 0
 
@@ -261,13 +326,13 @@ local function DrawCircleLine(innersize, outersize)
 		local radstep = (2.0 * math.pi) / circleOptions.circlePieces
 		for i = 1, circleOptions.circlePieces do
 			for d = 1, detail do
-				
+
 				detailPartWidth = ((width / detail) * d)
 				a1 = ((i+detailPartWidth - (width / detail)) * radstep)
 				a2 = ((i+detailPartWidth) * radstep)
 				a3 = ((i+circleOptions.circleInnerOffset+detailPartWidth - (width / detail)) * radstep)
 				a4 = ((i+circleOptions.circleInnerOffset+detailPartWidth) * radstep)
-				
+
 				--outer (fadein)
 				gl.Vertex(math.sin(a4)*innersize, 0, math.cos(a4)*innersize)
 				gl.Vertex(math.sin(a3)*innersize, 0, math.cos(a3)*innersize)
@@ -282,30 +347,30 @@ end
 -- Command Handling
 ------------------------------------------------------------
 
-function widget:CommandNotify(cmdID, params, options)	
+function widget:CommandNotify(cmdID, params, options)
 	if (cmdID == CMD_AREA_MEX and WG.metalSpots) then
 
 		local cx, cy, cz, cr = params[1], params[2], params[3], math.max((params[4] or 60),60)
-		
+
 		local xmin = cx-cr
 		local xmax = cx+cr
 		local zmin = cz-cr
 		local zmax = cz+cr
-		
+
 		local commands = {}
 		local orderedCommands = {}
 		local dis = {}
-		
+
 		local ux = 0
 		local uz = 0
 		local us = 0
-		
+
 		local aveX = 0
 		local aveZ = 0
-		
+
 		local units = spGetSelectedUnits()
 
-		for i = 1, #units do 
+		for i = 1, #units do
 			local unitID = units[i]
 			if mexBuilder[unitID] then
 				local x,_,z = spGetUnitPosition(unitID)
@@ -314,15 +379,15 @@ function widget:CommandNotify(cmdID, params, options)
 				us = us+1
 			end
 		end
-	
+
 		if (us == 0) then
 			return
 		else
 			aveX = ux/us
 			aveZ = uz/us
 		end
-	
-		for i = 1, #WG.metalSpots do		
+
+		for i = 1, #WG.metalSpots do
 			local mex = WG.metalSpots[i]
 			--if (mex.x > xmin) and (mex.x < xmax) and (mex.z > zmin) and (mex.z < zmax) then -- square area, should be faster
 			if (Distance(cx,cz,mex.x,mex.z) < cr*cr) then -- circle area, slower
@@ -332,7 +397,7 @@ function widget:CommandNotify(cmdID, params, options)
 
 		local noCommands = #commands
 		while noCommands > 0 do
-	  
+
 			tasort(commands, function(a,b) return a.d < b.d end)
 			orderedCommands[#orderedCommands+1] = commands[1]
 			aveX = commands[1].x
@@ -343,7 +408,7 @@ function widget:CommandNotify(cmdID, params, options)
 			end
 			noCommands = noCommands-1
 		end
-	
+
 		local shift = options.shift
 
 		local buildersByType = {}
@@ -459,13 +524,37 @@ function widget:UnitTaken(unitID, unitDefID, oldTeamID, teamID)
 	widget:UnitDestroyed(unitID, unitDefID, oldTeamID)
 end
 
-local function Initialize() 
+local function Initialize()
+	animShader = gl.CreateShader({
+		vertex   = animShaderVS,
+		fragment = animShaderFS,
+		uniformInt = {
+			colorAtlas = 0,
+			normAtlas = 1,
+			numImages = {4, 4}
+		},
+		uniformFloat = {
+			animProgress = 0.0,
+		},
+	})
+
+	local shLog = gl.GetShaderLog() or ""
+
+	if not animShader then
+		Spring.Echo("ERROR:\n"..shLog)
+		return false
+	elseif (shLog ~= "") then
+		Spring.Echo("WARNING:\n"..shLog)
+	end
+
+	animProgressLoc = gl.GetUniformLocation(animShader, "animProgress")
+
 
 	circleList = gl.CreateList(DrawCircleLine, circleOptions.innersize, circleOptions.outersize)
 	currentClock = os.clock()
-	
+
 	local units = spGetAllUnits()
-	for i, unitID in ipairs(units) do 
+	for i, unitID in ipairs(units) do
 		local unitDefID = spGetUnitDefID(unitID)
 		widget:UnitCreated(unitID, unitDefID)
 		if mexDefID[unitDefID] then
@@ -492,7 +581,7 @@ function widget:Update()
 		spotData = {}
 		wasSpectating = true
 		local units = spGetAllUnits()
-		for i, unitID in ipairs(units) do 
+		for i, unitID in ipairs(units) do
 			local unitDefID = spGetUnitDefID(unitID)
 		if mexDefID[unitDefID] then
 			local done = select(5, spGetUnitHealth(unitID))
@@ -506,9 +595,9 @@ function widget:Update()
 		Initialize()
 		metalSpotsNil = false
 	end
-	
+
 	WG.mouseoverMexIncome = false
-	
+
 	if mexSpotToDraw and WG.metalSpots then
 		WG.mouseoverMexIncome = mexSpotToDraw.metal
 		WG.mouseoverMex = mexSpotToDraw
@@ -519,8 +608,8 @@ function widget:Update()
 		end
 		local mx, my = spGetMouseState()
 		local _, coords = spTraceScreenRay(mx, my, true, true)
-		if (not coords) then 
-			return 
+		if (not coords) then
+			return
 		end
 		IntegrateMetal(coords[1], coords[3])
 		WG.mouseoverMexIncome = extraction * mexDefID[-cmd_id]
@@ -531,7 +620,7 @@ end
 -- Drawing
 ------------------------------------------------------------
 
-local centerX 
+local centerX
 local centerZ
 local extraction = 0
 
@@ -567,22 +656,22 @@ end
 
 function calcMainMexDrawList(valuesonly)
 	local specatate = spGetSpectatingState()
-	
+
 	if WG.metalSpots then
 		if not valuesonly and circleOptions.enabled then
 			if circleOptions.animating == false then
 				DrawMexList()
 			end
 		end
-		
+
 		for i = 1, #WG.metalSpots do
 			local spot = WG.metalSpots[i]
 			local x,z,y = spot.x, spot.z, spot.y
 			if y < 0 then y = 0 end
 			local mexColor = getSpotColor(x,y+45,z,i,specatate,1)
 			local metal = spot.metal or 0 --nil fix by MaDDoX
-			
-			glPushMatrix()	
+
+			glPushMatrix()
 			if not valuesonly and not circleOptions.enabled then
 				glDepthTest(true)
 				glColor(0,0,0,0.7)
@@ -592,11 +681,11 @@ function calcMainMexDrawList(valuesonly)
 				glLineWidth(spot.metal*1.6)
 				glDrawGroundCircle(x, 1, z, 40, 32)
 			end
-			glPopMatrix()	
-			
-			if valuesonly then 
+			glPopMatrix()
+
+			if valuesonly then
 				glPushMatrix()
-				
+
 				glDepthTest(false)
 				if options.drawicons.value then
 					local size = 1
@@ -610,10 +699,10 @@ function calcMainMexDrawList(valuesonly)
 						end
 					end
 
-					
+
 					size = options.size.value
-					
-					glRotate(90,1,0,0)	
+
+					glRotate(90,1,0,0)
 					glTranslate(0,0,-y-10)
 					glColor(1,1,1)
 					glTexture("LuaUI/Images/ibeam.png")
@@ -637,9 +726,9 @@ function calcMainMexDrawList(valuesonly)
                         end
                         font:End()
                     end
-				end	
-		
-				glPopMatrix()	
+				end
+
+				glPopMatrix()
 			end
 		end
 		glLineWidth(1.0)
@@ -648,9 +737,15 @@ function calcMainMexDrawList(valuesonly)
 end
 
 -- only used when animating
+local animRate = 30
 function DrawMexList()
 	local specatate = spGetSpectatingState()
-	
+
+	local gf = spGetGameFrame() + spGetFrameTimeOffset();
+
+	gl.Texture(0, "bitmaps/default/metalshimmer_color.dds")
+	--gl.Blending(GL.ONE, GL.ONE)
+
 	if WG.metalSpots and circleList then
 		for i = 1, #WG.metalSpots do
 			local spot = WG.metalSpots[i]
@@ -658,26 +753,32 @@ function DrawMexList()
 			if y < 0 then y = 0 end
 			local mexColor = getSpotColor(x,y+45,z,i,specatate,1)
 			local metal = spot.metal or 0
-            metal = math.max(metal, 0.1) --min = 0.1
+			metal = math.max(metal, 0.1) --min = 0.1
 
 			glPushMatrix()
-                --glScale(0.5,1,0.5)  -- Remove this to properly align the fancy circles (from circleList)
+				--glScale(0.5,1,0.5)  -- Remove this to properly align the fancy circles (from circleList)
+				--glLoadIdentity()
 
-                glTranslate(x,y,z)
+				--glTranslate(x,y + 100,z)
+				glTranslate(0, y + 10, 0)
 				--glColor(0,0,0,1) Black Solid
-                glColor(0.53, 0.77, 0.89, 0.9)
-
-                glRotate(currentRotationAngle,0,1,0)
-				glScale(0.9,1,0.9)
-                -- glDrawGroundRect(x-80, z-80, x+80, z+80) -- enable this to show the quads (WIP)
-				glCallList(circleList)
+				glColor(0.53, 0.77, 0.89, 0.9)
+				--glRotate(currentRotationAngle,0,1,0)
+				--glScale(0.9,1,0.9)
+				gl.UseShader(animShader)
+				gl.Uniform(animProgressLoc, (gf % animRate) / animRate)
+				glRotate(90, 1, 0, 0)
+				gl.TexRect(x-80, z-80, x+80, z+80)
+				--glDrawGroundRect(x-80, z-80, x+80, z+80)
+				gl.UseShader(0)
+				--glCallList(circleList)
 				----mexColor[4] = 0.8
 				----glColor(mexColor)
 				--glColor(1,1,1,(metal or 0) * 0.5)
 				--glScale(0.9,1,0.9)
 				--glCallList(circleList)
 				--glRotate(-currentRotationAngle,0,1,0)
-				
+
 				--glRotate(currentRotationAngleOpposite,0,1,0)
 				--glRotate(180,1,0,0)
 				--glColor(0,0,0,1)
@@ -690,17 +791,20 @@ function DrawMexList()
 				--glCallList(circleList)
 				--glTranslate(-x,-y,-z)
 				--glRotate(-currentRotationAngleOpposite,0,1,0)
-			glPopMatrix()	
+			glPopMatrix()
 		end
 	end
+
+	--gl.Blending(GL.SRC_ALPHA, GL.ONE_MINUS_SRC_ALPHA)
+	gl.Texture(0, false)
 end
 
 function updateMexDrawList()
-	if (mainMexDrawList) then 
-		gl.DeleteList(mainMexDrawList); 
-		gl.DeleteList(mainMexValueDrawList); 
-		mainMexDrawList = nil 
-		mainMexValueDrawList = nil 
+	if (mainMexDrawList) then
+		gl.DeleteList(mainMexDrawList);
+		gl.DeleteList(mainMexValueDrawList);
+		mainMexDrawList = nil
+		mainMexValueDrawList = nil
 	end --delete previous list if exist (ref:gui_chicken.lua by quantum)
 	mainMexDrawList = glCreateList(calcMainMexDrawList, false)
 	mainMexValueDrawList = glCreateList(calcMainMexDrawList, true)
@@ -711,6 +815,7 @@ function widget:Shutdown()
 	gl.DeleteList(mainMexDrawList)
 	gl.DeleteList(mainMexValueDrawList)
 	gl.DeleteList(circleList)
+	gl.DeleteShader(animShader)
 end
 
 local function DoLine(x1, y1, z1, x2, y2, z2)
@@ -730,11 +835,11 @@ function widget:DrawWorldPreUnit()
 
 
 	if drawMexSpots or (circleOptions.enabled and circleOptions.alwaysshow) then
-			
+
 		if circleOptions.enabled and circleOptions.animating then
 			local clockDifference = (os.clock() - previousOsClock)
 			previousOsClock = os.clock()
-			
+
 			-- animate rotation
 			if circleOptions.rotationSpeed > 0 then
 				local angleDifference = (circleOptions.rotationSpeed) * (clockDifference * 5)
@@ -742,13 +847,13 @@ function widget:DrawWorldPreUnit()
 				if currentRotationAngle > 360 then
 				   currentRotationAngle = currentRotationAngle - 360
 				end
-			
+
 				currentRotationAngleOpposite = currentRotationAngleOpposite - angleDifference
 				if currentRotationAngleOpposite < -360 then
 				   currentRotationAngleOpposite = currentRotationAngleOpposite + 360
 				end
 			end
-			
+
 			-- Draw the amounts
 			gl.DepthTest(true)
 			gl.DepthMask(true)
@@ -757,11 +862,12 @@ function widget:DrawWorldPreUnit()
 			end
 			glCallList(mainMexValueDrawList)
 
+			--
+
+			DrawMexList()
+
 			gl.DepthTest(false)
 			gl.DepthMask(false)
-			--
-			
-			DrawMexList()
 		end
 	end
 end
@@ -782,11 +888,11 @@ function widget:DrawWorld()
 
 	local mx, my = spGetMouseState()
 	local _, pos = spTraceScreenRay(mx, my, true)
-	
+
 	mexSpotToDraw = false
-	
+
 	if WG.metalSpots and pos and ((cmdID and mexDefID[-cmdID]) or peruse or CMD_AREA_MEX == cmdID) then
-	
+
 		-- Find build position and check if it is valid (Would get 100% metal)
 		local bx, by, bz
 		if cmdID and cmdID < 0 then
@@ -796,24 +902,24 @@ function widget:DrawWorld()
 		end
 		local bface = Spring.GetBuildFacing()
 		local closestSpot, distance, index = GetClosestMetalSpot(bx, bz)
-		
-		if closestSpot and ((cmdID and mexDefID[-cmdID]) or not ((CMD_AREA_MEX == cmdID or peruse) and distance > 60)) and (not spotData[index]) then 
-		
+
+		if closestSpot and ((cmdID and mexDefID[-cmdID]) or not ((CMD_AREA_MEX == cmdID or peruse) and distance > 60)) and (not spotData[index]) then
+
 			mexSpotToDraw = closestSpot
-			
+
 			local height = spGetGroundHeight(closestSpot.x,closestSpot.z)
 			height = height > 0 and height or 0
-			
+
 			gl.DepthTest(false)
-			
+
 			gl.LineWidth(1.7)
 			gl.Color(1, 1, 0, 0.5)
 			gl.BeginEnd(GL.LINE_STRIP, DoLine, bx, by, bz, closestSpot.x, height, closestSpot.z)
 			gl.LineWidth(1.0)
-			
+
 			gl.DepthTest(true)
 			gl.DepthMask(true)
-			
+
 			gl.Color(1, 1, 1, 0.5)
 			gl.PushMatrix()
 			gl.Translate(closestSpot.x, height, closestSpot.z)
@@ -822,12 +928,12 @@ function widget:DrawWorld()
 				gl.UnitShape(-cmdID, Spring.GetMyTeamID(), false, true, false)
 			end
 			gl.PopMatrix()
-			
+
 			gl.DepthTest(false)
 			gl.DepthMask(false)
 		end
 	end
-	
+
 	gl.Color(1, 1, 1, 1)
 end
 
@@ -839,7 +945,7 @@ function widget:DrawInMiniMap(minimapX, minimapY)
 
 	--if drawMexSpots then
 		local specatate = spGetSpectatingState()
-		
+
 		glTranslate(0,minimapY,0)
 		glScale(minimapX/mapX, -minimapY/mapZ, 1)
 
@@ -849,7 +955,7 @@ function widget:DrawInMiniMap(minimapX, minimapY)
 			local y = spGetGroundHeight(x,z)
 
 			local mexColor = getSpotColor(x,y,z,i,specatate,2)
-			
+
 			glLighting(false)
 
 			--Static minimap mex marker locations
@@ -860,7 +966,7 @@ function widget:DrawInMiniMap(minimapX, minimapY)
 			--mexColor[4] = 0.85
 			--glColor(mexColor)
 			glColor(0.53, 0.77, 0.89, 1)
-			
+
 			--This is for mex circles on the minimap that denote the amount that mexes give (hard to see)
 			-- glColor(0,0,0,0.66)
 			-- glLineWidth(((spot.metal > 0 and spot.metal) or 0.1)*5.0)
@@ -868,13 +974,13 @@ function widget:DrawInMiniMap(minimapX, minimapY)
 			-- glLineWidth(((spot.metal > 0 and spot.metal)*2) or 0.1)
 			-- mexColor[4] = 0.85
 			-- glColor(mexColor)
-			
+
 			glDrawCircle(x, z, MINIMAP_DRAW_SIZE)
 		end
 
 		glLineWidth(1.0)
 		glColor(1,1,1,1)
-		
+
 	--end
 
 end
