@@ -117,6 +117,8 @@ local currentRotationAngle = 0
 local currentRotationAngleOpposite = 0
 local drawIncome = false -- Should we draw the income estimation?
 
+local minimapIconSizeMult = 0.01 --0.0145
+
 -- only used when animating a spreadsheet/atlas texture
 local animRate = 60      -- That's actually the reverse of animrate, the lower it is the faster the animation goes
 local texturewidth = 140 --160
@@ -190,7 +192,7 @@ local animShaderFS = [[
 -- Config
 ------------------------------------------------------------
 
-local MINIMAP_DRAW_SIZE = math.max(mapX,mapZ) * 0.0145
+local MINIMAP_DRAW_SIZE = math.max(mapX,mapZ) * minimapIconSizeMult
 
 options_path = 'Settings/Interface/Map/Metal Spots'
 options_order = { 'drawicons', 'size', 'specPlayerColours', 'rounding'}
