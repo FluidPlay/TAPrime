@@ -221,11 +221,11 @@ function widget:GameFrame(frameNum)
                         end
                     else
                         local dist = ((x-ex)^2 + (y-ey)^2 +(z-ez)^2)^0.5
-                        if ((frameNum-lastframe) > 120) then --800 (4s now)
+                        if ((frameNum-lastframe) > 800) then --800 (4s now)
                             if (dist < 800) then --1000 is the current warning distance (for allies mostly)
                                 if isnumber(lastwarn.x) and isnumber(lastwarn.y) and isnumber(lastwarn.z) then
                                     MarkerErasePosition(lastwarn.x, lastwarn.y, lastwarn.z) end
-                                MarkerAddPoint(ex,ey,ez,"Nearby commander alert!")
+                                MarkerAddPoint(ex,ey,ez,"Nearby enemy commander alert!")
                                 enemycomlist[unitID] = frameNum
                                 lastwarn={x=ex, y=ey, z=ez}
                                 lastframe = frameNum

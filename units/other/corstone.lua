@@ -8,7 +8,7 @@ return {
 		buildtime = 255,
 		canattack = false,
 		canrepeat = false,
-		category = "OBJECT",
+		category = "ALL",
 		collisionvolumeoffsets = "0 0 0",
 		collisionvolumescales = "24 24 24",
 		collisionvolumetype = "CylY",

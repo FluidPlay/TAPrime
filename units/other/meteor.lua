@@ -85,10 +85,8 @@ return {
 				weaponvelocity = 2000,
 				wobble = 0,
 				damage = {
-					chicken = 0.001,
 					commanders = 10,
 					default = 700,
-					tinychicken = 0.001,
 				},
 			},
 		},

@@ -2,7 +2,7 @@ local armorDefs = {
     lightbot={"armack","armch","armck","armfark","armpw","armrectr","armsubk","armconsul","coraca","corack","corak",
               "coramph","corch","corck","cornecro","corspy","corsub","corvoyr","armfast", "corsktl", "armspid",
               "corpyro",},
-    supportbot={"armaak","armah","armjeth","armsptk","armmh","armrock","coraak","corhrk","corah","corcrash",
+    supportbot={"armaak","armaser","armah","armjeth","armsptk","armmh","armrock","coraak","corhrk","corah","corcrash",
 				"cormort","corstorm","cortermite", "cordefiler","armsnipe", },
     heavybot={"corkrog","armmark", "armzeus", "corsumo","armbanth", "armfboy",
               "armham","armorco","armraz","armvader","armwar","corcan","corkarg","corroach","corthud","corthovr","krogtaar",
@@ -36,7 +36,7 @@ local armorDefs = {
         "armuwmex","armuwmme","armtide","coruwmex","coruwmme","cortide",},
 
 	structure={"armoutpost","armoutpost2","armoutpost3","armoutpost4","coroutpost","coroutpost2","coroutpost3","coroutpost4","armtech","armtech2", "armtech3","armtech4",
-		"cortech","cortech2", "cortech3","cortech4","armawin","corawin","armjuno","armaap","armadvsol","armalab","armap","armarad","armaser","armason",
+		"cortech","cortech2", "cortech3","cortech4","armawin","corawin","armjuno","armaap","armadvsol","armalab","armap","armarad","armason",
 		"armasp","armasy","armavp","armbeaver","armckfus","armdf","armestor","armeyes","armfatf","armfdrag","armfgate","armfhp","armfmine3","armfmkr","armfort","armfrad",
 		"armgate","armhp","armjamt","armlab","armmakr","armmine1","armmine2","armmine3","armnanotc","armrad","armsd","armshltx",
 		"armveil","armvp","armwin","asubpen","corjuno","corageo","coraap","coradvsol","coralab","corap","corarad","corason","corasp","corasy","coravp",
