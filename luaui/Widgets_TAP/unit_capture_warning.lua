@@ -24,6 +24,8 @@ local GetTeamUnitsSorted = Spring.GetTeamUnitsSorted
 local spGetMyPlayerID    = Spring.GetMyPlayerID
 local spGetPlayerInfo    = Spring.GetPlayerInfo
 local MarkerAddPoint     = Spring.MarkerAddPoint
+local MarkerErasePosition= Spring.MarkerErasePosition
+
 local GetUnitIsTransporting = Spring.GetUnitIsTransporting
 
 local gl_Rect							= gl.Rect
@@ -43,7 +45,7 @@ local pz
 local enemycomlist ={}  --keep track of enemy commanders
 local allycomlist={}     --and of allied coms
 
-local lastwarn=0
+local lastwarn={x=nil, y=nil, z=nil} -- position of last warning (alert) issued
 local disabled=false
 
 local buttonXA=vsx -180
@@ -52,6 +54,8 @@ local buttonYA=(vsy*0.5) -8
 local buttonYB=(vsy*0.5) +8
 local buttonXM
 local buttonYM
+
+VFS.Include("gamedata/taptools.lua")
 
 local function calcButton()
     --[[  buttonXA= vsx -180
@@ -114,13 +118,13 @@ function widget:UnitCreated(unitID, unitDefID, teamID)
     end
 end
 
-function widget.UnitSeismicPing(x, y, z, strength, allyTeam, unitID, udefID)
-    local teamID = Spring.GetUnitTeam(unitID)
-    if not UnitDefs[udefID].customParams.iscommander or AreTeamsAllied(myTeamID, teamID) then
-        return end
-    --TODO: Add marker at pos
-    MarkerAddPoint(x, y, z,"Cloaked Enemy Commander Detected!")
-end
+--function widget.UnitSeismicPing(x, y, z, strength, allyTeam, unitID, udefID)
+--    local teamID = Spring.GetUnitTeam(unitID)
+--    if not UnitDefs[udefID].customParams.iscommander or AreTeamsAllied(myTeamID, teamID) then
+--        return end
+--    --TODO: Add marker at pos
+--    MarkerAddPoint(x, y, z,"Cloaked Enemy Commander Detected!")
+--end
 
 local function updateComlist()
     allycomlist={}
@@ -166,41 +170,42 @@ function widget:ViewResize(viewSizeX, viewSizeY)
 end
 
 function widget:DrawScreen()
-    if (lastwarn==0) then return true end
-    --draw button with background and text depending on <disabled>
-    gl_Color(0,0,0,0.2)
-    gl_Rect(buttonXA, buttonYA, buttonXB, buttonYB)
-    if (disabled) then
-        gl_Color(1,1,1,0.5)
-        TextDrawCentered("enable comnap evasion",buttonXM,buttonYM)
-    else
-        gl_Color(1,0.5,0.2,1.0)
-        TextDrawCentered("disable comnap evasion",buttonXM,buttonYM)
-    end
-    gl_Color(1,1,1,1)
+    --if (lastwarn==0) then return true end
+    ----draw button with background and text depending on <disabled>
+    --gl_Color(0,0,0,0.2)
+    --gl_Rect(buttonXA, buttonYA, buttonXB, buttonYB)
+    --if (disabled) then
+    --    gl_Color(1,1,1,0.5)
+    --    TextDrawCentered("enable comnap evasion",buttonXM,buttonYM)
+    --else
+    --    gl_Color(1,0.5,0.2,1.0)
+    --    TextDrawCentered("disable comnap evasion",buttonXM,buttonYM)
+    --end
+    --gl_Color(1,1,1,1)
     --  end
 end
 
 function widget:MousePress(x,y,button)
-    if    (x>=buttonXA) and (x<=buttonXB)
-            and (y>=buttonYA) and (y<=buttonYB)
-            and (lastwarn>0)
-    then
-        if(disabled) then
-            disabled=false
-        else
-            disabled=true
-        end
-    end
+    --if    (x>=buttonXA) and (x<=buttonXB)
+    --        and (y>=buttonYA) and (y<=buttonYB)
+    --        and (lastwarn>0)
+    --then
+    --    if(disabled) then
+    --        disabled=false
+    --    else
+    --        disabled=true
+    --    end
+    --end
 end
 
 function widget:GameFrame(frameNum)
     if ((frameNum%32)==0) then
         checkSpecState()
-        if(lastwarn>0) then
-            lastwarn=lastwarn-1
-            if (lastwarn==0) then disabled=false end
-        end
+        --if(lastwarn > 0) then
+        --    lastwarn = lastwarn - 1
+        --    --if lastwarn == 0 then
+        --    --    disabled = false end
+        --end
 
         for ComUnitID, ComTeamID in pairs(allycomlist) do
             --local shouldescape=true -- prevent multiple commands for multiple transports sighted at once
@@ -216,11 +221,14 @@ function widget:GameFrame(frameNum)
                         end
                     else
                         local dist = ((x-ex)^2 + (y-ey)^2 +(z-ez)^2)^0.5
-                        if ((frameNum-lastframe)>800) then
-                            if (dist<1000) then --1000 is the current warning distance (for allies mostly)
+                        if ((frameNum-lastframe) > 120) then --800 (4s now)
+                            if (dist < 800) then --1000 is the current warning distance (for allies mostly)
+                                if isnumber(lastwarn.x) and isnumber(lastwarn.y) and isnumber(lastwarn.z) then
+                                    MarkerErasePosition(lastwarn.x, lastwarn.y, lastwarn.z) end
                                 MarkerAddPoint(ex,ey,ez,"Nearby commander alert!")
-                                enemycomlist[unitID]=frameNum
-                                lastwarn=30
+                                enemycomlist[unitID] = frameNum
+                                lastwarn={x=ex, y=ey, z=ez}
+                                lastframe = frameNum
                             end
                         end
                         -- MaDDoX: Removing this, not used here. Also idle comms are always patrolling in TAP
