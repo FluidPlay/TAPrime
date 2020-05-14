@@ -414,6 +414,8 @@ if (gadgetHandler:IsSyncedCode()) then
         -- This way, if you select a bunch of planes and tell them to return, only the right ones will
         if cmdID == CMD_LAND_AT_AIRBASE and not cmdOptions.shift then
             local health, maxHealth = Spring.GetUnitHealth(unitID)
+            health = tonumber(health)
+            maxHealth = tonumber(maxHealth)
             if not health or not maxHealth then
                 return true end
             -- Scouts, transports:
