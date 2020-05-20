@@ -218,7 +218,7 @@ local weaponDamageTypes = {
 	corseal = { ["PlasmaCannon"] = "cannon", },
     corstil = { ["EMPbomb"] = "emp", },
 	armsptk = { ["HeavyRocket"] = "rocket", },
-	armst = { ["Gauss"] = "cannon", },
+	armst = { ["Gauss"] = "neutron", },
 	cortoast = { ["PopupCannon"] = "explosive", },
 	coresupp = { ["LightLaser"] = "homing", },
 	cormist = { ["Missiles"] = "rocket", ["AAMissiles"] = "homing", },
