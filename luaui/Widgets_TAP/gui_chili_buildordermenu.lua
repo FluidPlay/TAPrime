@@ -626,6 +626,7 @@ function widget:Initialize()
         return
     end
 
+    --That's a test (MaDDoX)
     local Chobby = WG.Chobby
     --Spring.Echo("HandleLobbyOverlay", msg)
     local interfaceRoot = Chobby and Chobby.interfaceRoot
