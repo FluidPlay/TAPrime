@@ -15,7 +15,7 @@ local damageMultipliers = {
 	}
 ,
     laser={     lightbot = 1.25,supportbot = 2,     heavybot = 0.9, lightveh = 0.72,    supportveh = 0.65,  heavyveh = 0.42,
-                lightair = 1.25,supportair = 0.45,  heavyair = 1,   lightship = 1.25,   supportship = 2,    heavyship = 0.5,
+                lightair = 1.25,supportair = 0.5,   heavyair = 1,   lightship = 1.25,   supportship = 2,    heavyship = 0.5,
                 structure = 1.1,resource = 0.5,     defense = 0.7,  defenseaa = 0.8,    commander = 0.68,
     }
 ,

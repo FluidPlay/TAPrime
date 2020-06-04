@@ -12,7 +12,7 @@ local armorDefs = {
 	lightveh = {
 		"armflash", "armyork", "corsent", "cormuskrat", "cormls", "armacv", "armcv", "armmls", "coracv", "corfast",
 		"critter_ant", "critter_duck", "critter_goldfish", "critter_gull", "critter_penguin", "corcv", "corgator",
-        "armlatnk","armfav","armjanus","armmlv","armkam","armsh","armspy","coresupp","corbw","corfav",
+        "armlatnk","armfav","armjanus","armmlv","armsh","armspy","coresupp","corfav",
         "corlevlr","corsh","decade","marauder","nsaclash",
 	},
 	supportveh = {"armfido","armmart","armsam", "cormist", "armmerl","corcat","armshock","cormart","cormh","corvroc",
@@ -23,8 +23,8 @@ local armorDefs = {
               "corsok","armintr","armmanni", "armjam",},
 
     --++++==== Air
-	lightair={"armaca","armawac","armca","armcsa","armfig","armhawk","armsehak","armsfig","corawac","corca","corcsa","corhunt","corsfig","corvamp","corveng",},
-	supportair={"armatlas","armbrawl","armdfly","armpeep","armsaber","armseap","corseah","corape","corcut","corfink","corseap","corvalk","armblade",},
+	lightair={"corbw","armaca","armawac","armca","armcsa","armfig","armhawk","armsehak","armsfig","corawac","corca","corcsa","corhunt","corsfig","corvamp","corveng",},
+	supportair={"armkam","armatlas","armbrawl","armdfly","armpeep","armsaber","armseap","corseah","corape","corcut","corfink","corseap","corvalk","armblade",},
 	heavyair={"armliche","armlance","armpnix","armsb","armthund","corstil","corhurc","corsb","corshad","cortitan","corcrw",},
 
     --++++==== Structures & Defenses
