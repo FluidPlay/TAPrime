@@ -533,7 +533,13 @@ local function processCommand(cmd)
     local uDef = UnitDefNames[cmd.name]
     --local uDefId = uDef.id
     if uDef then    -- It's a unit (build command)
-        local advanced = (uDef.customParams and tonumber(uDef.customParams.tier) >= 2)
+        local advanced = false
+        if uDef.customParams and uDef.customParams.tier then
+            local tier_number = tonumber(uDef.customParams.tier)
+            if tier_number and tier_number >= 2 then
+                advanced = true
+            end
+        end
         return advanced and 4 or 3  -- Advanced: grid #4, regular: grid #3
     elseif #cmd.params > 1 then
         return 1
