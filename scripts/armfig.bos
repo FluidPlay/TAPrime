@@ -10,7 +10,7 @@ static-var  Static_Var_1, gun_1, statechg_DesiredState, statechg_StateChanging, 
 // Signal definitions
 #define SIG_AIM				2
 
-lua_BombsAway() { return 0; }
+lua_BombsAway() { return 1; }
 
 activatescr()
 {
@@ -131,10 +131,10 @@ QueryPrimary(piecenum)
 
 AimPrimary()
 {
-	if( Aiming == 1 ) //This means aiming with the secondary (AA) weapon has priority
-	{
-		return (0);
-	}
+//	if( Aiming == 1 ) //This means aiming with the secondary (AA) weapon has priority
+//	{
+//		return (0);
+//	}
 	signal SIG_AIM;
 	set-signal-mask SIG_AIM;
 	Aiming = 1;	
@@ -143,9 +143,9 @@ AimPrimary()
 
 FirePrimary()
 {
-	call-script lua_BombsAway();
 	gun_1 = !gun_1;
 	Aiming = 0;	
+	call-script lua_BombsAway();	
 }
 
 
@@ -166,9 +166,9 @@ AimSecondary()
 
 FireSecondary()
 {
-	call-script lua_BombsAway();
 	gun_1 = !gun_1;
 	Aiming = 0;
+	call-script lua_BombsAway();
 }
 
 // ------------------------

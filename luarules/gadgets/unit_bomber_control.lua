@@ -81,11 +81,10 @@ local function getReload(unitID)
   return origReload
 end
 
-
 local function GetRearmWeaponsCount(unitID)
   local unitDef = UnitDefs[spGetUnitDefID(unitID)]
   local rearmweapons = unitDef.customParams.rearmweapons
-  return rearmweapons and rearmweapons or 1
+  return (rearmweapons ~= nil) and tonumber(rearmweapons) or 1
 end
 
 

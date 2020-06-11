@@ -30,12 +30,12 @@ local spSetUnitRulesParam = Spring.SetUnitRulesParam
 --local SetUnitNeutral = Spring.SetUnitNeutral
 
 local trackedUnits = {
-    [UnitDefNames["armfig"].id] = true,
-    [UnitDefNames["corveng"].id] = true,
+    --[UnitDefNames["armfig"].id] = true,
+    --[UnitDefNames["corveng"].id] = true,
     [UnitDefNames["armthund"].id] = true,
     [UnitDefNames["corshad"].id] = true,
-    [UnitDefNames["armhawk"].id] = true,
-    [UnitDefNames["corvamp"].id] = true,
+    --[UnitDefNames["armhawk"].id] = true,
+    --[UnitDefNames["corvamp"].id] = true,
     [UnitDefNames["armpnix"].id] = true,
     [UnitDefNames["corhurc"].id] = true,
     [UnitDefNames["armliche"].id] = true,
