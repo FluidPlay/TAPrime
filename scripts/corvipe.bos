@@ -3,8 +3,7 @@
 #include "sfxtype.h"
 #include "exptype.h"
 
-piece  base, turret1, stand, door1, door2, door3, door4, turret2,
-       emit1, emit2, emit3, emit4;
+piece  base, turret1, stand, door1, door2, door3, door4, turret2, emit1;
 
 static-var  OpenClosed, restore_delay, gun_1, statechg_DesiredState, statechg_StateChanging;
 
@@ -175,7 +174,7 @@ AimFromPrimary(piecenum)
 
 QueryPrimary(piecenum)
 {
-	piecenum = emit1 + gun_1;
+	piecenum = emit1; // + gun_1;
 }
 
 SweetSpot(piecenum)
