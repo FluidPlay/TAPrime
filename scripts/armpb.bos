@@ -16,7 +16,7 @@ Go()
 	set ARMORED to 0;
 	turn dome to x-axis <-135.032967> speed <550.000000>;
 	wait-for-turn dome around x-axis;
-	move post to y-axis [3.600000] speed [25.000000];
+	move post to y-axis [3.500000] speed [25.000000]; //3.6, 7.2, 12.5
 	move barrel to z-axis [0.000000] speed [15.000000];
 	move gun to x-axis [1.500000] speed [5.000000];
 	wait-for-move post along y-axis;
