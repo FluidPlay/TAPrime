@@ -7,7 +7,7 @@ function widget:GetInfo()
 		date    = '2013', -- 2014
 		license = 'GNU GPL v2',
 		layer   = 0,
-		enabled = false
+		enabled = false,
 	}
 end
 
@@ -40,6 +40,7 @@ local statName = {
 }
 
 local speccing = Spring.IsGameOver() or Spring.GetSpectatingState()
+local showEndGraph = Spring.GetGameRulesParam("showEndGraph")
 local isDelta  = false
 local curGraph = {}
 local button = {}
@@ -534,22 +535,31 @@ end
 
 function widget:GameStart()
 	getTeamInfo()
-	if WG.BarMenu and speccing then
-		loadWindow()
-	end
+	--if WG.BarMenu and speccing then
+	--	loadWindow()
+	--end
 end
 
 function widget:GameOver()
 	
-	if not (WG.BarMenu and speccing) then
-		loadWindow()
-	end
+--	if not (WG.BarMenu and speccing) then
+--		loadWindow()
+--	end
 	
-	if WG.BarMenu then
-		WG.BarMenu.ShowHide('Graph')
-	end
+	--if WG.BarMenu then
+	--	WG.BarMenu.ShowHide('Graph')
+	--end
+
 	-- Draw initial graph
-	drawGraph(button[1])
+	--drawGraph(button[1])
+end
+
+function widget:GameFrame(n)
+    local value = showEndGraph
+    if value and value == 1 then
+        loadWindow()
+        drawGraph(button[1])
+    end
 end
 
 function widget:Shutdown()
