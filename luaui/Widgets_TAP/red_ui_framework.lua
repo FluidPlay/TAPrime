@@ -57,7 +57,7 @@ function widget:ViewResize(viewSizeX, viewSizeY)
     local newFontfileScale = (0.5 + (vsx*vsy / 5700000))
     if (fontfileScale ~= newFontfileScale) then
         fontfileScale = newFontfileScale
-        font = gl.LoadFont(fontfile, fontfileSize*fontfileScale, fontfileOutlineSize*fontfileScale, fontfileOutlineStrength)
+        font = gl.LoadFont(FontPath, fontfileSize*fontfileScale, fontfileOutlineSize*fontfileScale, fontfileOutlineStrength)
         WG[TN].font = font
     end
 

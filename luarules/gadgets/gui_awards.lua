@@ -23,28 +23,32 @@ local present = {}
 local playerListByTeam = {}
 
 local econUnitDefIDs = { --better to hardcode these since its complicated to pick them out with UnitDef properties
-	--land t1
+	--land Basic
 	UnitDefNames.armsolar.id,
 	UnitDefNames.corsolar.id,
 	UnitDefNames.armadvsol.id,
 	UnitDefNames.coradvsol.id,
 	UnitDefNames.armwin.id,
-	UnitDefNames.corwin.id,
+    UnitDefNames.corwin.id,
 	UnitDefNames.armmakr.id,
 	UnitDefNames.cormakr.id,
-	--sea t1
+	--sea Basic
 	UnitDefNames.armtide.id,
 	UnitDefNames.cortide.id,
 	UnitDefNames.armfmkr.id,
 	UnitDefNames.corfmkr.id,
-	--land t2
+	--land Adv.
 	UnitDefNames.armmmkr.id,
 	UnitDefNames.cormmkr.id,
 	UnitDefNames.corfus.id,
 	UnitDefNames.armfus.id,
 	UnitDefNames.armafus.id,
 	UnitDefNames.corafus.id,
-	--sea t2
+    UnitDefNames.armawin.id,    -- Adv. Wind Gens
+    UnitDefNames.corawin.id,
+    UnitDefNames.armuber.id,
+    UnitDefNames.coruber.id,
+	--sea Adv.
 	UnitDefNames.armuwfus.id,
 	UnitDefNames.coruwfus.id,
 	UnitDefNames.armuwmmm.id,
@@ -548,7 +552,7 @@ function ProcessAwards(_,ecoKillAward, ecoKillAwardSec, ecoKillAwardThi, ecoKill
 	end
 	CreateBackground()
 	FirstAward = CreateAward('fuscup',0,'Destroying enemy resource production', white, ecoKillAward, ecoKillAwardSec, ecoKillAwardThi, ecoKillScore, ecoKillScoreSec, ecoKillScoreThi, 100) 
-	SecondAward = CreateAward('bullcup',0,'Destroying enemy units and defences',white, fightKillAward, fightKillAwardSec, fightKillAwardThi, fightKillScore, fightKillScoreSec, fightKillScoreThi, 200) 
+	SecondAward = CreateAward('bullcup',0,'Destroying enemy units and defenses',white, fightKillAward, fightKillAwardSec, fightKillAwardThi, fightKillScore, fightKillScoreSec, fightKillScoreThi, 200)
 	ThirdAward = CreateAward('comwreath',0,'Efficient use of resources',white,effKillAward, effKillAwardSec, effKillAwardThi, effKillScore, effKillScoreSec, effKillScoreThi, 300) 
 	if cowAward ~= -1 then
 		CowAward = CreateAward('cow',1,'Doing everything',white, ecoKillAward, 1,1,1,1,1, 400 + addy) 	
@@ -778,20 +782,26 @@ end
 local quitX = 100
 local graphsX = 250
 
+local function disableAwardsPanel()
+    if Script.LuaUI("GuishaderRemoveRect") then
+        Script.LuaUI.GuishaderRemoveRect('awards')
+    end
+    drawAwards = false
+end
+
 function gadget:MousePress(x,y,button)
 	if button ~= 1 then return end
 	if drawAwards then
 		x,y = correctMouseForScaling(x,y)
 		if (x > bx+w-quitX-5) and (x < bx+w-quitX+16*gl.GetTextWidth('Quit')+5) and (y>by+50-5) and (y<by+50+16+5) then --quit button
-			Spring.SendCommands("quitforce")
+            disableAwardsPanel()
+			Spring.SendCommands("QuitMenu") --quitforce
 		end
 		if (x > bx+w-graphsX-5) and (x < bx+w-graphsX+16*gl.GetTextWidth('Show Graphs')+5) and (y>by+50-5) and (y<by+50+16+5) then
 			Spring.SendCommands('endgraph 1')
-			if Script.LuaUI("GuishaderRemoveRect") then
-				Script.LuaUI.GuishaderRemoveRect('awards')
-			end
-			drawAwards = false
-		end	
+            --Spring.SetGameRulesParam("showEndGraph", 1) --TODO
+            disableAwardsPanel()
+		end
 	end
 end
 

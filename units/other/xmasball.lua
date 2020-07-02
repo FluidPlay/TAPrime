@@ -5,7 +5,7 @@ return {
 		buildtime = 255,
 		canattack = false,
 		canrepeat = false,
-		category = "OBJECT",
+		category = "ALL",
 		collisionvolumeoffsets = "0 0 0",
 		collisionvolumescales = "6.8 6.8 6.8",
 		collisionvolumetype = "Sphere",

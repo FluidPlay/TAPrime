@@ -75,7 +75,7 @@ local function UpdateUnitsList()
 	end
 end
 
-function maybeRemoveSelf()
+function removeSelfCheck()
     if Spring.GetSpectatingState() and (Spring.GetGameFrame() > 0 or gameStarted) then
         widgetHandler:RemoveWidget(self)
     end
@@ -83,16 +83,16 @@ end
 
 function widget:GameStart()
     gameStarted = true
-    maybeRemoveSelf()
+    removeSelfCheck()
 end
 
 function widget:PlayerChanged(playerID)
-    maybeRemoveSelf()
+    removeSelfCheck()
 end
 
 function widget:Initialize()
     if Spring.IsReplay() or Spring.GetGameFrame() > 0 then
-        maybeRemoveSelf()
+        removeSelfCheck()
     end
 	for i,ud in pairs(UnitDefs) do
 		if bombers[ud.name] then

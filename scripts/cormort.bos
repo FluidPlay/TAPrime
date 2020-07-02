@@ -424,13 +424,45 @@ FirePrimary()
 	return (0);
 }
 
-QueryPrimary(piecenum)
+//================
+
+AimSecondary(heading, pitch)
+{
+	signal SIG_AIM;
+	set-signal-mask SIG_AIM;
+	bAiming = TRUE;
+	while( !Static_Var_3 )
+	{
+		sleep 100;
+	}
+	turn Torso to y-axis heading speed <190.043956>;
+	turn support to x-axis <0.000000> - pitch speed <150.032967>;
+	wait-for-turn Torso around y-axis;
+	wait-for-turn support around x-axis;
+	start-script RestoreAfterDelay();
+	return (1);
+}
+
+FireSecondary()
+{
+	move Barrel to z-axis [-12.500000] speed [1250.000000];
+	show flare;
+	sleep 150;
+	turn Torso to x-axis <-10.000000> speed <500.120879>;
+	sleep 150;
+	hide flare;
+	turn Torso to x-axis <0.000000> speed <20.000000>;
+	move Barrel to z-axis [0.000000] speed [7.500000];
+	return (0);
+}
+
+QuerySecondary(piecenum)
 {
 	piecenum = flare;
 	return (0);
 }
 
-AimFromPrimary(piecenum)
+AimFromSecondary(piecenum)
 {
 	piecenum = support;
 	return (0);

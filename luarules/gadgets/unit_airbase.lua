@@ -156,13 +156,20 @@ if (gadgetHandler:IsSyncedCode()) then
     local function getAmmo(unitID)
         local ud = UnitDefs[spGetUnitDefID(unitID)]
         local maxammo = 1
+        --if ud.customParams and ud.customParams.maxAmmo then
+        --    maxammo = ud.customParams.maxAmmo
+        --end
         if ud.customParams ~= nil and ud.customParams.maxAmmo ~= nil then
             maxammo = ud.customParams.maxAmmo
         end
         return spGetUnitRulesParam(unitID, "ammo"), maxammo
+        --local ammo = spGetUnitRulesParam(unitID, "ammo")
+        --if ammo then
+        --    ammo = tonumber(ammo) end
+        --return ammo or 0, maxammo
     end
 
-    ---@return either false ie. cannot land at this airbase, or the piece number of a free pad within this airbase
+    -- @return It's either false ie. cannot land at this airbase, or the piece number of a free pad within this airbase
     function CanLandAt(unitID, airbaseID)
 
         -- check that this airbase has pads (needed?)
@@ -221,7 +228,7 @@ if (gadgetHandler:IsSyncedCode()) then
     -----@param unitID number   ---@return boolean
     function NeedsRearm(unitID)
         local ammo = getAmmo(unitID)
-        if ammo and isnumber(ammo)then
+        if ammo and isnumber(ammo) then
             return ammo < 1
         end
         return false
@@ -397,13 +404,18 @@ if (gadgetHandler:IsSyncedCode()) then
     function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions)
         -- If out of ammo, ignore the combat command
         local ammo, maxAmmo = getAmmo(unitID)
-        if combatCommands[cmdID] and ammo and ammo < 1 then --or cmdID == CMD.STOP
-            return false
+        --if combatCommands[cmdID] and isnumber(ammo) and ammo < 1 then --or cmdID == CMD.STOP
+        if combatCommands[cmdID] and (ammo ~= nil) then
+            local n_ammo = tonumber(ammo)
+            if n_ammo and (n_ammo < 1) then
+                return false end
         end
         -- If command == return to airbase (any) and the unit is at full health & armed, ignore
         -- This way, if you select a bunch of planes and tell them to return, only the right ones will
         if cmdID == CMD_LAND_AT_AIRBASE and not cmdOptions.shift then
             local health, maxHealth = Spring.GetUnitHealth(unitID)
+            health = tonumber(health)
+            maxHealth = tonumber(maxHealth)
             if not health or not maxHealth then
                 return true end
             -- Scouts, transports:

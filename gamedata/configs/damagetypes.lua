@@ -37,7 +37,7 @@ local damageTypes = {
 
 	siege={"cormort","shiva","armfido","corkrog","armbrtha","corint","corvroc","tawf013","armmart","cormart","corwolv","tawf11",},
 
-	omni={"armshock","corjugg","armamd","corfmd","armcarry","corcarry","armscab","cormabm","armsd","corsd","armcom","armcom2","armcom3","armdecom","corcom","corcom2","corcom3","cordecom","meteor","armjuno","armjamt","armveil","corjuno","corjamt","corshroud","armfhp","armhp","corfhp","corhp","armsy","asubpen","armaap","armalab","armap","armasy","armavp","armlab","armshltx","armshltxuw","armvp","coraap","coralab","corap","corasy","coravp","corgant","corgantuw","corlab","corsy","corvp","csubpen","armspy","armfark","armaser","armvulc","armfmine3","armmine1","armmine2","armmine3","corfmine3","cormine1","cormine2","cormine3","cormine4","armsilo","armvader","corroach","corthovr","armthovr","armintr","armtship","cortship","coreter","corfgate","corgate","armfgate","armgate",
+	omni={"armshock","corjugg","armamd","corfmd","armcarry","corcarry","armscab","cormabm","armsd","corsd","armcom","armcom2","armcom3","armdecom","corcom","corcom2","corcom3","cordecom","meteor","armjuno","armjamt","armveil","corjuno","corjamt","corshroud","armfhp","armhp","corfhp","corhp","armsy","asubpen","armaap","armalab","armap","armasy","armavp","armlab","armshltx","armshltxuw","armvp","coraap","coralab","corap","corasy","coravp","corgant","corgantuw","corlab","corsy","corvp","csubpen","armspy","armfark","armaser","armvulc","armfmine3","armmine1","armmine2","armmine3","corfmine3","cormine1","cormine2","cormine3","cormine4","armvader","corroach","corthovr","armthovr","armintr","armtship","cortship","coreter","corfgate","corgate","armfgate","armgate",
     "meteor",},
 
 	nuke={"cortron","armliche","corsilo","armsilo",},

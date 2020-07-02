@@ -15,7 +15,7 @@
 function gadget:GetInfo()
     return {
         name      = "Unit Moving SprayAngle",
-        desc      = "Applies custom SprayAngle when unit is moving",
+        desc      = "Applies custom SprayAngle when unit is moving, also flattens height of fire cone for some units",
         author    = "MaDDoX",
         date      = "Apr, 2018",
         license   = "GNU GPL, v2 or later",
@@ -38,7 +38,7 @@ local spGetProjectileDefID      = Spring.GetProjectileDefID
 local spSetProjectileVelocity   = Spring.SetProjectileVelocity
 local spGetProjectileVelocity   = Spring.GetProjectileVelocity
 
-local armfavweapID = WeaponDefNames["armfav_janus_rocket"].id
+--local armfavweapID = WeaponDefNames["armfav_janus_rocket"].id
 
 
 local trackedWeapIDs = {
@@ -47,6 +47,8 @@ local trackedWeapIDs = {
     armyork_mobileflak = true,
     corsent_mobileflak = true,
     armflash_emgx = true,
+    armaak_armaakbot_missile = true,
+    armpw_emg = true,
 }
 
 -- Synced only

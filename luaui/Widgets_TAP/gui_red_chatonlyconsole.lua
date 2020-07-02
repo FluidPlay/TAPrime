@@ -18,9 +18,15 @@ end
 
 VFS.Include("gamedata/taptools.lua")
 
-local font = gl.LoadFont(FontPath, loadedFontSize, 24, 1.25)
+local vsx,vsy = Spring.GetViewGeometry()
+local fontfileScale = (0.7 + (vsx*vsy / 7000000))
+local fontfileSize = 44
+local fontfileOutlineSize = 10 --24
+local fontfileOutlineStrength = 1.4 --1.25
 
-local vsx, vsy = gl.GetViewSizes()
+local font = gl.LoadFont(FontPath, fontfileSize*fontfileScale, fontfileOutlineSize*fontfileScale, fontfileOutlineStrength)
+
+
 local widgetScale = vsx/1500
 
 local NeededFrameworkVersion = 8
@@ -840,9 +846,9 @@ function widget:Initialize()
     Spring.SendCommands('inputtextgeo 0.26 0.73 0.02 0.028')
     AutoResizeObjects()
 
-    if WG['Red'].font then
-        font = WG['Red'].font
-    end
+    --if WG['Red'].font then
+    --    font = WG['Red'].font
+    --end
 
     WG['red_chatonlyconsole'] = {}
     WG['red_chatonlyconsole'].getMaxLines = function()

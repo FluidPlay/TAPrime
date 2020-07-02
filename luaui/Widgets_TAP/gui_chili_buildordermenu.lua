@@ -42,6 +42,8 @@ local Chili, Window, Image, Button, Grid, Label, ScrollPanel, color2incolor
 local orderWindow, buildWindow, buildWindowAdv, orderGrid, buildGrid, buildGridAdv, updateRequired, tooltip, btWidth
 local chiliCache = {}
 local vsx, vsy = spGetWindowGeometry()
+local lastvsx = vsx
+local lastvsy = vsy
 
 local Config = {
     ordermenu = {
@@ -76,7 +78,7 @@ local Config = {
     },
     labels = {
         --captionFontMinSize = 12, -- test, not being used currently
-        captionFontMaxSize = 18, --10, --18,
+        captionFontMaxSize = 16, --10, --18,
         queueFontSize = 24, --18, --32 (MaDDoX)
         costFontSize = 15, --9,
         showMetalCost = true,
@@ -531,7 +533,13 @@ local function processCommand(cmd)
     local uDef = UnitDefNames[cmd.name]
     --local uDefId = uDef.id
     if uDef then    -- It's a unit (build command)
-        local advanced = (uDef.customParams and tonumber(uDef.customParams.tier) >= 2)
+        local advanced = false
+        if uDef.customParams and uDef.customParams.tier then
+            local tier_number = tonumber(uDef.customParams.tier)
+            if tier_number and tier_number >= 2 then
+                advanced = true
+            end
+        end
         return advanced and 4 or 3  -- Advanced: grid #4, regular: grid #3
     elseif #cmd.params > 1 then
         return 1
@@ -623,6 +631,22 @@ function widget:Initialize()
         widgetHandler:RemoveWidget()
         return
     end
+
+    --That's a test (MaDDoX)
+    local Chobby = WG.Chobby
+    --Spring.Echo("HandleLobbyOverlay", msg)
+    local interfaceRoot = Chobby and Chobby.interfaceRoot
+    if interfaceRoot then
+        --if msg == REMOVE_BUTTON then
+            interfaceRoot.SetLobbyButtonEnabled(false)
+        --    return true
+        --elseif msg == ENABLE_OVERLAY then
+        --    Spring.Echo("HandleLobbyOverlay SetMainInterfaceVisibley")
+        --    interfaceRoot.SetMainInterfaceVisible(true)
+        --    return true
+        --end
+    end
+
     OverrideDefaultMenu()
 
     Chili = WG.Chili
@@ -658,48 +682,44 @@ function widget:WorldTooltip(ttType,data1,data2,data3)
 end --WorldTooltip
 
 function widget:ViewResize(newX,newY)
-    -- TODO: implement config for this resize and make a reusable helper function to handle it
+    vsx, vsy = spGetWindowGeometry() --newX, newY
+    Spring.Echo("Resized to "..vsx.." x "..vsy)
+    if lastvsx == vsx and lastvsy == vsy then
+        return
+    else
+        lastvsx = vsx
+        lastvsy = vsy
+    end
 
-    --Spring.SendCommands("luaui reload")
+    chiliCache = {}
+    btWidth = processRelativeCoord(max(vsx*0.14, minSideMenuWidth), vsx/Config.ordermenu.columns)
 
-    --vsx, vsy = newX, newY
+    --end
+    --if orderWindow then
+    --    orderWindow:Dispose()
+    --end
+    --if buildWindow then
+    --    buildWindow:Dispose()
+    --end
+    --if buildWindowAdv then
+    --    buildWindowAdv:Dispose()
+    --end
+    --
     --btWidth = processRelativeCoord(Config.ordermenu.width, vsx/Config.ordermenu.columns)
-    --widget:Shutdown()
-
-    --chiliCache = {}
+    --
     --
     --InitializeControls()
 
-
-    --
-    --Config.ordermenu.width = max(vsx*0.14,minSideMenuWidth)
-    --Config.ordermenu.height = vsy*0.14
-    --Config.ordermenu.y = vsy*0.25
-    ---- x, y, width, height
-    --orderWindow:SetPos(nil, Config.ordermenu.y, Config.ordermenu.width, Config.buildmenuAdv.height)
-    ----
-    --Config.buildmenu.width = max(vsx*0.14,minSideMenuWidth)
-    --Config.buildmenu.height = vsy*0.14
-    --Config.buildmenu.y = vsy*0.41
-    --buildWindow:SetPos(nil, Config.buildmenu.y, Config.buildmenu.width, Config.buildmenuAdv.height)
-    ----
-    --Config.buildmenuAdv.width = max(vsx*0.14,minSideMenuWidth)
-    --Config.buildmenuAdv.height = vsy*0.14
-    --Config.buildmenuAdv.y = vsy*0.57
-    --buildWindowAdv:SetPos(nil, Config.buildmenuAdv.y, Config.buildmenuAdv.width, Config.buildmenuAdv.height)
-    --
-    --updateRequired = true
-
 --[Original]
---    Config.ordermenu.height = orderWindow.width * (Config.ordermenu.rows / Config.ordermenu.columns)
---    orderWindow:SetPos(nil, nil, nil, Config.ordermenu.height)
---
---    Config.buildmenu.height = buildWindow.width * (Config.buildmenu.rows / Config.buildmenu.columns)
---    buildWindow:SetPos(nil, nil, nil, Config.buildmenu.height)
---
---    Config.buildmenuAdv.height = buildWindowAdv.width * (Config.buildmenuAdv.rows / Config.buildmenuAdv.columns)
---    buildWindowAdv:SetPos(nil, nil, nil, Config.buildmenuAdv.height)
-end --ViewResize
+    --:SetPos(pos.x, pos.y, pos.width, pos.height)
+    orderWindow:SetPosRelative(0, vsy*0.25, max(vsx*0.14, minSideMenuWidth), vsy*0.14)
+
+    buildWindow:SetPosRelative(0, vsy*0.41, max(vsx*0.14,minSideMenuWidth), vsy*0.14)
+
+    buildWindowAdv:SetPosRelative(0, vsy*0.57, max(vsx*0.14,minSideMenuWidth), vsy*0.14)
+
+    --spForceLayoutUpdate()
+end
 
 function widget:Shutdown()
     if orderWindow then

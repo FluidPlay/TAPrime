@@ -162,19 +162,19 @@ options = {
 	enableCons = {
 		name = 'Enable for constructors',
 		type = 'bool',
-		value = true,
+		value = false, --true,
 		desc = 'Enable constructor\'s avoidance feature (WILL NOT include Commander).\n\nConstructors will avoid enemy while having move order. Constructor also return to base when encountering enemy during area-reclaim or area-ressurect command, and will try to avoid enemy while having build or repair or reclaim queue except when hold-position is issued.\n\nTips: order area-reclaim to the whole map, work best for cloaked constructor, but buggy for flying constructor. Default:On',
 	},
 	enableCloaky = {
 		name = 'Enable for cloakies',
 		type = 'bool',
-		value = true,
+		value = false, --true,
 		desc = 'Enable cloakies\' avoidance feature.\n\nCloakable bots will avoid enemy while having move order. Cloakable will also flee from enemy when idle except when hold-position state is used.\n\nTips: is optimized for Sycthe- your Sycthe will less likely to accidentally bump into enemy unit. Default:On',
 	},
 	enableGround = {
 		name = 'Enable for ground units',
 		type = 'bool',
-		value = false, --true,
+		value = true,
 		desc = 'Enable for ground units (INCLUDE Commander).\n\nAll ground unit will avoid enemy while being outside'
 				.."camera view and/or while reloading except when hold-position state is used.\n"
 				.."\nTips:\n1) is optimized for masses of Thug or Zeus.\n2) You can use Guard to make your unit swarm"
@@ -195,7 +195,7 @@ options = {
 	enableReturnToBase = {
 		name = "Find base",
 		type = 'bool',
-		value = true,
+		value = false, --true,
 		desc = "Allow constructor to return to base when having area-reclaim or area-ressurect command, else it will"
 		.."return to center of the circle when retreating. \n\nTips: build 3 new buildings at new location to identify"
 		.."as base, unit will automatically select nearest base. Default:On",
@@ -221,13 +221,13 @@ options = {
 	retreatAvoidance = {
 		name = 'Retreating unit always flee',
 		type = 'bool',
-		value = true,
+		value = false, --true,
 		desc = 'Force retreating unit to always avoid the enemy (Note: this require the use of RETREAT functionality provided by cmd_retreat.lua widget a.k.a unit retreat widget). Default:On',
 	},	
 	dbg_RemoveAvoidanceSplitSecond = {
 		name = 'Debug: Constructor instant retreat',
 		type = 'bool',
-		value = true,
+		value = false, --true,
 		desc = "Widget to issue a retreat order first before issuing an avoidance (to reduce chance of avoidance putting constructor into more danger).\n\nDefault:On.",
 		advanced = true,
 	},

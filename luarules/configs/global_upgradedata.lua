@@ -32,8 +32,8 @@ GlobalUpgrades = {
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "",
-        metalCost = 300,
-        energyCost = 6000,
+        metalCost = 200,
+        energyCost = 3000,
         upgradeTime = 10 * 30, --5 seconds, in frames
         alertWhenDone = true, -- [Optional] if true, fires an alert once completed
         type = "tech", -- TODO: Currently unused. Should indicate special types (auras, debuffs, etc)

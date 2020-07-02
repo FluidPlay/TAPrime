@@ -936,12 +936,14 @@ do
         else
             --// AMMO
             local ammo = GetUnitRulesParam(unitID, "ammo")
-            if ammo and ud.customParams and ud.customParams.maxammo then
+            if ammo then
+                ammo = tonumber(ammo) end
+            if isnumber(ammo) and ud.customParams and ud.customParams.maxammo then
                 if ammo == 0 then
                     showreload = false
                 end
-                local maxammo = tonumber( ud.customParams.maxammo )
-                if ammo < maxammo and not flicker() then
+                local maxammo = tonumber(ud.customParams.maxammo)
+                if isnumber(maxammo) and (ammo < maxammo) and not flicker() then
                     local ammoperc = inverselerp(0, maxammo, ammo)
                     AddBar(messages.ammo, ammoperc,"ammo",(fullText and floor(ammoperc*100)..'%') or '')
                 end

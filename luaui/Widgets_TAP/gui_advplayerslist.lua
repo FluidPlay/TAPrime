@@ -2828,7 +2828,7 @@ function ShareTip(mouseX, playerID)
 		elseif mouseX >= widgetPosX + (m_share.posX + 19) * widgetScale  and  mouseX <= widgetPosX + (m_share.posX + 35) * widgetScale then
 			tipText = "Click and drag to ask for Energy"
 		elseif mouseX >= widgetPosX + (m_share.posX + 37) * widgetScale  and  mouseX <= widgetPosX + (m_share.posX + 53) * widgetScale then
-			tipText = "Click and drag to ask for Metal"
+			tipText = "Click and drag to ask for Ore"
 		end
 	else
 		if mouseX >= widgetPosX + (m_share.posX + 1) * widgetScale  and  mouseX <= widgetPosX + (m_share.posX + 17) * widgetScale then
@@ -2836,7 +2836,7 @@ function ShareTip(mouseX, playerID)
 		elseif mouseX >= widgetPosX + (m_share.posX + 19) * widgetScale  and  mouseX <= widgetPosX + (m_share.posX + 35) * widgetScale then
 			tipText = "Click and drag to share Energy"
 		elseif mouseX >= widgetPosX + (m_share.posX + 37) * widgetScale  and  mouseX <= widgetPosX + (m_share.posX + 53) * widgetScale then
-			tipText = "Click and drag to share Metal"
+			tipText = "Click and drag to share Ore"
 		end
 	end
 end
@@ -3330,13 +3330,13 @@ function widget:MouseRelease(x,y,button)
 		if metalPlayer ~= nil then
 			if metalPlayer.team == myTeamID then
 				if amountEM == 0 then
-					Spring_SendCommands("say a: I need Metal!")
+					Spring_SendCommands("say a: I need Ore!")
 				else
-					Spring_SendCommands("say a: I need "..amountEM.." Metal!")
+					Spring_SendCommands("say a: I need "..amountEM.." Ore!")
 				end
 			elseif amountEM > 0 then
 				Spring_ShareResources(metalPlayer.team, "metal", amountEM)
-				Spring_SendCommands("say a: I sent "..amountEM.." metal to "..metalPlayer.name)
+				Spring_SendCommands("say a: I sent "..amountEM.." ore to "..metalPlayer.name)
 			end
 			sliderOrigin = nil
 			amountEMMax = nil
@@ -3982,7 +3982,7 @@ function widget:Update(delta) --handles takes & related messages
 		
 			if afterE and afterM and afterU then
 				if afterE > 1.0 or afterM > 1.0 or  afterU > 0 then
-					toSay = toSay .. "Left  " .. math.floor(afterU) .. " units, " .. math.floor(afterE) .. " energy and " .. math.floor(afterM) .. " metal."
+					toSay = toSay .. "Left  " .. math.floor(afterU) .. " units, " .. math.floor(afterE) .. " energy and " .. math.floor(afterM) .. " ore."
 				end
 			end
 			

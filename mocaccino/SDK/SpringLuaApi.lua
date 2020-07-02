@@ -1050,13 +1050,13 @@ assert(type(x) == "number","Argument x, is of invalid type - expected number");
 return  numberMock
  end
 
-function Spring.GetUnitsInCylinder   (  radius, z, teamID, x)
-assert(type(radius) == "number","Argument radius is of invalid type - expected number");
-assert(type(z) == "number","Argument z, is of invalid type - expected number");
-assert(type(teamID) == "number","Argument teamID] is of invalid type - expected number");
-assert(type(x) == "number","Argument x, is of invalid type - expected number");
+function Spring.GetUnitsInCylinder (x, z, radius, teamID)
+    assert(type(x) == "number","Argument x, is of invalid type - expected number");
+    assert(type(z) == "number","Argument z, is of invalid type - expected number");
+    assert(type(radius) == "number","Argument radius is of invalid type - expected number");
+    assert(type(teamID) == "number","Argument teamID] is of invalid type - expected number");
 return  numberMock
- end
+end
 
 function Spring.GetUnitsInPlanes   ( )
 return  numberMock

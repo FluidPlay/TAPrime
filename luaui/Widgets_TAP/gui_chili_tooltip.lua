@@ -25,14 +25,16 @@ local stringformat = string.format
 local Chili, Window, TextBox, Image, Button, Grid, Label, ScrollPanel, color2incolor
 
 -- Global vars
-local tooltipWindow, buildWindow, tooltipTextBox, buildGrid, updateRequired, tooltip, btWidth
+local tooltipWindow, tooltipTextBox
 local vsx, vsy = sGetWindowGeometry()
+local fontfileScale = (0.75 + (vsx*vsy / 7000000))
+local fontfileSize = 15 -- 40; 18
 
 local Config = {
     tooltip = {
         x = '0%', y = '90%',
         width = '40%', height = '15%',
-        fontSize = 15,
+        fontSize = fontfileSize * fontfileScale, --19, --15,
         maxWidth = 1020,
         padding = {5, 5, 5, 5},     -- outer panel
     },
@@ -77,6 +79,9 @@ local function getEditedCurrentTooltip()
 end --getEditedCurrentTooltip
 --------------------------------------------------------------------------------
 local function InitializeControls()
+    vsx, vsy = sGetWindowGeometry()
+    fontfileScale = (0.75 + (vsx*vsy / 7000000))
+    Config.tooltip.fontSize = fontfileSize * fontfileScale
     tooltipTextBox, tooltipWindow = createTooltipWindow(Config.tooltip)
 end --InitializeControls
 
@@ -118,10 +123,17 @@ function widget:Update()
 end --Update
 
 function widget:ViewResize(newX,newY)
+    tooltipWindow:Dispose()
+    InitializeControls()
 
-end --ViewResize
+    --vsx, vsy = sGetWindowGeometry()
+    --fontfileScale = (0.75 + (vsx*vsy / 7000000))
+    ----Config.tooltip.fontSize = fontfileSize * fontfileScale
+    --tooltipTextBox.fontsize = fontfileSize * fontfileScale
+    --updateTooltipText()
+end
 
 function widget:Shutdown()
     tooltipWindow:Dispose()
     sSendCommands("tooltip 1")
-end --Shutdown
+end

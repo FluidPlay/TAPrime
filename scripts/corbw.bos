@@ -5,6 +5,8 @@
 
 piece  base, flare;
 
+static-var  Static_Var_4; //Aiming Dgun
+
 #define SIG_AIM				2
 
 SmokeUnit(healthpercent, sleeptime, smoketype)
@@ -37,6 +39,7 @@ SmokeUnit(healthpercent, sleeptime, smoketype)
 Create()
 {
 	hide flare;
+	Static_Var_4 = 0;
 	start-script SmokeUnit();
 }
 
@@ -52,6 +55,10 @@ AimFromPrimary(piecenum)
 
 AimPrimary(heading, pitch)
 {
+	if( Static_Var_4 == 1 )
+	{
+		return (0);
+	}
     signal SIG_AIM;
 	set-signal-mask SIG_AIM;
 	 	while( 255 > heading )
@@ -93,6 +100,7 @@ AimSecondary(heading, pitch)
 {
     signal SIG_AIM;
 	set-signal-mask SIG_AIM;
+	Static_Var_4 = 1;	
 	 	while( 255 > heading )
 		{
 			set UNKNOWN_UNIT_VALUE(82) to 0 - 1500 + get UNKNOWN_UNIT_VALUE(82);
@@ -110,6 +118,7 @@ AimSecondary(heading, pitch)
 
 FireSecondary()
 {
+	Static_Var_4 = 0;
 	start-script PostFire();
 	return (1);
 }
