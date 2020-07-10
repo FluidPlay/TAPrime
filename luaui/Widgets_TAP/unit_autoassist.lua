@@ -99,6 +99,7 @@ end
 function widget:UnitIdle(unitID, unitDefID, unitTeam)
     if not builders[unitID] then
         return end
+    --Spring.Echo("Unit ".. unitID.." is idle.") --UnitDefs[unitDefID].name)
     if myTeamID == spGetUnitTeam(unitID) then					--check if unit is mine
         idleBuilders[unitID]=true					--add unit to register
         assistStoppedUnits[unitID] = false
@@ -119,11 +120,11 @@ end
 --Unregister reclaimer once it is given a command
 function widget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdOpts, cmdParams)
 
-    --echo("unit "..unitID.." got a command") --¤debug
+    --Spring.Echo("unit "..unitID.." got a command") --¤debug
     for builderID in pairs(idleBuilders) do
         if (builderID == unitID) then
-            idleBuilders[builderID]=nil
-            --Spring.Echo("auto_assist: unregistering unit ".. builderID .." as idle")
+            idleBuilders[builderID] = nil
+            --Spring.Echo("unit ".. builderID .." is no longer idle")
         end
     end
     if cmdID < 0 then
