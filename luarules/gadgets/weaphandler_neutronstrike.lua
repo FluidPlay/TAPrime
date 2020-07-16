@@ -31,6 +31,7 @@ local spSetWatchWeapon = Script.SetWatchWeapon
 local spSetUnitNoDraw = Spring.SetUnitNoDraw
 local spSetUnitStealth = Spring.SetUnitStealth
 local spSetUnitSonarStealth = Spring.SetUnitSonarStealth
+local spSetUnitBlocking = Spring.SetUnitBlocking
 local spSetUnitNeutral = Spring.SetUnitNeutral
 local spGetGameFrame = Spring.GetGameFrame
 local minSpawnDelay = 1.25 * 30 -- n seconds in frames  --TODO: Make static
@@ -76,6 +77,7 @@ function gadget:GameFrame(f)
             spSetUnitNoDraw(unitID, true)
             spSetUnitStealth(unitID, true)
             spSetUnitSonarStealth(unitID, true)
+            spSetUnitBlocking(unitID, false, false, false, false, false, false, false)
             spSetUnitNeutral(unitID, true)
             table.remove(spawnList, i)
         end

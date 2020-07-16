@@ -32,7 +32,7 @@ return {
 		selfdestructas = "smallBuildingExplosionGenericSelfd",
 		sightdistance = 546,
 		usebuildinggrounddecal = true,
-		usepiececollisionvolumes = 1,
+		--usepiececollisionvolumes = 0,
 		yardmap = "ooooooooo",
 		customparams = {
 			bar_buildinggrounddecalsizex = 4.7,

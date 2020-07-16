@@ -30,6 +30,7 @@ local trackedUnits = {} -- { [unitID]=(number)enableframe, .. }
 function gadget:UnitFinished(unitID, unitDefID, teamID)
     --Spring.Echo("Disabling collision for "..unitID)
     Spring.SetUnitBlocking(unitID, false, false, true)
+    Spring.SetUnitNeutral(unitID, true)
     --isBlocking, isSolidObjectCollidable, isProjectileCollidable, isRaySegmentCollidable, crushable, blockEnemyPushing, blockHeightChanges
     trackedUnits[unitID] = Spring.GetGameFrame() + delay
 end
@@ -40,6 +41,7 @@ function gadget:GameFrame(n)
             --Spring.Echo("Enabling collision for "..unitID)
             Spring.SetUnitBlocking(unitID, true, true, true, true,
                     true, true, true)
+            Spring.SetUnitNeutral(unitID, false)
             trackedUnits[unitID]=nil
         end
     end
