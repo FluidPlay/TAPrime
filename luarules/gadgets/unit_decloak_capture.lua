@@ -14,17 +14,17 @@ local CMD_CAPTURE = CMD.CAPTURE --icon unit or area
 local spSetUnitCloak = Spring.SetUnitCloak
 local spGetUnitIsCloaked = Spring.GetUnitIsCloaked
 
-local function iscommander(uDefID)
-    local cParms = UnitDefs[uDefID].customParams
-    if cParms and cParms.iscommander then
-        return true
-    end
-    return false
-end
+--local function iscommander(uDefID)
+--    local cParms = UnitDefs[uDefID].customParams
+--    if cParms and cParms.iscommander then
+--        return true
+--    end
+--    return false
+--end
 
 function gadget:AllowCommand(unitID, uDefID, unitTeam, cmdID, cmdParams, cmdOptions, cmdTag, synced)
     if cmdID and cmdID == CMD_CAPTURE then
-        if iscommander(uDefID) then
+        if spGetUnitIsCloaked(unitID) then --iscommander(uDefID)
             spSetUnitCloak(unitID, false) end
     end
     return true

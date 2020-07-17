@@ -4,7 +4,7 @@
 function gadget:GetInfo()
     return {
         name      = "Decloak when damaged",
-        desc      = "Decloaks units when they are damaged or trying to capture",
+        desc      = "Decloaks units when they are damaged",
         author    = "Google Frog",
         date      = "Nov 25, 2009", -- Major rework 12 Feb 2014
         license   = "GNU GPL, v2 or later",

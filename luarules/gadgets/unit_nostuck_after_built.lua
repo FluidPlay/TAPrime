@@ -6,7 +6,7 @@ function gadget:GetInfo()
         date = "2020",
         license = "Public Domain",
         layer = 0,
-        enabled = true,
+        enabled = false, --true, || Disabled, caused weird edge cases
     }
 end
 

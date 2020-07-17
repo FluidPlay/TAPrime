@@ -128,7 +128,7 @@ return {
 				impulsefactor = 0.123,
 				name = "Pop-up heavy g2g gauss cannon",
 				noselfdamage = true,
-				range = 730,
+				range = 580, --730,
 				reloadtime = 1.625,
 				soundhit = "xplomed2",
 				soundhitwet = "splshbig",
