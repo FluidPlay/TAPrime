@@ -52,7 +52,7 @@ local moveDatas = {
 	},
 	TANK2 = {	-- Stumpy, Raider, Leveler -- (can crush light bots but not plasma bots or DTs)
         allowRawMovement = true,
-		crushstrength = 300,	-- plasma kbots crushresistance = 400
+		crushstrength = 275,	-- plasma kbots crushresistance = 400
 		footprintx = 3,
 		footprintz = 3,
 		maxslope = 18,
@@ -65,7 +65,7 @@ local moveDatas = {
 	},
 	TANK3 = {	-- Poker, Samson, Seer, Merl -- (Can't crush except for rifle bots)
         allowRawMovement = true,
-		crushstrength = 4, --15, (missile kbots crushresistance = 5)
+		crushstrength = 5, --15, (missile kbots crushresistance = 5)
 		footprintx = 3,
 		footprintz = 3,
 		maxslope = 18,
@@ -78,7 +78,7 @@ local moveDatas = {
 	},
 	HTANK3 = {	-- Bulldog, Reaper
         allowRawMovement = true,
-		crushstrength = 999,
+		crushstrength = 900,
 		footprintx = 4,	--3
 		footprintz = 4,
 		maxslope = 18,
