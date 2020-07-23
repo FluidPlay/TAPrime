@@ -18,7 +18,7 @@ local Ranges = {}
 for unitDefID, defs in pairs(UnitDefs) do
 	local maxRange = 0
 	local maxAARange = 0
-	for i, weapon in pairs (defs.weapons) do
+	for _, weapon in pairs (defs.weapons) do
 		local wDef = WeaponDefs[weapon.weaponDef]
 		if wDef.range >= maxRange and wDef.canAttackGround == true then
 			maxRange = wDef.range

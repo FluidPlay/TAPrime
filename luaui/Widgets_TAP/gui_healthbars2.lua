@@ -55,7 +55,7 @@ local gameSpeed = Game.gameSpeed
 local TELEPORT_CHARGE_NEEDED = Spring.GetGameRulesParam("pw_teleport_time") or gameSpeed*60
 
 --// this table is used to shows the hp of perimeter defence, and filter it for default wreckages
-local walls = {armdrag=true,cordrag=true,armwall=true,corwall=true,floatingteeth=true,floatingteeth_core=true}
+local walls = {armdrag=true,cordrag=true,armfort=true,corfort=true,floatingteeth=true,floatingteeth_core=true}
 
 local stockpileH = 24
 local stockpileW = 12

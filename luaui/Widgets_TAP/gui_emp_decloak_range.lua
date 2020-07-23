@@ -24,13 +24,13 @@ end
 -- OPTIONS
 --------------------------------------------------------------------------------
 
-local onlyDrawRangeWhenSelected	= true
+local onlyDrawRangeWhenSelected	= false --true
 local fadeOnCameraDistance		= true
 local showLineGlow 				= true		-- a ticker but faint 2nd line will be drawn underneath	
 local opacityMultiplier			= 1.3
 local fadeMultiplier			= 1.2		-- lower value: fades out sooner
 local circleDivs				= 64		-- detail of range circle
-local autoCloackSpy				= false
+local autoCloakSpy = false
 
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
@@ -65,11 +65,11 @@ local udefTab				= UnitDefs
 local selfdTag = "selfDExplosion"
 local aoeTag = "damageAreaOfEffect"
 
-local coreSpy = UnitDefNames["corspy"]
+local corMando = UnitDefNames["cormando"] --UnitDefNames["corspy"]
 local armSpy = UnitDefNames["armspy"]
 local armGremlin = UnitDefNames["armst"]
 
-local coreSpyId = coreSpy.id
+local coreMandoId = corMando.id
 local armSpyId = armSpy.id
 local armGremlinId = armGremlin.id
 
@@ -80,7 +80,7 @@ local notInSpecfullmode = false
 
 local cmdCloak = 37382
 
-function cloackSpy(unitID)
+function cloakSpy(unitID)
     spGiveOrderToUnit(unitID, cmdCloak, { 1 }, {})
 end
 
@@ -91,7 +91,7 @@ function processGremlin(unitID)
 end
 
 function isSpy(unitDefID)
-    if unitDefID == coreSpyId or armSpyId == unitDefID then
+    if unitDefID == coreMandoId or armSpyId == unitDefID then
         return true
     end
     return false
@@ -107,8 +107,8 @@ end
 function widget:UnitFinished(unitID, unitDefID, unitTeam)
     if isSpy(unitDefID) then
 		addSpy(unitID, unitDefID)
-		if autoCloackSpy then
-			cloackSpy(unitID)
+		if autoCloakSpy then
+			cloakSpy(unitID)
 		end
     end
 
@@ -139,7 +139,6 @@ end
 
 
 function addSpy(unitID, unitDefID)
-	
 	local udef = udefTab[unitDefID]
 	local selfdBlastId = weapNamTab[lower(udef[selfdTag])].id
 	local selfdBlastRadius = weapTab[selfdBlastId][aoeTag]
@@ -147,7 +146,6 @@ function addSpy(unitID, unitDefID)
 end
 
 function addGremlin(unitID, unitDefID)
-	
 	local udef = udefTab[unitDefID]
 	units[unitID] = {udef["decloakDistance"],0}
 end
@@ -157,7 +155,7 @@ function widget:UnitCreated(unitID, unitDefID, teamID, builderID)
 		
     if isSpy(unitDefID) then
 		addSpy(unitID, unitDefID)
-        cloackSpy(unitID)
+        cloakSpy(unitID)
     end
 
     if isGremlin(unitDefID) then
@@ -169,7 +167,7 @@ end
 function widget:UnitTaken(unitID, unitDefID, unitTeam, newTeam)
     if isSpy(unitDefID) then
 		addSpy(unitID, unitDefID)
-        cloackSpy(unitID)
+        cloakSpy(unitID)
     end
 
     if isGremlin(unitDefID) then
@@ -182,7 +180,7 @@ end
 function widget:UnitGiven(unitID, unitDefID, unitTeam, oldTeam)
     if isSpy(unitDefID) then
 		addSpy(unitID, unitDefID)
-        cloackSpy(unitID)
+        cloakSpy(unitID)
     end
 
     if isGremlin(unitDefID) then
