@@ -3,7 +3,7 @@
 
 function gadget:GetInfo()
     return {
-        name      = "Decloak when damaged",
+        name      = "Decloak logic",
         desc      = "Custom decloak logic. Decloaks units when they are near enemy units and/or when damaged",
         author    = "Google Frog",
         date      = "Nov 25, 2009", -- Major rework 12 Feb 2014
@@ -50,6 +50,7 @@ local spGetUnitIsDead = Spring.GetUnitIsDead
 
 local recloakUnit = {}  --recloakUnit[unitID] = duration or DEFAULT_DECLOAK_TIME
 local recloakFrame = {} --recloakFrame[unitID] = currentFrame + DEFAULT_DECLOAK_TIME
+local cloakedUnits = {} --[unitID] = allyTeam
 
 local noFFWeaponDefs = {}
 for i = 1, #WeaponDefs do
@@ -59,6 +60,7 @@ for i = 1, #WeaponDefs do
     end
 end
 
+local UPDATE_RATE = 2
 local DEFAULT_DECLOAK_TIME = 100
 local UPDATE_FREQUENCY = 10
 local CLOAK_MOVE_THRESHOLD = math.sqrt(0.2)
@@ -142,6 +144,11 @@ function gadget:UnitDamaged(unitID, unitDefID, unitTeam, damage, paralyzer,
     end
 end
 
+--function gadget:UnitEnteredLos(unitID, unitTeam, allyTeam, unitDefID)
+--    if spAreTeamsAllied(unitTeam, attackerTeam) then
+--    end
+--end
+
 local function CheckWaterBlockCloak(unitID, pos)
     local radius = Spring.GetUnitRadius(unitID)
     if radius + pos < 0 then
@@ -155,9 +162,27 @@ local function CheckWaterBlockCloak(unitID, pos)
     return false
 end
 
+-- Below code is redundant, check above
+local function CheckProximityDecloak()
+    for unitID, _ in pairs(cloakedUnits) do
+        local x,y,z = Spring.GetUnitPosition(unitID)
+        if x and z then
+            local unitsNearby = Spring.GetUnitsInCylinder(x,z,220) --TODO: Read 'decloakradius' from unit and use it here
+            for _, otherUID in pairs(unitsNearby) do
+                if not Spring.AreTeamsAllied(Spring.GetUnitTeam(unitID), Spring.GetUnitTeam(otherUID)) then
+                    PokeDecloakUnit(unitID)
+                end
+            end
+        end
+    end
+end
+
 function gadget:GameFrame(n)
     currentFrame = n
-    if n%UPDATE_FREQUENCY == 2 then
+    if n%UPDATE_FREQUENCY == UPDATE_RATE then
+
+        --CheckProximityDecloak()
+
         for unitID, frames in pairs(recloakUnit) do
             if frames <= UPDATE_FREQUENCY then
                 if not ((spGetUnitRulesParam(unitID,"on_fire") == 1) or (spGetUnitRulesParam(unitID,"disarmed") == 1) or waterUnitCloakBlocked[unitID]) then
