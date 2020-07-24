@@ -292,7 +292,7 @@ local moveDatas = {
     },
 	KBOT2 = {		-- All basic kbots really
         allowRawMovement = true,
-		crushstrength = 1,		--10
+		crushstrength = 0,		--10
 		footprintx = 3,
 		footprintz = 3,
 		maxslope = 36,

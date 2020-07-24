@@ -9,14 +9,14 @@
 --
 local damageMultipliers = {
 
-	bullet={ 	lightbot = 1.08, supportbot = 2.5,	heavybot = 0.8, lightveh = 0.3,     supportveh = 0.5,   heavyveh = 0.5,
+	bullet={ 	lightbot = 1.24, supportbot = 1.5,	heavybot = 0.71,lightveh = 0.255,   supportveh = 0.4,   heavyveh = 0.4,
 				lightair = 0.2,  supportair = 0.65,	heavyair = 1.5, lightship = 0.75,   supportship = 1,    heavyship = 0.25,
-                structure = 0.75,resource = 0.25, 	defense = 0.18, defenseaa = 0.25,   commander = 0.3,
+                structure = 0.75,resource = 0.25, 	defense = 0.18, defenseaa = 0.25,   commander = 0.21,
 	}
 ,
-    laser={     lightbot = 1.25,supportbot = 2,     heavybot = 0.9, lightveh = 0.72,    supportveh = 0.35,  heavyveh = 0.2,
+    laser={     lightbot = 1.44,supportbot = 1.4,   heavybot = 0.6, lightveh = 0.61,    supportveh = 0.28,  heavyveh = 0.16,
                 lightair = 0.75,supportair = 0.5,   heavyair = 1,   lightship = 1.25,   supportship = 2,    heavyship = 0.5,
-                structure = 1.1,resource = 0.5,     defense = 0.5,  defenseaa = 0.15,   commander = 0.3,
+                structure = 1.1,resource = 0.5,     defense = 0.5,  defenseaa = 0.15,   commander = 0.21,
     }
 ,
 	rocket={ 	lightbot = 0.175,supportbot = 0.75, heavybot = 0.35,lightveh = 0.65,   supportveh = 0.85,	heavyveh = 4,
@@ -34,8 +34,8 @@ local damageMultipliers = {
                 structure = 0.75,resource = 0.75,	defense = 0.6,  defenseaa = 0.5,    commander = 0.85,
 	}
 ,
-    plasma={ 	lightbot = 1,   supportbot = 0.75,  heavybot = 0.6, lightveh = 0.9,     supportveh = 0.45,  heavyveh = 0.4,
-                lightair = 0.75,supportair = 2,     heavyair = 1.5, lightship = 1.75,   supportship = 0.75, heavyship = 1.5,
+    plasma={ 	lightbot = 1,   supportbot = 0.75,  heavybot = 0.6,lightveh = 1.2,     supportveh = 0.45,  heavyveh = 0.4,
+                lightair = 0.75,supportair = 2,     heavyair = 1.5,lightship = 1.75,   supportship = 0.75, heavyship = 1.5,
                 structure = 1,  resource = 1, 		defense = 0.275,defenseaa = 0.6,    commander = 1.15,
 	}
 ,
