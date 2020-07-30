@@ -169,7 +169,8 @@ function gadget:GameFrame(f)
 
                 local tr = data.targetRotation -- target Rotation vector
                 if tr and tr.x and tr.y then
-                    Spring.SetUnitRotation(unitID, lerp(rx, tr.x, lerpFactor), lerp(ry, tr.y, lerpFactor), lerp(rz, tr.z, lerpFactor))
+                    -- Removed: rx, tr.x :: rz, tr.z (now only Y rotation is set, to keep bombers parallel to the ground)
+                    Spring.SetUnitRotation(unitID, lerp(rx, 0, lerpFactor), lerp(ry, tr.y, lerpFactor), lerp(rz, 0, lerpFactor))
 
                     Spring.MoveCtrl.SetPosition(unitID, lerp(posx, data.targetPos.x, lerpFactor),
                             lerp(posy, data.relativeHeight , 0.025),
