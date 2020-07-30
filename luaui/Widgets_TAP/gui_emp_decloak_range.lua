@@ -217,7 +217,9 @@ function widget:DrawWorldPreUnit()
 
     for unitID, property in pairs(units) do
         local x,y,z = spGetUnitPosition(unitID)
-		if ((onlyDrawRangeWhenSelected and spIsUnitSelected(unitID)) or onlyDrawRangeWhenSelected == false) and spIsSphereInView(x,y,z,math.max(property[1],property[2])) then
+        local maxproperty = (property[1] and property[2]) and math.max(property[1],property[2]) or 0
+        local isSphereInView = x and y and z and spIsSphereInView(x,y,z,maxproperty)
+		if ((onlyDrawRangeWhenSelected and spIsUnitSelected(unitID)) or onlyDrawRangeWhenSelected == false) and isSphereInView then
 			local camDistance = diag(camX-x, camY-y, camZ-z) 
 			
 			local lineWidthMinus = (camDistance/2000)
