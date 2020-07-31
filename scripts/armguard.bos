@@ -76,7 +76,7 @@ AimWeapon1(heading, pitch)
 {
 	signal 2;
 	set-signal-mask 2;
-	if( pitch >= 10012 OR Static_Var_2 == 1 )
+	if( Static_Var_2 == 1 ) // OR pitch >= 10012
 	{
 		return (0);
 	}

@@ -91,7 +91,7 @@ local moveDatas = {
 	},
 	ATANK3 = {	-- Triton (lvl3), Croc
         allowRawMovement = true,
-		crushstrength = 2499,
+		crushstrength = 3000,
 		depthmod = 0,
 		footprintx = 4.5,	--3
 		footprintz = 4.5,
@@ -101,7 +101,7 @@ local moveDatas = {
 	},
 	HTANK4 = {	-- Goliath
         allowRawMovement = true,
-		crushstrength = 2499,
+		crushstrength = 3000,
 		footprintx = 4,
 		footprintz = 4,
 		maxslope = 18,
@@ -114,7 +114,7 @@ local moveDatas = {
 	},
 	ATANK4 = {	-- Poison
         allowRawMovement = true,
-		crushstrength = 1499,
+		crushstrength = 3000, --1499
 		depthmod = 0,
 		footprintx = 5,
 		footprintz = 5,
