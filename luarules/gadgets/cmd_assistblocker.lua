@@ -25,6 +25,19 @@
 
 -- (RecvLuaMsg) https://github.com/ZeroK-RTS/Zero-K/blob/master/LuaRules/Gadgets/start_unit_setup.lua
 
+---TODO: try this:
+---addon.AllowBuilderHoldFire(unitID, unitDefID, action)
+--return: bool actionAllowed
+--
+--Called when a construction unit wants to "use his nano beams".
+--action is one of following:
+-- -1 = Build
+-- CMD.REPAIR = Repair
+-- CMD.RECLAIM = Reclaim
+-- CMD.RESTORE = Restore
+-- CMD.RESURRECT = Resurrect
+-- CMD.CAPTURE = Capture
+
 function gadget:GetInfo()
     return {
         name      = "Assist Blocker",
