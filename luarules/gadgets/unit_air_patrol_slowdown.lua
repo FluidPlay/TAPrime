@@ -21,7 +21,15 @@ local spGetUnitRulesParam = Spring.GetUnitRulesParam
 local spGetUnitDefID = Spring.GetUnitDefID
 
 local UPDATE_RATE = 2
-local speedReductionFactor = 0.66
+local speedReductionFactor = 0.37 --0.66
+local isBomber = {
+    [UnitDefNames["armthund"].id] = true,
+    [UnitDefNames["corshad"].id] = true,
+    [UnitDefNames["armpnix"].id] = true,
+    [UnitDefNames["corhurc"].id] = true,
+    [UnitDefNames["armliche"].id] = true,
+    [UnitDefNames["corstil"].id] = true,
+}
 
 local slowedDownPlanes = {} -- { unitID = true, ... }
 
@@ -50,7 +58,7 @@ if gadgetHandler:IsSyncedCode() then
     function gadget:AllowCommand(unitID, unitDefID, teamID, cmdID, cmdParams, cmdOptions)
         --Spring.Echo("cmdID: "..cmdID)
         local unitDef = UnitDefs[unitDefID]
-        if not unitDef or not unitDef.isAirUnit or unitDef.hoverAttack then
+        if not unitDef or not unitDef.isAirUnit or unitDef.hoverAttack or isBomber[unitDefID] then
             return true end
         --local defMaxSpeed = spGetUnitRulesParam(unitID, "maxSpeed")
         local defMaxSpeed = unitDef.speed or 6
