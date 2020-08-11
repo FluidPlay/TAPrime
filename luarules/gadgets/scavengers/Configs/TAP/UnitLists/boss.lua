@@ -1,4 +1,4 @@
 BossUnits = {
-"armcomboss_scav",
-"corcomboss_scav",
+    "armcomboss_scav",
+    "corcomboss_scav",
 }

@@ -1,141 +1,106 @@
 T0LandUnits = {
-	"armpw",
-	"corak",
-	"armsh",
-	"corsh",
-	--vechicles
-	"armfav",
-	"corfav",
+    "armpw",
+    "armrock",
+    "corak",
+    --vechicles
+    "armfav",
+    "corlevlr",
 }
 
 T1LandUnits = {
-	--bots
-	"armpw",
-	"armrock",
-	"armham",
-	"armjeth",
-	"armwar",
-	"armrectr",
-	"corak",
-	"cornecro",
-	"corthud",
-	"corstorm",
-	"corcrash",
-	--vechicles
-	"armflash",
-	"armstump",
-	"armart",
-	"armsam",
-	"armpincer",
-	"armjanus",
-	"corgator",
-	"cormist",
-	"corwolv",
-	"corlevlr",
-	"corraid",
-	--hovercraft
-	"armsh",
-	"armmh",
-	"armah",
-	"armanac",
-	"corsh",
-	"cormh",
-	"corah",
-	"corsnap",
-	--constructors
+    --## Bots
+    "armpw",
+    "armrock",
+    "armham",
+    "armwar",
+    "armrectr",
+    "corak",
+    "corstorm",
+    "corthud",
+    "corpyro",
+    "cormort",
+    --"cornecro",
+
+    --## Vehicles
+    "armflash",
+    "armstump",
+    "armsam",
+    "armmart",
+    "corgator",
+    "corraid",
+    "cormist",
+    "corlevlr",
+
+    --constructors
 }
 
 T2LandUnits = {
-	--bots
-	"armrectr",
-	"armvader",
-	"armspid",
-	"armsptk",
-	"armfast",
-	"armamph",
-	"armfido",
-	"armzeus",
-	"armspy",
-	"armaak",
-	"armsnipe",
-	"armmav",
-	"cornecro",
-	"corroach",
-	"corpyro",
-	"corfast",
-	"cormort",
-	"coramph",
-	"corsktl",
-	"corspy",
-	"corcan",
-	"coraak",
-	"cortermite",
-	"cormando",
-	--vechicles
-	"armgremlin",
-	"armmart",
-	"armlatnk",
-	"armyork",
-	"armcroc",
-	"armmerl",
-	"armbull",
-	"cormart",
-	"corsent",
-	"corseal",
-	"correap",
-	"corvroc",
-	"corban",
-	"corparrow",
-	--hovercraft
-	"corhal",
-	--constructors
-	"armck",
-	"armcv",
-	"armbeaver",
-	"armch",
-	"corck",
-	"corcv",
-	"cormuskrat",
-	"armack",
-	"armdecom",
-	"armacv",
-	"armconsul",
-	"corack",
-	"cordecom",
-	"coracv",
+    --bots
+    "armrectr",
+    "armfast",
+    "armmav",
+    "armfboy",
+    "armsptk",
+    "armaak",
+    "cormando",
+    "corcan",
+    "coraak",
+    "corhrk",
+    "cornecro",
+    "corsktl",
+    --"corspy",
+
+    --## Vehicles
+    "armst", --Gremlin
+    "armmart",
+    "armlatnk",
+    "armyork",
+    "armbull",
+
+    "correap",
+    "corsent",
+    "corban",
+
+    --constructors
+    "armck",
+    "armack",
+    "armcv",
+    "armacv",
+    "corck",
+    "corack",
+    "corcv",
+    "coracv",
 }
 
 T3LandUnits = {
-	-- Heavy T2s
-	"corgol",
-	"corsumo",
-	"armfboy",
-	"armmanni",
-	"cortrem",
-	"corhrk",
-	--bots
-	"armmar",
-	"armvang",
-	"armraz",
-	"corshiva",
-	"corkarg",
-	"corcat",
-	--hovercraft
-	"armlun",
-	"corsok",
-	"armsptkboss",
+    -- Heavy T2s
+    "armcroc",
+    "corgol",
+    "armyork",
+    "corsent",
+    "armmanni",
+    "cortrem",
+    "corban",
+    "armmerl",
+
+    --bots
+    "armspid",
+    "armsnipe",
+    "cortermite",
+    "armzeus",
+    "corsumo",
 }
 
-T4LandUnits = {
-	"corkrog",
-	"corjugg",
-	"armbanth",
-	--superboss
-	"armpwboss",
-	"armstumpboss",
-	"armvaderboss",
-	"armfepoch",
-	"corfblackhy",
-	"corcrwboss",
-	"armsptkboss",
+T4LandUnits = { --endgame units that spawn in waves
+    "armbanth",
+    "armraz",
+    "corjugg",
+
+    "corkrog",
+    "corkarg",
+    "corcat",
+
+    --superboss
+    --"armcomboss",
+    --"corcomboss",
 }

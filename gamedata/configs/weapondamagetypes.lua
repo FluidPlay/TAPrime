@@ -160,7 +160,7 @@ local weaponDamageTypes = {
 	cormaw = { ["FlameThrower"] = "thermo", },
 	corwolv = { ["LightArtillery"] = "siege", },
 	corcut = { ["RiotCannon"] = "bullet", },
-	packo = { ["AA2Missile"] = "rocket", },
+	--packo = { ["AA2Missile"] = "rocket", },
 	armbrawl = { ["Machinegun"] = "laser", },
 	corexp = { ["LightLaser"] = "bullet", },
 	cortl = { ["Level1TorpedoLauncher"] = "homing", },

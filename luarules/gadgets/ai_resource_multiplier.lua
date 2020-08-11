@@ -149,7 +149,9 @@ function gadget:GameFrame(n)
 		for uID,params in pairs(newMexes) do
 			if n > params[1] then
 				aiTeams[params[2]].mexes[uID] = select(1,spGetUnitResources(uID))
-				aiTeams[params[2]].metal = aiTeams[params[2]].metal + aiTeams[params[2]].mexes[uID]
+                if aiTeams[params[2]].metal and aiTeams[params[2]].mexes[uID] then
+                    aiTeams[params[2]].metal = aiTeams[params[2]].metal + aiTeams[params[2]].mexes[uID]
+                end
 				newMexes[uID] = nil
 			end
 		end

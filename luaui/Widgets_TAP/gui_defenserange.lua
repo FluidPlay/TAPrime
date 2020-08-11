@@ -33,14 +33,14 @@ local modConfig = {}
 --table initialized and unitList is needed!
 modConfig["TAP"] = {}
 modConfig["TAP"]["unitList"] = {
-	armclaw = { weapons = { 1 } },
-	cormaw = { weapons = { 1 } },
+	--armclaw = { weapons = { 1 } },
+	--cormaw = { weapons = { 1 } },
 	armllt = { weapons = { 1 } },
 	armbeamer = { weapons = { 1 } },
 	armhlt = { weapons = { 1 } },
 	armguard = { weapons = { 1, 1 } },
 	armrl = { weapons = { 2 } }, --light aa
-	armpacko = { weapons = { 2 } },
+	--armpacko = { weapons = { 2 } },
 	armcir = { weapons = { 2 } }, --chainsaw
 	armdl = { weapons = { 1 } }, --depthcharge
 	armjuno = { weapons = { 1 } },

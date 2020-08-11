@@ -373,11 +373,13 @@ if gadgetHandler:IsSyncedCode() then
         for _, v in ipairs(GG.JustFinishedBuilders) do
             local unitID = v.unitID
             if thisFrame > v.cleanupFrame then
-                spGiveOrderToUnit(unitID, CMD_REMOVE, {CMD_REPAIR}, {"alt"})
-                spGiveOrderToUnit(unitID, CMD_REMOVE, {CMD_GUARD}, {"alt"})
-                spGiveOrderToUnit(unitID, CMD_REMOVE, {CMD_PATROL}, {"alt"})
+                ipairs_removeByElement(GG.JustFinishedBuilders,"unitID", unitID)
+                if IsValidUnit(unitID) then
+                    spGiveOrderToUnit(unitID, CMD_REMOVE, {CMD_REPAIR}, {"alt"})
+                    spGiveOrderToUnit(unitID, CMD_REMOVE, {CMD_GUARD}, {"alt"})
+                    spGiveOrderToUnit(unitID, CMD_REMOVE, {CMD_PATROL}, {"alt"})
+                end
                 --Spring.Echo("blockassist: Repairs removed from: "..unitID)
-                ipairs_removeByElement(GG.JustFinishedBuilders,"unitID",unitID)
                 --RemoveUnitFromTable(GG.JustFinishedBuilders, unitID)
             end
         end

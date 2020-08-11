@@ -68,7 +68,7 @@ return {
 			"armhlt",
 			"armguard",
 			"armrl",
-			"armpacko",
+			--"armpacko",
 			"armcir",
 			"armdl",
 			"armjamt",

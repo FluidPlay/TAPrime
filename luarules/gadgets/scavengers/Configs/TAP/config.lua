@@ -102,13 +102,13 @@ if scavengersAIEnabled then
 		constructortimerreductionframes		= 36000,
 		minimumconstructors					= 2,
 		useresurrectors						= true,
-			searesurrectors					= false,
+		searesurrectors					    = false,
 		useconstructors						= true,
 		usecollectors						= true,
 	}
 
 	unitControllerModuleConfig = {
-		minimumrangeforfight				= 650,
+		minimumrangeforfight				= 650, -- Low range units use Move command, units with range above this value use 'Fight'
 	}
 
 	spawnProtectionConfig = {

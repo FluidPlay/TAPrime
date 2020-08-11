@@ -1,141 +1,106 @@
 T0LandUnits = {
 	"armpw",
+    "armrock",
 	"corak",
-	"armsh",
-	"corsh",
 	--vechicles
 	"armfav",
-	"corfav",
+	"corlevlr",
 }
 
 T1LandUnits = {
-	--bots
+	--## Bots
 	"armpw",
 	"armrock",
 	"armham",
-	"armjeth",
 	"armwar",
 	"armrectr",
 	"corak",
-	"cornecro",
-	"corthud",
 	"corstorm",
-	"corcrash",
-	--vechicles
+	"corthud",
+    "corpyro",
+    "cormort",
+	--"cornecro",
+
+	--## Vehicles
 	"armflash",
 	"armstump",
-	"armart",
 	"armsam",
-	"armpincer",
-	"armjanus",
+	"armmart",
 	"corgator",
-	"cormist",
-	"corwolv",
-	"corlevlr",
 	"corraid",
-	--hovercraft
-	"armsh",
-	"armmh",
-	"armah",
-	"armanac",
-	"corsh",
-	"cormh",
-	"corah",
-	"corsnap",
+	"cormist",
+	"corlevlr",
+
 	--constructors
 }
 
 T2LandUnits = {
 	--bots
 	"armrectr",
-	"armvader",
-	"armspid",
-	"armsptk",
 	"armfast",
-	"armamph",
-	"armfido",
-	"armzeus",
-	"armspy",
-	"armaak",
-	"armsnipe",
 	"armmav",
-	"cornecro",
-	"corroach",
-	"corpyro",
-	"corfast",
-	"cormort",
-	"coramph",
-	"corsktl",
-	"corspy",
+    "armfboy",
+	"armsptk",
+	"armaak",
+	"cormando",
 	"corcan",
 	"coraak",
-	"cortermite",
-	"cormando",
-	--vechicles
-	"armgremlin",
+    "corhrk",
+	"cornecro",
+	"corsktl",
+	--"corspy",
+
+	--## Vehicles
+	"armst", --Gremlin
 	"armmart",
 	"armlatnk",
 	"armyork",
-	"armcroc",
-	"armmerl",
 	"armbull",
-	"cormart",
-	"corsent",
-	"corseal",
+
 	"correap",
-	"corvroc",
+	"corsent",
 	"corban",
-	"corparrow",
-	--hovercraft
-	"corhal",
+
 	--constructors
 	"armck",
-	"armcv",
-	"armbeaver",
-	"armch",
-	"corck",
-	"corcv",
-	"cormuskrat",
 	"armack",
-	"armdecom",
+	"armcv",
 	"armacv",
-	"armconsul",
+	"corck",
 	"corack",
-	"cordecom",
+	"corcv",
 	"coracv",
 }
 
 T3LandUnits = {
 	-- Heavy T2s
+    "armcroc",
 	"corgol",
-	"corsumo",
-	"armfboy",
+    "armyork",
+    "corsent",
 	"armmanni",
 	"cortrem",
-	"corhrk",
-	--bots
-	"armmar",
-	"armvang",
-	"armraz",
-	"corshiva",
-	"corkarg",
-	"corcat",
-	--hovercraft
-	"armlun",
-	"corsok",
-	"armsptkboss",
+    "corban",
+    "armmerl",
+
+    --bots
+    "armspid",
+    "armsnipe",
+    "cortermite",
+    "armzeus",
+	"corsumo",
 }
 
 T4LandUnits = {
-	"corkrog",
-	"corjugg",
-	"armbanth",
+    "armbanth",
+    "armraz",
+    "corjugg",
+
+    "corkrog",
+    "corkarg",
+    "corcat",
+
 	--superboss
-	"armpwboss",
-	"armstumpboss",
-	"armvaderboss",
-	"armfepoch",
-	"corfblackhy",
-	"corcrwboss",
-	"armsptkboss",
+	"armcomboss",
+	"corcomboss",
 }
