@@ -9,6 +9,10 @@
 
 return {
   {
+    name = 'ScavengersAI',
+    desc = 'Survival gamemode against robots infected by mysterious virus'
+  },
+  {
 	  name = 'DAI',
 	  desc = 'Shard by AF for Spring Lua, Mod for BA made by Damgam',
   },

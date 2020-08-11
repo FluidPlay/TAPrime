@@ -78,6 +78,12 @@ function UnitDef_Post(name, uDef)
     if uDef.maxreversevelocity ~= nil then
         --Spring.Echo("Found reverse velocity "..tonumber(uDef.maxreversevelocity).." on unit "..name)
     end
+	
+	-- scavs - keep on the bottom
+	if string.find(name, '_scav') then
+		VFS.Include("gamedata/scavengers/unitdef_post.lua")
+		uDef = scav_Udef_Post(name, uDef)
+	end
 end
 
 --These parameter before/after combinations should not allow updating the uDef:
@@ -236,6 +242,12 @@ function WeaponDef_Post(name, wDef, udName)
 					.." - wrong weapon name in weapondamagetypes? unit assigned to 'none' in damagemultipliers.lua?")
 	end
 	--DebugTableKeys(wDef.damage)
+	
+	-- scavs - keep on the bottom
+	if string.find(name, '_scav') then
+		VFS.Include("gamedata/scavengers/weapondef_post.lua")
+		wDef = scav_Wdef_Post(name, wDef)
+	end
 end
 
 local function UpdateWeaponDamageTypes(unitName, weaponName, baseDamageType)
