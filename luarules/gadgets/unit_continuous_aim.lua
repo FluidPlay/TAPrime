@@ -113,11 +113,11 @@ local convertedUnits = {}
 --end
 
 local popups = {	-- exclude auto target range boost for popup units
-	[UnitDefNames.armclaw.id] = true,
+	--[UnitDefNames.armclaw.id] = true,
 	[UnitDefNames.armpb.id] = true,
-	[UnitDefNames.armamb.id] = true,
-	[UnitDefNames.cormaw.id] = true,
 	[UnitDefNames.corvipe.id] = true,
+	[UnitDefNames.armamb.id] = true,
+	--[UnitDefNames.cormaw.id] = true,
 	[UnitDefNames.corpun.id] = true,
 	[UnitDefNames.corexp.id] = true,
 

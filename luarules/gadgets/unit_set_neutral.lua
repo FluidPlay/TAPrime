@@ -6,7 +6,7 @@ function gadget:GetInfo()
     date      = "25 Nov 2008",
     license   = "GNU GPL, v2 or later",
     layer     = 0,
-    enabled   = true  --  loaded by default?
+    enabled   = false, --true  --  loaded by default?
   }
 end
 
@@ -22,8 +22,8 @@ local SetUnitNeutral = Spring.SetUnitNeutral
 local GetUnitStates = Spring.GetUnitStates
 local neutralUnits = {}
 local armourTurrets = {}
-armourTurrets[UnitDefNames["cormaw"].id] = true
-armourTurrets[UnitDefNames["armclaw"].id] = true
+--armourTurrets[UnitDefNames["cormaw"].id] = true
+--armourTurrets[UnitDefNames["armclaw"].id] = true
 local UPDATE = 30
 local timeCounter = 15
 
