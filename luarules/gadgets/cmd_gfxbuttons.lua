@@ -22,24 +22,24 @@ if not gadgetHandler:IsSyncedCode() then
     return end
 
 local GfxButtons = {
-    [1] = { cmd = CMD.ATTACK, texture = 'luaui/images/gfxbuttons/cmd_attack.png', },
-    [2] = { cmd = CMD_UNIT_CANCEL_TARGET, texture = 'luaui/images/gfxbuttons/cmd_canceltarget.png', },
-    [3] = { cmd = CMD.CAPTURE, texture = 'luaui/images/gfxbuttons/cmd_capture.png', },
-    [4] = { cmd = CMD.FIGHT, texture = 'luaui/images/gfxbuttons/cmd_fight.png', },
-    [5] = { cmd = CMD.GUARD, texture = 'luaui/images/gfxbuttons/cmd_guard.png', },
-    [6] = { cmd = CMD.MANUALFIRE, texture = 'luaui/images/gfxbuttons/cmd_manualfire.png', },
-    [7] = { cmd = CMD.MOVE, texture = 'luaui/images/gfxbuttons/cmd_move.png', },
-    [8] = { cmd = CMD.PATROL, texture = 'luaui/images/gfxbuttons/cmd_patrol.png', },
-    [9] = { cmd = CMD.RECLAIM, texture = 'luaui/images/gfxbuttons/cmd_reclaim.png', },
-    [10] = { cmd = CMD.REPAIR, texture = 'luaui/images/gfxbuttons/cmd_repair.png', },
-    [11] = { cmd = CMD.RESTORE, texture = 'luaui/images/gfxbuttons/cmd_restore.png', },
-    [12] = { cmd = CMD.SELFD, texture = 'luaui/images/gfxbuttons/cmd_selfd.png', },
-    [13] = { cmd = CMD_UNIT_SET_TARGET, texture = 'luaui/images/gfxbuttons/cmd_settarget.png', },
-    [14] = { cmd = CMD.STOP, texture = 'luaui/images/gfxbuttons/cmd_stop.png', },
-    [15] = { cmd = CMD.WAIT, texture = 'luaui/images/gfxbuttons/cmd_wait.png', },
+    [1] = { cmd = CMD.ATTACK, texture = ':n:luaui/images/gfxbuttons/cmd_attack.png', },
+    [2] = { cmd = CMD_UNIT_CANCEL_TARGET, texture = ':n:luaui/images/gfxbuttons/cmd_canceltarget.png', },
+    [3] = { cmd = CMD.CAPTURE, texture = ':n:luaui/images/gfxbuttons/cmd_capture.png', },
+    [4] = { cmd = CMD.FIGHT, texture = ':n:luaui/images/gfxbuttons/cmd_fight.png', },
+    [5] = { cmd = CMD.GUARD, texture = ':n:luaui/images/gfxbuttons/cmd_guard.png', },
+    [6] = { cmd = CMD.MANUALFIRE, texture = ':n:luaui/images/gfxbuttons/cmd_manualfire.png', },
+    [7] = { cmd = CMD.MOVE, texture = ':n:luaui/images/gfxbuttons/cmd_move.png', },
+    [8] = { cmd = CMD.PATROL, texture = ':n:luaui/images/gfxbuttons/cmd_patrol.png', },
+    [9] = { cmd = CMD.RECLAIM, texture = ':n:luaui/images/gfxbuttons/cmd_reclaim.png', },
+    [10] = { cmd = CMD.REPAIR, texture = ':n:luaui/images/gfxbuttons/cmd_repair.png', },
+    [11] = { cmd = CMD.RESTORE, texture = ':n:luaui/images/gfxbuttons/cmd_restore.png', },
+    [12] = { cmd = CMD.SELFD, texture = ':n:luaui/images/gfxbuttons/cmd_selfd.png', },
+    [13] = { cmd = CMD_UNIT_SET_TARGET, texture = ':n:luaui/images/gfxbuttons/cmd_settarget.png', },
+    [14] = { cmd = CMD.STOP, texture = ':n:luaui/images/gfxbuttons/cmd_stop.png', },
+    [15] = { cmd = CMD.WAIT, texture = ':n:luaui/images/gfxbuttons/cmd_wait.png', },
 
-    [16] = { cmd = CMD.REPEAT, texture = 'luaui/images/gfxbuttons/cmd_repeat.png', },
-    [17] = { cmd = CMD.CLOAK, texture = 'luaui/images/gfxbuttons/cmd_cloak.png', },
+    [16] = { cmd = CMD.REPEAT, texture = ':n:luaui/images/gfxbuttons/cmd_repeat.png', },
+    [17] = { cmd = 37382, texture = ':n:luaui/images/gfxbuttons/cmd_cloak.png', }, --CMD.CLOAK now CMD.WANT_CLOAK, using # here
 
 }
 
