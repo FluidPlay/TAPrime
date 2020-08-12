@@ -13,6 +13,8 @@ CMD.UPG_BOOSTER2 = 42997
 CMD_UPG_BOOSTER2 = CMD.UPG_BOOSTER2
 CMD.UPG_BOOSTER3 = 42996
 CMD_UPG_BOOSTER3 = CMD.UPG_BOOSTER3
+CMD.UPG_THROTTLE = 42995
+CMD_UPG_THROTTLE = CMD.UPG_THROTTLE
 
 local CMD_CAPTURE = CMD.CAPTURE
 
@@ -40,7 +42,7 @@ GlobalUpgrades = {
         buttonToUnlock = CMD_CAPTURE,
         buttonToUnlockTooltip = "", --automatically fed when button is locked (@ unit create)
         --UnlockedCmdDescTootip = "" (to be added/used by handlers)
-        lockedUnitDefIds = { [UnitDefNames["armck"].id] = true,
+        upgradableDefIDs = { [UnitDefNames["armck"].id] = true,
                              [UnitDefNames["corck"].id] = true,
                              [UnitDefNames["armcv"].id] = true,
                              [UnitDefNames["corcv"].id] = true,
@@ -55,6 +57,36 @@ GlobalUpgrades = {
         },
         techToGrant = "capture",
     },
+    throttle = {
+        UpgradeCmdDesc = {
+            id      = CMD_UPG_THROTTLE,
+            name    = '^ THROTTLE',
+            action  = 'upgradethrottle',
+            cursor  = 'Morph',
+            type    = CMDTYPE.ICON,
+            tooltip = 'Throttle - Upgrade the maximum speed of Tanks and Raider vehicles',
+            texture = 'luaui/images/upgrades/techthrottle.dds',
+            onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
+        },
+        prereq = "",
+        metalCost = 300,
+        energyCost = 4500,
+        upgradeTime = 15 * 30, --5 seconds, in frames
+        alertWhenDone = true, -- [Optional] if true, fires an alert once completed
+        type = "tech", -- TODO: Currently unused. Should indicate special types (auras, debuffs, etc)
+        buttonToUnlock = nil,
+        buttonToUnlockTooltip = "", --automatically fed when button is locked (@ unit create)
+        --UnlockedCmdDescTootip = "" (to be added/used by handlers)
+        upgradableDefIDs = { [UnitDefNames["armstump"].id] = true,
+                             [UnitDefNames["corraid"].id] = true,
+                             [UnitDefNames["armfav"].id] = true,
+                             [UnitDefNames["corlevlr"].id] = true,
+                             [UnitDefNames["armflash"].id] = true,
+                             [UnitDefNames["corgator"].id] = true,
+        },
+        techToGrant = "throttle",
+    },
     booster1 = {
         UpgradeCmdDesc = {
             id      = CMD_UPG_BOOSTER1,
@@ -62,7 +94,7 @@ GlobalUpgrades = {
             action  = 'upgradecapture',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Increases Morph Speed by 25%',
+            tooltip = 'Morph Booster: Increases Morph Speed by 25%',
             texture = 'luaui/images/upgrades/techbooster1.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
@@ -74,7 +106,7 @@ GlobalUpgrades = {
         type = "tech",
         buttonToUnlock = nil,
         buttonToUnlockTooltip = "",
-        lockedUnitDefIds = { },
+        upgradableDefIDs = { },
         techToGrant = "booster1",
     },
     booster2 = {
@@ -84,7 +116,7 @@ GlobalUpgrades = {
             action  = 'upgradecapture',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Increases Morph Speed by 33% (cumulative)',
+            tooltip = 'Morph Booster II: Increases Morph Speed by 33% (cumulative)',
             texture = 'luaui/images/upgrades/techbooster2.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
@@ -96,7 +128,7 @@ GlobalUpgrades = {
         type = "tech",
         buttonToUnlock = nil,
         buttonToUnlockTooltip = "",
-        lockedUnitDefIds = { },
+        upgradableDefIDs = { },
         techToGrant = "booster2",
     },
     booster3 = {
@@ -106,7 +138,7 @@ GlobalUpgrades = {
             action  = 'upgradecapture',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'Increases Morph Speed by 50% (cumulative)',
+            tooltip = 'Morph Booster III: Increases Morph Speed by 50% (cumulative)',
             texture = 'luaui/images/upgrades/techbooster3.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
@@ -118,23 +150,23 @@ GlobalUpgrades = {
         type = "tech",
         buttonToUnlock = nil,
         buttonToUnlockTooltip = "",
-        lockedUnitDefIds = { },
+        upgradableDefIDs = { },
         techToGrant = "booster3",
     },
 }
 
 -- Which units can research what
 GlobalResearchers = {
-    [UnitDefNames["armtech"].id] = {"capture","booster1","booster2","booster3"},
-    [UnitDefNames["cortech"].id] = {"capture","booster1","booster2","booster3"},
-    [UnitDefNames["armtech1"].id] = {"capture","booster1","booster2","booster3"},
-    [UnitDefNames["cortech1"].id] = {"capture","booster1","booster2","booster3"},
-    [UnitDefNames["armtech2"].id] = {"capture","booster1","booster2","booster3"},
-    [UnitDefNames["cortech2"].id] = {"capture","booster1","booster2","booster3"},
-    [UnitDefNames["armtech3"].id] = {"capture","booster1","booster2","booster3"},
-    [UnitDefNames["cortech3"].id] = {"capture","booster1","booster2","booster3"},
-    [UnitDefNames["armtech4"].id] = {"capture","booster1","booster2","booster3"},
-    [UnitDefNames["cortech4"].id] = {"capture","booster1","booster2","booster3"},
+    [UnitDefNames["armtech"].id] = {"capture","throttle","booster1","booster2","booster3"},
+    [UnitDefNames["cortech"].id] = {"capture","throttle","booster1","booster2","booster3"},
+    [UnitDefNames["armtech1"].id] = {"capture","throttle","booster1","booster2","booster3"},
+    [UnitDefNames["cortech1"].id] = {"capture","throttle","booster1","booster2","booster3"},
+    [UnitDefNames["armtech2"].id] = {"capture","throttle","booster1","booster2","booster3"},
+    [UnitDefNames["cortech2"].id] = {"capture","throttle","booster1","booster2","booster3"},
+    [UnitDefNames["armtech3"].id] = {"capture","throttle","booster1","booster2","booster3"},
+    [UnitDefNames["cortech3"].id] = {"capture","throttle","booster1","booster2","booster3"},
+    [UnitDefNames["armtech4"].id] = {"capture","throttle","booster1","booster2","booster3"},
+    [UnitDefNames["cortech4"].id] = {"capture","throttle","booster1","booster2","booster3"},
 }
 
 -- Which unitDefs are Tech Centers (Global Researchers)
