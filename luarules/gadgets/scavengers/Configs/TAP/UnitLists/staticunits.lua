@@ -1,6 +1,6 @@
 NoSelfdList = {
-	"cormaw",
-	"armclaw",
+	--"cormaw",
+	--"armclaw",
 	"corfmd",
 	"coramd",
 	"lootboxgold",
@@ -30,7 +30,7 @@ StockpilingUnitNames = {
 	"armmercury",
 	"corjuno",
 	"armjuno",
-	"cormabm",
+	"cormabm",  --hedgehog
 }
 
 NukingUnitNames = {
@@ -63,154 +63,162 @@ BeaconDefenceStructuresT0 = {
 }
 
 BeaconDefenceStructuresT1 = {
+    -- Lasers / Rail
 	"corllt",
 	"armllt",
-	"corllt",
-	"armllt",
-	"corllt",
-	"armllt",
+    "armbeamer",
+    "armbeamer",
+	"armbeamer",
+    "corhllt",
+	"corhllt",
+	"corhllt",
+    "armhlt",
+    "armhlt",
+    "corhlt",
+    "corhlt",
+    -- Missiles
 	"corrl",
 	"armrl",
-	"corhllt",
-	"corhllt",
-	"armbeamer",
-	"cormaw",
-	"armclaw",
+    "armcir",
+    "armcir",
+    "corerad",
+    "corerad",
+    -- Cannon
+    "armpb",
+    "armpb",
+    "armpb",
+    "armpb",
+    "corvipe",
+    "corvipe",
+    "corvipe",
+    "corvipe",
+    -- Gauss
+    "corpun",
+    "armguard",
 }
 
 BeaconDefenceStructuresT2 = {
-	"corllt",
-	"armllt",
-	"corllt",
-	"armllt",
-	"corllt",
-	"armllt",
-	"corrl",
-	"armrl",
-	"corhllt",
-	"corhllt",
-	"armbeamer",
-	"cormaw",
-	--"armclaw",
-	--"armpacko",
-	"armbeamer",
-	"armhlt",
+    -- Lasers / Rail
+    "armbeamer",
+    "corhllt",
 	"armhlt",
 	"corhlt",
-	"corhlt",
-	"armflak",
-	"corflak",
+    -- Missiles
+    "armcir",
+    "corerad",
+    "armmercury",
+    "corscreamer",
+    -- Flak
+	"armdeva",
+	"corshred",
+    -- Neutron
+    "armanni",
+    "cordoom",
+    -- Gauss
+    "corpun",
+    "armguard",
 }
 
 BeaconDefenceStructuresT3 = {
-	"corllt",
-	"armllt",
-	"corllt",
-	"armllt",
-	"corllt",
-	"armllt",
-	"corrl",
-	"armrl",
-	"corhllt",
-	"corhllt",
-	"armbeamer",
-	"cormaw",
-	"armclaw",
-	"armpacko",
-	"armbeamer",
-	"armhlt",
-	"armhlt",
-	"corhlt",
-	"corhlt",
-	"armflak",
-	"corflak",
-	"corvipe",
-	"corvipe",
-	"corvipe",
-	"corvipe",
-	"armpb",
-	"armpb",
-	"armpb",
-	"armpb",
-	"armanni",
-	"cordoom",
+    -- Lasers / Rail
+    "armhlt",
+    "corhlt",
+    -- Missiles
+    "armcir",
+    "corerad",
+    "armmercury",
+    "corscreamer",
+    -- Flak
+    "armdeva",
+    "corshred",
+    -- Neutron
+    "armanni",
+    "cordoom",
+    -- Gauss
+    "armamb",
+    "cortoast",
 }
 
-
+--#### Startbox Defenses
 
 StartboxDefenceStructuresT0 = {
-	"corllt",
-	"corhllt",
 	"armllt",
-	"cormaw",
-	"corhllt",
-	"armclaw",
-	"armbeamer",
-	"armpacko",
+	"corllt",
+    "armrl",
+    "corrl",
+    "armpb",
+    "corvipe",
 }
 
 StartboxDefenceStructuresT1 = {
-	"cormaw",
-	"corhllt",
-	"armclaw",
-	"armbeamer",
-	"armpacko",
+    "armllt",
+    "corllt",
+    "armrl",
+    "corrl",
+    "armbeamer",
+    "armbeamer",
+    "corhllt",
+    "corhllt",
+    "armpb",
+    "corvipe",
 }
 
 StartboxDefenceStructuresT2 = {
-	"corhllt",
-	"corhlt",
-	"armhlt",
-	"corvipe",
-	"armpb",
-	"armflak",
-	"corflak",
+    "armhlt",
+    "corhlt",
+    "armrl",
+    "corrl",
+    "armcir",
+    "corerad",
 	"armguard",
 	"corpun",
-	"armamd",
-	"corfmd",
 }
 
 StartboxDefenceStructuresT3 = {
-	"corvipe",
-	"armpb",
-	"cortoast",
-	"armamb",
-	"armpb",
-	"armflak",
-	"corflak",
-	"armanni",
-	"cordoom",
-	"armamd",
-	"corfmd",
-	"armemp",
+    -- Missiles
+    "armcir",
+    "corerad",
+    "armmercury",
+    "corscreamer",
+    -- Flak
+    "armdeva",
+    "corshred",
+    -- Neutron
+    "armanni",
+    "cordoom",
+    -- Gauss
+    "armamb",
+    "cortoast",
 }
 
 StartboxDefenceStructuresT4 = {
-	"corflak",
-	"armanni",
-	"cordoom",
-	"armanni",
-	"cordoom",
-	"armflak",
-	"corflak",
-	"armanni",
-	"cordoom",
-	"armmine3",
-	"armamd",
-	"corfmd",
-	"armemp",
+    -- Missiles
+    "armmercury",
+    "corscreamer",
+    -- Flak
+    "armdeva",
+    "corshred",
+    -- Neutron
+    "armanni",
+    "armanni",
+    "armanni",
+    "cordoom",
+    "cordoom",
+    "cordoom",
+    -- Gauss
+    "armamb",
+    "cortoast",
 }
 
 
 StartboxDefenceStructuresT0Sea = {
-	"cortl",
+	"armtl",
 	"armtl",
 	"cortl",
-	"armtl",
+	"cortl",
 	"armfrt",
 	"corfrt",
-	"corfdrag",
+	"corfdrag", --shark teeth
 }
 
 StartboxDefenceStructuresT1Sea = {
@@ -225,15 +233,17 @@ StartboxDefenceStructuresT2Sea = {
 	"armtl",
 	"armfrt",
 	"corfrt",
-	"coratl",
-	"armatl",
+	--"coratl",
+	--"armatl",
 	"corfhlt",
 	"armfhlt",
 }
 
 StartboxDefenceStructuresT3Sea = {
-	"coratl",
-	"armatl",
+    "cortl",
+    "armtl",
+	--"coratl",
+	--"armatl",
 	"corfhlt",
 	"armfhlt",
 	--"corfflak",
@@ -241,8 +251,6 @@ StartboxDefenceStructuresT3Sea = {
 }
 
 StartboxDefenceStructuresT4Sea = {
-	"coratl",
-	"armatl",
-	--"corfflak",
-	--"armfflak",
+    "corfhlt",
+    "armfhlt",
 }
