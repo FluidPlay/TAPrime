@@ -18,6 +18,20 @@ if not gadgetHandler:IsSyncedCode() then
 	return false
 end
 
+local noAutoShare = true -- Are resources auto-share-able along the match?
+
+local function disableShareCheck()
+    local teamList = Spring.GetTeamList()
+    if noAutoShare then
+        for i = 1, #teamList do
+            local teamID = teamList[i]
+            Spring.SetTeamShareLevel(teamID, 'metal', 0)
+            Spring.SetTeamShareLevel(teamID, 'energy', 0)
+        end
+    end
+
+end
+
 ----------------------------------------------------------------
 -- Callins
 ----------------------------------------------------------------
@@ -29,11 +43,12 @@ function gadget:Initialize()
 	local teamResources = true 
 
 	if ((modOptions.storageowner) and (modOptions.storageowner == "com")) then
-    teamResources = false
+        teamResources = false
 	end
 	
+    local teamList = Spring.GetTeamList()
     if GG.coopMode then
-        
+
         local teamPlayerCounts = {}
         local playerList = Spring.GetPlayerList()
         for i = 1, #playerList do
@@ -43,8 +58,7 @@ function gadget:Initialize()
                 teamPlayerCounts[teamID] = (teamPlayerCounts[teamID] or 0) + 1
             end
         end
-        
-        local teamList = Spring.GetTeamList()
+
         for i = 1, #teamList do
             local teamID = teamList[i]
             local multiplier = teamPlayerCounts[teamID] or 1 -- Gaia has no players
@@ -58,8 +72,7 @@ function gadget:Initialize()
             Spring.SetTeamResource(teamID, 'm' , startMetal  * multiplier)
             Spring.SetTeamResource(teamID, 'e' , startEnergy * multiplier)
         end
-    else
-        local teamList = Spring.GetTeamList()
+    else    -- Not cooperative
         for i = 1, #teamList do
             local teamID = teamList[i]
             if (teamResources) then
@@ -73,6 +86,11 @@ function gadget:Initialize()
             Spring.SetTeamResource(teamID, 'e' , startEnergy)
         end
     end
+    disableShareCheck()
+end
+
+function gadget:GameFrame(n)
+    disableShareCheck()
 end
 
 function gadget:TeamDied(teamID)

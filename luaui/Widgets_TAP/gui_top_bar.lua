@@ -21,6 +21,7 @@ local height = 38
 local relXpos = 0.3
 local borderPadding = 5
 local showConversionSlider = true
+local showShareSlider = false
 local bladeSpeedMultiplier = 0.22
 local resourcebarBgTint = true		-- will background of resourcebar get colored when overflowing or low on energy?
 
@@ -750,23 +751,25 @@ local function updateResbar(res)
 			end
 		end
 		-- Share slider
-        local value = r[res][6]
-        if draggingShareIndicatorValue[res] ~= nil then
-            value = draggingShareIndicatorValue[res]
+        if showShareSlider then
+            local value = r[res][6]
+            if draggingShareIndicatorValue[res] ~= nil then
+                value = draggingShareIndicatorValue[res]
+            end
+            shareIndicatorArea[res] = {barArea[1]+(value * barWidth)-(shareSliderWidth/2), barArea[2]-sliderHeightAdd, barArea[1]+(value * barWidth)+(shareSliderWidth/2), barArea[4]+sliderHeightAdd}
+            glTexture(barbg)
+            if resbarHover ~= nil and resbarHover == res then
+                local padding = shareSliderWidth/8
+                glColor(0.66, 0, 0, 1)
+                RectRound(shareIndicatorArea[res][1], shareIndicatorArea[res][2], shareIndicatorArea[res][3], shareIndicatorArea[res][4],2.5*widgetScale)
+                glColor(0.6, 0, 0, 1)
+                RectRound(shareIndicatorArea[res][1]+padding, shareIndicatorArea[res][2]+padding, shareIndicatorArea[res][3]-padding, shareIndicatorArea[res][4]-padding,2.5*widgetScale)
+            else
+                glColor(0.8, 0, 0, 1)
+                glTexRect(shareIndicatorArea[res][1], shareIndicatorArea[res][2], shareIndicatorArea[res][3], shareIndicatorArea[res][4])
+            end
+            glTexture(false)
         end
-		shareIndicatorArea[res] = {barArea[1]+(value * barWidth)-(shareSliderWidth/2), barArea[2]-sliderHeightAdd, barArea[1]+(value * barWidth)+(shareSliderWidth/2), barArea[4]+sliderHeightAdd}
-		glTexture(barbg)
-		if resbarHover ~= nil and resbarHover == res then
-			local padding = shareSliderWidth/8
-			glColor(0.66, 0, 0, 1)
-			RectRound(shareIndicatorArea[res][1], shareIndicatorArea[res][2], shareIndicatorArea[res][3], shareIndicatorArea[res][4],2.5*widgetScale)
-			glColor(0.6, 0, 0, 1)
-			RectRound(shareIndicatorArea[res][1]+padding, shareIndicatorArea[res][2]+padding, shareIndicatorArea[res][3]-padding, shareIndicatorArea[res][4]-padding,2.5*widgetScale)
-		else
-			glColor(0.8, 0, 0, 1)
-			glTexRect(shareIndicatorArea[res][1], shareIndicatorArea[res][2], shareIndicatorArea[res][3], shareIndicatorArea[res][4])
-		end
-		glTexture(false)
 	end)
 	
 	-- add tooltips
@@ -1431,22 +1434,24 @@ end
 function widget:MousePress(x, y, button)
 	if button == 1 then
 		if not spec then
-			if IsOnRect(x, y, shareIndicatorArea['metal'][1], shareIndicatorArea['metal'][2], shareIndicatorArea['metal'][3], shareIndicatorArea['metal'][4]) then
-				draggingShareIndicator = 'metal'
-			end
-			if IsOnRect(x, y, resbarDrawinfo['metal'].barArea[1], shareIndicatorArea['metal'][2], resbarDrawinfo['metal'].barArea[3], shareIndicatorArea['metal'][4]) then
-				draggingShareIndicator = 'metal'
-				adjustSliders(x, y)
-			end
-			if IsOnRect(x, y, shareIndicatorArea['energy'][1], shareIndicatorArea['energy'][2], shareIndicatorArea['energy'][3], shareIndicatorArea['energy'][4]) then
-				draggingShareIndicator = 'energy'
-			end
+            if showShareSlider then
+                if IsOnRect(x, y, shareIndicatorArea['metal'][1], shareIndicatorArea['metal'][2], shareIndicatorArea['metal'][3], shareIndicatorArea['metal'][4]) then
+                    draggingShareIndicator = 'metal'
+                end
+                if IsOnRect(x, y, resbarDrawinfo['metal'].barArea[1], shareIndicatorArea['metal'][2], resbarDrawinfo['metal'].barArea[3], shareIndicatorArea['metal'][4]) then
+                    draggingShareIndicator = 'metal'
+                    adjustSliders(x, y)
+                end
+                if IsOnRect(x, y, shareIndicatorArea['energy'][1], shareIndicatorArea['energy'][2], shareIndicatorArea['energy'][3], shareIndicatorArea['energy'][4]) then
+                    draggingShareIndicator = 'energy'
+                end
+                if draggingConversionIndicator == nil and IsOnRect(x, y, resbarDrawinfo['energy'].barArea[1], shareIndicatorArea['energy'][2], resbarDrawinfo['energy'].barArea[3], shareIndicatorArea['energy'][4]) then
+                    draggingShareIndicator = 'energy'
+                    adjustSliders(x, y)
+                end
+            end
 			if draggingShareIndicator == nil and showConversionSlider and IsOnRect(x, y, conversionIndicatorArea[1], conversionIndicatorArea[2], conversionIndicatorArea[3], conversionIndicatorArea[4]) then
 				draggingConversionIndicator = true
-			end
-			if draggingConversionIndicator == nil and IsOnRect(x, y, resbarDrawinfo['energy'].barArea[1], shareIndicatorArea['energy'][2], resbarDrawinfo['energy'].barArea[3], shareIndicatorArea['energy'][4]) then
-				draggingShareIndicator = 'energy'
-				adjustSliders(x, y)
 			end
 			if draggingShareIndicator or draggingConversionIndicator then
 				if playSounds then
