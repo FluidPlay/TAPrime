@@ -252,7 +252,6 @@ local function finishUpgrade(unitID, upgData, upgID)
     if techToGrant then
         GG.TechGrant(techToGrant, unitTeam, true) end
 
-    --TODO: Only re-enable when it's fixed in the engine. Create bug report
     if upgData.alertWhenDone then
         LocalAlert(unitID, "Upgrade Finished: ".. upgID)
     end

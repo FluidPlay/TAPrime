@@ -18,22 +18,6 @@ local options={
        desc="TA Prime - Options",
        type="section",
     },
-    --{
-    --    key    = "barmodels",
-    --    name   = "Remodelled units",
-    --    desc   = "Activate BAR unit model integration",
-    --    type   = "bool",
-    --    section= 'tap_enhancements_misc',
-    --    def = false,
-    --},
-    --{
-    --    key    = "barsounds",
-    --    name   = "alternative sounds",
-    --    desc   = "Activate BAR sound replacements (barmodels (Remodelled units) must be enabled)",
-    --    type   = "bool",
-    --    section= 'tap_enhancements_misc',
-    --    def = false,
-    --},
 	{
 		key    = 'scavengers',
 		name   = 'Scavenger amount',

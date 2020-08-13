@@ -462,19 +462,28 @@ function UnblockCmdID(unitID, cmdID, orgTooltip)
     SetCmdIDEnable(unitID, cmdID, false, orgTooltip)
 end
 
-
-function LocalAlert(unitID, msg)
-    local x, y, z = spGetUnitPosition(unitID)  --x and z on map floor, y is height
-    spMarkerAddPoint(x,y,z,msg) --,true) defaults to local
-    spMarkerErasePosition(x,y,z)
-end
-
 function IsValidUnit(unitID)
 	local unitDefID = spGetUnitDefID(unitID)
 	if unitDefID and spValidUnitID(unitID) then
 		return true
 	end
 	return false
+end
+
+function LocalAlert(unitID, msg)
+    --local x, y, z = spGetUnitPosition(unitID)  --x and z on map floor, y is height
+    --spMarkerAddPoint(x,y,z,msg) --,true) defaults to local
+    --spMarkerErasePosition(x,y,z)
+
+    --local orange = "\255\255\135\0" --"\255\136\197\226" (skyblue)
+    local color = "\255\240\200\86" --"\255\136\197\226"
+    Spring.PlaySoundFile("sounds/ui/upgrades.wav",1)
+    if IsValidUnit(unitID) then
+        local team = Spring.GetUnitTeam(unitID)
+        Spring.SendMessageToTeam(team, color .."------------------------------------------------")
+        Spring.SendMessageToTeam(team, color ..msg)
+        Spring.SendMessageToTeam(team, color .."------------------------------------------------")
+    end
 end
 
 function DistanceToPoint(unitID, px,py,pz)
