@@ -90,7 +90,7 @@ function gadget:Initialize()
 end
 
 function gadget:GameFrame(n)
-    disableShareCheck()
+    --disableShareCheck()
 end
 
 function gadget:TeamDied(teamID)

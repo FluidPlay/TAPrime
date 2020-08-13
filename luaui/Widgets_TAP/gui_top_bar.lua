@@ -21,7 +21,7 @@ local height = 38
 local relXpos = 0.3
 local borderPadding = 5
 local showConversionSlider = true
-local showShareSlider = false
+local showShareSlider = true --false
 local bladeSpeedMultiplier = 0.22
 local resourcebarBgTint = true		-- will background of resourcebar get colored when overflowing or low on energy?
 
