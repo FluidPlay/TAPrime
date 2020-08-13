@@ -253,9 +253,9 @@ local function finishUpgrade(unitID, upgData, upgID)
         GG.TechGrant(techToGrant, unitTeam, true) end
 
     --TODO: Only re-enable when it's fixed in the engine. Create bug report
-    --if upgData.alertWhenDone then
-    --    LocalAlert(unitID, "Upgrade Finished: ".. upgID)
-    --end
+    if upgData.alertWhenDone then
+        LocalAlert(unitID, "Upgrade Finished: ".. upgID)
+    end
 end
 
 function gadget:GameFrame()

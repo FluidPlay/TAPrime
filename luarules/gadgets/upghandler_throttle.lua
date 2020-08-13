@@ -26,58 +26,55 @@ VFS.Include("LuaRules/configs/global_upgradedata.lua")
 
 local spGetGameFrame = Spring.GetGameFrame
 local spGetUnitTeam  = Spring.GetUnitTeam
+local spSetUnitRulesParam = Spring.SetUnitRulesParam
 
-local trackedUnits = {}   -- { unitID = true, ...} | who'll get the speed improved once upgrade done
+local trackedUnits = {}     -- { unitID = true, ...} | who'll get the speed improved once upgrade done
 
 local upgradableDefIDs = {} -- { UnitDefID = {}, ..} | Reverse table built in Initialize()
+local upgData = {}          -- { [UnitDefNames["armstump"].id] = true, ... }
 
-local updateRate = 5      -- How often to check for pending-research techs
+local updateRate = 5        -- How often to check for pending-research techs
+local reductionFactor = 0.7
 
 function gadget:Initialize()
-    upgradableDefIDs = {}     -- { unitDefID = { capture = true, scan = true, .. } }
-    -- Build reverse table from GlobalUpgrades
-    for upgID, upgData in pairs(GlobalUpgrades) do
-        for upgradableDefIDs in pairs(upgData.upgradedDefIDs) do
-            if upgradableDefIDs[upgradableDefIDs] == nil then
-                upgradableDefIDs[upgradableDefIDs] = {}
-            end
-            upgradableDefIDs[upgradableDefIDs][upgID] = true
-        end
+
+    --throttle = {        upgradableDefIDs = { [UnitDefNames["armstump"].id] = true,
+    --                                         [UnitDefNames["corraid"].id] = true,
+    --                                         [UnitDefNames["armfav"].id] = true,
+    --                                         [UnitDefNames["corlevlr"].id] = true,
+    --                                         [UnitDefNames["armflash"].id] = true,
+    --                                         [UnitDefNames["corgator"].id] = true,
+    --},
+
+    upgData = GlobalUpgrades.throttle
+    upgradableDefIDs = upgData.upgradableDefIDs
+end
+
+local function ApplySlowDown(unitID, unitDefID, enable)
+    --local defSpeed = UnitDefs[unitDefID].speed
+    --local newSpeed = enable and (defSpeed * 0.6) or defSpeed
+    --Spring.Echo("defSpeed: "..tostring(defSpeed).." new Speed: "..newSpeed)
+    --Spring.MoveCtrl.SetGroundMoveTypeData(unitID, "maxSpeed", newSpeed)
+
+    --- SlowDown will be actually applied by unit_reverse_move, where this (and damaged) factor is used
+    spSetUnitRulesParam(unitID, "throttleNerf", enable and reductionFactor or nil)
+end
+
+-- Applies negative effect when a new unit is created and prereq is not already researched
+function gadget:UnitCreated(unitID, unitDefID, unitTeam)
+    if upgradableDefIDs[unitDefID] and not HasTech(upgData.techToGrant, unitTeam) then
+        --Spring.Echo("Tracking unit: "..UnitDefs[unitDefID].name)
+        ApplySlowDown(unitID, unitDefID, true)
+        trackedUnits[unitID] = unitDefID
     end
 end
 
--- Assures locked commands are disabled when a new unit is created and prereq is not already researched
-function gadget:UnitCreated(unitID, unitDefID, unitTeam)
-    --local upgradableDefIDs = upgradableDefIDs[unitDefID]
-    --if not upgradableDefIDs then
-    --    return end
-    --for lockedUpgID in pairs(upgradableDefIDs) do
-    --    for upgID, upgData in pairs(GlobalUpgrades) do
-    --        --Spring.Echo("Locked upgID: "..lockedUpgID.." upgID: "..upgID)
-    --        if lockedUpgID == upgID and not HasTech(upgID, unitTeam) then
-    --            BlockCmdID(unitID, upgData.buttonToUnlock, upgData.UpgradeCmdDesc.tooltip,
-    --                    "Requires: "..upgID)
-    --            trackedUnits[unitID] = unitDefID
-    --        end
-    --    end
-    --end
-end
-
 local function Update()
-    --- Check for tracked Units, verify if any of their lockedCMDs is done and unlock it/them
-    --TODO: Should check only for upgradeID == "TROTTLE" and improve speed (vs unitDef one) when found
+    --Check only for upgradeID == "TROTTLE" and improve speed (vs unitDef one) when found
     for unitID, unitDefID in pairs(trackedUnits) do
-        local lockedUpgradeIds = upgradableDefIDs[unitDefID] -- { unitDefID = { capture = true, scan = true, .. } }
-        if lockedUpgradeIds then
-            --Spring.Echo("# Locked UnitDefs: "..pairs_len(upgradeLockedUnitDefs))
-            for lockedUpgID in pairs(lockedUpgradeIds) do
-                for upgID, upgData in pairs(GlobalUpgrades) do
-                    if lockedUpgID == upgID and HasTech(upgID, spGetUnitTeam(unitID)) then
-                        UnblockCmdID(unitID, upgData.buttonToUnlock, upgData.UpgradeCmdDesc.tooltip )
-                        trackedUnits[unitID] = nil
-                    end
-                end
-            end
+        if HasTech(upgData.techToGrant, spGetUnitTeam(unitID)) then
+            ApplySlowDown(unitID, unitDefID, false)
+            trackedUnits[unitID] = nil
         end
     end
 end
@@ -86,7 +83,6 @@ function gadget:GameFrame()
     local frame = spGetGameFrame()
     if frame % updateRate > 0.001 then
         return end
-
     Update()
 end
 
@@ -95,5 +91,5 @@ function gadget:UnitDestroyed(unitID)
 end
 
 function gadget:UnitGiven(unitID, unitDefID, teamID)
-    gadget:UnitCreated(unitID, unitDefID, teamID)
+    gadget:UnitFinished(unitID, unitDefID, teamID)
 end

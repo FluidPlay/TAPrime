@@ -51,7 +51,7 @@ local damageMultipliers = {
 ,
 	siege={ 	lightbot = 0.4, supportbot = 0.85,  heavybot = 1.2,	lightveh = 1, 	    supportveh = 0.6,       heavyveh = 0.25,
                 lightair = 0.5, supportair = 1.5, 	heavyair = 0.25,lightship = 3,      supportship = 0.75,     heavyship = 0.25,
-                structure = 1.2,resource = 1.2, 	defense = 1.8, 	defenseaa = 1.6, 	commander = 0.25,
+                structure = 1.2,resource = 1.2, 	defense = 1.6, 	defenseaa = 1.4, 	commander = 0.25,
 	}
 ,
 	emp={ 	    lightbot = 1, 	supportbot = 0.75,  heavybot = 3, 	lightveh = 0.2,     supportveh = 2,      heavyveh = 4.5,

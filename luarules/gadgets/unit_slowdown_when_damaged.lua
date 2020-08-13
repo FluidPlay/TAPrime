@@ -69,7 +69,8 @@ local function ApplyNewSpeed(unitID, maxspeedReductionFactor, turnrateReductionF
             maxSpeed = newMaxSpeed,
             maxReverseSpeed = newRevSpeed,
         })
-        -- Below will be read by unit_reverse_move
+        -- Below will be read (and applied) by unit_reverse_move.
+        --TODO: Make unit_reverse_move.lua "final speed setter"..
         spSetUnitRulesParam(unitID, "damagedSpeed", newMaxSpeed)
         spSetUnitRulesParam(unitID, "damagedrSpeed", newRevSpeed)
     end

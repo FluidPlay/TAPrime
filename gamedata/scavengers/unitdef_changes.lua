@@ -26,7 +26,7 @@ customDefs.corcom = {
 	workertime = 500,				-- can get multiplied in unitdef_post 
 	customparams = {
 		iscommander = 'nil',		-- since you cant actually remove parameters normally, it will do it when you set string: 'nil' as value
-        providetech = 'Tech, Tech1, Tech2, Tech3, Tech4',
+        providetech = 'Tech, Tech1, Tech2, Tech3, Tech4, throttle',
 	},
 	featuredefs = {
 		dead = {
@@ -62,7 +62,7 @@ customDefs.armcom = {
 	workertime = 500,				-- can get multiplied in unitdef_post 
 	customparams = {
 		iscommander = 'nil',		-- since you cant actually remove parameters normally, it will do it when you set string: 'nil' as value
-        providetech = 'Tech, Tech1, Tech2, Tech3, Tech4',
+        providetech = 'Tech, Tech1, Tech2, Tech3, Tech4, throttle',
 	},
 	featuredefs = {
 		dead = {

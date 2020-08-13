@@ -465,7 +465,7 @@ end
 
 function LocalAlert(unitID, msg)
     local x, y, z = spGetUnitPosition(unitID)  --x and z on map floor, y is height
-    spMarkerAddPoint(x,y,z,msg,true)
+    spMarkerAddPoint(x,y,z,msg) --,true) defaults to local
     spMarkerErasePosition(x,y,z)
 end
 
