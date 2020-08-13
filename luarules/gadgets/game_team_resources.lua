@@ -1,52 +1,37 @@
 
 function gadget:GetInfo()
-	return {
-		name      = 'Team Resourcing',
-		desc      = 'Sets up team resources',
-		author    = 'Niobium',
-		date      = 'May 2011',
-		license   = 'GNU GPL, v2 or later',
-		layer     = 0,
-		enabled   = true
-	}
+    return {
+        name      = 'Team Resourcing',
+        desc      = 'Sets up team resources',
+        author    = 'Niobium',
+        date      = 'May 2011',
+        license   = 'GNU GPL, v2 or later',
+        layer     = 0,
+        enabled   = true
+    }
 end
 
 ----------------------------------------------------------------
 -- Synced only
 ----------------------------------------------------------------
 if not gadgetHandler:IsSyncedCode() then
-	return false
-end
-
-local noAutoShare = true -- Are resources auto-share-able along the match?
-
-local function disableShareCheck()
-    local teamList = Spring.GetTeamList()
-    if noAutoShare then
-        for i = 1, #teamList do
-            local teamID = teamList[i]
-            Spring.SetTeamShareLevel(teamID, 'metal', 0)
-            Spring.SetTeamShareLevel(teamID, 'energy', 0)
-        end
-    end
-
+    return false
 end
 
 ----------------------------------------------------------------
 -- Callins
 ----------------------------------------------------------------
 function gadget:Initialize()
-	
-	local modOptions = Spring.GetModOptions() or {}
-	local startMetal  = tonumber(modOptions.startmetal)  or 1000
-	local startEnergy = tonumber(modOptions.startenergy) or 1000
-	local teamResources = true 
 
-	if ((modOptions.storageowner) and (modOptions.storageowner == "com")) then
+    local modOptions = Spring.GetModOptions() or {}
+    local startMetal  = tonumber(modOptions.startmetal)  or 1000
+    local startEnergy = tonumber(modOptions.startenergy) or 1000
+    local teamResources = true
+
+    if ((modOptions.mo_storageowner) and (modOptions.mo_storageowner == "com")) then
         teamResources = false
-	end
-	
-    local teamList = Spring.GetTeamList()
+    end
+
     if GG.coopMode then
 
         local teamPlayerCounts = {}
@@ -59,43 +44,38 @@ function gadget:Initialize()
             end
         end
 
+        local teamList = Spring.GetTeamList()
         for i = 1, #teamList do
             local teamID = teamList[i]
             local multiplier = teamPlayerCounts[teamID] or 1 -- Gaia has no players
             if (teamResources) then
-              Spring.SetTeamResource(teamID, 'es', startEnergy * multiplier)
-              Spring.SetTeamResource(teamID, 'ms', startMetal  * multiplier)
+                Spring.SetTeamResource(teamID, 'es', startEnergy * multiplier)
+                Spring.SetTeamResource(teamID, 'ms', startMetal  * multiplier)
             else
-              Spring.SetTeamResource(teamID, 'es', 20 * multiplier)
-              Spring.SetTeamResource(teamID, 'ms', 20 * multiplier)
+                Spring.SetTeamResource(teamID, 'es', 20 * multiplier)
+                Spring.SetTeamResource(teamID, 'ms', 20 * multiplier)
             end
             Spring.SetTeamResource(teamID, 'm' , startMetal  * multiplier)
             Spring.SetTeamResource(teamID, 'e' , startEnergy * multiplier)
         end
-    else    -- Not cooperative
+    else
+        local teamList = Spring.GetTeamList()
         for i = 1, #teamList do
             local teamID = teamList[i]
             if (teamResources) then
-              Spring.SetTeamResource(teamID, 'ms', startMetal)
-              Spring.SetTeamResource(teamID, 'es', startEnergy)
+                Spring.SetTeamResource(teamID, 'ms', startMetal)
+                Spring.SetTeamResource(teamID, 'es', startEnergy)
             else
-              Spring.SetTeamResource(teamID, 'es', 20)
-              Spring.SetTeamResource(teamID, 'ms', 20)
+                Spring.SetTeamResource(teamID, 'es', 20)
+                Spring.SetTeamResource(teamID, 'ms', 20)
             end
             Spring.SetTeamResource(teamID, 'm' , startMetal)
             Spring.SetTeamResource(teamID, 'e' , startEnergy)
         end
     end
-    disableShareCheck()
-end
-
-function gadget:GameFrame(n)
-    --disableShareCheck()
 end
 
 function gadget:TeamDied(teamID)
-	Spring.SetTeamShareLevel(teamID, 'metal', 0)
-	Spring.SetTeamShareLevel(teamID, 'energy', 0)
+    Spring.SetTeamShareLevel(teamID, 'metal', 0)
+    Spring.SetTeamShareLevel(teamID, 'energy', 0)
 end
-
-
