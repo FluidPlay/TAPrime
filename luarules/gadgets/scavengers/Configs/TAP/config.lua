@@ -79,18 +79,18 @@ if scavengersAIEnabled then
 		bossFightEnabled					= true,
 		FinalBossUnit						= true,
 		BossWaveTimeLeft					= 900,
-		aircraftchance 						= 6, -- higher number = lower chance
+		aircraftchance 						= 8, --6,[M} -- higher number = lower chance
 		globalscoreperoneunit 				= 900,
 		spawnchance							= 120,
 		beaconspawnchance					= 120,
 		minimumspawnbeacons					= 3,
 		landmultiplier 						= 0.75,
-		airmultiplier 						= 2.0,
+		airmultiplier 						= 0.6, --2.0
 		seamultiplier 						= 0.2,
 		chanceforaircraftonsea				= 2, -- higher number = lower chance
 
 		t0multiplier						= 3,
-		t1multiplier						= 2.5,
+		t1multiplier						= 2, --2.5, [M}
 		t2multiplier						= 0.8,
 		t3multiplier						= 0.1,
 		t4multiplier						= 0.05,
