@@ -44,6 +44,8 @@ if scavengersAIEnabled then
 			T1med								= 1200,
 			T1high								= 1500,
 			T1top								= 1800,
+            -- On function UpdateTierChances() you have tier chances for every timer and then it's RNG
+            -- Eg: T2start has 20% chance for T2 and 80% chance for T1; It's transition so it doesn't switch instantly from.pure T1 to pure T2
 			T2start								= 2250,
 			T2low								= 3000,
 			T2med								= 3750,
@@ -79,7 +81,7 @@ if scavengersAIEnabled then
 		bossFightEnabled					= true,
 		FinalBossUnit						= true,
 		BossWaveTimeLeft					= 900,
-		aircraftchance 						= 8, --6,[M} -- higher number = lower chance
+		aircraftchance 						= 9, --6,[M] -- higher number = lower chance
 		globalscoreperoneunit 				= 900,
 		spawnchance							= 120,
 		beaconspawnchance					= 120,
@@ -89,8 +91,8 @@ if scavengersAIEnabled then
 		seamultiplier 						= 0.2,
 		chanceforaircraftonsea				= 2, -- higher number = lower chance
 
-		t0multiplier						= 3,
-		t1multiplier						= 2, --2.5, [M}
+		t0multiplier						= 3,    ---Higher number bigger wave
+		t1multiplier						= 2, --2.5, [M]
 		t2multiplier						= 0.8,
 		t3multiplier						= 0.1,
 		t4multiplier						= 0.05,
@@ -184,7 +186,7 @@ if scavengersAIEnabled then
 			TierSpawnChances.T2 = 70
 			TierSpawnChances.T3 = 10
 			TierSpawnChances.T4 = 0
-		elseif globalScore > scavconfig.timers.T2top then
+		elseif globalScore > scavconfig.timers.T2top then   -- Numbers below must always sum up to 100
 			TierSpawnChances.T0 = 10
 			TierSpawnChances.T1 = 10
 			TierSpawnChances.T2 = 80
