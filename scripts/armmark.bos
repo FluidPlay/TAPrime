@@ -4,13 +4,13 @@
 #include "exptype.h"
 
 piece  head, Rthigh, Rshin, Rfoot, Lshin, Lfoot, Lthigh, rdish,
-       ldish, base;
+       ldish, base, turret, fire;
 
-static-var  bMoving, Static_Var_2;
+static-var  bMoving, bAiming, Static_Var_2;
 
 // Signal definitions
 #define SIG_ACTIVATE			2
-
+#define SIG_AIM				4
 
 walk2()
 {
@@ -164,6 +164,7 @@ MotionControl(Func_Var_1, Func_Var_2)
 Create()
 {
 	bMoving = FALSE;
+	bAiming = FALSE;	
 	Static_Var_2 = 1000;
 	start-script MotionControl();
 	start-script SmokeUnit();
@@ -206,6 +207,11 @@ RestoreAfterDelay()
 {
 	sleep Static_Var_2;
 	return (0);
+	turn head to y-axis <0.000000> speed <90.000000>;
+	turn turret to x-axis <0.000000> speed <45.000000>;
+	wait-for-turn head around y-axis;
+	wait-for-turn turret around x-axis;
+	bAiming = FALSE;	
 }
 
 SweetSpot(piecenum)
@@ -213,6 +219,41 @@ SweetSpot(piecenum)
 	piecenum = head;
 	return (0);
 }
+
+//--- Smoke Bomb
+
+AimFromPrimary(piecenum)
+{
+	piecenum = turret;
+}
+
+QueryPrimary(piecenum)
+{
+	piecenum = fire;
+}
+
+FirePrimary()
+{
+//	show rfire;
+	sleep 100;
+//	hide rfire;
+}
+
+AimPrimary(heading, pitch)
+{
+	signal SIG_AIM;
+	set-signal-mask SIG_AIM;
+	bAiming = TRUE;
+
+	turn head to y-axis heading speed <300.000000>;
+	turn turret to x-axis <0.000000> speed <300.000000>;
+	wait-for-turn head around y-axis;
+	wait-for-turn turret around x-axis;
+	start-script RestoreAfterDelay();
+	return (1);
+}
+
+//-----
 
 Killed(severity, corpsetype)
 {

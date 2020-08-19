@@ -45,6 +45,10 @@ local maxLosScaler = 1.75  -- 2.5
 local minMapHeight = 100        -- We get this from the map, this is just a default
 local maxMapHeightDelta = 464   -- 564 is DSD's highest, 100 is its lowest. Using that as reference.
 local maxMapHeight = 565        -- Any y Position above this delta will cap @ maxLosScaler
+
+local spGetUnitRulesParam = Spring.GetUnitRulesParam
+local spSetUnitSensorRadius = Spring.SetUnitSensorRadius
+local spGetUnitPosition = Spring.GetUnitPosition
 --local unitDefs -- = DEFS.unitDefs
 --local unitDefsData = VFS.Include("gamedata/unitdefs_data.lua")
 --local myTeamID = Spring.GetMyTeamID
@@ -72,7 +76,7 @@ end
 
 ---- Adds valid units to the myUnits table
 function gadget:UnitFinished(unitID, unitDefID, teamID, builderID)
-    allUnits[#allUnits +1] = unitID
+    allUnits[#allUnits +1] = { unitID = unitID, uDef = UnitDefs[unitDefID] } --unitDefID = unitDefID }
 end
 
 ---- Remove valid units from the myUnits table
@@ -83,7 +87,7 @@ function gadget:UnitDestroyed(unitID, unitDefID, teamID, attackerID, attackerDef
     local list_size = #allUnits
     local i = 1
     while i <= list_size do
-        if allUnits[i] == unitID then
+        if allUnits[i].unitID == unitID then
             table.remove(allUnits, i)
             list_size = list_size - 1
         else
@@ -97,17 +101,19 @@ function gadget:GameFrame(frame)
     if (frame % updateRate > 0.001) then
         return end
 
-    for _,unitID in ipairs(allUnits) do
-        local unitDefID = Spring.GetUnitDefID(unitID)   -- optimize by cache?
-        if unitDefID then
-            local uDef = UnitDefs[unitDefID]
+    for _,data in ipairs(allUnits) do
+        --local unitDefID = Spring.GetUnitDefID(unitID)
+        --local unitDefID = data.unitDefID
+        local unitID = data.unitID
+        local uDef = data.uDef
+        if uDef then
             local defaultLOS = uDef.losRadius
             local defaultAirLOS = uDef.airLosRadius
-            local _,unitYpos,_ = Spring.GetUnitPosition(unitID)
-            local losScaler = lerp(1, maxLosScaler, inverselerp(minMapHeight, maxMapHeight, unitYpos))
-            Spring.SetUnitSensorRadius ( unitID, "los", defaultLOS * losScaler )
-            Spring.SetUnitSensorRadius ( unitID, "airLos", defaultAirLOS * losScaler )
-            --Spring.Echo(" new LOS: "..newLOS)
+            local _,unitYpos,_ = spGetUnitPosition(unitID)
+            local heightScaler = lerp(1, maxLosScaler, inverselerp(minMapHeight, maxMapHeight, unitYpos))
+            local losModifier = spGetUnitRulesParam(unitID, "losmodifier") or 1
+            spSetUnitSensorRadius ( unitID, "los", defaultLOS * heightScaler * losModifier )
+            spSetUnitSensorRadius ( unitID, "airLos", defaultAirLOS * heightScaler * losModifier)
         end
     end
 end
