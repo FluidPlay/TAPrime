@@ -25,8 +25,6 @@
 
 -- (RecvLuaMsg) https://github.com/ZeroK-RTS/Zero-K/blob/master/LuaRules/Gadgets/start_unit_setup.lua
 
----TODO: try this:
----addon.AllowBuilderHoldFire(unitID, unitDefID, action)
 --return: bool actionAllowed
 --
 --Called when a construction unit wants to "use his nano beams".
@@ -78,7 +76,8 @@ local CMD_GUARD		= CMD.GUARD
 
 -- These are the builders DefIDs to be assist-blocked
 local builderDefIDs = {
-    UnitDefNames.armck.id, UnitDefNames.armcv.id, UnitDefNames.corck.id, UnitDefNames.corcv.id, UnitDefNames.armca.id, UnitDefNames.corca.id,
+    UnitDefNames.armck.id, UnitDefNames.corck.id, UnitDefNames.armcv.id, UnitDefNames.corcv.id,
+    UnitDefNames.armca.id, UnitDefNames.corca.id, UnitDefNames.armcs.id, UnitDefNames.corcs.id,
 }
 local mobileUnitsBeingBuilt = {}     -- { unitID, ... }
 local basicBuilderUnits     = {}     -- { unitID, ... }

@@ -42,6 +42,7 @@ local affectedUnits = {}        -- { unitID = recoveryFrame }
 local spSetWatchWeapon = Script.SetWatchWeapon
 local spGetGameFrame = Spring.GetGameFrame
 local spSetUnitRulesParam = Spring.SetUnitRulesParam
+local spGetUnitsInCylinder = Spring.GetUnitsInCylinder
 
 local marky_smokebomb = "armmark_smokebomb"
 local slasher_smokebomb = "cormist_smokebomb"
@@ -83,8 +84,8 @@ function gadget:GameFrame(f)
         return end
     for i, data in pairs(explosions) do
         if data.effectTime >= f then
-            local unitsAroundImpact = Spring.GetUnitsInCylinder(data.x, data.z, EffectRadius)
-            Spring.Echo("Nearby units found: "..#unitsAroundImpact)
+            local unitsAroundImpact = spGetUnitsInCylinder(data.x, data.z, EffectRadius)
+            --Spring.Echo("Nearby units found: "..#unitsAroundImpact)
             for _,unitID in ipairs(unitsAroundImpact) do
                 ApplyLosReduction(unitID)
             end

@@ -371,9 +371,12 @@ end
 --////////////////////////
 
 function inverselerp(a, b, t)
-	--return t / (a + b) || deprecated, was used by los scaler
-
-	return (t - a) / (b - a)
+    --return t / (a + b) || deprecated, was used by los scaler
+    if not a or not b then
+        return nil end
+    if not t then
+        return a end
+    return (t - a) / (b - a)
 end
 
 function lerp(a, b, t)
@@ -477,7 +480,6 @@ function LocalAlert(unitID, msg)
 
     --local orange = "\255\255\135\0" --"\255\136\197\226" (skyblue)
     local color = "\255\240\200\86" --"\255\136\197\226"
-    Spring.PlaySoundFile("sounds/ui/upgrades.wav",1)
     if IsValidUnit(unitID) then
         local team = Spring.GetUnitTeam(unitID)
         Spring.SendMessageToTeam(team, color .."------------------------------------------------")

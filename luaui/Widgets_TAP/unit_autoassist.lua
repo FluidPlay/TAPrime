@@ -28,6 +28,9 @@ local spGiveOrderToUnit = Spring.GiveOrderToUnit
 local spGetTeamResources = Spring.GetTeamResources
 local spGetUnitTeam    = Spring.GetUnitTeam
 local spGetUnitsInSphere = Spring.GetUnitsInSphere
+local spGetGameFrame = Spring.GetGameFrame
+local spGetUnitsInCylinder = Spring.GetUnitsInCylinder
+local idlingDelay = 1   -- How many frames after creation before the unit is force-idled (required to not break scripts)
 local myTeamID = -1;
 local updateRate = 40;
 
@@ -38,11 +41,16 @@ local CMD_FIGHT = CMD.FIGHT
 local CMD_PATROL = CMD.PATROL
 local CMD_REPAIR = CMD.REPAIR
 local CMD_GUARD = CMD.GUARD
-local CMD_RECLAIM = CMD.RECLAIM
 local CMD_REMOVE = CMD.REMOVE
+local CMD_RECLAIM = CMD.RECLAIM
 local CMD_STOP = CMD.STOP
 local CMD_INSERT = CMD.INSERT
 
+local UnitsToIdle = {}
+
+local basicbuilderDefs = {
+    armck = true, corck = true, armca = true, corca = true, armcs = true, corcs = true,
+}
 -- These guys will use a 'less aggressive' reclaim, favoring ressurects or assistance vs reclaiming
 local farkDefs = {
     armfark = true, cormuskrat = true, corfast = true, armconsul = true,
@@ -69,8 +77,10 @@ function widget:UnitFinished(unitID, unitDefID, unitTeam)
     if myTeamID==spGetUnitTeam(unitID) then					--check if unit is mine
         if UnitDefs[unitDefID].isBuilder then
             builders[unitID] = true
-            widget:UnitIdle(unitID, unitDefID, unitTeam)
+
             --Spring.Echo("Registering unit "..unitID.." as builder "..UnitDefs[unitDefID].name)
+            widget:UnitIdle(unitID, unitDefID, unitTeam)
+            --UnitsToIdle[unitID] = spGetGameFrame() + idlingDelay
         end
     end
 end
@@ -215,7 +225,14 @@ local function AutoAssist(unitID, unitDef)
     internalCommandUIDs[unitID] = true  -- Flag auto-assisting unit for further command event processing
     local x, y, z = spGetUnitPosition(unitID)
 
-    if farkDefs[unitDef.name] then
+    if basicbuilderDefs [unitDef.name] then
+        -- If there's any unit in a radius (which's not a wip builder), repair it
+        local unitsAroundImpact = spGetUnitsInCylinder(data.x, data.z, EffectRadius)
+        --Spring.Echo("Nearby units found: "..#unitsAroundImpact)
+        for _,unitID in ipairs(unitsAroundImpact) do
+            ApplyLosReduction(unitID)
+        end
+    elseif farkDefs[unitDef.name] then
         local offsetPos = patrolOffset(x, y, z)
         spGiveOrderToUnit(unitID, CMD_PATROL, { offsetPos.x, y, offsetPos.z }, {}) --, {"meta", "shift"} )
         --spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, {}) --"alt" favors reclaiming --Spring.Echo("Farking")
@@ -248,10 +265,10 @@ end
 -- or reimplement guard/partol kludges in Lua
 
 ----Give idle builders an assist command every n frames
-function widget:GameFrame(n)
+function widget:GameFrame(f)
     for unitID, data in pairs(cancelAutoassistForUIDs) do
         -- Actual assist removal (a few frames after being issued)
-        if IsValidUnit(unitID) and (not assistStoppedUnits[unitID]) and data.frame >= n then
+        if IsValidUnit(unitID) and (not assistStoppedUnits[unitID]) and data.frame >= f then
             --Spring.Echo("Removing assist from ".. unitID)
             --spGiveOrderToUnit(uID, CMD_REMOVE, {CMD_PATROL, CMD_GUARD, CMD_RECLAIM, CMD_REPAIR}, {"alt"})
             --spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
@@ -268,8 +285,14 @@ function widget:GameFrame(n)
     --if WG.Cutscene and WG.Cutscene.IsInCutscene() then
     --    return end
 
-    if n % updateRate > 0.001 then
+    if f % updateRate > 0.001 then
         return end
+
+    --for unitID, recoveryFrame in pairs(UnitsToIdle) do
+    --    if f >= recoveryFrame then
+    --        widget:UnitIdle(unitID)
+    --    end
+    --end
 
     --TODO: Finish below, to remove auto-guard from commanders
     --if guardingUnits[unitID] and not enoughEconomy() then

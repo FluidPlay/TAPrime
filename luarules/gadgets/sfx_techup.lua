@@ -79,11 +79,10 @@ function gadget:UnitFinished(unitID, unitDefID, teamID)
     local newTier = tostring(techCenters[unitDef.name])
     --TODO: Check if tech was already unlocked, only play sound if it wasn't
     if IsValidUnit(unitID) then
-        local team = Spring.GetUnitTeam(unitID)
-        Spring.SendMessageToTeam(team, txtcolor .."------------------------------------------------")
-        Spring.SendMessageToTeam(team, txtcolor .."You've reached Tech Level "..newTier)
-        Spring.SendMessageToTeam(team, txtcolor .."------------------------------------------------")
-        Spring.PlaySoundFile("sounds/ui/achievement.wav",0.75)
+        Spring.SendMessageToTeam(teamID, txtcolor .."------------------------------------------------")
+        Spring.SendMessageToTeam(teamID, txtcolor .."You've reached Tech Level "..newTier)
+        Spring.SendMessageToTeam(teamID, txtcolor .."------------------------------------------------")
+        Spring.PlaySoundFile("sounds/ui/achievement.wav",0.5) --,_,_,_,_,_,_,"userinterface")
     end
 end
 	

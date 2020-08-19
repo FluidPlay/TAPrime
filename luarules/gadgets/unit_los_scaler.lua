@@ -110,10 +110,12 @@ function gadget:GameFrame(frame)
             local defaultLOS = uDef.losRadius
             local defaultAirLOS = uDef.airLosRadius
             local _,unitYpos,_ = spGetUnitPosition(unitID)
-            local heightScaler = lerp(1, maxLosScaler, inverselerp(minMapHeight, maxMapHeight, unitYpos))
-            local losModifier = spGetUnitRulesParam(unitID, "losmodifier") or 1
-            spSetUnitSensorRadius ( unitID, "los", defaultLOS * heightScaler * losModifier )
-            spSetUnitSensorRadius ( unitID, "airLos", defaultAirLOS * heightScaler * losModifier)
+            if unitYpos then
+                local heightScaler = lerp(1, maxLosScaler, inverselerp(minMapHeight, maxMapHeight, unitYpos))
+                local losModifier = spGetUnitRulesParam(unitID, "losmodifier") or 1
+                spSetUnitSensorRadius ( unitID, "los", defaultLOS * heightScaler * losModifier )
+                spSetUnitSensorRadius ( unitID, "airLos", defaultAirLOS * heightScaler * losModifier)
+            end
         end
     end
 end

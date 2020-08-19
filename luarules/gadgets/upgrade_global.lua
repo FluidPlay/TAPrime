@@ -254,6 +254,8 @@ local function finishUpgrade(unitID, upgData, upgID)
 
     if upgData.alertWhenDone then
         LocalAlert(unitID, "Upgrade Finished: ".. upgID)
+        local x,y,z=Spring.GetUnitPosition(unitID)
+        Spring.PlaySoundFile("sounds/ui/upgrades.wav",0.2) --,x,y,z,_,_,_,"userinterface")
     end
 end
 

@@ -5,6 +5,7 @@
 --
 
 local SIG_STATECHG = {}
+local SIG_REQSTATE = {}
 
 --local base = piece 'base'
 --local body = piece 'body'
@@ -19,7 +20,10 @@ local base, body, aim, tower1, tower2, tower3, emitnano = piece('base', 'body', 
 --#include "sfxtype.h"
 --#include "exptype.h"
 
-local HeadingAngle, RestoreDelay, statechg_DesiredState, statechg_StateChanging
+local HeadingAngle, PitchAngle, RestoreDelay, statechg_StateChanging
+local minPitch, maxPitch = -0.2, 0.84
+local state = { build = 0, stop = 1}
+local statechg_DesiredState
 local level = 1
 local justcreated = false
 local Rad = math.rad
@@ -103,17 +107,6 @@ local function DisableTowers()
 		end
 end
 
-local function Go()
-  Spring.UnitScript.Signal(SIG_STATECHG)
-  Spring.UnitScript.SetSignalMask(SIG_STATECHG)
-    --Spring.Echo("armoutpost_lus: Going")
-	EnableTowers()
-	WaitOneFrame()
-	Turn( aim , y_axis, HeadingAngle, Rad(160.00000) )
-	WaitForTurn(aim, y_axis)
-	SetUnitValue(COB.INBUILDSTANCE, 1)
-end
-
 local function Stop()
   Spring.UnitScript.Signal(SIG_STATECHG)
   Spring.UnitScript.SetSignalMask(SIG_STATECHG)
@@ -124,7 +117,25 @@ local function Stop()
 	StartThread(RestoreAfterDelay)
 end
 
+local function Go()
+  Spring.UnitScript.Signal(SIG_STATECHG)
+  Spring.UnitScript.SetSignalMask(SIG_STATECHG)
+    if PitchAngle == nil or HeadingAngle == nil then
+        Stop() end
+    --Spring.Echo("armoutpost_lus: Going")
+	EnableTowers()
+	WaitOneFrame()
+	Turn( aim , y_axis, HeadingAngle, Rad(160.00000) )
+    if PitchAngle then
+        Turn( aim , x_axis, PitchAngle, Rad(90.00000) ) end
+	WaitForTurn(aim, y_axis)
+    WaitForTurn(aim, x_axis)
+	SetUnitValue(COB.INBUILDSTANCE, 1)
+end
+
 local function RequestState(requestedstate, currentstate)
+    Spring.UnitScript.Signal(SIG_REQSTATE)
+    Spring.UnitScript.SetSignalMask(SIG_REQSTATE)
 	if  statechg_StateChanging  then
 		statechg_DesiredState = requestedstate
 		return (0)
@@ -133,10 +144,10 @@ local function RequestState(requestedstate, currentstate)
 	currentstate = statechg_DesiredState
 	statechg_DesiredState = requestedstate
 	while statechg_DesiredState ~= currentstate  do
-		if statechg_DesiredState == 0 then
+		if statechg_DesiredState == state.build then
 			StartThread(Go)
-			currentstate = 0
-		elseif statechg_DesiredState == 1 then
+			currentstate = state.build
+		elseif statechg_DesiredState == state.stop then
       --Spring.Echo("Stop now")
 			StartThread(Stop)
 			currentstate = 1
@@ -146,19 +157,20 @@ local function RequestState(requestedstate, currentstate)
 end
 
 local function InitState()
-	HeadingAngle = 0
+	HeadingAngle = nil
+    PitchAngle = nil
 	RestoreDelay = 5000
 	justcreated = true
 	statechg_DesiredState = 1
 	statechg_StateChanging = false
 	local unitDefID = UnitDefs[unitDefID].name
-	if (unitDefID == "armoutpost") then
+	if (unitDefID == "armoutpost" or unitDefID == "coroutpost") then
 		level = 1
-	elseif (unitDefID == "armoutpost2") then
+	elseif (unitDefID == "armoutpost2" or unitDefID == "coroutpost2") then
 		level = 2
-	elseif (unitDefID == "armoutpost3") then
+	elseif (unitDefID == "armoutpost3" or unitDefID == "coroutpost3") then
 		level = 3
-	elseif (unitDefID == "armoutpost4") then
+	elseif (unitDefID == "armoutpost4" or unitDefID == "coroutpost4") then
 		level = 4
 	end
 	EnableTowers()
@@ -166,11 +178,13 @@ end
 
 function script.StartBuilding(heading, pitch)
 	HeadingAngle = heading
-	StartThread(RequestState, 0)
+    --Spring.Echo("Source pitch: "..pitch)
+    PitchAngle = - math.max(minPitch, math.min(pitch, maxPitch))
+	StartThread(RequestState, state.build)
 end
 
 function script.StopBuilding()
-	StartThread(RequestState, 1)
+	StartThread(RequestState, state.stop)
 end
 
 function script.QueryNanoPiece(piecenum)
@@ -189,11 +203,11 @@ end
 
 function script.Activate()
     HeadingAngle = 0
-	StartThread(RequestState, 0)
+	StartThread(RequestState, state.build)
 end
 
 function script.Deactivate()
-	StartThread(RequestState, 1)
+	StartThread(RequestState, state.stop)
 end
 
 function script.Killed(recentDamage, maxHealth)
