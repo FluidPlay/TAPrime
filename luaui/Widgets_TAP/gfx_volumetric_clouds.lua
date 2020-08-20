@@ -11,7 +11,7 @@ function widget:GetInfo()
     date      = "november 2014",
     license   = "GNU GPL, v2 or later",
     layer     = 1000,
-    enabled   = true
+    enabled   = false, --true --TODO: Move to settings, enable it on high quality +
   }
 end
 
@@ -28,7 +28,7 @@ local noiseTex = ":l:LuaUI/Images/rgbnoise.png"
 local mapcfg = {
 	custom = {
 		clouds = {
-		speed = 0.33, --0.5, -- multiplier for speed of scrolling with wind
+		speed = 0.4, --0.5, -- multiplier for speed of scrolling with wind
 		--color    = {0.46, 0.32, 0.2}, -- diffuse color of the fog
 		color    = {0.6,0.7,0.8}, -- diffuse color of the fog
 

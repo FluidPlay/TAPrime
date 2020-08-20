@@ -79,7 +79,7 @@ local builderDefIDs = {
     UnitDefNames.armck.id, UnitDefNames.corck.id, UnitDefNames.armcv.id, UnitDefNames.corcv.id,
     UnitDefNames.armca.id, UnitDefNames.corca.id, UnitDefNames.armcs.id, UnitDefNames.corcs.id,
 }
-local mobileUnitsBeingBuilt = {}     -- { unitID, ... }
+local WIPmobileUnits = {}     -- { unitID, ... }
 local basicBuilderUnits     = {}     -- { unitID, ... }
 local PausedPlayers         = {}     -- { [playerID]=pausedState, ... }
 
@@ -103,7 +103,7 @@ local function IsArmFav(uDefID)
 end
 
 local function IsWIPMobileUnit(uID)
-    for _,v in ipairs(mobileUnitsBeingBuilt) do
+    for _,v in ipairs(WIPmobileUnits) do
         if v == uID then
             return true end
     end
@@ -331,14 +331,14 @@ if gadgetHandler:IsSyncedCode() then
         -- If unit just created is a mobile unit, add it to array
         local uDef = UnitDefs[unitDefID]
         if not uDef.isImmobile then
-            mobileUnitsBeingBuilt[#mobileUnitsBeingBuilt +1] = unitID
+            WIPmobileUnits[#WIPmobileUnits +1] = unitID
         end
     end
 
     -- Fired once a unit finishes building
     function gadget:UnitFinished(unitID, unitDefID, teamID)
         if UnitDefs[unitDefID].isBuilding == false then
-            ipairs_remove(mobileUnitsBeingBuilt, unitID)
+            ipairs_remove(WIPmobileUnits, unitID)
         end
         -- If finished unit is a builder, we must manually remove any guard/fight order or else it inherits from fac
         -- We'll do it after a couple frames, though; that's required so factory inheritance don't override it
@@ -353,7 +353,7 @@ if gadgetHandler:IsSyncedCode() then
             ipairs_remove(basicBuilderUnits, unitID)
         end
         if UnitDefs[unitDefID].isBuilding == false then
-            ipairs_remove(mobileUnitsBeingBuilt, unitID)
+            ipairs_remove(WIPmobileUnits, unitID)
         end
         ipairs_removeByElement(GG.JustFinishedBuilders,"unitID", unitID)
         --RemoveUnitFromTable(GG.JustFinishedBuilders, unitID)

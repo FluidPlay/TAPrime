@@ -7,7 +7,7 @@ return {
 		buildcostmetal = 100,
 		buildpic = "ARMMARK.DDS",
 		buildtime = 3800,
-		canattack = false,
+		canattack = true,
 		canmove = true,
 		category = "KBOT MOBILE ALL NOTSUB NOWEAPON NOTSHIP NOTAIR SURFACE",
 		collisionvolumeoffsets = "0 0 -1",
