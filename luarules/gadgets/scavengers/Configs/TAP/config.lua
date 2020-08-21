@@ -46,13 +46,13 @@ if scavengersAIEnabled then
 			T1top								= 1800,
             -- On function UpdateTierChances() you have tier chances for every timer and then it's RNG
             -- Eg: T2start has 20% chance for T2 and 80% chance for T1; It's transition so it doesn't switch instantly from.pure T1 to pure T2
-			T2start								= 2250,
-			T2low								= 3000,
-			T2med								= 3750,
-			T2high								= 4500,
-			T2top								= 6000,
-			T3start								= 7500,
-			T3low								= 9000,
+			T2start								= 2925, --2250,
+			T2low								= 3900,
+			T2med								= 4875,
+			T2high								= 5850,
+			T2top								= 7800,
+			T3start								= 8500, -- 7500
+			T3low								= 9500, -- 9000
 			T3med								= 10500,
 			T3high								= 12000,
 			T3top								= 13500,
@@ -80,7 +80,7 @@ if scavengersAIEnabled then
 	unitSpawnerModuleConfig = {
 		bossFightEnabled					= true,
 		FinalBossUnit						= true,
-		BossWaveTimeLeft					= 900,
+		BossWaveTimeLeft					= 180, --900,
 		aircraftchance 						= 9, --6,[M] -- higher number = lower chance
 		globalscoreperoneunit 				= 4500,
 		spawnchance							= 20,

@@ -1,5 +1,20 @@
 
 local moveDatas = {
+    BOSSBOT = {	--Used by Boss Commanders
+        allowRawMovement = true,
+        crushstrength = 50000,  -- Super units = 10000
+        depthmod = 0,
+        footprintx = 2,
+        footprintz = 2,
+        maxslope = 36,
+        maxwaterdepth = 5000,
+        maxwaterslope = 50,
+        depthModParams = {
+            minHeight = 0,
+            linearCoeff = 0.03,
+            maxScale = 1.4,
+        }
+    },
 	AKBOT2 = {	--Used by Commanders
         allowRawMovement = true,
 		crushstrength = 50,
