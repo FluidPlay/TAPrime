@@ -61,17 +61,18 @@ local spGetUnitDefID = Spring.GetUnitDefID
 
 -- Callback from the unit animation script (.cob or .lua), when ammo-weapon is fired
 function BombsAway(unitID, unitDefID, unitTeam)
-  --local ud = UnitDefs[unitDefID]
-  local newAmmo = math.max(0, spGetUnitRulesParam(unitID,"ammo")-1)
-  spSetUnitRulesParam(unitID, "ammo", newAmmo)
-  if newAmmo == 0 then
+    --local ud = UnitDefs[unitDefID]
+    local ammo = spGetUnitRulesParam(unitID,"ammo")
+    local newAmmo = ammo and math.max(0, ammo-1) or 1
+    spSetUnitRulesParam(unitID, "ammo", newAmmo)
+    if newAmmo == 0 then
     newPlanesToRearm[#newPlanesToRearm + 1] = unitID
     newRequestLanding[#newRequestLanding + 1] = { id = unitID, frame = spGetGameFrame() + 30 }
     --if Script.LuaRules('RequestRearm') then
     --  Script.LuaRules.RequestRearm(unitID)
     --end
-  end
-  --Spring.Echo("Bombs released from: "..unitID.." ammo was: ".. Spring.GetUnitRulesParam(unitID, "ammo")) -- || Bombers to Rearm: "..#GG.PlanesToRearm)
+    end
+    --Spring.Echo("Bombs released from: "..unitID.." ammo was: ".. Spring.GetUnitRulesParam(unitID, "ammo")) -- || Bombers to Rearm: "..#GG.PlanesToRearm)
 end
 
 -- We're counting on all re-armable weapons reload time to be the same..
