@@ -15,40 +15,37 @@ T1AirUnits = {
 }
 
 T2AirUnits = {
-	"armsb",
-	"armkam",
 	"armbrawl",
-	"armsaber",
-	"armsfig",
-	"corsb",
-	"corsfig",
-	"corcut",
+    "armhawk",
+    "corvamp",
+    "armthund",
+    "corshad",
+	--"armsaber",
+	--"armsfig",
+	--"corsb",
+	--"corsfig",
+	--"corcut",
 	--constructors
 	"armca",
-	"armcsa",
 	"corca",
-	"corcsa",
 	"armaca",
 	"coraca",
 }
 
 T3AirUnits = {
 	"armhawk",
-	"armsb",
-	"armblade",
-	"armstil",
-	"armliche",
-	"armpnix",
-	"corsb",
 	"corvamp",
-	"corhurc",
-	"corape",
+    "corhurc",
+	"armblade",
+	"corstil",
+	"armpnix",
 	"corcrw",
-
 }
 
 T4AirUnits = {
-	"corcrwboss",
-	"armfepoch",
-	"corfblackhy",
+    "corcrw",
+    "corstil",
+    "armliche",
+    "corhurc",
+    "armpnix",
 }
