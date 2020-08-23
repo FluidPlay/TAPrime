@@ -13,9 +13,17 @@ return {
     desc = 'Survival gamemode against robots infected by mysterious virus'
   },
   {
-	  name = 'DAI',
-	  desc = 'Shard by AF for Spring Lua, Mod for BA made by Damgam',
+      name = 'SimpleAI',
+      desc = 'Simple AI developed by Damgam'
   },
+  {
+      name = 'SimpleCheaterAI',
+      desc = 'Simple Cheating AI developed by Damgam'
+  },
+  --{
+	--  name = 'DAI',
+	--  desc = 'Shard by AF for Spring Lua, Mod for BA made by Damgam',
+  --},
   
   {
     name = 'Chicken: Very Easy',
