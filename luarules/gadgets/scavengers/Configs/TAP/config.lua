@@ -10,7 +10,7 @@ if scavengersAIEnabled then
 			brutal = 5,
 		},
 		unitnamesuffix = "_scav",
-		messenger = true, -- BYAR specific thing, don't enable otherwise (or get gui_messages.lua from BYAR)
+		messenger = true, -- make sure gui_messages.lua is included in the mod
 		modules = {
 			buildingSpawnerModule 			= false,
 			constructorControllerModule 	= true,
@@ -46,8 +46,8 @@ if scavengersAIEnabled then
 			T1top								= 1800,
             -- On function UpdateTierChances() you have tier chances for every timer and then it's RNG
             -- Eg: T2start has 20% chance for T2 and 80% chance for T1; It's transition so it doesn't switch instantly from.pure T1 to pure T2
-			T2start								= 2925, --2250,
-			T2low								= 3900,
+			T2start								= 3200, --2250, 2925
+			T2low								= 3900, --3900
 			T2med								= 4875,
 			T2high								= 5850,
 			T2top								= 7800,
@@ -81,25 +81,25 @@ if scavengersAIEnabled then
 		bossFightEnabled					= true,
 		FinalBossUnit						= true,
 		BossWaveTimeLeft					= 180, --900,
-		aircraftchance 						= 9, --6,[M] -- higher number = lower chance
+		aircraftchance 						= 8, --6,9 [M] -- higher number = lower chance
 		globalscoreperoneunit 				= 4500,
 		spawnchance							= 20,
 		beaconspawnchance					= 60,
 		minimumspawnbeacons					= 3,
 		landmultiplier 						= 0.75,
-		airmultiplier 						= 0.6, --2.0
+		airmultiplier 						= 0.7, --2.0, 0.6 [M]
 		seamultiplier 						= 0.2,
 		chanceforaircraftonsea				= 2, -- higher number = lower chance
 
 		t0multiplier						= 3,    ---Higher number bigger wave
-		t1multiplier						= 2, --2.5, [M]
-		t2multiplier						= 0.8,
-		t3multiplier						= 0.1,
-		t4multiplier						= 0.05,
+		t1multiplier						= 2.15, --2.5, 2 [M]
+		t2multiplier						= 1.0,  -- 0.8 [M]
+		t3multiplier						= 0.175, -- 0.1 [M]
+		t4multiplier						= 0.03, -- 0.05, [M]
 	}
 
 	constructorControllerModuleConfig = {
-		constructortimerstart				= 120, -- ammount of seconds it skips from constructortimer for the first spawn (make first spawn earlier - this timer starts on timer-Timer1)
+		constructortimerstart				= 120, -- amount of seconds it skips from constructortimer for the first spawn (make first spawn earlier - this timer starts on timer-Timer1)
 		constructortimer 					= 240, -- time in seconds between commander/constructor spawns
 		constructortimerreductionframes		= 36000,
 		minimumconstructors					= 2,
@@ -110,7 +110,7 @@ if scavengersAIEnabled then
 	}
 
 	unitControllerModuleConfig = {
-		minimumrangeforfight				= 650, -- Low range units use Move command, units with range above this value use 'Fight'
+		minimumrangeforfight				= 500, --650 [M], -- Low range units use Move command, units with range above this value use 'Fight'
 	}
 
 	spawnProtectionConfig = {
@@ -187,21 +187,21 @@ if scavengersAIEnabled then
 			TierSpawnChances.T3 = 10
 			TierSpawnChances.T4 = 0
 		elseif globalScore > scavconfig.timers.T2top then   -- Numbers below must always sum up to 100
-			TierSpawnChances.T0 = 10
+			TierSpawnChances.T0 = 5 -- 10
 			TierSpawnChances.T1 = 10
-			TierSpawnChances.T2 = 80
+			TierSpawnChances.T2 = 85
 			TierSpawnChances.T3 = 0
 			TierSpawnChances.T4 = 0
 		elseif globalScore > scavconfig.timers.T2high then
-			TierSpawnChances.T0 = 10
-			TierSpawnChances.T1 = 30
-			TierSpawnChances.T2 = 60
+			TierSpawnChances.T0 = 5  --10
+			TierSpawnChances.T1 = 25 --30
+			TierSpawnChances.T2 = 70 --60
 			TierSpawnChances.T3 = 0
 			TierSpawnChances.T4 = 0
 		elseif globalScore > scavconfig.timers.T2med then
-			TierSpawnChances.T0 = 10
-			TierSpawnChances.T1 = 40
-			TierSpawnChances.T2 = 50
+			TierSpawnChances.T0 = 5  --10
+			TierSpawnChances.T1 = 35 --40
+			TierSpawnChances.T2 = 60 --50
 			TierSpawnChances.T3 = 0
 			TierSpawnChances.T4 = 0
 		elseif globalScore > scavconfig.timers.T2low then
