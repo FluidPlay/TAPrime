@@ -138,7 +138,7 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
     local upgrade = UnitResearchers[unitDefID]
     if not upgrade then
         return end
-    Spring.Echo("Found locally available upgrade: "..upgrade)
+    --Spring.Echo("Found locally available upgrade: "..upgrade)
 
     local unitUpg = UnitUpg[upgrade]
     if unitUpg then

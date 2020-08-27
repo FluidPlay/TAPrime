@@ -75,7 +75,8 @@ end
 function PileLimit(_,teamID,pilelimit)
 	local myTeamID = SpGetMyTeamID()
 	if myTeamID == teamID and not SpGetSpectatingState() then
-		SpEcho("Stockpile queue is already full (max " .. tostring(pilelimit) .. ").")
+        --TODO: Add proper alert here
+		--SpEcho("Stockpile queue is already full (max " .. tostring(pilelimit) .. ").")
 	end
 end
 
