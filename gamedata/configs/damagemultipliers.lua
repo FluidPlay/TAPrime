@@ -86,7 +86,7 @@ local damageMultipliers = {
 ,
 	nuke={ 		lightbot = 1, 	supportbot = 1, 	heavybot = 1, 	lightveh = 1, 	    supportveh = 1,     heavyveh = 1.1,
 				lightair = 1, 	supportair = 1, 	heavyair = 1,   lightship = 1,	    supportship = 1,    heavyship = 1,
-                structure = 1, resource = 1,		defense = 1, 	defenseaa = 1, 		commander = 0.5,
+                structure = 1, resource = 1,		defense = 1, 	defenseaa = 1, 		commander = 0.3,
 	}
 ,
 	none={ 		lightbot = 0.1, supportbot = 0.1, 	heavybot = 0.1, lightveh = 0.1,     supportveh = 0.1, 	heavyveh = 0.1,

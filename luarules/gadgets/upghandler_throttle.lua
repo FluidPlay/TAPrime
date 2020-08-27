@@ -19,7 +19,7 @@ if not gadgetHandler:IsSyncedCode() then
     return end
 
 VFS.Include("gamedata/taptools.lua")
-VFS.Include("LuaRules/configs/global_upgradedata.lua")
+VFS.Include("LuaRules/configs/upgradedata_global.lua")
 -----------------
 ---- SYNCED
 -----------------

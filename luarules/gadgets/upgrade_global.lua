@@ -37,7 +37,7 @@ PerUnitUpgrades [made by unit]
 ]]
 
 VFS.Include("gamedata/taptools.lua")
-VFS.Include("luarules/configs/global_upgradedata.lua")
+VFS.Include("luarules/configs/upgradedata_global.lua")
 
 --local spGetUnitDefID        = Spring.GetUnitDefID
 --local spGetUnitCmdDescs     = Spring.GetUnitCmdDescs

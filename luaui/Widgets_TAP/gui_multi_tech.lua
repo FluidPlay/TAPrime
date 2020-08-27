@@ -14,7 +14,7 @@ Unsynced
 
 ]]--
 
----<< DEPRECATED; check global_upgradedata.lua >>
+---<< DEPRECATED; check upgradedata_global.lua >>
 --[[
 *** How the upgrade system works
 
