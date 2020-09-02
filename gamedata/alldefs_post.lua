@@ -75,9 +75,12 @@ function UnitDef_Post(name, uDef)
     if uDef.builddistance ~= nil and uDef.builddistance < minimumbuilddistancerange then
         uDef.builddistance = minimumbuilddistancerange
     end
-    if uDef.maxreversevelocity ~= nil then
-        --Spring.Echo("Found reverse velocity "..tonumber(uDef.maxreversevelocity).." on unit "..name)
+    if uDef.canfly then
+        uDef.crashdrag = 0.012
     end
+    --if uDef.maxreversevelocity ~= nil then
+        --Spring.Echo("Found reverse velocity "..tonumber(uDef.maxreversevelocity).." on unit "..name)
+    --end
 	
 	-- scavs - keep on the bottom
 	if string.find(name, '_scav') then
@@ -306,8 +309,12 @@ function ModOptions_Post (UnitDefs, WeaponDefs)
         -- transporting enemy coms
         if (modOptions.transportenemy == "notcoms") then
             for name,ud in pairs(UnitDefs) do
-                if (name == "armcom" or name == "corcom" or name == "armdecom" or name == "cordecom") then
-                    ud.transportbyenemy = false
+                if  name == "armcom" or name == "corcom"
+                    or name == "armcom2" or name == "corcom2"
+                    or name == "armcom3" or name == "corcom3"
+                    or name == "armcom4" or name == "corcom4"
+                    or name == "armdecom" or name == "cordecom" then
+                        ud.transportbyenemy = false
                 end
             end
         elseif (modOptions.transportenemy == "none") then

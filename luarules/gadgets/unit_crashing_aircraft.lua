@@ -25,10 +25,12 @@ local DestroyUnit = Spring.DestroyUnit
 
 local COB_CRASHING = COB.CRASHING
 local COM_BLAST = WeaponDefNames['commanderexplosion'].id
+local COM_BLAST2 = WeaponDefNames['commanderexplosion2'].id
 
 local crashable  = {}
 local crashing = {}
 local crashingCount = 0
+local crashGravityMult = 4 --2.2
 
 local totalUnitsTime = 0
 local percentage = 0.5	-- is reset somewhere else
@@ -60,7 +62,8 @@ function gadget:UnitPreDamaged(unitID, unitDefID, unitTeam, damage, paralyzer, w
 		return 0,0
 	end
 
-	if crashable[unitDefID] and (damage>GetUnitHealth(unitID)) and weaponDefID ~= COM_BLAST then
+	if crashable[unitDefID] and (damage>GetUnitHealth(unitID))
+            and weaponDefID ~= COM_BLAST and weaponDefID ~= COM_BLAST2 then
 		if Spring.GetGameSeconds() - totalUnitsTime > 5 then
 			totalUnitsTime = Spring.GetGameSeconds()
 			local totalUnits = #Spring.GetAllUnits()
@@ -70,6 +73,11 @@ function gadget:UnitPreDamaged(unitID, unitDefID, unitTeam, damage, paralyzer, w
 			end
 		end
 		if random() < percentage then
+            -- increase gravity so it crashes faster
+            local moveTypeData = Spring.GetUnitMoveTypeData(unitID)
+            if moveTypeData['myGravity'] then
+                Spring.MoveCtrl.SetAirMoveTypeData(unitID, 'myGravity', moveTypeData['myGravity'] * crashGravityMult)
+            end
 			-- make it crash
 			crashingCount = crashingCount + 1
 			crashing[unitID] = Spring.GetGameFrame() + 300
