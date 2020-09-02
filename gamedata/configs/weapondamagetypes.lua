@@ -105,7 +105,7 @@ local weaponDamageTypes = {
 	armdecom = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", },
 	corbuzz = { ["RapidfireLRPC"] = "plasma", },
 	corrl = { ["Missiles"] = "homing", ["AAMissiles"] = "homing", },
-	corblackhy = { ["HighEnergyLaser"] = "plasma", ["BattleshipCannon"] = "plasma", ["RapidSamMissile"] = "plasma", },
+	corblackhy = { ["HighEnergyLaser"] = "neutron", ["BattleshipCannon"] = "plasma", ["RapidSamMissile"] = "plasma", },
 	corgate = { ["PlasmaRepulsor"] = "none", },
 	corhlt = { ["HighEnergyLaser"] = "hflaser", },
 	armblade = { ["aircannon"] = "cannon", },
