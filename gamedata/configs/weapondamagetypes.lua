@@ -202,7 +202,7 @@ local weaponDamageTypes = {
 	cormine4 = { ["CrawlingbombDummyWeapon"] = "flak", ["MineDetonator"] = "flak", },
 	armemp = { ["EMPMissile"] = "emp", },
 	corpt = { ["Laser"] = "laser", ["Missiles"] = "homing", },
-	corcrus = { ["HighEnergyLaser"] = "cannon", ["L2DeckLaser"] = "laser", ["CruiserDepthCharge"] = "homing", },
+	corcrus = { ["CruiserCannon"] = "cannon", ["L2DeckLaser"] = "laser", ["CruiserDepthCharge"] = "homing", },
 	cortrem = { ["RapidArtillery"] = "plasma", },
 	cordoom = { ["HighEnergyLaser"] = "neutron", ["PlasmaBeam"] = "plasma", ["ATAD"] = "neutron", },
 	armhawk = { ["HawkBeamer"] = "thermo", ["HawkBeamerA2G"] = "homing", },

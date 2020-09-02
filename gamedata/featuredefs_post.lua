@@ -43,7 +43,7 @@ local function ProcessUnitDef(udName, ud)
         if uDef.customparams and uDef.customparams.groupsize then
             groupMult = 1/uDef.customparams.groupsize
         end
-        featuredef.metal = uDef.buildcostmetal * metalFactor * groupMult --buildcostmetal
+        featuredef.metal = uDef.buildcostmetal * metalFactor * groupMult --true buildcostmetal
         featuredef.damage = uDef.maxdamage * damageFactor    --health
         local crushResist = uDef.crushresistance or uDef.mass
         if crushResist then
