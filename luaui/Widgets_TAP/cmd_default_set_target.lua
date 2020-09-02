@@ -1,8 +1,8 @@
 function widget:GetInfo()
 	return {
 	name	= "Set target default",
-	desc	= "replaces default click from attack to set target",
-	author	= "BD",
+	desc	= "replaces default click from attack to set target, snaps within click radius",
+	author	= "BD, Snap by MaDDoX",
 	date	= "-",
 	license	= "WTFPL",
 	layer	= -math.huge,
@@ -33,7 +33,9 @@ local spSendCommmands = Spring.SendCommands
 local spGiveOrderToUnit = Spring.GiveOrderToUnit
 local spGetSelectedUnits = Spring.GetSelectedUnits
 local spGetUnitAllyTeam = Spring.GetUnitAllyTeam
+local spGetUnitsInCylinder = Spring.GetUnitsInCylinder
 local spGetUnitPosition = Spring.GetUnitPosition
+local spGetUnitDefID = Spring.GetUnitDefID
 
 local hotKeys = {}
 local targetSetUnits = {}
@@ -88,26 +90,33 @@ end
 --	return ud and ( ( ud.canMove and ud.speed > 0 and not ud.canFly and ud.canAttack and ud.maxWeaponRange and ud.maxWeaponRange > 0 ) or ud.isFactory )
 --end
 
+local function isBomber(unitID)
+    local uDef = UnitDefs[spGetUnitDefID(unitID)]
+    return uDef.customParams and uDef.customParams.tedclass and uDef.customParams.func == "bomber"
+end
+
 local function AssignSetTarget(targetUID, options)
     if options == nil then
         options = {} end
     for _,unitID in ipairs(spGetSelectedUnits()) do
         spGiveOrderToUnit(unitID, CMD_UNIT_SET_TARGET, { targetUID }, options)
-        targetSetUnits[unitID] = targetUID
+        if not isBomber(unitID) then
+            targetSetUnits[unitID] = targetUID
+        end
     end
 end
 
 function widget:CommandNotify(id, params, options)
-    if (id == CMD_ATTACK) then
+    if id == CMD_ATTACK then
         if #params == 1 then    -- Target one UnitID
             AssignSetTarget(params[1], options)
         else                    -- Targetted ground position
-            --TODO: #SNAP# If enemy unit is within cylinder/radius of clicked position, assign it as target
+            ---#SNAP# If enemy unit is within cylinder/radius of clicked position, assign it as target
             --DebugTable(params)
             local click = { x = params[1], z = params[3] }
             local minSqrDist = 999999999 -- sqrDists usually have 8 digits or more.. :o
             local closestEnemyID = nil
-            local unitsAroundClick = Spring.GetUnitsInCylinder(click.x, click.z, snapRadius)
+            local unitsAroundClick = spGetUnitsInCylinder(click.x, click.z, snapRadius)
             --Spring.Echo("Units nearby found: "..#unitsAroundClick)
             for _,unitID in ipairs(unitsAroundClick) do
                 if spGetUnitAllyTeam(unitID) ~= myAllyTeam then -- It's enemy Unit
@@ -131,12 +140,20 @@ function widget:CommandNotify(id, params, options)
             end
         end
     end
-    if id == CMD_MOVE or id == CMD_FIGHT or id == CMD_STOP then
+    --if id == CMD_MOVE or id == CMD_FIGHT or id == CMD_STOP then
+    --    for unitID,targetID in pairs(targetSetUnits) do
+    --        if IsValidUnit(targetID) then
+    --            --Spring.Echo ("Reassigning: "..unitID.." to target: "..params[1])
+    --            spGiveOrderToUnit(unitID, CMD_UNIT_SET_TARGET, { targetID }, {}) --TODO: Save options above? not sure
+    --        else
+    --            targetSetUnits[unitID] = nil
+    --        end
+    --    end
+    --end
+    if id == CMD_STOP then
         for unitID,targetID in pairs(targetSetUnits) do
-            if IsValidUnit(targetID) then
-                --Spring.Echo ("Reassiging: "..unitID.." to target: "..params[1])
-                spGiveOrderToUnit(unitID, CMD_UNIT_SET_TARGET, { targetID }, {}) --TODO: Save options above? not sure
-            end
+            targetSetUnits[unitID] = nil
+            spGiveOrderToUnit(unitID, CMD_UNIT_CANCEL_TARGET, {  }, {}) --CMD_FIGHT { x, y, z }
         end
     end
 end

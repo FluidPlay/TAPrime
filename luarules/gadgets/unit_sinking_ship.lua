@@ -23,7 +23,7 @@ function gadget:Initialize()
     --- Currently Unused. Could be used to filter out valid FeatureDefIDs for the sink-damping effect
     --for i = 1, #FeatureDefs do
     --    local fdef = FeatureDefs[i]
-    --    if fdef.customParams and fdef.customParams.tedclass and fdef.customParams.tedclass = "ship" then
+    --    if fdef.customParams and fdef.customParams.tedclass and fdef.customParams.tedclass == "ship" then
     --        validFeatureDefID[i] = true
     --    end
     --end
