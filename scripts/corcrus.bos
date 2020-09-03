@@ -3,7 +3,7 @@
 #include "sfxtype.h"
 #include "exptype.h"
 
-piece  base, wake1, wake2, chrgflare, turret, sleeve, barrels,
+piece  base, wake1, wake2, chrgflare, turret, sleeve, barrel1, barrel2,
        foreturret, foregun, foreflare, aftturret, aftgun, aftflare, flare1,
        flare2, ground;
 
@@ -243,14 +243,18 @@ FirePrimary()
 	if( gun_1 )
 	{
 		show flare2;
+		move barrel2 to z-axis [-2.300000] now;
 		sleep 150;
 		hide flare2;
+		move barrel2 to z-axis [0.000000] speed [1.500000];
 	}
 	else
 	{
 		show flare1;
+		move barrel1 to z-axis [-2.300000] now;
 		sleep 150;
 		hide flare1;
+		move barrel1 to z-axis [0.000000] speed [1.500000];
 	}
 	gun_1 = !gun_1;
 }
@@ -282,7 +286,8 @@ Killed(severity, corpsetype)
 		explode sleeve type BITMAPONLY | BITMAP2;
 		explode base type BITMAPONLY | BITMAP3;
 		explode turret type BITMAPONLY | BITMAP2;
-		explode barrels type BITMAPONLY | BITMAP2;
+		explode barrel1 type BITMAPONLY | BITMAP2;
+		explode barrel2 type BITMAPONLY | BITMAP2;		
 		explode foreturret type BITMAPONLY | BITMAP2;
 		explode aftturret type BITMAPONLY | BITMAP1;
 		explode foregun type BITMAPONLY | BITMAP3;
@@ -296,7 +301,8 @@ Killed(severity, corpsetype)
 		corpsetype = 2;
 		explode base type BITMAPONLY | BITMAP3;
 		explode turret type BITMAPONLY | BITMAP2;
-		explode barrels type BITMAPONLY | BITMAP2;
+		explode barrel1 type BITMAPONLY | BITMAP2;
+		explode barrel2 type BITMAPONLY | BITMAP2;
 		explode sleeve type BITMAPONLY | BITMAP3;
 		explode foreturret type SHATTER | EXPLODE_ON_HIT | BITMAP2;
 		explode aftturret type SHATTER | EXPLODE_ON_HIT | BITMAP1;
@@ -311,7 +317,8 @@ Killed(severity, corpsetype)
 		corpsetype = 3;
 		explode base type BITMAPONLY | BITMAP3;
 		explode turret type BITMAPONLY | BITMAP2;
-		explode barrels type BITMAPONLY | BITMAP2;
+		explode barrel1 type BITMAPONLY | BITMAP2;
+		explode barrel2 type BITMAPONLY | BITMAP2;
 		explode sleeve type BITMAPONLY | BITMAP3;
 		explode foreturret type SHATTER | EXPLODE_ON_HIT | BITMAP2;
 		explode aftturret type SHATTER | EXPLODE_ON_HIT | BITMAP1;
@@ -324,7 +331,8 @@ Killed(severity, corpsetype)
 	corpsetype = 3;
 	explode base type BITMAPONLY | BITMAP3;
 	explode turret type BITMAPONLY | BITMAP2;
-	explode barrels type BITMAPONLY | BITMAP2;
+	explode barrel1 type BITMAPONLY | BITMAP2;
+	explode barrel2 type BITMAPONLY | BITMAP2;
 	explode sleeve type BITMAPONLY | BITMAP3;
 	explode foreturret type SHATTER | EXPLODE_ON_HIT | BITMAP2;
 	explode aftturret type SHATTER | EXPLODE_ON_HIT | BITMAP1;

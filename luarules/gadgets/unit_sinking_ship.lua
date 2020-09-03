@@ -9,13 +9,15 @@ function gadget:GetInfo()
     enabled   = true,
   }
 end
+
+---TODO: Enhancement: Make the feature velocity slowdown along time (check plane_freeze as a reference)
      
 if not gadgetHandler:IsSyncedCode() then
   return
 end
 
 local damping = 0.2
-local sinkingMult = 4
+local sinkingMult = 4   -- currently not working, apparently an engine bug
 
 local validFeatureDefID = {}
 

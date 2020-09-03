@@ -24,7 +24,7 @@ VFS.Include("gamedata/taptools.lua")
 
 local reductionFactor = 0.33    -- multiplier of the default line of sight
 local effectDuration = 10 * 30  -- how long, in frames, effect will last. Multiply x 30 to use seconds
-local effectDelay = 0.1 * 30 -- n seconds in frames
+local effectDelay = 0.1 * 30    -- n seconds in frames
 local EffectRadius = 320
 local updateRate = 5
 

@@ -7,6 +7,11 @@
 
 local UDN = UnitDefNames
 local nameSuffix = '_scav'
+local amb_chance_small = 0.3    -- Chance of one or more Ambushers spawning in small outposts
+local amb_chance_mid = 0.5
+local emp_chance = 0.25         -- Chance of one EMP Launcher spawn in mid/large outposts
+local bertha_chance_small = 0.175
+local bertha_chance_mid = 0.4
 
 local function T1TinyOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 110
@@ -197,14 +202,18 @@ end
 
 local function T2SmallOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 270
-    local r = math_random(0,3)
+    local rnd = math_random(0,1) or 0
     if radiusCheck then
         return posradius
     else
-        Spring.GiveOrderToUnit(scav, -(UDN.armamd_scav.id), {posx+(77), posy, posz+(9), 2}, {"shift"})
+        if rnd < bertha_chance_small then
+            Spring.GiveOrderToUnit(scav, -(UDN.armbrtha_scav.id), {posx+(77), posy, posz+(9), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armgate_scav.id), {posx+(-83), posy, posz+(9), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armhlt_scav.id), {posx+(-243), posy, posz+(-55), 2}, {"shift"})
-        Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(125), posy, posz+(-103), 2}, {"shift"})
+        if rnd < amb_chance_small then
+            Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(125), posy, posz+(-103), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armcir_scav.id), {posx+(13), posy, posz+(185), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armcir_scav.id), {posx+(205), posy, posz+(-7), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armcir_scav.id), {posx+(-211), posy, posz+(-7), 2}, {"shift"})
@@ -212,7 +221,9 @@ local function T2SmallOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
         Spring.GiveOrderToUnit(scav, -(UDN.armhlt_scav.id), {posx+(-211), posy, posz+(41), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armcir_scav.id), {posx+(-19), posy, posz+(-183), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armhlt_scav.id), {posx+(253), posy, posz+(9), 2}, {"shift"})
-        Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(-115), posy, posz+(153), 2}, {"shift"})
+        if rnd < amb_chance_small then
+            Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(-115), posy, posz+(153), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armasp_scav.id), {posx+(-115), posy, posz+(-119), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armasp_scav.id), {posx+(141), posy, posz+(121), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armoutpost2_scav.id), {posx+(-2), posy, posz+(7), 0}, {"shift"})
@@ -221,16 +232,25 @@ end
 
 local function T2MediumOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 460
-    --local r = math_random(0,3)
+    local rnd = math_random(0,1) or 0
+    local rnd2 = math_random(0,1.01) or 0
     if radiusCheck then
         return posradius
     else
-        Spring.GiveOrderToUnit(scav, -(UDN.armemp_scav.id), {posx+(19), posy, posz+(78), 2}, {"shift"})
+        if rnd2 < emp_chance then
+            Spring.GiveOrderToUnit(scav, -(UDN.armemp_scav.id), {posx+(19), posy, posz+(78), 2}, {"shift"})
+        elseif rnd2 < (emp_chance * 2) then -- Chance of a Tactical Nuke Launcher being spawned == EMP Launcher
+            Spring.GiveOrderToUnit(scav, -(UDN.cortron_scav.id), {posx+(19), posy, posz+(78), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-29), posy, posz+(-450), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(291), posy, posz+(-66), 3}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-349), posy, posz+(14), 1}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armcir_scav.id), {posx+(35), posy, posz+(398), 2}, {"shift"})
-        Spring.GiveOrderToUnit(scav, -(UDN.armamd_scav.id), {posx+(99), posy, posz+(-2), 2}, {"shift"})
+        if rnd < bertha_chance_mid then
+            Spring.GiveOrderToUnit(scav, -(UDN.armbrtha_scav.id), {posx+(99), posy, posz+(-2), 2}, {"shift"})
+        elseif rnd < (bertha_chance_mid * 2) then    -- Antinuke
+            Spring.GiveOrderToUnit(scav, -(UDN.armamd_scav.id), {posx+(99), posy, posz+(-2), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(3), posy, posz+(-354), 0}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-61), posy, posz+(-386), 3}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(35), posy, posz+(-434), 2}, {"shift"})
@@ -239,7 +259,9 @@ local function T2MediumOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
         Spring.GiveOrderToUnit(scav, -(UDN.armgate_scav.id), {posx+(-61), posy, posz+(-2), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(83), posy, posz+(-370), 1}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armdeva_scav.id), {posx+(43), posy, posz+(-394), 2}, {"shift"})
-        Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(-285), posy, posz+(270), 2}, {"shift"})
+        if rnd < amb_chance_mid then
+            Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(-285), posy, posz+(270), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(83), posy, posz+(382), 1}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-445), posy, posz+(46), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(83), posy, posz+(414), 1}, {"shift"})
@@ -255,7 +277,9 @@ local function T2MediumOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(387), posy, posz+(-66), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-61), posy, posz+(-418), 3}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(323), posy, posz+(78), 0}, {"shift"})
-        Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(275), posy, posz+(-322), 2}, {"shift"})
+        if rnd < amb_chance_mid then
+            Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(275), posy, posz+(-322), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-349), posy, posz+(-18), 1}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armawin_scav.id), {posx+(-133), posy, posz+(230), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armcir_scav.id), {posx+(-13), posy, posz+(-402), 2}, {"shift"})
@@ -305,16 +329,25 @@ end
 
 local function T3MediumOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 180
-    --local r = math_random(0,3)
+    local rnd = math_random(0,1) or 0
+    local rnd2 = math_random(0,1.01) or 0
     if radiusCheck then
         return posradius
     else
-        Spring.GiveOrderToUnit(scav, -(UDN.armemp_scav.id), {posx+(21), posy, posz+(80), 2}, {"shift"})
+        if rnd2 < emp_chance then
+            Spring.GiveOrderToUnit(scav, -(UDN.armemp_scav.id), {posx+(21), posy, posz+(80), 2}, {"shift"})
+        elseif rnd2 < (emp_chance * 2) then -- Chance of a Tactical Nuke Launcher being spawned == EMP Launcher
+            Spring.GiveOrderToUnit(scav, -(UDN.cortron_scav.id), {posx+(21), posy, posz+(80), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-27), posy, posz+(-448), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(293), posy, posz+(-64), 3}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-347), posy, posz+(16), 1}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armcir_scav.id), {posx+(37), posy, posz+(400), 2}, {"shift"})
-        Spring.GiveOrderToUnit(scav, -(UDN.armamd_scav.id), {posx+(101), posy, posz+(0), 2}, {"shift"})
+        if rnd < bertha_chance_mid then
+            Spring.GiveOrderToUnit(scav, -(UDN.armbrtha_scav.id), {posx+(101), posy, posz+(0), 2}, {"shift"})
+        else    -- Antinuke
+            Spring.GiveOrderToUnit(scav, -(UDN.armamd_scav.id), {posx+(101), posy, posz+(0), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(5), posy, posz+(-352), 0}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-59), posy, posz+(-384), 3}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(37), posy, posz+(-432), 2}, {"shift"})
@@ -323,7 +356,9 @@ local function T3MediumOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
         Spring.GiveOrderToUnit(scav, -(UDN.armgate_scav.id), {posx+(-59), posy, posz+(0), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(85), posy, posz+(-368), 1}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armdeva_scav.id), {posx+(45), posy, posz+(-392), 2}, {"shift"})
-        Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(-283), posy, posz+(272), 2}, {"shift"})
+        if rnd < amb_chance_mid then
+            Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(-283), posy, posz+(272), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(85), posy, posz+(384), 1}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-443), posy, posz+(48), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(85), posy, posz+(416), 1}, {"shift"})
@@ -342,7 +377,9 @@ local function T3MediumOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
         Spring.GiveOrderToUnit(scav, -(UDN.corscreamer_scav.id), {posx+(-235), posy, posz+(-320), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armanni_scav.id), {posx+(229), posy, posz+(320), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(325), posy, posz+(80), 0}, {"shift"})
-        Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(277), posy, posz+(-320), 2}, {"shift"})
+        if rnd < amb_chance_mid then
+            Spring.GiveOrderToUnit(scav, -(UDN.armamb_scav.id), {posx+(277), posy, posz+(-320), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-347), posy, posz+(-16), 1}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armawin_scav.id), {posx+(-131), posy, posz+(232), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armcir_scav.id), {posx+(-11), posy, posz+(-400), 2}, {"shift"})
@@ -397,18 +434,26 @@ end
 -- Has a LOL Cannon, and 2 Tactical Nuke Launchers
 local function T3LargeOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 500
-    local r = math_random(0,3)
+    local rnd = math_random(0,1.01) or 0
     if radiusCheck then
         return posradius
     else
-        Spring.GiveOrderToUnit(scav, -(UDN.armemp_scav.id), {posx+(21), posy, posz+(80), 2}, {"shift"})
+        if rnd < emp_chance then
+            Spring.GiveOrderToUnit(scav, -(UDN.armemp_scav.id), {posx+(21), posy, posz+(80), 2}, {"shift"})
+        elseif rnd < (emp_chance * 2) then -- Chance of a Tactical Nuke Launcher being spawned == EMP Launcher
+            Spring.GiveOrderToUnit(scav, -(UDN.cortron_scav.id), {posx+(21), posy, posz+(80), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armafus_scav.id), {posx+(157), posy, posz+(-232), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armvulc_scav.id), {posx+(5), posy, posz+(-112), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-27), posy, posz+(-448), 2}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(293), posy, posz+(-64), 3}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-347), posy, posz+(16), 1}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armcir_scav.id), {posx+(37), posy, posz+(400), 2}, {"shift"})
-        Spring.GiveOrderToUnit(scav, -(UDN.armamd_scav.id), {posx+(101), posy, posz+(0), 2}, {"shift"})
+        if rnd < bertha_chance_mid then
+            Spring.GiveOrderToUnit(scav, -(UDN.armbrtha_scav.id), {posx+(101), posy, posz+(0), 2}, {"shift"})
+        else    -- Antinuke
+            Spring.GiveOrderToUnit(scav, -(UDN.armamd_scav.id), {posx+(101), posy, posz+(0), 2}, {"shift"})
+        end
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(5), posy, posz+(-352), 0}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(-59), posy, posz+(-384), 3}, {"shift"})
         Spring.GiveOrderToUnit(scav, -(UDN.armfort_scav.id), {posx+(37), posy, posz+(-432), 2}, {"shift"})

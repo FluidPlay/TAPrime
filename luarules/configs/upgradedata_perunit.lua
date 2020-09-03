@@ -105,14 +105,14 @@ UnitUpg = {
             action  = 'grenadeupgrade',
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
-            tooltip = 'EMP Grenade upgrade: Enables manual-fire weapon [per unit]'..
-                    GreenStr..'time:5\n'..CyanStr..'metal: 80\n'..YellowStr..'energy: 480',
+            tooltip = 'EMP Grenade upgrade: Enables manual-fire weapon [per unit]\n'..
+                    GreenStr..'time:5\n'..CyanStr..'metal: 50\n'..YellowStr..'energy: 480',
             texture = 'luaui/images/upgrades/techempbomb.dds',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
         },
         prereq = "Tech",
-        metalCost = 80,
+        metalCost = 50,
         energyCost = 480,     --6x metalCost
         upgradeTime = 5 * 30, --5 seconds, in frames
         type = "perunit",

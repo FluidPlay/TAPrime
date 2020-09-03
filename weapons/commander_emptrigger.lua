@@ -1,3 +1,4 @@
+
 return {
     --- Commander's Explosion EMP is fired by unit_commander_blast.lua, for all comm levels
 	commander_emptrigger = {
