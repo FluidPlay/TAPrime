@@ -12,6 +12,7 @@ local amb_chance_mid = 0.5
 local emp_chance = 0.25         -- Chance of one EMP Launcher spawn in mid/large outposts
 local bertha_chance_small = 0.175
 local bertha_chance_mid = 0.4
+local rand = math.random
 
 local function T1TinyOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 110
@@ -29,8 +30,8 @@ local function T1TinyOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
 end
 
 local function T1SmallOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
-local posradius = 260
-local r = math_random(0,3)
+    local posradius = 260
+    --local r = math_random(0,3)
 	if radiusCheck then
 		return posradius
 	else
@@ -91,7 +92,7 @@ end
 
 local function T1MediumOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 400
-    local r = math_random(0,3)
+    --local r = math_random(0,3)
     if radiusCheck then
         return posradius
     else
@@ -202,7 +203,7 @@ end
 
 local function T2SmallOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 270
-    local rnd = math_random(0,1) or 0
+    local rnd = rand() or 0
     if radiusCheck then
         return posradius
     else
@@ -232,8 +233,8 @@ end
 
 local function T2MediumOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 460
-    local rnd = math_random(0,1) or 0
-    local rnd2 = math_random(0,1.01) or 0
+    local rnd = rand() or 0
+    local rnd2 = rand() or 0
     if radiusCheck then
         return posradius
     else
@@ -329,8 +330,8 @@ end
 
 local function T3MediumOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 180
-    local rnd = math_random(0,1) or 0
-    local rnd2 = math_random(0,1.01) or 0
+    local rnd = rand() or 0
+    local rnd2 = rand() or 0
     if radiusCheck then
         return posradius
     else
@@ -434,7 +435,7 @@ end
 -- Has a LOL Cannon, and 2 Tactical Nuke Launchers
 local function T3LargeOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     local posradius = 500
-    local rnd = math_random(0,1.01) or 0
+    local rnd = rand() or 0
     if radiusCheck then
         return posradius
     else
@@ -560,8 +561,8 @@ local function RandomOutpost(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
     if radiusCheck then
         return posradius
     else
-        local r = math_random(0,1)
-        if r == 0 then
+        local rnd = rand() or 0
+        if rnd < 0.5 then
             Spring.GiveOrderToUnit(scav, -UDN.coroutpost_scav.id, {posx+(math_random(-96,96)), posy, posz+(math_random(-96,96)), 0}, {"shift"})
         else
             Spring.GiveOrderToUnit(scav, -UDN.armoutpost_scav.id, {posx+(math_random(-96,96)), posy, posz+(math_random(-96,96)), 0}, {"shift"})
@@ -574,12 +575,13 @@ table.insert(ScavengerConstructorBlueprintsT1, RandomOutpost)
 --Add random wind generators to T0 & T1 constructor blueprints
 
 local function Windfarm(scav, posx, posy, posz, GaiaTeamID, radiusCheck)
-local posradius = 96
-local r = math_random(0,3)
+    local posradius = 96
+    local rnd = rand() or 0
+
 	if radiusCheck then
 		return posradius
 	else
-		if r == 0 then
+		if rnd < 0.25 then
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(-48), posy, posz+(0), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(0), posy, posz+(0), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(96), posy, posz+(0), 1}, {"shift"})
@@ -595,7 +597,7 @@ local r = math_random(0,3)
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(0), posy, posz+(-80), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(-96), posy, posz+(0), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(-48), posy, posz+(-80), 1}, {"shift"})
-		elseif r == 1 then
+		elseif rnd < 0.5 then
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(-80), posy, posz+(48), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(0), posy, posz+(0), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(80), posy, posz+(-96), 1}, {"shift"})
@@ -611,7 +613,7 @@ local r = math_random(0,3)
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(-80), posy, posz+(0), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(80), posy, posz+(48), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.armwin_scav.id), {posx+(-80), posy, posz+(-96), 1}, {"shift"})
-		elseif r == 2 then
+        elseif rnd < 0.75 then
 			Spring.GiveOrderToUnit(scav, -(UDN.corwin_scav.id), {posx+(48), posy, posz+(0), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.corwin_scav.id), {posx+(0), posy, posz+(-80), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.corwin_scav.id), {posx+(-48), posy, posz+(-80), 1}, {"shift"})
@@ -627,7 +629,7 @@ local r = math_random(0,3)
 			Spring.GiveOrderToUnit(scav, -(UDN.corwin_scav.id), {posx+(-96), posy, posz+(0), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.corwin_scav.id), {posx+(-48), posy, posz+(80), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.corwin_scav.id), {posx+(96), posy, posz+(-80), 1}, {"shift"})
-		else
+		else    -- 0.75 ~ 1
 			Spring.GiveOrderToUnit(scav, -(UDN.corwin_scav.id), {posx+(80), posy, posz+(0), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.corwin_scav.id), {posx+(0), posy, posz+(-48), 1}, {"shift"})
 			Spring.GiveOrderToUnit(scav, -(UDN.corwin_scav.id), {posx+(0), posy, posz+(48), 1}, {"shift"})
