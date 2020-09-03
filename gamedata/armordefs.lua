@@ -42,7 +42,7 @@ local armorDefs = {
 		"cordrag","corestor","coreyes","corfatf","corfdrag","corfhp","corfmine3","corfmkr","corfort","corfrad","corgant","corgantuw","corgeo","corhp",
 		"corjamt","corlab","cormakr","cormexp","cormine1","cormine2","cormine3","cormine4","cormmkr","cormstor","cornanotc","corrad","corsd",
 		"corshroud","corsonar","corsy","cortarg","cortron","coruwadves","coruwadvms","coruwes","coruwfus","coruwmmm","coruwms",
-		"corvp","corwin","csubpen","tllmedfusion","armsonar",},
+		"corvp","corwin","csubpen","tllmedfusion","armsonar","scavengerdroppodbeacon_scav"},
 
     --++++==== Ships
 	lightship = {"corpt", "corcrus", "armpt", "armcrus",},
@@ -59,6 +59,15 @@ local armorDefs = {
 	["else"] = {},
 }
 
+-- Copy regular unit armor def to its Scavengers counterpart
+for categoryName, categoryUnits in pairs(armorDefs) do
+    for _, thisUdID in pairs(categoryUnits) do
+        if not string.find(thisUdID, '_scav') then
+            table.insert(armorDefs[categoryName], thisUdID.."_scav")
+            --Spring.Echo("Added Scav Unit: ", thisUdID, " to armorclass: "..categoryName)
+        end
+    end
+end
 
 --[[
 -- -- put any unit that doesn't go in any other category in light armor

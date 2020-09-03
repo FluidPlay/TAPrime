@@ -1,5 +1,5 @@
--- BA does not use unitdefs_post, see alldefs_post.lua 
--- basically, DONT TOUCH this! 
+-- TAP uses unitdefs_post and alldefs_post.lua
+-- DONT TOUCH this if you're not sure what you're doing
 
 --
 --if Spring.GetModOptions and (tonumber(Spring.GetModOptions().barmodels) or 0) ~= 0 then
@@ -66,6 +66,15 @@ end
 --        --for name,ud in pairs(barUnitDefs) do
 --        --    UnitDefs[name] = ud
 --        --end
+--    end
+--end
+--
+--for categoryName, categoryUnits in pairs(ArmorDefs) do
+--    for _, thisUdID in pairs(categoryUnits) do
+--        if not string.find(thisUdID, '_scav') then
+--            table.insert(ArmorDefs.categoryName, thisUdID+"_scav")
+--            Spring.Echo("Added Scav Unit: ", thisUdID, " to armorclass: "..categoryName)
+--        end
 --    end
 --end
 
