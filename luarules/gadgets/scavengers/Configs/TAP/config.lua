@@ -82,8 +82,10 @@ if scavengersAIEnabled then
 		FinalBossUnit						= true,
 		BossWaveTimeLeft					= 180, --900,
 		aircraftchance 						= 8, --6,9 [M] -- higher number = lower chance
-		globalscoreperoneunit 				= 4500,
-		spawnchance							= 20,
+        --- globalscoreperoneunit: Let's say scavs are on 3000 score, and score per unit is 1000,
+        -- it will spawn 3 units if all other multipliers are 1 but there are multipliers for land/sea/air and multipliers for tiers
+		globalscoreperoneunit 				= 2000, --4500,
+		spawnchance							= 120, -- 20; lower = more
 		beaconspawnchance					= 60,
 		minimumspawnbeacons					= 3,
 		landmultiplier 						= 0.75,

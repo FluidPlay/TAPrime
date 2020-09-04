@@ -9,6 +9,9 @@ local rana = math.random(3,1000)
 local ranb = math.random(2,a)
 local ranc = math.random(1,b)
 
+local maxdamagemult = 1 --0.5
+local maxvelocitymult = 1 --0.9
+
 function scav_Udef_Post(name, uDef)
 	if not uDef.customparams then
 		uDef.customparams = {}
@@ -119,12 +122,12 @@ function scav_Udef_Post(name, uDef)
 		uDef.metalmake = math.ceil(uDef.metalmake*0.5)
 	end
 
-	if uDef.maxdamage then
-		uDef.maxdamage = math.ceil(uDef.maxdamage*0.5)
+    if uDef.maxdamage then
+		uDef.maxdamage = math.ceil(uDef.maxdamage*maxdamagemult)
 	end
 
 	if uDef.maxvelocity then
-		uDef.maxvelocity = uDef.maxvelocity*0.9
+		uDef.maxvelocity = uDef.maxvelocity * maxvelocitymult
 	end
 
 	if uDef.radardistancejam then
