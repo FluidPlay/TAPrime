@@ -85,7 +85,7 @@ if scavengersAIEnabled then
         --- globalscoreperoneunit: Let's say scavs are on 3000 score, and score per unit is 1000,
         -- it will spawn 3 units if all other multipliers are 1 but there are multipliers for land/sea/air and multipliers for tiers
 		globalscoreperoneunit 				= 2000, --4500,
-		spawnchance							= 120, -- 20; lower = more
+		spawnchance							= 70, -- 20, 120; lower = more
 		beaconspawnchance					= 60,
 		minimumspawnbeacons					= 3,
 		landmultiplier 						= 0.75,
