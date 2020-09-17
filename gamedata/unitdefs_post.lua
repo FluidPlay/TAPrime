@@ -95,6 +95,7 @@ local scavengerUnitDefs = {}
 		 end
 	 end
  end
+ 
  for name,ud in pairs(scavengerUnitDefs) do
 	 UnitDefs[name] = ud
  end
