@@ -18,9 +18,9 @@ function scav_Udef_Post(name, uDef)
 	end
 
 	-- add unit category
-	if uDef.category then
-		uDef.category = uDef.category..' SCAVENGER'
-	end
+	-- if uDef.category then
+		-- uDef.category = uDef.category..' SCAVENGER'
+	-- end
 
 	-- add model vertex displacement
 
