@@ -18,7 +18,7 @@ end
 customDefs.corcom = {		
 	blocking = false,
 	buildoptions = scavUnit,
-	explodeas = "scavcomexplosion",
+	explodeas = "mediumScavengerExplosionGeneric",
 	footprintx = 4,
 	footprintz = 4,
 	hidedamage = true,
@@ -54,7 +54,7 @@ customDefs.corcom = {
 customDefs.armcom = {		
 	blocking = false,
 	buildoptions = scavUnit,
-	explodeas = "scavcomexplosion",
+	explodeas = "mediumScavengerExplosionGeneric",
 	footprintx = 4,
 	footprintz = 4,
 	hidedamage = true,

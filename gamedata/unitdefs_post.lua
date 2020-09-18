@@ -82,39 +82,59 @@ end
 
 
 -- create scavenger units
+for name,ud in pairs(UnitDefs) do
+	UnitDef_Post(name,ud)
+	if ud.weapondefs then
+		for wname,wd in pairs(ud.weapondefs) do
+			WeaponDef_Post(wname,wd)
+		end
+	end 
+  
+	--ud.acceleration = 0.75
+	--ud.turnrate = 800
+  
+	if SaveDefsToCustomParams then
+		SaveDefToCustomParams("UnitDefs", name, ud)    
+	end
+end
+
 VFS.Include("gamedata/scavengers/unitdef_changes.lua")
 local scavengerUnitDefs = {}
 
- for name,uDef in pairs(UnitDefs) do
-	 --local faction = string.sub(name, 1, 3)
-	 if not string.find(name, '_scav') then
-		 if customDefs[name] ~= nil then
-			 scavengerUnitDefs[name..'_scav'] = tableMergeSpecial(deepcopy(uDef), deepcopy(customDefs[name]))
-		 else
-			 scavengerUnitDefs[name..'_scav'] = deepcopy(uDef)
-		 end
-	 end
- end
- 
- for name,ud in pairs(scavengerUnitDefs) do
-	 UnitDefs[name] = ud
- end
-
-for name,ud in pairs(UnitDefs) do
-  UnitDef_Post(name,ud)
-  if ud.weapondefs then
-	for wname,wd in pairs(ud.weapondefs) do
-	  WeaponDef_Post(wname,wd)
+for name,uDef in pairs(UnitDefs) do
+	--local faction = string.sub(name, 1, 3)
+	if not string.find(name, '_scav') then
+		if customDefs[name] ~= nil then
+			scavengerUnitDefs[name..'_scav'] = tableMergeSpecial(deepcopy(uDef), deepcopy(customDefs[name]))
+		else
+			scavengerUnitDefs[name..'_scav'] = deepcopy(uDef)
+		end
 	end
-  end 
-  
-  --ud.acceleration = 0.75
-  --ud.turnrate = 800
-  
-  if SaveDefsToCustomParams then
-      SaveDefToCustomParams("UnitDefs", name, ud)    
-  end
 end
+ 
+for name,uDef in pairs(scavengerUnitDefs) do
+	UnitDefs[name] = uDef
+end
+
+VFS.Include("gamedata/scavengers/unitdef_post.lua")
+VFS.Include("gamedata/scavengers/weapondef_post.lua")
+for name,uDef in pairs(UnitDefs) do
+	if string.find(name, '_scav') then
+		uDef = scav_Udef_Post(name, uDef)
+		if uDef.weapondefs then
+			for wname,wDef in pairs(uDef.weapondefs) do
+				wDef = scav_Wdef_Post(name, wDef)
+			end
+		end 
+	end
+	if SaveDefsToCustomParams then
+		SaveDefToCustomParams("UnitDefs", name, uDef)    
+	end
+end
+
+
+
+
 
 ---- TAPrime ::
 -- We use unitdefs_data.lua as a lua table, generated from the units gsheet, which may be easily replace-able anytime
