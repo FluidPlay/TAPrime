@@ -26,53 +26,53 @@ function scav_Udef_Post(name, uDef)
 
 	--local udefVertDisp = uDef.customparams.vertdisp1 or 0
 	--uDef.customparams.vertdisp = 2.0 * udefVertDisp
-	uDef.customparams.healthlookmod = 0.40
+	-- uDef.customparams.healthlookmod = 0.40
 
 	-- make barrelshot purple
-	if uDef.customparams.firingceg then
-		if string.find(uDef.customparams.firingceg, 'barrelshot') then
-			uDef.customparams.firingceg = uDef.customparams.firingceg..'-purple'
-		end
-	end
-	if uDef.sfxtypes then
-		-- make barrelshot purple
-		if uDef.sfxtypes.explosiongenerators then
-			for k,v in pairs(uDef.sfxtypes.explosiongenerators) do
-				if string.find(v, 'barrelshot') then
-					uDef.sfxtypes.explosiongenerators[k] = v..'-purple'
-				end
-			end
-		end
-		-- make deathcegs purple
-		if uDef.sfxtypes.pieceexplosiongenerators then
-			for k,v in pairs(uDef.sfxtypes.pieceexplosiongenerators) do
-				if string.find(v, 'deathceg') then
-					uDef.sfxtypes.pieceexplosiongenerators[k] = v..'-purple'
-				end
-			end
-		end
-	end
-	-- make unit explosion purple
-	if uDef.explodeas then
-		if string.find(string.lower(uDef.explodeas), 'explosiongeneric') or
-			string.find(string.lower(uDef.explodeas), 'buildingexplosiongeneric') or
-			string.find(string.lower(uDef.explodeas), 'explosiont3') or
-			string.find(string.lower(uDef.explodeas), 'bantha') or
-			string.find(string.lower(uDef.explodeas), 'lootbox')
-		then
-			uDef.explodeas = uDef.explodeas..'-purple'
-		end
-	end
-	if uDef.selfdestructas then
-		if string.find(string.lower(uDef.selfdestructas), 'explosiongeneric') or
-			string.find(string.lower(uDef.selfdestructas), 'buildingexplosiongeneric') or
-		 	string.find(string.lower(uDef.selfdestructas), 'explosiont3') or
-			string.find(string.lower(uDef.selfdestructas), 'bantha') or
-			string.find(string.lower(uDef.selfdestructas), 'lootbox')
-		then
-			uDef.selfdestructas = uDef.selfdestructas..'-purple'
-		end
-	end
+	-- if uDef.customparams.firingceg then
+		-- if string.find(uDef.customparams.firingceg, 'barrelshot') then
+			-- uDef.customparams.firingceg = uDef.customparams.firingceg..'-purple'
+		-- end
+	-- end
+	-- if uDef.sfxtypes then
+		-- -- make barrelshot purple
+		-- if uDef.sfxtypes.explosiongenerators then
+			-- for k,v in pairs(uDef.sfxtypes.explosiongenerators) do
+				-- if string.find(v, 'barrelshot') then
+					-- uDef.sfxtypes.explosiongenerators[k] = v..'-purple'
+				-- end
+			-- end
+		-- end
+		-- -- make deathcegs purple
+		-- if uDef.sfxtypes.pieceexplosiongenerators then
+			-- for k,v in pairs(uDef.sfxtypes.pieceexplosiongenerators) do
+				-- if string.find(v, 'deathceg') then
+					-- uDef.sfxtypes.pieceexplosiongenerators[k] = v..'-purple'
+				-- end
+			-- end
+		-- end
+	-- end
+	-- -- make unit explosion purple
+	-- if uDef.explodeas then
+		-- if string.find(string.lower(uDef.explodeas), 'explosiongeneric') or
+			-- string.find(string.lower(uDef.explodeas), 'buildingexplosiongeneric') or
+			-- string.find(string.lower(uDef.explodeas), 'explosiont3') or
+			-- string.find(string.lower(uDef.explodeas), 'bantha') or
+			-- string.find(string.lower(uDef.explodeas), 'lootbox')
+		-- then
+			-- uDef.explodeas = uDef.explodeas..'-purple'
+		-- end
+	-- end
+	-- if uDef.selfdestructas then
+		-- if string.find(string.lower(uDef.selfdestructas), 'explosiongeneric') or
+			-- string.find(string.lower(uDef.selfdestructas), 'buildingexplosiongeneric') or
+		 	-- string.find(string.lower(uDef.selfdestructas), 'explosiont3') or
+			-- string.find(string.lower(uDef.selfdestructas), 'bantha') or
+			-- string.find(string.lower(uDef.selfdestructas), 'lootbox')
+		-- then
+			-- uDef.selfdestructas = uDef.selfdestructas..'-purple'
+		-- end
+	-- end
 
 	-- replace buillists with _scav units
 	if uDef.buildoptions then
@@ -109,19 +109,19 @@ function scav_Udef_Post(name, uDef)
 	end
 
 	if uDef.buildcostenergy then
-		uDef.buildcostenergy = math.ceil(uDef.buildcostenergy*0.5)
+		uDef.buildcostenergy = math.ceil(uDef.buildcostenergy*maxdamagemult)
 	end
 
 	if uDef.buildcostmetal then
-		uDef.buildcostmetal = math.ceil(uDef.buildcostmetal*0.5)
+		uDef.buildcostmetal = math.ceil(uDef.buildcostmetal*maxdamagemult)
 	end
 
 	if uDef.energymake then
-		uDef.energymake = math.ceil(uDef.energymake*0.5)
+		uDef.energymake = math.ceil(uDef.energymake*maxdamagemult)
 	end
 
 	if uDef.metalmake then
-		uDef.metalmake = math.ceil(uDef.metalmake*0.5)
+		uDef.metalmake = math.ceil(uDef.metalmake*maxdamagemult)
 	end
 
     if uDef.maxdamage then
@@ -137,15 +137,15 @@ function scav_Udef_Post(name, uDef)
 	end
 
 	if uDef.maxdamage then
-		uDef.autoheal = math.ceil(math.sqrt(uDef.maxdamage/60))
-		uDef.idleautoheal = math.ceil(math.sqrt(uDef.maxdamage/60))
+		uDef.autoheal = math.ceil(math.sqrt(uDef.maxdamage*0.1))
+		uDef.idleautoheal = math.ceil(math.sqrt(uDef.maxdamage*0.1))
 	else
 		uDef.autoheal = 3
 		uDef.idleautoheal = 3
 	end
 
 	if uDef.turnrate then
-		uDef.turnrate = uDef.turnrate*0.8
+		uDef.turnrate = uDef.turnrate*maxvelocitymult
 	end
 
 	if uDef.turninplaceanglelimit then
