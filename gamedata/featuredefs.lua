@@ -46,7 +46,7 @@ end
 --  Load the TDF featuredef files
 --
 
-local tdfFiles = RecursiveFileSearch('features/', '*.tdf') 
+local tdfFiles = RecursiveFileSearch('features/', '*.tdf')
 
 for _, filename in ipairs(tdfFiles) do
   local fds, err = TDF.Parse(filename)
@@ -86,7 +86,7 @@ for _, filename in ipairs(luaFiles) do
         featureDefs[fdName] = fd
       end
     end
-  end  
+  end
 end
 
 
@@ -95,7 +95,7 @@ end
 --
 --  Run a post-processing script if one exists
 --
-
+--
 if (VFS.FileExists(postProcFile)) then
   Shared = shared  -- make it global
   FeatureDefs = featureDefs  -- make it global

@@ -118,6 +118,7 @@ end
 
 VFS.Include("gamedata/scavengers/unitdef_post.lua")
 VFS.Include("gamedata/scavengers/weapondef_post.lua")
+
 for name,uDef in pairs(UnitDefs) do
 	if string.find(name, '_scav') then
 		uDef = scav_Udef_Post(name, uDef)

@@ -63,15 +63,16 @@ end
 
 -- process unitdefs
 function UnitDef_Post(name, uDef)
+    --Spring.Echo("uDef name being processed: "..name)
+    -- TODO: Below is not working, move elsewhere
 	if string.find(name, '_scav') then
-		local scavnamelenght = string.len(name)
-		local scavname = string.sub(name, 1, scavnamelenght-5)
+		local scavnamelength = string.len(name)
+		local scavname = string.sub(name, 1, scavnamelength -5)
 		ApplyUnitDefs_Data(scavname, uDef)
-	-- Any post processing after unitdefs_data.lua is applied should come after this
+	    -- Any post processing after unitdefs_data.lua is applied should come after this
 		ApplyGroupCosts(scavname, uDef)
 	else
 		ApplyUnitDefs_Data(name, uDef)
-	-- Any post processing after unitdefs_data.lua is applied should come after this
 		ApplyGroupCosts(name, uDef)
 	end
 	-- [deprecated, now done straight in ssheet] Add reverse move to units with customDef allowreversemove defined as true
@@ -86,15 +87,6 @@ function UnitDef_Post(name, uDef)
     if uDef.canfly then
         uDef.crashdrag = 0.012
     end
-    --if uDef.maxreversevelocity ~= nil then
-        --Spring.Echo("Found reverse velocity "..tonumber(uDef.maxreversevelocity).." on unit "..name)
-    --end
-	
-	-- scavs - keep on the bottom
-	-- if string.find(name, '_scav') then
-		-- VFS.Include("gamedata/scavengers/unitdef_post.lua")
-		-- uDef = scav_Udef_Post(name, uDef)
-	-- end
 end
 
 --These parameter before/after combinations should not allow updating the uDef:

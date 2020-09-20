@@ -21,17 +21,20 @@ local function isstring(x) return (type(x) == 'string')  end
 
 VFS.Include("gamedata/taptools.lua")
 
+-- Process the unitDefs
+local UnitDefs = DEFS.unitDefs
+
 --------------------------------------------------------------------------------
 
-local function ProcessUnitDef(udName, ud)
+local function ProcessUnitDef(uDefID, uDef)
 
-  local featuredefs = ud.featuredefs
-  if not istable(featuredefs) then
+  local unitFeatureDefs = uDef.featuredefs
+  if not istable(unitFeatureDefs) then
     return
   end
 
   -- add this unitDef's featureDefs
-  for id, featuredef in pairs(featuredefs) do
+  for featID, featureData in pairs(unitFeatureDefs) do
     -- Automatically set metal and resistance of this featuredef, according to its unitdef info
     local function calculateMetalAndDamage(id, featuredef, uDef)
         local metalFactor, damageFactor, crushresistFactor, groupMult = 1, 1, 1, 1
@@ -53,34 +56,51 @@ local function ProcessUnitDef(udName, ud)
         return featuredef
     end
 
-    if (isstring(id) and istable(featuredef)) then
-      if ud.buildcostmetal and ud.maxdamage then
-        featuredef = calculateMetalAndDamage(id, featuredef, ud) end
+    if (isstring(featID) and istable(featureData)) then
+      if uDef.buildcostmetal and uDef.maxdamage then
+        featureData = calculateMetalAndDamage(featID, featureData, uDef) end
       -- Make all unit's featureDefs 'unpushable'
-      featuredef.mass = 999999
-      local fullName = udName .. '_' .. id
-      FeatureDefs[fullName] = featuredef
+      featureData.mass = 99999
+      Spring.Echo("Fullname: uDefID - ".. uDefID .." id - ".. featID)
+      local fullName = uDefID .. '_' .. featID
+
+        --- This is working / not working. The final scav UnitDef is somehow still pointing to the original featureDef
+        if string.find(uDefID, '_scav') then
+            Spring.Echo ("Processing "..uDefID)
+            if featID == "dead" and featureData.description then
+                Spring.Echo ("Found dead")
+                featureData.description = "Scavenger "..featureData.description
+                featureData.resurrectable = 0
+            end
+            if featID == "heap" and featureData.description then
+                featureData.description = "Scavenger "..featureData.description
+            end
+        end
+
+      FeatureDefs[fullName] = featureData
+      UnitDefs[uDefID].featuredefs[featID] = featureData
     end
   end
 
+    --TODO: Temporarily commented out
   -- FeatureDead name changes (featureName of the feature to spawn when this feature is destroyed)
-  for id, featuredef in pairs(featuredefs) do
-    if (isstring(id) and istable(featuredef)) then
-      if (isstring(featuredef.featuredead)) then
-        local fullName = udName .. '_' .. featuredef.featuredead:lower()
-        if (FeatureDefs[fullName]) then
-          featuredef.featuredead = fullName
-        end
-      end
-    end
-  end
+  --for id, featuredef in pairs(unitFeatureDefs) do
+  --  if (isstring(id) and istable(featuredef)) then
+  --    if (isstring(featuredef.featuredead)) then
+  --      local fullName = uDefID .. '_' .. featuredef.featuredead:lower()
+  --      if (FeatureDefs[fullName]) then
+  --        featuredef.featuredead = fullName
+  --      end
+  --    end
+  --  end
+  --end
 
   -- convert the unit corpse name
-  if (isstring(ud.corpse)) then
-    local fullName = udName .. '_' .. ud.corpse:lower()
+  if (isstring(uDef.corpse)) then
+    local fullName = uDefID .. '_' .. uDef.corpse:lower()
     local fd = FeatureDefs[fullName]
     if (fd) then
-      ud.corpse = fullName
+      uDef.corpse = fullName
     end
   end
   
@@ -105,12 +125,9 @@ end
 
 --------------------------------------------------------------------------------
 
--- Process the unitDefs
-local UnitDefs = DEFS.unitDefs
-
-for udName, ud in pairs(UnitDefs) do
-  if (isstring(udName) and istable(ud)) then
-    ProcessUnitDef(udName, ud)
+for uDefID, uDef in pairs(UnitDefs) do
+  if (isstring(uDefID) and istable(uDef)) then
+    ProcessUnitDef(uDefID, uDef)
   end
 end
 

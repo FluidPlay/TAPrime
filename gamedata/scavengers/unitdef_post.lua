@@ -1,4 +1,4 @@
--- this file gets included in alldefs_post.lua
+--- This file is called by unitdefs.lua
 
 local scavUnit = {}
 for name,uDef in pairs(UnitDefs) do
@@ -86,6 +86,9 @@ function scav_Udef_Post(name, uDef)
 	-- add Scavenger name prefix to wrecks
 	if uDef.featuredefs then
 		if uDef.featuredefs.dead then
+            --if uDef.featuredefs.dead.description == "Commander Wreckage" then
+            --    Spring.Echo "Found scav commander Wreckage"
+            --end
 			if uDef.featuredefs.dead.description then
 				uDef.featuredefs.dead.description = "Scavenger "..uDef.featuredefs.dead.description
 			end
@@ -164,18 +167,6 @@ function scav_Udef_Post(name, uDef)
 			end
 		end
 	end
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 	--[[

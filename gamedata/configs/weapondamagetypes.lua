@@ -58,7 +58,7 @@ local weaponDamageTypes = {
 	corshred = { ["FlakCannon"] = "flak", ["FlakAACannon"] = "flak", },
 	armhlt = { ["HighEnergyLaser"] = "hflaser", },
 	armfido = { ["GaussCannon"] = "siege", ["BallisticCannon"] = "siege", },
-	armpw = { ["peewee"] = "bullet", ["grenade"] = "hflaser",},
+	armpw = { ["peewee"] = "bullet", ["grenade"] = "hflaser", ["empexplosion"]="emp",},
     armmark = { ["smokebomb"] = "hflaser",},
 	armmart = { ["PlasmaCannon"] = "siege", },
 	coramph = { ["HighEnergyLaser"] = "laser", ["Torpedo"] = "rocket", },
