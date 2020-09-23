@@ -11,11 +11,11 @@ local damageTypes = {
 
 	cannon={"armcrus","armfflak","armflak","armblade","armmav","armroy","corcrus","corraid","corroy","corenaa","corflak","armst","armanac","armcroc","armlun","armpincer","corparrow","corseal","corsnap","corsok","armbull","armstump","corgol","correap","corgarp"},
 
-	bullet={"armkam","armsaber","corcut","corfink","corveng","armpw","corak","armpt","corpt","corsub","armflash","armemp","armspid",},
+	bullet={"armkam","armsaber","corcut","corfink","corveng","armpw","armpt","corpt","corsub","armflash","armemp","armspid",},
 
 	rocket={"armfig","armpship","corpship","armlance","armmerl","armsb","corcrw","corsb","cortitan","armseap","corape","corseap","corvipe","armtl","corptl","cortl","armclaw","armdl","armpb","corerad","cordl","armah","corcat","armrock","armjeth","coraak","corcrash","armaak","corstorm","armbanth","corbuzz","armmship","cormship","armptl","armaas","corbow","armsptk","corfrt","packo","armsub","corssub","tawf009","cormh","armmh","corah","armfrt","madsam",},
 
-	laser={"armfast","armwar","corfav","armsubk","corshark","armjanus","corgator",},
+	laser={"armfast","armwar","corfav","armsubk","corshark","corak","armjanus","corgator",},
 
 	hflaser={"armllt","corllt","armhlt","corhlt","corexp","corhllt","armfhlt","corfhlt",},
 
@@ -37,7 +37,7 @@ local damageTypes = {
 
 	siege={"cormort","shiva","armfido","corkrog","armbrtha","corint","corvroc","tawf013","armmart","cormart","corwolv","tawf11",},
 
-	omni={"armshock","corjugg","armamd","corfmd","armcarry","corcarry","armscab","cormabm","armsd","corsd","armcom","armcom2","armcom3","armdecom","corcom","corcom2","corcom3","cordecom","meteor","armjuno","armjamt","armveil","corjuno","corjamt","corshroud","armfhp","armhp","corfhp","corhp","armsy","asubpen","armaap","armalab","armap","armasy","armavp","armlab","armshltx","armshltxuw","armvp","coraap","coralab","corap","corasy","coravp","corgant","corgantuw","corlab","corsy","corvp","csubpen","armspy","armfark","armaser","armvulc","armfmine3","armmine1","armmine2","armmine3","corfmine3","cormine1","cormine2","cormine3","cormine4","armvader","corroach","corthovr","armthovr","armintr","armtship","cortship","coreter","corfgate","corgate","armfgate","armgate",
+	omni={"armshock","corjugg","armamd","corfmd","armcarry","corcarry","armscab","cormabm","armsd","corsd","armcom","armcom1","armcom2","armcom3","armdecom","corcom","corcom1","corcom2","corcom3","cordecom","meteor","armjuno","armjamt","armveil","corjuno","corjamt","corshroud","armfhp","armhp","corfhp","corhp","armsy","asubpen","armaap","armalab","armap","armasy","armavp","armlab","armshltx","armshltxuw","armvp","coraap","coralab","corap","corasy","coravp","corgant","corgantuw","corlab","corsy","corvp","csubpen","armspy","armfark","armaser","armvulc","armfmine3","armmine1","armmine2","armmine3","corfmine3","cormine1","cormine2","cormine3","cormine4","armvader","corroach","corthovr","armthovr","armintr","armtship","cortship","coreter","corfgate","corgate","armfgate","armgate",
     "meteor",},
 
 	nuke={"cortron","armliche","corsilo","armsilo",},

@@ -37,13 +37,27 @@ local COM_BLAST = WeaponDefNames['commanderexplosion'].id
 local COM_BLAST2 = WeaponDefNames['commanderexplosion2'].id
 
 local DGUN = {
-	[WeaponDefNames['armcom_disintegrator'].id] = true,
-	[WeaponDefNames['corcom_disintegrator'].id] = true,
+	[WeaponDefNames['armcom1_disintegrator'].id] = true,
+	[WeaponDefNames['corcom1_disintegrator'].id] = true,
+    [WeaponDefNames['armcom2_disintegrator'].id] = true,
+    [WeaponDefNames['corcom2_disintegrator'].id] = true,
+    [WeaponDefNames['armcom3_disintegrator'].id] = true,
+    [WeaponDefNames['corcom3_disintegrator'].id] = true,
+    [WeaponDefNames['armcom4_disintegrator'].id] = true,
+    [WeaponDefNames['corcom4_disintegrator'].id] = true,
 }
 
 local COMMANDER = {
   [UnitDefNames["corcom"].id] = true,
   [UnitDefNames["armcom"].id] = true,
+  [UnitDefNames["corcom1"].id] = true,
+  [UnitDefNames["armcom1"].id] = true,
+  [UnitDefNames["corcom2"].id] = true,
+  [UnitDefNames["armcom2"].id] = true,
+  [UnitDefNames["corcom3"].id] = true,
+  [UnitDefNames["armcom3"].id] = true,
+  [UnitDefNames["corcom4"].id] = true,
+  [UnitDefNames["armcom4"].id] = true,
 }
 
 local immuneDgunList = {}
@@ -65,6 +79,7 @@ function CommCount(unitTeam)
 	local count = 0
 	for _, teamID in pairs(teamsInAllyID[currentAllyTeamID]) do -- [_] = teamID,
 		count = count + Spring.GetTeamUnitDefCount(teamID, UnitDefNames["armcom"].id) + Spring.GetTeamUnitDefCount(teamID, UnitDefNames["corcom"].id)
+                      + Spring.GetTeamUnitDefCount(teamID, UnitDefNames["armcom1"].id) + Spring.GetTeamUnitDefCount(teamID, UnitDefNames["corcom1"].id)
                       + Spring.GetTeamUnitDefCount(teamID, UnitDefNames["armcom2"].id) + Spring.GetTeamUnitDefCount(teamID, UnitDefNames["corcom2"].id)
                       + Spring.GetTeamUnitDefCount(teamID, UnitDefNames["armcom3"].id) + Spring.GetTeamUnitDefCount(teamID, UnitDefNames["corcom3"].id)
                       + Spring.GetTeamUnitDefCount(teamID, UnitDefNames["armcom4"].id) + Spring.GetTeamUnitDefCount(teamID, UnitDefNames["corcom4"].id)

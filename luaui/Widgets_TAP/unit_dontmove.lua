@@ -26,6 +26,8 @@ local unitArray = {
   --comms
   "armcom",
   "corcom",
+  "armcom1",
+  "corcom1",
   "armcom2",
   "corcom2",
   "armcom3",

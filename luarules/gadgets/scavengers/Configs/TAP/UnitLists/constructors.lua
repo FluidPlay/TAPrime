@@ -7,6 +7,8 @@ ConstructorsList = {    --what scavs spawn
 CommandersList = {      -- for targeting; in final phase they switch target from nearest enemy to commanders
     "armcom",
     "corcom",
+    "armcom1",
+    "corcom1",
     "armcom2",
     "corcom2",
     "armcom3",

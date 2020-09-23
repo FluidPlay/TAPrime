@@ -6,7 +6,7 @@ function widget:GetInfo()
 		date = "11/09/2013",
 		license = "WTFPL",
 		layer = 0,
-		enabled = true
+		enabled = false, --true
 	}
 end
 

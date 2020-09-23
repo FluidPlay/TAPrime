@@ -58,13 +58,13 @@ UnitUpg = {
             cursor  = 'Morph',
             type    = CMDTYPE.ICON,
             tooltip = 'D-Gun Upgrade: Enables D-gun weapon [per unit]\n'..
-                    GreenStr..'time:10\n'..CyanStr..'metal: 200\n'..YellowStr..'energy: 1200',
+                    GreenStr..'time:n/a\n'..CyanStr..'metal: n/a\n'..YellowStr..'energy: n/a',
             texture = 'luaui/images/upgrades/cmd_upgdgun.png',
             onlyTexture = true,
             showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
             --params = { '1', ' Fly ', 'Land'}
         },
-        prereq = "Tech1",
+        prereq = "T1 Commander",
         metalCost = 200,
         energyCost = 1200,
         upgradeTime = 10 * 30, --5 seconds, in frames

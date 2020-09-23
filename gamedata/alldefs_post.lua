@@ -236,13 +236,13 @@ function WeaponDef_Post(name, wDef, udName)
  
 	local unitName = udName or "undefined"
 	--local damages = "unit: "..unitName.." weapon: "..wDef.name.."; default: "..baseDamage.." "
-	if (damageType ~= nil) then
+	if (damageType and damageMults[damageType]) then
 		for armorClass, armorMultiplier in pairs(damageMults[damageType]) do
 			wDef.damage[armorClass] = baseDamage * armorMultiplier
 		end
 	else
 		Spring.Echo(" damagePerArmor error: couldn't find setting for "..udName
-					.." - wrong weapon name in weapondamagetypes? unit assigned to 'none' in damagemultipliers.lua?")
+					..", damageType "..(damageType or " nil ")..", damageMults "..(damageMults[damageType] and "found" or "not found") .. " - wrong weapon name in weapondamagetypes? unit assigned to 'none' in damagemultipliers.lua?")
 	end
 	--DebugTableKeys(wDef.damage)
 	
@@ -310,6 +310,7 @@ function ModOptions_Post (UnitDefs, WeaponDefs)
         if (modOptions.transportenemy == "notcoms") then
             for name,ud in pairs(UnitDefs) do
                 if  name == "armcom" or name == "corcom"
+                    or name == "armcom1" or name == "corcom1"
                     or name == "armcom2" or name == "corcom2"
                     or name == "armcom3" or name == "corcom3"
                     or name == "armcom4" or name == "corcom4"

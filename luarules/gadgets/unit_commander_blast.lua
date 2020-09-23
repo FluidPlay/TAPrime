@@ -9,7 +9,7 @@ function gadget:GetInfo()
     date      = "June 2014",
     license   = "GNU GPL, v2 or later",
     layer     = 0,
-    enabled   = true  --  loaded by default?
+    enabled   = false, --true  --  loaded by default?
   }
 end
 
@@ -34,10 +34,12 @@ local spGetUnitRulesParam = Spring.GetUnitRulesParam
 -- MaDDoX: Added Commanders level 2 through 4 to list
 local COMMANDER = {
   [UnitDefNames["corcom"].id] = true,
+  [UnitDefNames["corcom1"].id] = true,
   [UnitDefNames["corcom2"].id] = true,
   [UnitDefNames["corcom3"].id] = true,
   [UnitDefNames["corcom4"].id] = true,
   [UnitDefNames["armcom"].id] = true,
+  [UnitDefNames["armcom1"].id] = true,
   [UnitDefNames["armcom2"].id] = true,
   [UnitDefNames["armcom3"].id] = true,
   [UnitDefNames["armcom4"].id] = true,

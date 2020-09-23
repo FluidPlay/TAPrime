@@ -25,13 +25,15 @@ local bladeSpeedMultiplier = 0.22
 local resourcebarBgTint = true		-- will background of resourcebar get colored when overflowing or low on energy?
 
 local comDefIDs = { [1] = { id = UnitDefNames.armcom.id },
-                    [2] = { id = UnitDefNames.armcom2.id },
-                    [3] = { id = UnitDefNames.armcom3.id },
-                    [4] = { id = UnitDefNames.armcom4.id },
-                    [5] = { id = UnitDefNames.corcom.id },
-                    [6] = { id = UnitDefNames.corcom2.id },
-                    [7] = { id = UnitDefNames.corcom3.id },
-                    [8] = { id = UnitDefNames.corcom4.id },}
+                    [2] = { id = UnitDefNames.armcom1.id },
+                    [3] = { id = UnitDefNames.armcom2.id },
+                    [4] = { id = UnitDefNames.armcom3.id },
+                    [5] = { id = UnitDefNames.armcom4.id },
+                    [6] = { id = UnitDefNames.corcom.id },
+                    [7] = { id = UnitDefNames.corcom1.id },
+                    [8] = { id = UnitDefNames.corcom2.id },
+                    [9] = { id = UnitDefNames.corcom3.id },
+                    [10] = { id = UnitDefNames.corcom4.id },}
 
 --local armcomDefID = UnitDefNames.armcom.id
 --local corcomDefID = UnitDefNames.corcom.id

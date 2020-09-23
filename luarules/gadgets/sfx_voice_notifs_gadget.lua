@@ -177,8 +177,8 @@ else
     --# Unsynced
     --#####################
 
-    local commanderIDs = { armcom = true, armcom2 = true, armcom3 = true, armcom4 = true,
-                           corcom = true, corcom2 = true, corcom3 = true, corcom4 = true, }
+    local commanderIDs = { armcom = true, armcom1 = true, armcom2 = true, armcom3 = true, armcom4 = true,
+                           corcom = true, corcom1 = true, corcom2 = true, corcom3 = true, corcom4 = true, }
 
     local spGetUnitRulesParam = Spring.GetUnitRulesParam
 

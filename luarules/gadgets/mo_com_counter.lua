@@ -35,13 +35,15 @@ local teamComs = {} -- format is enemyComs[teamID] = total # of coms in enemy te
 
 -- This could be improved by initializing the array automatically, with the isCom method
 local comDefIDs = { [1] = { id = UnitDefNames.armcom.id },
-                    [2] = { id = UnitDefNames.armcom2.id },
-                    [3] = { id = UnitDefNames.armcom3.id },
-                    [4] = { id = UnitDefNames.armcom4.id },
-                    [5] = { id = UnitDefNames.corcom.id },
-                    [6] = { id = UnitDefNames.corcom2.id },
-                    [7] = { id = UnitDefNames.corcom3.id },
-                    [8] = { id = UnitDefNames.corcom4.id },}
+                    [2] = { id = UnitDefNames.armcom1.id },
+                    [3] = { id = UnitDefNames.armcom2.id },
+                    [4] = { id = UnitDefNames.armcom3.id },
+                    [5] = { id = UnitDefNames.armcom4.id },
+                    [6] = { id = UnitDefNames.corcom.id },
+                    [7] = { id = UnitDefNames.corcom1.id },
+                    [8] = { id = UnitDefNames.corcom2.id },
+                    [9] = { id = UnitDefNames.corcom3.id },
+                    [10] = { id = UnitDefNames.corcom4.id },}
 
 local countChanged  = true 
 
