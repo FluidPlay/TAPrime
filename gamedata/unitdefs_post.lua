@@ -27,7 +27,6 @@ function deepcopy(orig)
     return copy
 end
 
-
 function tableMergeSpecial(t1, t2)
     for k,v in pairs(t2) do
         if type(v) == "table" then

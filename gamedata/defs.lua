@@ -51,10 +51,10 @@ end
 Spring.TimeCheck('[defs.lua] loading all *Defs tables: ', function()
 
   DEFS.unitDefs    = LoadDefs('unitDefs')
-  DEFS.featureDefs = LoadDefs('featureDefs')
   DEFS.weaponDefs  = LoadDefs('weaponDefs')
   DEFS.armorDefs   = LoadDefs('armorDefs')
   DEFS.moveDefs    = LoadDefs('moveDefs')
+  DEFS.featureDefs = LoadDefs('featureDefs')
 
     -- TA Prime
     if (VFS.FileExists('gamedata/alldefs_post.lua')) then

@@ -12,7 +12,7 @@
 -- unitdefs_post.lua writes the corresponding unitDefs to customparams (if wanted)
 -- weapondefs_post.lua fetches any weapondefs from the unitdefs, 
 -- weapondefs_post.lua fetches the standlaone weapondefs, calls the _post functions for them, writes them to customparams (if wanted)
--- strictly speaking, alldefs.lua is a misnomer since this file does not handle armordefs, featuredefs or movedefs
+-- strictly speaking, alldefs_post is a misnomer since this file does not handle armordefs, featuredefs or movedefs
 
 VFS.Include("gamedata/taptools.lua")
 local unitDefsData = VFS.Include("gamedata/configs/unitdefs_data.lua")
@@ -63,9 +63,9 @@ end
 
 -- process unitdefs
 function UnitDef_Post(name, uDef)
-    --Spring.Echo("uDef name being processed: "..name)
-    -- TODO: Below is not working, move elsewhere
+    -- TODO: Below is not working (_scav units still don't exist at this time), move elsewhere
 	if string.find(name, '_scav') then
+        Spring.Echo("uDef name being processed: "..name)
 		local scavnamelength = string.len(name)
 		local scavname = string.sub(name, 1, scavnamelength -5)
 		ApplyUnitDefs_Data(scavname, uDef)

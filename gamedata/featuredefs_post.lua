@@ -35,7 +35,7 @@ local function ProcessUnitDef(uDefID, uDef)
 
   -- add this unitDef's featureDefs
   for featID, featureData in pairs(unitFeatureDefs) do
-    -- Automatically set metal and resistance of this featuredef, according to its unitdef info
+    -- Automatically set metal and resistance of this featureDef, according to its unitdef info
     local function calculateMetalAndDamage(id, featuredef, uDef)
         local metalFactor, damageFactor, crushresistFactor, groupMult = 1, 1, 1, 1
         if id:find("dead") then
@@ -65,12 +65,14 @@ local function ProcessUnitDef(uDefID, uDef)
       local fullName = uDefID .. '_' .. featID
 
         --- This is working / not working. The final scav UnitDef is somehow still pointing to the original featureDef
-        if string.find(uDefID, '_scav') then
+        if string.find(uDefID, '_scav_') then
             Spring.Echo ("Processing "..uDefID)
+            local baseCorpseName = uDefID
             if featID == "dead" and featureData.description then
                 Spring.Echo ("Found dead")
                 featureData.description = "Scavenger "..featureData.description
                 featureData.resurrectable = 0
+                UnitDefs[uDefID].wreckName = baseCorpseName.."dead"    --eg: armcom_scav_dead
             end
             if featID == "heap" and featureData.description then
                 featureData.description = "Scavenger "..featureData.description
@@ -82,20 +84,20 @@ local function ProcessUnitDef(uDefID, uDef)
     end
   end
 
-    --TODO: Temporarily commented out
+  ---TODO: Temporarily commented out
   -- FeatureDead name changes (featureName of the feature to spawn when this feature is destroyed)
-  --for id, featuredef in pairs(unitFeatureDefs) do
-  --  if (isstring(id) and istable(featuredef)) then
-  --    if (isstring(featuredef.featuredead)) then
-  --      local fullName = uDefID .. '_' .. featuredef.featuredead:lower()
-  --      if (FeatureDefs[fullName]) then
-  --        featuredef.featuredead = fullName
-  --      end
-  --    end
-  --  end
-  --end
+  for id, featuredef in pairs(unitFeatureDefs) do
+    if (isstring(id) and istable(featuredef)) then
+      if (isstring(featuredef.featuredead)) then
+        local fullName = uDefID .. '_' .. featuredef.featuredead:lower()
+        if (FeatureDefs[fullName]) then
+          featuredef.featuredead = fullName
+        end
+      end
+    end
+  end
 
-  -- convert the unit corpse name
+  --convert the unit corpse name
   if (isstring(uDef.corpse)) then
     local fullName = uDefID .. '_' .. uDef.corpse:lower()
     local fd = FeatureDefs[fullName]
