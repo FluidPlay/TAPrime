@@ -80,6 +80,9 @@ buildingSpawnerModuleConfig = {
 unitSpawnerModuleConfig = {
 	bossFightEnabled					= true,
 	FinalBossUnit						= true,
+		FinalBossHealth						= 250000, -- this*teamcount*difficulty
+		FinalBossMinionsPassive				= 3000, -- this/(teamcount*difficulty), how often does boss spawn minions passively, frames.
+		FinalBossMinionsActive				= 150, -- this/(teamcount*difficulty), how often does boss spawn minions when taking damage, frames.
 	BossWaveTimeLeft					= 180, --900,
 	aircraftchance 						= 8, --6,9 [M] -- higher number = lower chance
 	--- globalscoreperoneunit: Let's say scavs are on 3000 score, and score per unit is 1000,
