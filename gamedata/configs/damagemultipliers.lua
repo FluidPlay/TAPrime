@@ -25,7 +25,7 @@ local damageMultipliers = {
 	}
 ,
 	homing={ 	lightbot = 1,    supportbot = 0.25, heavybot = 0.3, lightveh = 0.75,    supportveh = 1.25,  heavyveh = 4.65, --3.2,
-				lightair = 0.9,  supportair = 2, 	heavyair = 2.5, lightship = 1.25,   supportship = 1.75, heavyship = 2.5,
+				lightair = 0.9,  supportair = 2, 	heavyair = 2.5, lightship = 0.6,    supportship = 1.75, heavyship = 2.5,
                 structure = 0.2, resource = 0.75, 	defense = 0.5,  defenseaa = 0.125,  commander = 0.2,
 	}
 ,
@@ -39,7 +39,7 @@ local damageMultipliers = {
                 structure = 1,   resource = 1, 		defense = 0.275,defenseaa = 0.6,    commander = 1.15,
 	}
 ,
-	cannon={ 	lightbot = 0.2,  supportbot = 0.25, heavybot = 0.675,lightveh = 1.6, 	supportveh = 1.5,     heavyveh = 1,
+	cannon={ 	lightbot = 0.2,  supportbot = 0.25, heavybot = 0.675,lightveh = 1.6, 	supportveh = 1.5,     heavyveh = 1.25,
                 lightair = 1.5,  supportair = 2, 	heavyair = 1.25,lightship = 2,      supportship = 0.5,    heavyship = 1,
                 structure = 1,   resource = 1, 		defense = 0.9, 	defenseaa = 0.22, 	commander = 0.75,
 	}

@@ -80,9 +80,9 @@ buildingSpawnerModuleConfig = {
 unitSpawnerModuleConfig = {
 	bossFightEnabled					= true,
 	FinalBossUnit						= true,
-		FinalBossHealth						= 250000, -- this*teamcount*difficulty
-		FinalBossMinionsPassive				= 3000, -- this/(teamcount*difficulty), how often does boss spawn minions passively, frames.
-		FinalBossMinionsActive				= 150, -- this/(teamcount*difficulty), how often does boss spawn minions when taking damage, frames.
+		FinalBossHealth						= 180000, --250000, -- this*teamcount*difficulty
+		FinalBossMinionsPassive				= 5000, --3000, -- this/(teamcount*difficulty), how often does boss spawn minions passively, frames.
+		FinalBossMinionsActive				= 750, --150, -- this/(teamcount*difficulty), how often does boss spawn minions when taking damage, frames.
 	BossWaveTimeLeft					= 180, --900,
 	aircraftchance 						= 8, --6,9 [M] -- higher number = lower chance
 	--- globalscoreperoneunit: Let's say scavs are on 3000 score, and score per unit is 1000,
@@ -94,13 +94,13 @@ unitSpawnerModuleConfig = {
 	landmultiplier 						= 0.75,
 	airmultiplier 						= 0.7, --2.0, 0.6 [M]
 	seamultiplier 						= 0.2,
-	chanceforaircraftonsea				= 2, -- higher number = lower chance
+	chanceforaircraftonsea				= 6, --2, -- higher number = lower chance
 
-	t0multiplier						= 3,    ---Higher number bigger wave
+	t0multiplier						= 3.5, --3,    ---Higher number bigger wave
 	t1multiplier						= 2.15, --2.5, 2 [M]
-	t2multiplier						= 1.0,  -- 0.8 [M]
-	t3multiplier						= 0.175, -- 0.1 [M]
-	t4multiplier						= 0.03, -- 0.05, [M]
+	t2multiplier						= 1.1,  -- 0.8, 1 [M]
+	t3multiplier						= 0.165, -- 0.1, 0.175 [M]
+	t4multiplier						= 0.025, -- 0.05, 0.03 [M]
 }
 
 constructorControllerModuleConfig = {
