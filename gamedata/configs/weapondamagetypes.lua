@@ -38,6 +38,8 @@ local weaponDamageTypes = {
 	corcom2 = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", ["J7NSLaser"] = "omni", },
 	corcom3 = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", ["J7NSLaser"] = "omni", ["CommanderShield"] = "omni", },
 	corcom4 = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", ["J7NSLaser"] = "omni", ["CommanderShield"] = "omni", },
+    armcomboss = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", ["J7NSLaser"] = "omni", ["CommanderShield"] = "omni", },
+    corcomboss = { ["Disintegrator"] = "omni", ["J7Laser"] = "omni", ["J7NSLaser"] = "omni", ["CommanderShield"] = "omni", },
 	corpun = { ["PlasmaCannon"] = "explosive", ["NavalCannon"] = "explosive", },
 	armbats = { ["BattleshipCannon"] = "plasma", },
 	corfrt = { ["Missiles"] = "homing", ["MissilesAA"] = "homing", },
