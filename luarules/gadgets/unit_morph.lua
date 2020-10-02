@@ -1067,7 +1067,7 @@ local function FinishMorph(unitID, morphData)
         local cmds = Spring.GetUnitCommands(unitID,100)
         for i = 1, cmdqueuesize do  -- skip the first command (CMD_MORPH)
             local cmd = cmds[i]
-            if cmd.id == CMD.MOVE or cmd.id == CMD.PATROL then
+            if istable(cmd) and cmd.id and (cmd.id == CMD.MOVE or cmd.id == CMD.PATROL) then
                 local m = { x = cmd.params[1], z = cmd.params[3] }
                 if m.x and m.z then
                     local y = Spring.GetGroundHeight(m.x, m.z)

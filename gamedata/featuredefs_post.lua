@@ -61,15 +61,15 @@ local function ProcessUnitDef(uDefID, uDef)
         featureData = calculateMetalAndDamage(featID, featureData, uDef) end
       -- Make all unit's featureDefs 'unpushable'
       featureData.mass = 99999
-      Spring.Echo("Fullname: uDefID - ".. uDefID .." id - ".. featID)
+      --Spring.Echo("Fullname: uDefID - ".. uDefID .." id - ".. featID)
       local fullName = uDefID .. '_' .. featID
 
         --- This is working / not working. The final scav UnitDef is somehow still pointing to the original featureDef
         if string.find(uDefID, '_scav_') then
-            Spring.Echo ("Processing "..uDefID)
+            --Spring.Echo ("Processing "..uDefID)
             local baseCorpseName = uDefID
             if featID == "dead" and featureData.description then
-                Spring.Echo ("Found dead")
+                --Spring.Echo ("Found dead")
                 featureData.description = "Scavenger "..featureData.description
                 featureData.resurrectable = 0
                 UnitDefs[uDefID].wreckName = baseCorpseName.."dead"    --eg: armcom_scav_dead
