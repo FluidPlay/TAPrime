@@ -766,7 +766,7 @@ local function UpdateGrid(g,cmds,ordertype)
 					for digit in string.gmatch(str, "%d") do
 					  addedSpaces = string.sub(addedSpaces, 0, -2)
 					end
-					text.caption = ""..shotcutCaption.."\n\n\n"..infoNewline..'\255\240\240\240'..metalCost.."\n"..yellow..energyCost..addedSpaces
+					text.caption = ""..shotcutCaption.."\n\n\n"..infoNewline..'\255\240\240\240'..metalCost..addedSpaces --.."\n"..yellow..energyCost..addedSpaces
 				end
 				text.options = "bs"
 				if drawRadaricon then
@@ -1170,6 +1170,7 @@ function widget:GetConfigData() --save config
 		return {Config=Config, iconScaling=iconScaling, drawPrice=drawPrice, drawRadaricon=drawRadaricon, drawTooltip=drawTooltip, drawBigTooltip=drawBigTooltip, largePrice=largePrice, oldUnitpics=oldUnitpics, shortcutsInfo=shortcutsInfo, playSounds=playSounds, largeUnitIcons=largeUnitIcons}
 	end
 end
+
 function widget:SetConfigData(data) --load config
 	if (data.Config ~= nil) then
 		Config.buildmenu.px = data.Config.buildmenu.px

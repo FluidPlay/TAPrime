@@ -41,16 +41,19 @@ local Chili, Window, Image, Button, Grid, Label, ScrollPanel, color2incolor
 -- Global vars
 local orderWindow, buildWindow, buildWindowAdv, orderGrid, buildGrid, buildGridAdv, updateRequired, tooltip, btWidth
 local chiliCache = {}
-local vsx, vsy = spGetWindowGeometry()
+--local vsx, vsy = spGetWindowGeometry()
+local vsx, vsy = gl.GetViewSizes()
 local lastvsx = vsx
 local lastvsy = vsy
+local panelwidthx = 0.175 --0.14
+local panelheightx = 0.16 --0.14
 
 local Config = {
     ordermenu = {
         name = 'ordermenu',
         rows = 5, columns = 4,
         x = '0%', y = vsy*0.25, --'25%',
-        width = max(vsx*0.14, minSideMenuWidth), height = vsy*0.14, --'14%', --'17.5%', --width 14, height 20%
+        width = max(vsx* panelwidthx, minSideMenuWidth), height = vsy* panelheightx, --'14%', --'17.5%', --width 14, height 20%
         orientation = 'horizontal',
         maxWidth = 490, --420
         minWidth = 280,
@@ -60,7 +63,7 @@ local Config = {
         name = 'buildmenu',
         rows = 3, columns = 5,
         x = '0%', y = vsy*0.41, --'41%',
-        width = max(vsx*0.14,minSideMenuWidth), height = vsy*0.14, --was 15 -- button width/height within the area (20,20)
+        width = max(vsx* panelwidthx,minSideMenuWidth), height = vsy* panelheightx, --was 15 -- button width/height within the area (20,20)
         orientation = 'horizontal',
         maxWidth = 490,
         padding = {2,2,2,2}, --5, 5, 5, 5},
@@ -70,7 +73,7 @@ local Config = {
         name = 'buildmenuAdv',
         rows = 3, columns = 5,
         x = '0%', y = vsy*0.57, --'57%', --64.5
-        width = max(vsx*0.14,minSideMenuWidth), height = vsy*0.14, -- 20, 20
+        width = max(vsx* panelwidthx,minSideMenuWidth), height = vsy* panelheightx, -- 20, 20
         orientation = 'horizontal',
         maxWidth = 490,
         padding = {2,2,2,2}, --5, 5, 5, 5},
@@ -682,8 +685,9 @@ function widget:WorldTooltip(ttType,data1,data2,data3)
 end --WorldTooltip
 
 function widget:ViewResize(newX,newY)
-    vsx, vsy = spGetWindowGeometry() --newX, newY
-    Spring.Echo("Resized to "..vsx.." x "..vsy)
+    --vsx, vsy = spGetWindowGeometry() --newX, newY
+    --Spring.Echo("Resized to "..vsx.." x "..vsy)
+    vsx, vsy = gl.GetViewSizes()
     if lastvsx == vsx and lastvsy == vsy then
         return
     else
@@ -712,13 +716,14 @@ function widget:ViewResize(newX,newY)
 
 --[Original]
     --:SetPos(pos.x, pos.y, pos.width, pos.height)
-    orderWindow:SetPosRelative(0, vsy*0.25, max(vsx*0.14, minSideMenuWidth), vsy*0.14)
+    orderWindow:SetPosRelative(0, vsy*0.25, max(vsx*panelwidthx, minSideMenuWidth), vsy*panelheightx) --0.14
 
-    buildWindow:SetPosRelative(0, vsy*0.41, max(vsx*0.14,minSideMenuWidth), vsy*0.14)
+    buildWindow:SetPosRelative(0, vsy*0.41, max(vsx*panelwidthx,minSideMenuWidth), vsy*panelheightx)
 
-    buildWindowAdv:SetPosRelative(0, vsy*0.57, max(vsx*0.14,minSideMenuWidth), vsy*0.14)
+    buildWindowAdv:SetPosRelative(0, vsy*0.57, max(vsx*panelwidthx,minSideMenuWidth), vsy*panelheightx)
 
-    --spForceLayoutUpdate()
+    Spring.SelectUnitArray({}) -- Deselect all units, to prevent infinite loop in line below
+    spForceLayoutUpdate()
 end
 
 function widget:Shutdown()
