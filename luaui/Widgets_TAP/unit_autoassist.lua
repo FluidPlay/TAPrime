@@ -48,8 +48,31 @@ local CMD_REMOVE = CMD.REMOVE
 local CMD_RECLAIM = CMD.RECLAIM
 local CMD_STOP = CMD.STOP
 local CMD_INSERT = CMD.INSERT
-
 local UnitsToIdle = {}
+
+----- Add tables for 'canreclaim', 'canassist', canressurect, canrepair
+local canreclaim = {
+    armfark = true, cormuskrat = true, armconsul = true, corfast = true,
+    armck = true, corck = true, armca = true, corca = true, armcs = true, corcs = true,
+    armack = true, corack = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
+}
+
+local canrepair = {
+    armfark = true, cormuskrat = true, armconsul = true, corfast = true,
+    armck = true, corck = true, armca = true, corca = true, armcs = true, corcs = true,
+    armack = true, corack = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
+}
+
+local canassist = {
+    armfark = true, cormuskrat = true, armconsul = true, corfast = true,
+    armack = true, corack = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
+}
+
+local canressurect = {
+    armrectr = true, corvrad = true, cornecro = true,
+}
+
+-----
 
 local basicbuilderDefs = {
     armck = true, corck = true, armca = true, corca = true, armcs = true, corcs = true,
@@ -280,6 +303,9 @@ local function AutoAssist(unitID, unitDef)
         end
     elseif farkDefs[unitDef.name] then
         local offsetPos = patrolOffset(x, y, z)
+        ---TODO: Convert to custom patrol; set to 'patrol' state; check every frame if it can assist > repair > reclaim something (regular builder)
+        --- Or ressurect > repair > assist > reclaim (necro-type unit)
+        ----- Add tables for 'canreclaim', 'canassist', canressurect, canrepair
         spGiveOrderToUnit(unitID, CMD_PATROL, { offsetPos.x, y, offsetPos.z }, {}) --, {"meta", "shift"} )
         --spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, {}) --"alt" favors reclaiming --Spring.Echo("Farking")
     elseif necroDefs[unitDef.name] then
