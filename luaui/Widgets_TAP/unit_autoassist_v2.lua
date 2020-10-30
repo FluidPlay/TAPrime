@@ -12,7 +12,7 @@ function widget:GetInfo()
         date = "Oct 14, 2020",
         license = "GPLv3",
         layer = 0,
-        enabled = false,
+        enabled = true,
     }
 end
 
@@ -21,6 +21,7 @@ VFS.Include("gamedata/taptools.lua")
 local spGetAllUnits = Spring.GetAllUnits
 local spGetUnitDefID = Spring.GetUnitDefID
 local spGetFeatureDefID = Spring.GetFeatureDefID
+local spValidFeatureID = Spring.ValidFeatureID
 local spGetGameFrame = Spring.GetGameFrame
 local spGetUnitPosition = Spring.GetUnitPosition
 local spGetFeaturePosition = Spring.GetFeaturePosition
@@ -55,18 +56,20 @@ local CMD_STOP = CMD.STOP
 local CMD_INSERT = CMD.INSERT
 local UnitsToIdle = {}
 
+local CMD_OPT_INTERNAL = CMD.OPT_INTERNAL
+
 ----- Tables for 'canreclaim', 'canassist', canressurect, canrepair
 local canreclaim = {
-    armcom = true, armcom2 = true, armcom3 = true, armcom4 = true,
-    corcom = true, corcom2 = true, corcom3 = true, corcom4 = true,
+    armcom = true, armcom1 = true, armcom2 = true, armcom3 = true, armcom4 = true,
+    corcom = true, corcom1 = true, corcom2 = true, corcom3 = true, corcom4 = true,
     armfark = true, cormuskrat = true, armconsul = true, corfast = true,
     armck = true, corck = true, armca = true, corca = true, armcs = true, corcs = true,
     armack = true, corack = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
 }
 
 local canrepair = {
-    armcom = true, armcom2 = true, armcom3 = true, armcom4 = true,
-    corcom = true, corcom2 = true, corcom3 = true, corcom4 = true,
+    armcom = true, armcom1 = true, armcom2 = true, armcom3 = true, armcom4 = true,
+    corcom = true, corcom1 = true, corcom2 = true, corcom3 = true, corcom4 = true,
     armfark = true, cormuskrat = true, armconsul = true, corfast = true,
     armck = true, corck = true, armca = true, corca = true, armcs = true, corcs = true,
     armack = true, corack = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
@@ -100,6 +103,7 @@ local necroDefs = {
 local builders = {}
 local idleBuilders = {}
 local assistStoppedUnits = {}
+local autoAssistingUnits = {}
 local cancelAutoassistForUIDs = {} -- { frame = unitID }
 local internalCommandUIDs = {}
 local guardingUnits = {}    -- TODO: Commanders guarding factories, we('ll) use it to stop guarding when we're out of resources
@@ -240,7 +244,7 @@ local function nearestItemAround(unitID, pos, unitDef, radius, typeCheck, getFea
         return nil
     end
     for _,targetID in pairs(itemsAround) do
-        if getFeature then
+        if getFeature and spValidFeatureID(targetID) then
             local targetDefID = spGetFeatureDefID(targetID)
             local targetDef = (targetDefID ~= nil) and FeatureDefs[targetDefID] or nil
             --if targetDef and targetDef.isFactory then ==> eg.: function(x) return x.isFactory end
@@ -248,11 +252,11 @@ local function nearestItemAround(unitID, pos, unitDef, radius, typeCheck, getFea
                 local x, y, z = spGetFeaturePosition(targetID)
                 local targetPos = { x = x, y = y, z = z }
                 local thisSqrDist = sqrDistance(pos, targetPos)
-                if isnumber(thisSqrDist) and isnumber(nearestSqrDistance) then
-                    if thisSqrDist < nearestSqrDistance then
+                if isnumber(thisSqrDist) and isnumber(nearestSqrDistance)
+                   and thisSqrDist < nearestSqrDistance then
                         nearestItemID = targetID
                         nearestSqrDistance = sqrDistance
-                    end
+                        Spring.Echo("Assigned target feature: "..targetID)
                 end
             end
         elseif IsValidUnit(targetID) and targetID ~= unitID then
@@ -263,11 +267,10 @@ local function nearestItemAround(unitID, pos, unitDef, radius, typeCheck, getFea
                 local x, y, z = spGetUnitPosition(targetID)
                 local targetPos = { x = x, y = y, z = z }
                 local thisSqrDist = sqrDistance(pos, targetPos)
-                if isnumber(thisSqrDist) and isnumber(nearestSqrDistance) then
-                    if thisSqrDist < nearestSqrDistance then
+                if isnumber(thisSqrDist) and isnumber(nearestSqrDistance)
+                   and thisSqrDist < nearestSqrDistance then
                         nearestItemID = targetID
                         nearestSqrDistance = sqrDistance
-                    end
                 end
             end
         end
@@ -364,8 +367,17 @@ local function assistSearch(pos, unitID, unitDef)
         Spring.Echo("[5] Reclaim check")
         local nearestFeatureID = nearestItemAround(unitID, pos, unitDef, radius, nil, true)
         if nearestFeatureID then
-            spGiveOrderToUnit(unitID, CMD_RECLAIM, { nearestFeatureID }, {"shift"} )
-            --spGiveOrderToUnit(unitID, CMD_INSERT, {1, CMD_RECLAIM, CMD.OPT_INTERNAL+1, { nearestFeatureID }}, {"alt"})
+            --spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_RECLAIM, CMD.OPT_INTERNAL+1, { nearestFeatureID }}, {"alt"})
+            --Spring.GiveOrderToUnit(UnitID, CMD_INSERT, {cmdParams[1],cmdParams[2],cmdParams[3],cmdParams[4],y,cmdParams[6]}, cmdOptions.coded)
+            --spGiveOrderToUnit(unitID,CMD_INSERT,{-1,CMD_CAPTURE,CMD_OPT_INTERNAL+1,unitID2},{"alt"});
+            --Spring.GiveOrderToUnit(unitID,
+            --        CMD.INSERT,
+            --        {-1,CMD.RECLAIM,CMD.OPT_SHIFT,nearestFeatureID},
+            --        {"alt"}
+            --)
+            --spGiveOrderToUnit(unitID, CMD_RECLAIM, { nearestFeatureID }, {"alt"} )
+            local x,y,z = Spring.GetFeaturePosition(nearestFeatureID)
+            spGiveOrderToUnit(unitID, CMD_INSERT, {-1, CMD_RECLAIM, CMD_OPT_INTERNAL+1,x,y,z,80}, {"alt"})
             _orderIssued = true
         else
             Spring.Echo("@autoassist: Nearest featureID not found")
@@ -373,6 +385,7 @@ local function assistSearch(pos, unitID, unitDef)
     end
     if _orderIssued then
         Spring.Echo("@autoassist: Order issued")
+        autoAssistingUnits[unitID] = true
     end
 end
 
@@ -401,8 +414,8 @@ local function AutoAssist(unitID, unitDef)
         --spGiveOrderToUnit(unitID, CMD_REPAIR, { offsetPos.x, y, offsetPos.z, 160 }, {"meta"} ) --shift
         ---- Commanders have weapons, thus 'fight' won't work here. Need to find nearest factory, if any, and guard it
         if unitDef.customParams and unitDef.customParams.iscommander then
-            Spring.Echo("Commander auto-searching: "..unitID)
             local unitPos = { x = x, y = y, z = z }
+            Spring.Echo("Commander auto-searching: "..unitID)
             assistSearch(unitPos, unitID, unitDef)
         --else    -- Usually outposts down here. Since it's static, let's have it reclaim aggressively.
         --    spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, {"meta", "shift"} ) --shift and {"meta", "shift"} or
@@ -453,7 +466,8 @@ function widget:GameFrame(f)
         if IsValidUnit(unitID) and not assistStoppedUnits[unitID] then
             --Spring.Echo("idle Builder unitID: "..unitID)
             local unitDef = UnitDefs[spGetUnitDefID(unitID)]
-            AutoAssist(unitID, unitDef)
+            if not autoAssistingUnits[unitID] then
+                AutoAssist(unitID, unitDef) end
             --if unitDef then
             --    if UnitNotMoving(unitID) and UnitHasNoOrders(unitID) then
             --        idleBuilders[unitID] = true
