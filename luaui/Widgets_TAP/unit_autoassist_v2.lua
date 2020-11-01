@@ -35,12 +35,15 @@ local spGetFeaturesInSphere = Spring.GetFeaturesInSphere
 local spGetGameFrame = Spring.GetGameFrame
 local spGetUnitsInCylinder = Spring.GetUnitsInCylinder
 local spGetUnitNearestEnemy = Spring.GetUnitNearestEnemy
-local idlingDelay = 1   -- How many frames after creation before the unit is force-idled (required to not break scripts)
+local idlingDelay = 5   -- How many frames after creation before the unit is force-idled (required to not break scripts)
 local myTeamID = -1;
 local updateRate = 40;
 
 local basicBuilderAssistRadius = 250
+-- We use this to identify units that can't be build-assisted by basic builders
 local WIPmobileUnits = {}     -- { unitID = true, ... }
+local unitsToAutomate = {}
+local automatedUnits = {}
 
 local mapsizehalfwidth = Game.mapSizeX/2
 local mapsizehalfheight = Game.mapSizeZ/2
@@ -54,7 +57,6 @@ local CMD_REMOVE = CMD.REMOVE
 local CMD_RECLAIM = CMD.RECLAIM
 local CMD_STOP = CMD.STOP
 local CMD_INSERT = CMD.INSERT
-local UnitsToIdle = {}
 
 local CMD_OPT_INTERNAL = CMD.OPT_INTERNAL
 
@@ -101,9 +103,8 @@ local necroDefs = {
     cornecro = true, armrectr = true,
 }
 local builders = {}
-local idleBuilders = {}
+local automatedUnits = {}
 local assistStoppedUnits = {}
-local autoAssistingUnits = {}
 local cancelAutoassistForUIDs = {} -- { frame = unitID }
 local internalCommandUIDs = {}
 local guardingUnits = {}    -- TODO: Commanders guarding factories, we('ll) use it to stop guarding when we're out of resources
@@ -154,7 +155,6 @@ function widget:UnitFinished(unitID, unitDefID, unitTeam)
 
             --Spring.Echo("Registering unit "..unitID.." as builder "..UnitDefs[unitDefID].name)
             widget:UnitIdle(unitID, unitDefID, unitTeam)
-            --UnitsToIdle[unitID] = spGetGameFrame() + idlingDelay
         end
     end
 end
@@ -164,8 +164,8 @@ function widget:UnitIdle(unitID, unitDefID, unitTeam)
     if not builders[unitID] then
         return end
     --Spring.Echo("Unit ".. unitID.." is idle.") --UnitDefs[unitDefID].name)
-    if myTeamID == spGetUnitTeam(unitID) then		--check if unit is mine
-        idleBuilders[unitID]=true					--add unit to register
+    if myTeamID == spGetUnitTeam(unitID) and not unitsToAutomate[unitID] then		--check if unit is mine
+        unitsToAutomate[unitID] = spGetGameFrame() + idlingDelay
         assistStoppedUnits[unitID] = false
         --Spring.Echo("Re-enabling assist for ".. unitID) --..UnitDefs[unitDefID].name)
         cancelAutoassistForUIDs[unitID] = nil
@@ -176,9 +176,9 @@ end
 function widget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdOpts, cmdParams)
 
     --Spring.Echo("unit "..unitID.." got a command") --¤debug
-    for builderID in pairs(idleBuilders) do
+    for builderID in pairs(automatedUnits) do
         if (builderID == unitID) then
-            idleBuilders[builderID] = nil
+            automatedUnits[builderID] = nil
             --Spring.Echo("unit ".. builderID .." is no longer idle")
         end
     end
@@ -189,7 +189,7 @@ function widget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdOpts, cmdPara
 end
 --
 function widget:UnitDestroyed(unitID)
-    idleBuilders[unitID] = nil
+    automatedUnits[unitID] = nil
     assistStoppedUnits[unitID] = nil
     builders[unitID] = nil
 end
@@ -365,6 +365,7 @@ local function assistSearch(pos, unitID, unitDef)
     --- 5. Reclaim nearest feature (prioritize metal)
     if canreclaim[unitDef.name] and not _orderIssued then
         Spring.Echo("[5] Reclaim check")
+        --TODO: This seems to be wrong (furthest feature instead of closest)
         local nearestFeatureID = nearestItemAround(unitID, pos, unitDef, radius, nil, true)
         if nearestFeatureID then
             --spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_RECLAIM, CMD.OPT_INTERNAL+1, { nearestFeatureID }}, {"alt"})
@@ -385,12 +386,11 @@ local function assistSearch(pos, unitID, unitDef)
     end
     if _orderIssued then
         Spring.Echo("@autoassist: Order issued")
-        autoAssistingUnits[unitID] = true
+        automatedUnits[unitID] = true
     end
 end
 
 local function AutoAssist(unitID, unitDef)
-    internalCommandUIDs[unitID] = true  -- Flag auto-assisting unit for further command event processing
     local x, y, z = spGetUnitPosition(unitID)
 
     if basicbuilderDefs [unitDef.name] then
@@ -398,6 +398,7 @@ local function AutoAssist(unitID, unitDef)
         if targetID then
             --Spring.Echo("Nearest candidate found: "..targetID)
             spGiveOrderToUnit(unitID, CMD_REPAIR, {targetID}, {}) --, {"meta", "shift"} )
+            automatedUnits[unitID] = true  -- Flag auto-assisting unit for further command event processing
         end
     elseif farkDefs[unitDef.name] then
         local offsetPos = patrolOffset(x, y, z)
@@ -405,8 +406,10 @@ local function AutoAssist(unitID, unitDef)
         --- Or ressurect > repair > assist > reclaim (necro-type unit)
         ----- Add tables for 'canreclaim', 'canassist', canressurect, canrepair
         spGiveOrderToUnit(unitID, CMD_PATROL, { offsetPos.x, y, offsetPos.z }, {}) --, {"meta", "shift"} )
+        automatedUnits[unitID] = true  -- Flag auto-assisting unit for further command event processing
     elseif necroDefs[unitDef.name] then
         spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, { "alt", "shift" })   --'alt' autoressurects if available --Spring.Echo("Necroing")
+        automatedUnits[unitID] = true  -- Flag auto-assisting unit for further command event processing
     else --- Is Commander
         -- TODO: To further test widget exploits, uncomment lines below:
         --local offsetPos = patrolOffset(x, y, z)
@@ -439,7 +442,7 @@ function widget:GameFrame(f)
             spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
             spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
             spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_FIGHT }, { "alt"})
-            idleBuilders[unitID] = nil
+            automatedUnits[unitID] = nil
             assistStoppedUnits[unitID] = true
             --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
         end
@@ -450,24 +453,12 @@ function widget:GameFrame(f)
     if f % updateRate > 0.001 then
         return end
 
-    --for unitID, recoveryFrame in pairs(UnitsToIdle) do
-    --    if f >= recoveryFrame then
-    --        widget:UnitIdle(unitID)
-    --    end
-    --end
-
-    --TODO: Finish below, to remove auto-guard from commanders
-    --if guardingUnits[unitID] and not enoughEconomy() then
-    --    --Spring.Echo("Stopping auto-guard")
-    --    spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )  --spGiveOrder(CMD_INSERT, {0, CMD_STOP, 0}, {"alt"})
-    --    guardingUnits[unitID] = false
-    --end
-    for unitID in pairs(idleBuilders) do
-        if IsValidUnit(unitID) and not assistStoppedUnits[unitID] then
-            --Spring.Echo("idle Builder unitID: "..unitID)
+    for unitID, automateFrame in pairs(unitsToAutomate) do
+        if f >= automateFrame and IsValidUnit(unitID)
+            and not automatedUnits[unitID] and not assistStoppedUnits[unitID] then
+            Spring.Echo("idle Builder unitID: "..unitID)
             local unitDef = UnitDefs[spGetUnitDefID(unitID)]
-            if not autoAssistingUnits[unitID] then
-                AutoAssist(unitID, unitDef) end
+            AutoAssist(unitID, unitDef)
             --if unitDef then
             --    if UnitNotMoving(unitID) and UnitHasNoOrders(unitID) then
             --        idleBuilders[unitID] = true
