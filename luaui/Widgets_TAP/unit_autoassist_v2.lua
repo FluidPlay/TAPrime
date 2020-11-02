@@ -22,11 +22,7 @@ local spGetAllUnits = Spring.GetAllUnits
 local spGetUnitDefID = Spring.GetUnitDefID
 local spGetFeatureDefID = Spring.GetFeatureDefID
 local spValidFeatureID = Spring.ValidFeatureID
-local spGetGameFrame = Spring.GetGameFrame
 local spGetUnitPosition = Spring.GetUnitPosition
-local spGetFeaturePosition = Spring.GetFeaturePosition
-local spGetUnitVelocity = Spring.GetUnitVelocity
-local spGetCommandQueue = Spring.GetCommandQueue
 local spGetUnitHealth   = Spring.GetUnitHealth
 local spGetSelectedUnits = Spring.GetSelectedUnits
 local spGiveOrderToUnit = Spring.GiveOrderToUnit
@@ -37,11 +33,14 @@ local spGetFeaturesInSphere = Spring.GetFeaturesInSphere
 local spGetGameFrame = Spring.GetGameFrame
 local spGetUnitsInCylinder = Spring.GetUnitsInCylinder
 local spGetUnitNearestEnemy = Spring.GetUnitNearestEnemy
+local spGetFeaturePosition = Spring.GetFeaturePosition
 local spGetCommandQueue = Spring.GetCommandQueue -- 0 => commandQueueSize, -1 = table
+local spGetFullBuildQueue = Spring.GetFullBuildQueue
 
-local idlingDelay = 5   -- How many frames after creation before the unit is force-idled (required to not break scripts)
+local idlingDelay = 10   -- How many frames after 'idle' the unit is actually considered idle (required to not break scripts)
 local myTeamID = -1;
-local updateRate = 40;
+local idleCheckUpdateRate = 40  -- How long it'll take for an idled unit to check things around it
+local automatedCheckUpdateRate = 90 -- How long it'll take for an automated unit to see if it shouldn't be doing something else
 local basicBuilderAssistRadius = 250
 
 local automatableUnits = {}
@@ -316,6 +315,11 @@ local function setAutomate(unitID)
     unitsToAutomate[unitID] = nil
 end
 
+local function factoryIsBuilding(unitID)
+    local buildqueue = spGetFullBuildQueue(unitID) -- => nil | buildOrders = { [1] = { [number unitDefID] = number count }, ... } }
+    return buildqueue and #buildqueue > 0 or false
+end
+
 --- Decides and issues orders on what to do around the unit, in this order (1 == higher):
 --- 1. If has no weapon (outpost, FARK, etc), reclaim enemy units;
 --- 2. If can ressurect, ressurect nearest feature (check for economy? might want to reclaim instead)
@@ -323,7 +327,11 @@ end
 --- 4. If can repair, repair nearest allied unit with less than 90% maxhealth.
 --- 5. Reclaim nearest feature (prioritize metal)
 
-local function assistSearch(pos, unitID, unitDef)
+local function automateCheck(unitID, unitDef)
+    local x, y, z = spGetUnitPosition(unitID)
+    local pos = { x = x, y = y, z = z }
+
+    --Spring.Echo("Automatable auto-searching: "..unitID)
     local _orderIssued = false
     local radius = unitDef.buildDistance * 1.2
 
@@ -340,21 +348,20 @@ local function assistSearch(pos, unitID, unitDef)
     --- 2. If can ressurect, ressurect nearest feature (check for economy? might want to reclaim instead)
     if canresurrect[unitDef.name] and not _orderIssued then
         Spring.Echo("[2] Resurrect check")
-        --local nearestFeature = --TODO: WIP
         local nearestFeatureID = nearestItemAround(unitID, pos, unitDef, radius, nil, nil, true)
         if nearestFeatureID then
-            local x,y,z = Spring.GetFeaturePosition(nearestFeatureID)
-            spGiveOrderToUnit(unitID, CMD_INSERT, {-1, CMD_RESURRECT, CMD_OPT_INTERNAL+1,x,y,z,20}, {"alt"})
-            --spGiveOrderToUnit(unitID, CMD_RESURRECT, nearestFeatureID, {"meta"} )
+            local x,y,z = spGetFeaturePosition(nearestFeatureID)
+            spGiveOrderToUnit(unitID, CMD_INSERT, {-1, CMD_RESURRECT, CMD_OPT_INTERNAL+1,x,y,z,20}, {"alt"})  --shift
             _orderIssued = true
-        end --shift
+        end
     end
     --- 3. If can assist, guard nearest factory
     if canassist[unitDef.name] and not _orderIssued then
         Spring.Echo("[3] Factory-assist check")
-        --TODO: If there's a factory to guard, but it's building nothing, don't guard.
         --TODO: If during 'automation' it's guarding a factory but factory stopped production, remove it
-        local nearestFactoryUnitID = nearestItemAround(unitID, pos, unitDef, radius, function(x) return x.isFactory end)
+        local nearestFactoryUnitID = nearestItemAround(unitID, pos, unitDef, radius,
+                function(x) return x.isFactory end,     --We're only interested in factories currently producing
+                function(x) return factoryIsBuilding(x) end)
         if nearestFactoryUnitID and enoughEconomy() then
             --Spring.Echo ("Autoassisting factory: "..(nearestFactoryUnitID or "nil").." has eco: "..tostring(enoughEconomy()))
             spGiveOrderToUnit(unitID, CMD_GUARD, { nearestFactoryUnitID }, {} )
@@ -396,8 +403,8 @@ local function assistSearch(pos, unitID, unitDef)
             local x,y,z = Spring.GetFeaturePosition(nearestFeatureID)
             spGiveOrderToUnit(unitID, CMD_INSERT, {-1, CMD_RECLAIM, CMD_OPT_INTERNAL+1,x,y,z,80}, {"alt"})
             _orderIssued = true
-        else
-            Spring.Echo("@autoassist: Nearest featureID not found")
+        --else
+        --    Spring.Echo("@autoassist: Nearest featureID not found")
         end --shift
     end
     if _orderIssued then
@@ -406,40 +413,8 @@ local function assistSearch(pos, unitID, unitDef)
     end
 end
 
-local function AutoAssist(unitID, unitDef)
-    local x, y, z = spGetUnitPosition(unitID)
-
-    --if basicbuilderDefs [unitDef.name] then
-    --    local targetID = GetNearestValidTarget(unitID, unitDef)
-    --    if targetID then
-    --        --Spring.Echo("Nearest candidate found: "..targetID)
-    --        spGiveOrderToUnit(unitID, CMD_REPAIR, {targetID}, {}) --, {"meta", "shift"} )
-    --        setAutomate(unitID) -- Flag auto-assisting unit for further command event processing
-    --    end
-    --elseif farkDefs[unitDef.name] then
-    --    local offsetPos = patrolOffset(x, y, z)
-    --    --- Or ressurect > repair > assist > reclaim (necro-type unit)
-    --    ----- Add tables for 'canreclaim', 'canassist', canressurect, canrepair
-    --    spGiveOrderToUnit(unitID, CMD_PATROL, { offsetPos.x, y, offsetPos.z }, {}) --, {"meta", "shift"} )
-    --    setAutomate(unitID) -- Flag auto-assisting unit for further command event processing
-    --elseif necroDefs[unitDef.name] then
-    --    spGiveOrderToUnit(unitID, CMD_FIGHT, { x, y, z }, { "alt", "shift" })   --'alt' autoressurects if available --Spring.Echo("Necroing")
-    --    setAutomate(unitID) -- Flag auto-assisting unit for further command event processing
-    --else --- Is Commander
-
-        --local offsetPos = patrolOffset(x, y, z)
-        --spGiveOrderToUnit(unitID, CMD_PATROL, { offsetPos.x, y, offsetPos.z }, {"meta"} ) --shift
-        --spGiveOrderToUnit(unitID, CMD_REPAIR, { offsetPos.x, y, offsetPos.z, 160 }, {"meta"} ) --shift
-
-    --if unitDef.customParams and unitDef.customParams.iscommander then
-    local unitPos = { x = x, y = y, z = z }
-    Spring.Echo("Automatable auto-searching: "..unitID)
-    assistSearch(unitPos, unitID, unitDef)
-    --end
-end
-
 function widget:CommandNotify(cmdID, params, options)
-    Spring.Echo("CommandID registered: "..(cmdID or "nil"))
+    --Spring.Echo("CommandID registered: "..(cmdID or "nil"))
     -- User commands are tracked here, check what unit(s) is/are selected and remove it from automatedUnits
     local selUnits = spGetSelectedUnits()  --() -> { [1] = unitID, ... }
     for _, unitID in ipairs(selUnits) do
@@ -468,20 +443,27 @@ function widget:GameFrame(f)
             --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
         end
     end
-    --if WG.Cutscene and WG.Cutscene.IsInCutscene() then
-    --    return end
 
     --local commandQueueSize = spGetCommandQueue(unitID, 0) --use 20 to limit this
 
-    if f % updateRate > 0.001 then
-        return end
-
-    for unitID, automateFrame in pairs(unitsToAutomate) do
-        if f >= automateFrame and IsValidUnit(unitID)
-            and not automatedUnits[unitID] and not assistStoppedUnits[unitID] then
-            Spring.Echo("idle automatable unitID: "..unitID)
-            local unitDef = UnitDefs[spGetUnitDefID(unitID)]
-            AutoAssist(unitID, unitDef)
+    if f % idleCheckUpdateRate < 0.001 then
+        for unitID, automateFrame in pairs(unitsToAutomate) do
+            if f >= automateFrame and IsValidUnit(unitID)
+                    and not automatedUnits[unitID] and not assistStoppedUnits[unitID] then
+                local unitDef = UnitDefs[spGetUnitDefID(unitID)]
+                Spring.Echo("Trying to automate unitID: "..unitID)
+                --- unitsToAutomate[unitID] is only unset down the pipe, if automation is successful
+                automateCheck(unitID, unitDef)
+            end
+        end
+    end
+    if f % automatedCheckUpdateRate < 0.001 then
+        for unitID in pairs(automatedUnits) do
+            if IsValidUnit(unitID) and not assistStoppedUnits[unitID] then
+                local unitDef = UnitDefs[spGetUnitDefID(unitID)]    --TODO: Cache this within automatedUnits
+                Spring.Echo("Rechecking automation of unitID: "..unitID)
+                automateCheck(unitID, unitDef)
+            end
         end
     end
 end
