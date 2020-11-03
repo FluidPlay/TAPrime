@@ -20,7 +20,7 @@ local nameScaling			= true
 local useThickLeterring		= true
 local heightOffset			= 50
 local fontSize				= 15		-- not real fontsize, it will be scaled
-local scaleFontAmount		= 120
+local scaleFontAmount		= 90 --120 (60 == no downscale)
 local fontShadow			= true		-- only shows if font has a white outline
 local shadowOpacity			= 0.35
 
@@ -222,7 +222,6 @@ function widget:DrawWorld()
   local camX, camY, camZ = GetCameraPosition()
   
   for unitID, attributes in pairs(comms) do
-    
     -- calc opacity
 	if IsUnitInView(unitID) then
 		local x,y,z = GetUnitPosition(unitID)
