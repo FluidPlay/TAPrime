@@ -18,7 +18,7 @@ end
 
 VFS.Include("gamedata/taptools.lua")
 
-local glDebugStates = true
+local localDebug = false --true
 
 local spGetAllUnits = Spring.GetAllUnits
 local spGetUnitDefID = Spring.GetUnitDefID
@@ -26,6 +26,9 @@ local spGetFeatureDefID = Spring.GetFeatureDefID
 local spValidFeatureID = Spring.ValidFeatureID
 local spGetUnitPosition = Spring.GetUnitPosition
 local spGetUnitHealth   = Spring.GetUnitHealth
+local spGetMyTeamID     = Spring.GetMyTeamID
+local spGetMyAllyTeamID     = Spring.GetMyAllyTeamID
+local spGetUnitAllyTeam     = Spring.GetUnitAllyTeam
 local spGetSelectedUnits = Spring.GetSelectedUnits
 local spGiveOrderToUnit = Spring.GiveOrderToUnit
 local spGetTeamResources = Spring.GetTeamResources
@@ -34,6 +37,7 @@ local spGetUnitsInSphere = Spring.GetUnitsInSphere
 local spGetFeaturesInSphere = Spring.GetFeaturesInSphere
 local spGetGameFrame = Spring.GetGameFrame
 local spGetUnitsInCylinder = Spring.GetUnitsInCylinder
+local spGetFeaturesInCylinder = Spring.GetFeaturesInCylinder
 local spGetUnitNearestEnemy = Spring.GetUnitNearestEnemy
 local spGetFeaturePosition = Spring.GetFeaturePosition
 local spGetCommandQueue = Spring.GetCommandQueue -- 0 => commandQueueSize, -1 = table
@@ -60,9 +64,9 @@ local glBlending          		= gl.Blending
 local glScale          			= gl.Scale
 
 local idlingDelay = 10   -- How many frames after 'idle' the unit is actually considered idle (required to not break scripts)
-local myTeamID = -1;
+local myTeamID, myAllyTeamID = -1, -1
 local idleCheckUpdateRate = 40  -- How long it'll take for an idled unit to check things around it
-local automatedCheckUpdateRate = 90 -- How long it'll take for an automated unit to see if it shouldn't be doing something else
+local automatedCheckUpdateRate = 60 -- How long it'll take for an automated unit to see if it shouldn't be doing something else
 local basicBuilderAssistRadius = 250
 
 local automatableUnits = {}
@@ -102,23 +106,23 @@ local canreclaim = {
     armcom = true, armcom1 = true, armcom2 = true, armcom3 = true, armcom4 = true,
     corcom = true, corcom1 = true, corcom2 = true, corcom3 = true, corcom4 = true,
     armfark = true, cormuskrat = true, armconsul = true, corfast = true,
-    armck = true, corck = true, armca = true, corca = true, armcs = true, corcs = true,
-    armack = true, corack = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
+    armck = true, corck = true, armcv = true, corcv = true, armca = true, corca = true, armcs = true, corcs = true,
+    armack = true, corack = true, armacv = true, coracv = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
 }
 
 local canrepair = {
     armcom = true, armcom1 = true, armcom2 = true, armcom3 = true, armcom4 = true,
     corcom = true, corcom1 = true, corcom2 = true, corcom3 = true, corcom4 = true,
     armfark = true, cormuskrat = true, armconsul = true, corfast = true,
-    armck = true, corck = true, armca = true, corca = true, armcs = true, corcs = true,
-    armack = true, corack = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
+    armck = true, corck = true, armcv = true, corcv = true, armca = true, corca = true, armcs = true, corcs = true,
+    armack = true, corack = true, armacv = true, coracv = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
 }
 
 local canassist = {
     armcom = true, armcom1 = true, armcom2 = true, armcom3 = true, armcom4 = true,
     corcom = true, corcom1 = true, corcom2 = true, corcom3 = true, corcom4 = true,
     armfark = true, cormuskrat = true, armconsul = true, corfast = true,
-    armack = true, corack = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
+    armack = true, corack = true, armacv = true, coracv = true, armaca = true, coraca = true, armacsub = true, coracsub = true,
 }
 
 local canresurrect = {
@@ -143,7 +147,8 @@ function widget:Initialize()
         widgetHandler:RemoveWidget()
         return false
     end
-    myTeamID = Spring.GetMyTeamID()
+    myTeamID = spGetMyTeamID()
+    myAllyTeamID = spGetMyAllyTeamID
     local allUnits = spGetAllUnits()
     for i = 1, #allUnits do
         local unitID    = allUnits[i]
@@ -182,33 +187,46 @@ function widget:UnitIdle(unitID, unitDefID, unitTeam)
     if not automatableUnits[unitID] then
         return end
     --Spring.Echo("Unit ".. unitID.." is idle.") --UnitDefs[unitDefID].name)
+    assistStoppedUnits[unitID] = nil
     if myTeamID == spGetUnitTeam(unitID) and not unitsToAutomate[unitID] then		--check if unit is mine
         unitsToAutomate[unitID] = spGetGameFrame() + idlingDelay
-        assistStoppedUnits[unitID] = false
         --Spring.Echo("Re-enabling assist for ".. unitID) --..UnitDefs[unitDefID].name)
         cancelAutoassistFor[unitID] = nil
     end
 end
 
---Unregister automated unit once it is given a command
-function widget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdOpts, cmdParams)
-
-    --Spring.Echo("unit "..unitID.." got a command") --¤debug
-    for builderID in pairs(automatedUnits) do
-        if (builderID == unitID) then
-            automatedUnits[builderID] = nil
-            --Spring.Echo("unit ".. builderID .." is no longer idle")
-        end
+local function DeautomateUnit(unitID, callingMethod)
+    if IsValidUnit(unitID) and (not assistStoppedUnits[unitID]) then
+        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
+        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
+        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_FIGHT }, { "alt"})
+        automatedUnits[unitID] = nil
+        assistStoppedUnits[unitID] = true
+        --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
     end
-    if cmdID < 0 then   -- build command was issued
-        local nearFuture = spGetGameFrame() + orderRemovalDelay
-        cancelAutoassistFor[unitID] = { frame = nearFuture, cmdID = cmdID, cmdOpts = cmdOpts, cmdParams = cmdParams }
-    end
+    if localDebug then Spring.Echo("Deautomating Unit: "..unitID.." from: "..(callingMethod or "nil")) end
 end
+
+
+--Unregister automated unit once it is given a command
+--function widget:UnitCommand(unitID, unitDefID, unitTeam, cmdID, cmdOpts, cmdParams)
+--
+--    --Spring.Echo("unit "..unitID.." got a command") --¤debug
+--    for builderID in pairs(automatedUnits) do
+--        if (builderID == unitID) then
+--            DeautomateUnit(builderID, "UnitCommand") end
+--    end
+--    if cmdID < 0 then   -- build command was issued
+--        local nearFuture = spGetGameFrame() + orderRemovalDelay
+--        cancelAutoassistFor[unitID] = { frame = nearFuture, cmdID = cmdID, cmdOpts = cmdOpts, cmdParams = cmdParams }
+--    end
+--end
 --
 function widget:UnitDestroyed(unitID)
     unitsToAutomate[unitID] = nil
-    automatedUnits[unitID] = nil
+    DeautomateUnit(unitID, "UnitDestroyed")
     assistStoppedUnits[unitID] = nil
     automatableUnits[unitID] = nil
 end
@@ -276,8 +294,8 @@ end
 -- idCheck is a function (checking for true), checks the targetID to see if it fits a certain criteria
 local function nearestItemAround(unitID, pos, unitDef, radius, typeCheck, idCheck, isFeature)
     local itemsAround = isFeature
-            and spGetFeaturesInSphere(pos.x, pos.y, pos.z, radius, myTeamID)
-            or spGetUnitsInSphere(pos.x, pos.y, pos.z, radius, myTeamID)
+            and spGetFeaturesInCylinder(pos.x, pos.z, radius)
+            or spGetUnitsInCylinder(pos.x, pos.z, radius, myTeamID)
     if not istable(itemsAround) then
         return nil end
     local targets = {}
@@ -335,8 +353,10 @@ local function GetNearestValidTarget(unitID, unitDef)
 end
 
 local function setAutomate(unitID, state)
-    automatedUnits[unitID] = state  -- Flag auto-assisting unit for further command event processing
+    --if state ~= nil then
+        automatedUnits[unitID] = state --end -- Flag auto-assisting unit for further command event processing
     unitsToAutomate[unitID] = nil
+    if localDebug then Spring.Echo("Automating unit: "..unitID.." state: "..(state or "nil")) end
 end
 
 local function factoryIsBuilding(unitID)
@@ -357,31 +377,36 @@ local function automateCheck(unitID, unitDef)
 
     --Spring.Echo("Automatable auto-searching: "..unitID)
     local _orderIssued = false
-    local radius = unitDef.buildDistance * 1.2
+    local radius = unitDef.buildDistance * 1.1
 
     --- 1. If has no weapon (outpost, FARK, etc), reclaim enemy units;
     local hasWeapon = unitDef.weapons[1]
     if not hasWeapon then
-        --Spring.Echo("[1] Fast-reclaim check")
+        --if localDebug then Spring.Echo("[1] Enemy-reclaim check") end
+        --TODO: Fix
         local nearestEnemy = spGetUnitNearestEnemy(unitID, radius, false) -- useLOS = false ; => nil | unitID
         if nearestEnemy then
-            spGiveOrderToUnit(unitID, CMD_RECLAIM, nearestEnemy, {"meta"} ) --shift
-            setAutomate(unitID, "reclaim")
+            --spGiveOrderToUnit(unitID, CMD_RECLAIM, nearestEnemy, {"meta"} ) --shift
+            local x,y,z = Spring.GetUnitPosition(nearestEnemy)
+            spGiveOrderToUnit(unitID, CMD_INSERT, {-1, CMD_RECLAIM, CMD_OPT_INTERNAL+1,x,y,z,40}, {"alt"})
+            setAutomate(unitID, "enemy reclaim")
+            _orderIssued = true
         end
     end
-    --- 2. If can ressurect, ressurect nearest feature (check for economy? might want to reclaim instead)
+    --- 2. If can resurrect, resurrect nearest feature (check for economy? might want to reclaim instead)
     if canresurrect[unitDef.name] and not _orderIssued then
-        --Spring.Echo("[2] Resurrect check")
+        --if localDebug then Spring.Echo("[2] Resurrect check") end
         local nearestFeatureID = nearestItemAround(unitID, pos, unitDef, radius, nil, nil, true)
         if nearestFeatureID then
             local x,y,z = spGetFeaturePosition(nearestFeatureID)
             spGiveOrderToUnit(unitID, CMD_INSERT, {-1, CMD_RESURRECT, CMD_OPT_INTERNAL+1,x,y,z,20}, {"alt"})  --shift
-            setAutomate(unitID, "ressurect")
+            setAutomate(unitID, "resurrect")
+            _orderIssued = true
         end
     end
     --- 3. If can assist, guard nearest factory
     if canassist[unitDef.name] and not _orderIssued then
-        --Spring.Echo("[3] Factory-assist check")
+        --if localDebug then Spring.Echo("[3] Factory-assist check") end
         --TODO: If during 'automation' it's guarding a factory but factory stopped production, remove it
         local nearestFactoryUnitID = nearestItemAround(unitID, pos, unitDef, radius,
                 function(x) return x.isFactory end,     --We're only interested in factories currently producing
@@ -391,33 +416,37 @@ local function automateCheck(unitID, unitDef)
             spGiveOrderToUnit(unitID, CMD_GUARD, { nearestFactoryUnitID }, {} )
             guardingUnits[unitID] = true
             setAutomate(unitID, "assist")
+            _orderIssued = true
         end
     end
     --- 4. If can repair, repair nearest allied unit with less than 90% maxhealth.
     if canrepair[unitDef.name] and not _orderIssued then
-        --Spring.Echo("[4] Repair check")
+        --if localDebug then Spring.Echo("[4] Repair check") end
         --TODO: Must check if the unit can assist or not (to assist building WIPmobileUnits)
         local nearestUnitID
         if canassist[unitID] then
             nearestUnitID = nearestItemAround(unitID, pos, unitDef, radius, nil,
                     function(x)
+                        --local isAllied = spGetUnitAllyTeam(unitID) == myAllyTeamID
                         local health,maxHealth = spGetUnitHealth(x)
-                        return health < (maxHealth * 0.99) end)
+                        return health < (maxHealth * 0.99) end) --isAllied and
         else
             nearestUnitID = nearestItemAround(unitID, pos, unitDef, radius, nil,
                     function(x)
+                        --local isAllied = spGetUnitAllyTeam(unitID) == myAllyTeamID
                         local health,maxHealth,_,_,done = spGetUnitHealth(x)
-                        return done and health < (maxHealth * 0.99) end)
+                        return done and health < (maxHealth * 0.99) end) --isAllied and
         end
         if nearestUnitID then
             --spGiveOrderToUnit(unitID, CMD_INSERT, {-1, CMD_REPAIR, CMD_OPT_INTERNAL+1,x,y,z,80}, {"alt"})
             spGiveOrderToUnit(unitID, CMD_REPAIR, { nearestUnitID }, {} )
             setAutomate(unitID, "repair")
+            _orderIssued = true
         end
     end
     --- 5. Reclaim nearest feature (prioritize metal)
     if canreclaim[unitDef.name] and not _orderIssued then
-        --Spring.Echo("[5] Reclaim check")
+        --if localDebug then Spring.Echo("[5] Reclaim check") end
         --TODO: This seems to be wrong (furthest feature instead of closest)
         local nearestFeatureID = nearestItemAround(unitID, pos, unitDef, radius, nil, nil, true)
         if nearestFeatureID then
@@ -425,11 +454,9 @@ local function automateCheck(unitID, unitDef)
             --spGiveOrderToUnit(unitID,CMD_INSERT,{-1,CMD_CAPTURE,CMD_OPT_INTERNAL+1,unitID2},{"alt"});
             --spGiveOrderToUnit(unitID, CMD_RECLAIM, { nearestFeatureID }, {"alt"} )
             local x,y,z = Spring.GetFeaturePosition(nearestFeatureID)
-            spGiveOrderToUnit(unitID, CMD_INSERT, {-1, CMD_RECLAIM, CMD_OPT_INTERNAL+1,x,y,z,80}, {"alt"})
+            spGiveOrderToUnit(unitID, CMD_INSERT, {-1, CMD_RECLAIM, CMD_OPT_INTERNAL+1,x,y,z,40}, {"alt"})
             setAutomate(unitID, "reclaim")
-        --else
-        --    Spring.Echo("@autoassist: Nearest featureID not found")
-        end --shift
+        end
     end
 end
 
@@ -438,7 +465,7 @@ function widget:CommandNotify(cmdID, params, options)
     -- User commands are tracked here, check what unit(s) is/are selected and remove it from automatedUnits
     local selUnits = spGetSelectedUnits()  --() -> { [1] = unitID, ... }
     for _, unitID in ipairs(selUnits) do
-        automatedUnits[unitID] = nil
+        DeautomateUnit(unitID, "CommandNotify")
     end
 end
 
@@ -447,22 +474,22 @@ end
 
 ----Give idle builders an assist command every n frames
 function widget:GameFrame(f)
-    for unitID, data in pairs(cancelAutoassistFor) do
-        -- Actual assist removal (a few frames after being issued)
-        if IsValidUnit(unitID) and (not assistStoppedUnits[unitID]) and data.frame >= f then
-            --Spring.Echo("Removing assist from ".. unitID)
-            --spGiveOrderToUnit(uID, CMD_REMOVE, {CMD_PATROL, CMD_GUARD, CMD_RECLAIM, CMD_REPAIR}, {"alt"})
-            --spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
-            spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
-            spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
-            spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
-            spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
-            spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_FIGHT }, { "alt"})
-            automatedUnits[unitID] = nil
-            assistStoppedUnits[unitID] = true
-            --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
-        end
-    end
+    --for unitID, data in pairs(cancelAutoassistFor) do
+    --    -- Actual assist removal (a few frames after being issued)
+    --    if IsValidUnit(unitID) and (not assistStoppedUnits[unitID]) and data.frame >= f then
+    --        --Spring.Echo("Removing assist from ".. unitID)
+    --        --spGiveOrderToUnit(uID, CMD_REMOVE, {CMD_PATROL, CMD_GUARD, CMD_RECLAIM, CMD_REPAIR}, {"alt"})
+    --        --spGiveOrderToUnit(unitID, CMD_INSERT, {0, CMD_STOP, CMD.OPT_SHIFT}, {"alt"}) --
+    --        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+    --        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
+    --        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
+    --        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+    --        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_FIGHT }, { "alt"})
+    --        automatedUnits[unitID] = nil
+    --        assistStoppedUnits[unitID] = true
+    --        --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
+    --    end
+    --end
 
     --local commandQueueSize = spGetCommandQueue(unitID, 0) --use 20 to limit this
 
@@ -478,10 +505,10 @@ function widget:GameFrame(f)
         end
     end
     if f % automatedCheckUpdateRate < 0.001 then
-        for unitID in pairs(automatedUnits) do
-            if IsValidUnit(unitID) and not assistStoppedUnits[unitID] then
+        for unitID in pairs(automatableUnits) do
+            if IsValidUnit(unitID) and not automatedUnits[unitID] and not assistStoppedUnits[unitID] then -- then
                 local unitDef = UnitDefs[spGetUnitDefID(unitID)]    --TODO: Cache this within automatedUnits
-                Spring.Echo("Rechecking automation of unitID: "..unitID)
+                if localDebug then Spring.Echo("Rechecking automation of unitID: "..unitID) end
                 automateCheck(unitID, unitDef)
             end
         end
@@ -503,26 +530,47 @@ local function SetColor(r,g,b,a)
 end
 
 function widget:DrawScreen()
-    if not glDebugStates or Spring.IsGUIHidden() then
+    if not localDebug then
         return end
-    local textSize = 14
+    local textSize = 22
+
     gl.PushMatrix()
+    gl.Translate(50, 50, 0)
+    gl.BeginText()
     for unitID, state in pairs(automatedUnits) do
         if spIsUnitInView(unitID) then
-            Spring.Echo("unitid/state: "..unitID..", "..state)
-
-            --local x, y, z = spGetUnitViewPosition(unitID)
-            local x, y, z = spGetUnitPosition(unitID)
+            --local sx, sy = 1000, 500
+            local x, y, z = spGetUnitViewPosition(unitID)
+            --            local x, y, z = spGetUnitPosition(unitID)
             local sx, sy, sz = Spring.WorldToScreenCoords(x, y, z)
-            glTranslate(50, 50, 0)
-            glBillboard()
-            --font:SetOutlineColor(outlineColor)
-            --font:Print(state, sx, sy, loadedFontSize, "con")
-            --glText(state, 0, 0, 28, 'ocd')
-
-            SetColor(1.0, 1.0, 0.7, 1.0)
-            glText(state, sx, sy, textSize, "ocd")
+            gl.Text(state, sx, sy, textSize, "ocd")
         end
     end
+    gl.EndText()
     gl.PopMatrix()
 end
+
+--function widget:DrawScreen()
+--    if not glDebugStates or Spring.IsGUIHidden() then
+--        return end
+--    local textSize = 14
+--    gl.PushMatrix()
+--    for unitID, state in pairs(automatedUnits) do
+--        if spIsUnitInView(unitID) then
+--            Spring.Echo("unitid/state: "..unitID..", "..state)
+--
+--            --local x, y, z = spGetUnitViewPosition(unitID)
+--            local x, y, z = spGetUnitPosition(unitID)
+--            local sx, sy, sz = Spring.WorldToScreenCoords(x, y, z)
+--            --glTranslate(50, 50, 0)
+--            --glBillboard()
+--            --font:SetOutlineColor(outlineColor)
+--            --font:Print(state, sx, sy, loadedFontSize, "con")
+--            --glText(state, 0, 0, 28, 'ocd')
+--
+--            SetColor(1.0, 1.0, 0.7, 1.0)
+--            glText(""..(state or "nil"), sx, sy, textSize, "ocd")
+--        end
+--    end
+--    gl.PopMatrix()
+--end
