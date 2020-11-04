@@ -12,13 +12,13 @@ function widget:GetInfo()
         date = "Oct 14, 2020",
         license = "GPLv3",
         layer = 0,
-        enabled = false, --true,
+        enabled = true,
     }
 end
 
 VFS.Include("gamedata/taptools.lua")
 
-local localDebug = false --true
+local localDebug = true
 
 local spGetAllUnits = Spring.GetAllUnits
 local spGetUnitDefID = Spring.GetUnitDefID
@@ -71,8 +71,7 @@ local basicBuilderAssistRadius = 250
 
 local automatableUnits = {}
 local automatedUnits = {}
-local assistStoppedUnits = {}
-local cancelAutoassistFor = {} -- { frame = unitID }
+local deautomatedUnits = {}
 local guardingUnits = {}    -- TODO: Commanders guarding factories, we('ll) use it to stop guarding when we're out of resources
 local orderRemovalDelay = 10    -- 10 frames of delay before removing commands, to prevent the engine from removing just given orders
 local internalCommandUIDs = {}
@@ -131,6 +130,18 @@ local canresurrect = {
 
 -----
 
+local function setAutomate(unitID, state)
+    if state == nil or state == "deautomated" then
+        state = "deautomated"
+        automatedUnits[unitID] = nil
+        deautomatedUnits[unitID] = true
+    else
+       automatedUnits[unitID] = state
+    end -- Flag auto-assisting unit for further command event processing
+    unitsToAutomate[unitID] = nil
+    if localDebug then Spring.Echo("Automating unit: "..unitID.." state: "..state) end
+end
+
 function widget:PlayerChanged()
     if Spring.GetSpectatingState() and Spring.GetGameFrame() > 0 then
         widgetHandler:RemoveWidget(self)
@@ -176,7 +187,7 @@ function widget:UnitFinished(unitID, unitDefID, unitTeam)
         if canreclaim[unitDef.name] or canresurrect[unitDef.name] then
             automatableUnits[unitID] = true
 
-            --Spring.Echo("Registering unit "..unitID.." as automatable"..unitDef.name)
+            Spring.Echo("Registering unit "..unitID.." as automatable"..unitDef.name)
             widget:UnitIdle(unitID, unitDefID, unitTeam)
         end
     end
@@ -187,26 +198,24 @@ function widget:UnitIdle(unitID, unitDefID, unitTeam)
     if not automatableUnits[unitID] then
         return end
     --Spring.Echo("Unit ".. unitID.." is idle.") --UnitDefs[unitDefID].name)
-    assistStoppedUnits[unitID] = nil
+    --setAutomate(unitID, nil)
     if myTeamID == spGetUnitTeam(unitID) and not unitsToAutomate[unitID] then		--check if unit is mine
         unitsToAutomate[unitID] = spGetGameFrame() + idlingDelay
         --Spring.Echo("Re-enabling assist for ".. unitID) --..UnitDefs[unitDefID].name)
-        cancelAutoassistFor[unitID] = nil
     end
 end
 
 local function DeautomateUnit(unitID, callingMethod)
-    if IsValidUnit(unitID) and (not assistStoppedUnits[unitID]) then
-        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+    if IsValidUnit(unitID) and (not deautomatedUnits[unitID]) then
         spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
         spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
-        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
         spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_FIGHT }, { "alt"})
-        automatedUnits[unitID] = nil
-        assistStoppedUnits[unitID] = true
+        spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+
+        setAutomate(unitID,nil)
         --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
+        if localDebug then Spring.Echo("Deautomating Unit: "..unitID.." from: "..(callingMethod or "nil")) end
     end
-    if localDebug then Spring.Echo("Deautomating Unit: "..unitID.." from: "..(callingMethod or "nil")) end
 end
 
 
@@ -227,7 +236,7 @@ end
 function widget:UnitDestroyed(unitID)
     unitsToAutomate[unitID] = nil
     DeautomateUnit(unitID, "UnitDestroyed")
-    assistStoppedUnits[unitID] = nil
+    deautomatedUnits[unitID] = nil
     automatableUnits[unitID] = nil
 end
 
@@ -251,14 +260,14 @@ local function enoughEconomy()
     return currentM > currentMstorage * 0.1 and currentE > currentEstorage * 0.1 --0.3
 end
 
---- We use this to make sure patrol works, issuing two nearby patrol points
-local function patrolOffset (x, y, z)
-    local ofs = 50
-    x = (x > mapsizehalfwidth ) and x-ofs or x+ofs   -- x ? a : b, in lua notation
-    z = (z > mapsizehalfheight) and z-ofs or z+ofs
-
-    return { x = x, y = y, z = z }
-end
+----- We use this to make sure patrol works, issuing two nearby patrol points
+--local function patrolOffset (x, y, z)
+--    local ofs = 50
+--    x = (x > mapsizehalfwidth ) and x-ofs or x+ofs   -- x ? a : b, in lua notation
+--    z = (z > mapsizehalfheight) and z-ofs or z+ofs
+--
+--    return { x = x, y = y, z = z }
+--end
 
 local function sqrDistance (pos1, pos2)
     if not istable(pos1) or not istable(pos2) or not pos1.x or not pos1.z or not pos2.x or not pos2.z then
@@ -350,13 +359,6 @@ local function GetNearestValidTarget(unitID, unitDef)
         end
     end
     return nearestUnitID
-end
-
-local function setAutomate(unitID, state)
-    --if state ~= nil then
-        automatedUnits[unitID] = state --end -- Flag auto-assisting unit for further command event processing
-    unitsToAutomate[unitID] = nil
-    if localDebug then Spring.Echo("Automating unit: "..unitID.." state: "..(state or "nil")) end
 end
 
 local function factoryIsBuilding(unitID)
@@ -496,7 +498,7 @@ function widget:GameFrame(f)
     if f % idleCheckUpdateRate < 0.001 then
         for unitID, automateFrame in pairs(unitsToAutomate) do
             if f >= automateFrame and IsValidUnit(unitID)
-                    and not automatedUnits[unitID] and not assistStoppedUnits[unitID] then
+                    and not automatedUnits[unitID] and not deautomatedUnits[unitID] then
                 local unitDef = UnitDefs[spGetUnitDefID(unitID)]
                 --Spring.Echo("Trying to automate unitID: "..unitID)
                 --- We only un-set unitsToAutomate[unitID] down the pipe, if automation is successful
@@ -506,7 +508,7 @@ function widget:GameFrame(f)
     end
     if f % automatedCheckUpdateRate < 0.001 then
         for unitID in pairs(automatableUnits) do
-            if IsValidUnit(unitID) and not automatedUnits[unitID] and not assistStoppedUnits[unitID] then -- then
+            if IsValidUnit(unitID) and not automatedUnits[unitID] and not deautomatedUnits[unitID] then -- then
                 local unitDef = UnitDefs[spGetUnitDefID(unitID)]    --TODO: Cache this within automatedUnits
                 if localDebug then Spring.Echo("Rechecking automation of unitID: "..unitID) end
                 automateCheck(unitID, unitDef)
