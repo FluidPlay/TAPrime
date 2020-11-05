@@ -7,7 +7,7 @@ function widget:GetInfo()
     date      = "Sep 2011",
     license   = "PD",
     layer     = -3,
-    enabled   = true,
+    enabled   = false, --true,
     detailsDefault = 3
   }
 end
@@ -287,6 +287,7 @@ end
 
 function widget:Initialize()
 	Spring.SendCommands("luaui disablewidget Map Edge Extension")
+    Spring.SendCommands("mapborder 0")  -- gets rid of the map border downwards gradient
 	island = IsIsland()
 	InitGroundHeights()
 	if DspLst then

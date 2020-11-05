@@ -8,7 +8,7 @@ function widget:GetInfo()
 	license   = "GNU GPL, v2 or later",
 	layer     = -11,
 	enabled   = false, --true, --enabled by default
-	handler   = false, --true, --can use widgetHandler:x()
+	handler   = true, --can use widgetHandler:x()
 	}
 end
 local vsx, vsy = gl.GetViewSizes()

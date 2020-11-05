@@ -364,7 +364,7 @@ function widget:Initialize()
 	end
 
 	SetupShaderTable()
-	Spring.SendCommands("luaui disablewidget External VR Grid")
+	Spring.SendCommands("luaui disablewidget Map External VR Grid")
 	if gl.CreateShader and options.useShader.value then
 		mirrorShader = gl.CreateShader(shaderTable)
 		if (mirrorShader == nil) then
