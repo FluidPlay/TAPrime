@@ -31,15 +31,17 @@ function SelfDestructionControls(n, scav, scavDef)
 				Constructing[scav] = false
 			end
 		end
-		if (oldselfdx[scav] and oldselfdy[scav] and oldselfdz[scav]) and (oldselfdx[scav] > selfdx[scav]-10 and oldselfdx[scav] < selfdx[scav]+10) and (oldselfdy[scav] > selfdy[scav]-10 and oldselfdy[scav] < selfdy[scav]+10) and (oldselfdz[scav] > selfdz[scav]-10 and oldselfdz[scav] < selfdz[scav]+10) then
+		if (oldselfdx[scav] and oldselfdy[scav] and oldselfdz[scav]) and (oldselfdx[scav] > selfdx[scav]-20 and oldselfdx[scav] < selfdx[scav]+20) and (oldselfdy[scav] > selfdy[scav]-20 and oldselfdy[scav] < selfdy[scav]+20) and (oldselfdz[scav] > selfdz[scav]-20 and oldselfdz[scav] < selfdz[scav]+20) then
 			if selfdx[scav] < mapsizeX and selfdx[scav] > 0 and selfdz[scav] < mapsizeZ and selfdz[scav] > 0 then
 				if not scavConstructor[scav] or Constructing[scav] == false then
+					local scavhealth, scavmaxhealth, scavparalyze = Spring.GetUnitHealth(scav)
 					for q = 1,5 do
 						local posx = math.random(selfdx[scav] - 400, selfdx[scav] + 400)
 						local posz = math.random(selfdz[scav] - 400, selfdz[scav] + 400)
 						local telstartposy = Spring.GetGroundHeight(selfdx[scav], selfdz[scav])
 						local telendposy = Spring.GetGroundHeight(posx, posz)
-						if (UnitDefs[scavDef].minWaterDepth and -(UnitDefs[scavDef].minWaterDepth) > telendposy) or (UnitDefs[scavDef].maxWaterDepth and -(UnitDefs[scavDef].maxWaterDepth) < telendposy) then
+						local poscheck = posLosCheckOnlyLOS(posx, telendposy, posz, 100)
+						if (-(UnitDefs[scavDef].minWaterDepth) > telendposy) and (-(UnitDefs[scavDef].maxWaterDepth) < telendposy) and scavparalyze == 0 and poscheck == true then
 							Spring.SpawnCEG("scav-spawnexplo",selfdx[scav],telstartposy,selfdz[scav],0,0,0)
 							Spring.SpawnCEG("scav-spawnexplo",posx,telendposy,posz,0,0,0)
 							Spring.SetUnitPosition(scav, posx, posz)
@@ -54,6 +56,18 @@ function SelfDestructionControls(n, scav, scavDef)
 	end
 	UnitRange[scav] = nil
 	Constructing[scav] = nil
+end
+
+function BossDGun(n)
+	if FinalBossUnitID then
+		local NearestBossEnemy = Spring.GetUnitNearestEnemy(FinalBossUnitID, 20000, false)
+		NearestBossEnemyUnitDefID = Spring.GetUnitDefID(NearestBossEnemy)
+		if UnitDefs[NearestBossEnemyUnitDefID].canFly ~= true then
+			local x,y,z = Spring.GetUnitPosition(NearestBossEnemy)
+			--Spring.GiveOrderToUnit(FinalBossUnitID, CMD.DGUN,{x,y,z}, {0})
+			Spring.GiveOrderToUnit(FinalBossUnitID, CMD.DGUN, NearestBossEnemy, {0})
+		end
+	end
 end
 
 function ArmyMoveOrders(n, scav, scavDef)

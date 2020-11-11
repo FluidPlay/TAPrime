@@ -63,6 +63,11 @@ if scavconfig.modules.constructorControllerModule then
 	VFS.Include("luarules/gadgets/scavengers/Modules/constructor_controller.lua")
 end
 
+if scavconfig.modules.randomEventsModule then
+	RandomEventsList = {}
+	VFS.Include("luarules/gadgets/scavengers/Modules/random_events.lua")
+end
+
 if scavconfig.modules.factoryControllerModule then
 	VFS.Include("luarules/gadgets/scavengers/Modules/factory_controller.lua")
 end
@@ -97,6 +102,8 @@ local function DisableUnit(unitID)
 	Spring.MoveCtrl.SetPosition(unitID, Game.mapSizeX+1000, 2000, Game.mapSizeZ+1000) --don't move too far out or prevent_aicraft_hax will explode it!
 	Spring.SetUnitCloak(unitID, true)
 	--Spring.SetUnitHealth(unitID, {paralyze=99999999})
+	Spring.SetUnitMaxHealth(unitID, 10000000)
+	Spring.SetUnitHealth(unitID, 10000000)
 	Spring.SetUnitNoDraw(unitID, true)
 	Spring.SetUnitStealth(unitID, true)
 	Spring.SetUnitNoSelect(unitID, true)
@@ -181,9 +188,16 @@ function gadget:GameFrame(n)
 		pregameMessages(n)
 	end
 	
+	if n%30 == 20 and n > 9000 and scavconfig.modules.randomEventsModule == true then
+		RandomEventTrigger(n)
+	end
+	
 	if n%150 == 85 and FinalBossUnitSpawned and FinalBossKilled == false then
 		local bosshealth = Spring.GetUnitHealth(FinalBossUnitID)
 		ScavSendMessage("Boss Health: "..math.ceil(bosshealth))
+		if math_random(0,math.floor(4/spawnmultiplier)) == 0 then
+			BossDGun(n)
+		end
 	end
 	
 	if n%minionFramerate == 0 and FinalBossUnitSpawned and FinalBossKilled == false then
@@ -191,13 +205,14 @@ function gadget:GameFrame(n)
 	end
 		
 
-	if scavconfig.modules.startBoxProtection == true and ScavengerStartboxExists == true and FinalBossKilled == false then
+	if scavconfig.modules.startBoxProtection == true and ScavSafeAreaExist == true and FinalBossKilled == false then
 		if n%30 == 0 then
 			spawnStartBoxProtection(n)
 			executeStartBoxProtection(n)
 			spawnStartBoxEffect2(n)
 		end
-		if n%3 == 0 then
+		--if n%(math.ceil(450/(math.ceil(ScavSafeAreaSize/5)))) == 0 then
+		if n%(math.ceil(7500000/(ScavSafeAreaSize*ScavSafeAreaSize))) == 0 then
 			spawnStartBoxEffect(n)
 		end
 	end
@@ -213,7 +228,7 @@ function gadget:GameFrame(n)
 			DisableCommander()
 			disabledCommander = true
 		end
-		Spring.SetUnitHealth(HiddenCommander, 9999999)
+		Spring.SetUnitHealth(HiddenCommander, 10000000)
 	end
 
 	if n == 100 and globalScore then
@@ -228,6 +243,14 @@ function gadget:GameFrame(n)
 		Spring.SetTeamResource(GaiaTeamID, "e", 1000000)
 		if BossWaveStarted == true then
 			BossWaveTimer(n)
+		end
+		local scavUnits = Spring.GetTeamUnits(GaiaTeamID)
+		local scavUnitsCount = #scavUnits
+		if scavUnitsCount < 5 and n > 18000 then
+			killedscavengers = killedscavengers + 100
+			if BossWaveStarted and (BossWaveTimeLeft and BossWaveTimeLeft > 20) then
+				BossWaveTimeLeft = 20
+			end
 		end
 	end
 	if n%1800 == 0 and n > 100 then
@@ -323,7 +346,7 @@ function gadget:GameFrame(n)
 				end
 				
 				-- backup -- and not scavConstructor[scav] and not scavResurrector[scav] and not scavCollector[scav]
-				if n%450 == 0 and not scavStructure[scav] and not scavAssistant[scav] and not scavFactory[scav] and not scavSpawnBeacon[scav] then
+				if n%900 == 0 and not scavStructure[scav] and not scavAssistant[scav] and not scavFactory[scav] and not scavSpawnBeacon[scav] then
 					SelfDestructionControls(n, scav, scavDef)
 				end
 				if Spring.GetCommandQueue(scav, 0) <= 1 and not scavStructure[scav] and not scavConstructor[scav] and not scavReclaimer[scav] and not scavResurrector[scav] and not scavAssistant[scav] and not scavCollector[scav] and not scavFactory[scav] and not scavSpawnBeacon[scav] then
@@ -356,7 +379,7 @@ function gadget:UnitDestroyed(unitID, unitDefID, unitTeam)
 		if scavConstructor[unitID] then
 			killedscavengers = killedscavengers + scavconfig.scoreConfig.scorePerKilledConstructor
 		end
-		if UnitName == "scavengerdroppodbeacon_scav" then
+		if UnitName == "scavengerdroppodbeacon_scav" or UnitDefs[unitDefID].name == "scavsafeareabeacon_scav" then
 			numOfSpawnBeacons = numOfSpawnBeacons - 1
 			killedscavengers = killedscavengers + scavconfig.scoreConfig.scorePerKilledSpawner
 		end
@@ -383,6 +406,10 @@ function gadget:UnitDestroyed(unitID, unitDefID, unitTeam)
 		UnitSuffixLenght[unitID] = nil
 		ConstructorNumberOfRetries[unitID] = nil
 		CaptureProgressForBeacons[unitID] = nil
+		if UnitName == "scavsafeareabeacon_scav" then
+			ScavSafeAreaExist = false
+			killedscavengers = killedscavengers + ((scavconfig.scoreConfig.scorePerKilledSpawner+scavconfig.scoreConfig.baseScorePerKill)*4*ScavSafeAreaGenerator)
+		end
 	else
 		for i = 1,#AliveEnemyCommanders do
 			local comID = AliveEnemyCommanders[i]
@@ -392,7 +419,7 @@ function gadget:UnitDestroyed(unitID, unitDefID, unitTeam)
 				break
 			end
 		end
-		if UnitName == "scavengerdroppodbeacon_scav" then
+		if UnitName == "scavengerdroppodbeacon_scav" or UnitDefs[unitDefID].name == "scavsafeareabeacon_scav" then
 			numOfSpawnBeaconsTeams[unitTeam] = numOfSpawnBeaconsTeams[unitTeam] - 1
 		end
 	end
@@ -401,7 +428,7 @@ end
 function gadget:UnitTaken(unitID, unitDefID, unitOldTeam, unitNewTeam)
 	local UnitName = UnitDefs[unitDefID].name
 	if unitOldTeam == GaiaTeamID then
-		if UnitDefs[unitDefID].name == "scavengerdroppodbeacon_scav" then
+		if UnitDefs[unitDefID].name == "scavengerdroppodbeacon_scav" or UnitDefs[unitDefID].name == "scavsafeareabeacon_scav" then
 			numOfSpawnBeacons = numOfSpawnBeacons - 1
 			numOfSpawnBeaconsTeams[unitNewTeam] = numOfSpawnBeaconsTeams[unitNewTeam] + 1
 			killedscavengers = killedscavengers + scavconfig.scoreConfig.scorePerCapturedSpawner
@@ -411,6 +438,9 @@ function gadget:UnitTaken(unitID, unitDefID, unitOldTeam, unitNewTeam)
 				Spring.SetUnitMaxHealth(unitID, 10000)
 			end
 			--SpawnDefencesAfterCapture(unitID, unitNewTeam)
+		end
+		if UnitName == "scavsafeareabeacon_scav" then
+			ScavSafeAreaExist = false
 		end
 		selfdx[unitID] = nil
 		selfdy[unitID] = nil
@@ -442,7 +472,7 @@ function gadget:UnitTaken(unitID, unitDefID, unitOldTeam, unitNewTeam)
 				UnitSuffixLenght[unitID] = 0
 			end
 			--Spring.Echo("Scavs just captured me " .. UnitName .. " and my suffix lenght is " .. UnitSuffixLenght[unitID])
-			if UnitDefs[unitDefID].name == "scavengerdroppodbeacon_scav" then
+			if UnitDefs[unitDefID].name == "scavengerdroppodbeacon_scav" or UnitDefs[unitDefID].name == "scavsafeareabeacon_scav" then
 				numOfSpawnBeaconsTeams[unitOldTeam] = numOfSpawnBeaconsTeams[unitOldTeam] - 1
 				numOfSpawnBeacons = numOfSpawnBeacons + 1
 				scavSpawnBeacon[unitID] = true
@@ -523,7 +553,7 @@ function gadget:UnitTaken(unitID, unitDefID, unitOldTeam, unitNewTeam)
 				end
 			end
 		end
-		if UnitDefs[unitDefID].name == "scavengerdroppodbeacon_scav" then
+		if UnitDefs[unitDefID].name == "scavengerdroppodbeacon_scav" or UnitDefs[unitDefID].name == "scavsafeareabeacon_scav" then
 			numOfSpawnBeaconsTeams[unitOldTeam] = numOfSpawnBeaconsTeams[unitOldTeam] - 1
 			numOfSpawnBeaconsTeams[unitNewTeam] = numOfSpawnBeaconsTeams[unitNewTeam] + 1
 		end
@@ -549,16 +579,20 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
 				Spring.DestroyUnit(unitID, false, true)
 				if heading >= -24576 and heading < -8192 then -- west
 					-- 3
-					Spring.CreateUnit(UnitName..suffix, posx, posy, posz, 3,GaiaTeamID)
+					QueueSpawn(UnitName..suffix, posx, posy, posz, 3 ,GaiaTeamID, frame+1)
+					--Spring.CreateUnit(UnitName..suffix, posx, posy, posz, 3,GaiaTeamID)
 				elseif heading >= -8192 and heading < 8192 then -- south
 					-- 0
-					Spring.CreateUnit(UnitName..suffix, posx, posy, posz, 0,GaiaTeamID)
+					QueueSpawn(UnitName..suffix, posx, posy, posz, 0 ,GaiaTeamID, frame+1)
+					--Spring.CreateUnit(UnitName..suffix, posx, posy, posz, 0,GaiaTeamID)
 				elseif heading >= 8192 and heading < 24576 then -- east
 					-- 1
-					Spring.CreateUnit(UnitName..suffix, posx, posy, posz, 1,GaiaTeamID)
+					QueueSpawn(UnitName..suffix, posx, posy, posz, 1 ,GaiaTeamID, frame+1)
+					--Spring.CreateUnit(UnitName..suffix, posx, posy, posz, 1,GaiaTeamID)
 				else -- north
 					-- 2
-					Spring.CreateUnit(UnitName..suffix, posx, posy, posz, 2,GaiaTeamID)
+					QueueSpawn(UnitName..suffix, posx, posy, posz, 2 ,GaiaTeamID, frame+1)
+					--Spring.CreateUnit(UnitName..suffix, posx, posy, posz, 2,GaiaTeamID)
 				end
 				return
 			end
@@ -571,10 +605,23 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
 				Spring.SetUnitHealth(unitID, bosshealth)
 			end
 		end
+		if UnitName == "scavsafeareabeacon_scav" then
+			ScavSafeAreaExist = true
+			if not ScavSafeAreaGenerator then
+				ScavSafeAreaGenerator = 0
+			end
+			ScavSafeAreaSize = math.ceil(ScavSafeAreaSize + (250 * (teamcount*0.5) * (spawnmultiplier*0.5)))
+			ScavSafeAreaGenerator = ScavSafeAreaGenerator + 1
+			local posx, posy, posz = Spring.GetUnitPosition(unitID)
+			ScavSafeAreaMinX = posx - ScavSafeAreaSize
+			ScavSafeAreaMaxX = posx + ScavSafeAreaSize
+			ScavSafeAreaMinZ = posz - ScavSafeAreaSize
+			ScavSafeAreaMaxZ = posz + ScavSafeAreaSize
+		end
 		if UnitName == "scavengerdroppod_scav" then
 			Spring.GiveOrderToUnit(unitID, CMD.SELFD,{}, {"shift"})
 		end
-		if UnitName == "scavengerdroppodbeacon_scav" then
+		if UnitName == "scavengerdroppodbeacon_scav" or UnitDefs[unitDefID].name == "scavsafeareabeacon_scav" then
 			scavSpawnBeacon[unitID] = true
 			numOfSpawnBeacons = numOfSpawnBeacons + 1
 			if scavconfig.modules.reinforcementsModule == true then
@@ -670,7 +717,7 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
 				table.insert(AliveEnemyCommanders,unitID)
 			end
 		end
-		if UnitDefs[unitDefID].name == "scavengerdroppodbeacon_scav" then
+		if UnitDefs[unitDefID].name == "scavengerdroppodbeacon_scav" or UnitDefs[unitDefID].name == "scavsafeareabeacon_scav" then
 			numOfSpawnBeaconsTeams[unitTeam] = numOfSpawnBeaconsTeams[unitTeam] + 1
 			if scavconfig.modules.reinforcementsModule == true then
 				Spring.SetUnitNeutral(unitID, false)
@@ -684,6 +731,18 @@ end
 function gadget:UnitFinished(unitID, unitDefID, unitTeam)
 	if unitTeam == GaiaTeamID then
 		-- CMD.CLOAK = 37382
+		local UnitName = UnitDefs[unitDefID].name
+		if string.find(UnitName, scavconfig.unitnamesuffix) then
+			UnitSuffixLenght[unitID] = string.len(scavconfig.unitnamesuffix)
+		else
+			UnitSuffixLenght[unitID] = 0
+		end
+		for i = 1,#WallUnitNames do
+			if string.sub(UnitName, 1, string.len(UnitName)-UnitSuffixLenght[unitID]) == WallUnitNames[i] then
+				Spring.SetUnitNeutral(unitID, false)
+				break
+			end
+		end
 		Spring.GiveOrderToUnit(unitID,37382,{1},0)
 		-- Fire At Will
 		if scavConstructor[unitID] then
