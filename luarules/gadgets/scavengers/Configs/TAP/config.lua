@@ -1,7 +1,5 @@
 Spring.Echo("[Scavengers] Config initialized")
 
-
-
 scavconfig = {
 	difficulty = {
 		easy = 1,
@@ -18,6 +16,7 @@ scavconfig = {
 		unitSpawnerModule 				= true,
 		startBoxProtection				= true,
 		reinforcementsModule			= false,
+		randomEventsModule				= true,
 		stockpilers						= true,
 		nukes							= true,
 	},
@@ -33,7 +32,7 @@ scavconfig = {
 			-- Additional score for specific unit types, use -baseScorePerKill(default 1) to make it have no effect on score, use values lower than baseScorePerKill to reduce score
 			scorePerKilledBuilding 			= 4,
 			scorePerKilledConstructor 		= 99,
-			scorePerKilledSpawner 			= -1,
+			scorePerKilledSpawner 			= 99,
 			scorePerCapturedSpawner 		= 50, -- this doesn't care about baseScorePerKill 
 	},
 	timers = {
@@ -61,9 +60,9 @@ scavconfig = {
 		T4med								= 21000,
 		T4high								= 24000,
 		T4top								= 28000,
-		BossFight							= 28001,
+		BossFight							= 32000,
 		-- don't delete
-		NoRadar								= 1200,
+		NoRadar								= 7500,
 	},
 	other = {
 		heighttolerance						= 30, -- higher = allow higher height diffrences
@@ -87,8 +86,8 @@ unitSpawnerModuleConfig = {
 	aircraftchance 						= 8, --6,9 [M] -- higher number = lower chance
 	--- globalscoreperoneunit: Let's say scavs are on 3000 score, and score per unit is 1000,
 	-- it will spawn 3 units if all other multipliers are 1 but there are multipliers for land/sea/air and multipliers for tiers
-	globalscoreperoneunit 				= 2000, --4500,
-	spawnchance							= 70, -- 20, 120; lower = more
+	globalscoreperoneunit 				= 1000, --4500,
+	spawnchance							= 140, -- 20, 120; lower = more
 	beaconspawnchance					= 60,
 	minimumspawnbeacons					= 3,
 	landmultiplier 						= 0.75,
@@ -119,7 +118,13 @@ unitControllerModuleConfig = {
 }
 
 spawnProtectionConfig = {
-	spread				= 192,
+	spread				= 100,
+}
+
+randomEventsConfig = {
+	randomEventMinimumDelay = 9000, -- frames
+	randomEventChance = 200, -- higher = lower chance
+	
 }
 
 

@@ -43,16 +43,17 @@ if not gadgetHandler:IsSyncedCode() then
 	end
 
 	function SendMessage(_,msg)
-		if tonumber(Spring.GetConfigInt("scavmessages",1) or 1) == 1 then
+		if Spring.GetConfigInt("scavmessages",1) == 1 then
 			if Script.LuaUI("GadgetAddMessage") then
 				Script.LuaUI.GadgetAddMessage(msg)
 			end
 		end
 	end
 	function SendNotification(_,msg)
-		if tonumber(Spring.GetConfigInt("scavmessages",1) or 1) == 1 then
+		if Spring.GetConfigInt("scavmessages",1) == 1 then
 			if Script.LuaUI("EventBroadcast") then
-				Script.LuaUI.EventBroadcast("SoundEvents "..msg.." "..myPlayerID)
+				local forceplay = (Spring.GetConfigInt("scavaudiomessages",1) == 1) and ' y' or ''
+				Script.LuaUI.EventBroadcast("SoundEvents "..msg.." "..myPlayerID..forceplay)
 			end
 		end
 	end
@@ -77,6 +78,7 @@ if not gadgetHandler:IsSyncedCode() then
 			Script.LuaUI.AddNotification('scav_droppingUnits', 'scavengers/droppingUnits.wav', 20, 3.31, "Scavengers are dropping units in our area.", unlisted)
 
 			Script.LuaUI.AddNotification('scav_scavfinalvictory', 'scavengers/scavfinalvictory.wav', 20, 10.5, "Good work commander. You survived all scavenger attacks. You are victorius! Celebrate and then try and annihilate them on the next map.", unlisted)
+			Script.LuaUI.AddNotification('scav_scavfinalboss', 'scavengers/scavfinalboss.wav', 20, 10.5, "Commander, we've detected an abnormally large signature of scavenger unit. It's approaching slowly in your direction. Be prepared for the worst!", unlisted)
 			Script.LuaUI.AddNotification('scav_scavfinal12remain', 'scavengers/scavfinal12remain.wav', 20, 3.93, "12.5 minutes remaining. Still a long fight ahead.", unlisted)
 			Script.LuaUI.AddNotification('scav_scavfinal10remain', 'scavengers/scavfinal10remain.wav', 20, 1.49, "10 minutes remaining.", unlisted)
 			Script.LuaUI.AddNotification('scav_scavfinal09remain', 'scavengers/scavfinal09remain.wav', 20, 2.7, "9 minutes remaining. Hold your line.", unlisted)
@@ -98,6 +100,10 @@ if not gadgetHandler:IsSyncedCode() then
 			Script.LuaUI.AddNotification('scav_scavtech3e', 'scavengers/scavtech3e.wav', 20, 3.18, "", unlisted)
 			Script.LuaUI.AddNotification('scav_scavheavyshipsdetected', 'scavengers/scavheavyshipsdetected.wav', 20, 3.28, "Alert. Heavy ships detected in the area.", unlisted)
 			--Script.LuaUI.AddNotification('scav_', 'scavengers/.wav', 20, 3, "", unlisted)
+
+			Script.LuaUI.AddNotification('scav_eventmalfunctions', 'scavengers/scav-event-malfunctions.wav', 20, 3.02, "Alert! Scavenger malfunction detected.", unlisted)
+			Script.LuaUI.AddNotification('scav_eventminiboss', 'scavengers/scav-event-miniboss.wav', 20, 4.23, "Alert! Miniboss Detected.", unlisted)
+			Script.LuaUI.AddNotification('scav_eventswarm', 'scavengers/scav-event-swarmdetected.wav', 20, 3.76, "Warning! Scavenger swarm detected.", unlisted)
 
 		end
 	end

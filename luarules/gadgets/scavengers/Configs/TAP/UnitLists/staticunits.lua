@@ -19,6 +19,15 @@ NoSelfdList = {
 	--"cornecro",
 }
 
+WallUnitNames = {
+	"armdrag",
+	"armfdrag",
+	"cordrag",
+	"corfdrag",
+	"armfort",
+	"corfort",
+}
+
 StockpilingUnitNames = {
 	"corsilo",
 	"armsilo",
