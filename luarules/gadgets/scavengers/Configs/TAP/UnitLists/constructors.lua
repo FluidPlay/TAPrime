@@ -17,6 +17,11 @@ CommandersList = {      -- for targeting; in final phase they switch target from
     "corcom4",
 }
 
+ConstructorsCounter = {
+	UDN.armcom_scav.id,
+	UDN.corcom_scav.id,
+}
+
 AssistUnits = {
     "armoutpost",
     "coroutpost",
