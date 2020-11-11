@@ -38,6 +38,7 @@ function widget:Initialize()
     --Spring.SetDrawSky(false)
     Spring.SetDrawWater(true)
     Spring.SetDrawGround(true)
+    Spring.SetDrawSky(false)
     Spring.SetMapRenderingParams({voidWater = false, voidGround = true})
     Spring.SetSkyBoxTexture("LuaUI/Images/vr_grid.png")
         ---fog{Start,End}, {sun,sky,cloud}Color
