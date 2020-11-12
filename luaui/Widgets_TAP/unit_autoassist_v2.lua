@@ -137,6 +137,13 @@ local canresurrect = {
 
 -----
 
+local function isCom(unitID,unitDefID)
+    if unitID and not unitDefID then
+        unitDefID = spGetUnitDefID(unitID)
+    end
+    return UnitDefs[unitDefID] and UnitDefs[unitDefID].customParams and UnitDefs[unitDefID].customParams.iscommander ~= nil
+end
+
 local function unitIsBeingBuilt(unitID)
     return select(5, spGetUnitHealth(unitID)) < 1
 end
@@ -147,13 +154,17 @@ local function setAutomate(unitID, state, caller)
     end
     automatedState[unitID] = state
     --unitsToAutomate[unitID] = nil
-    if localDebug then Spring.Echo("automating unit: "..unitID.." state: "..state.." from function: "..caller) end
+    if localDebug and isCom(unitID) then Spring.Echo("automating unit: "..unitID.." state: "..state.." from function: "..caller) end
 end
 
 local function hasCommandQueue(unitID)
     local commandQueue = spGetCommandQueue(unitID, 0)
-    Spring.Echo("command queue size: "..(commandQueue or "N/A"))
-    return commandQueue and commandQueue == 0 or false
+    if isCom(unitID) then Spring.Echo("command queue size: "..(commandQueue or "N/A")) end
+    if commandQueue then
+        return commandQueue > 0
+    else
+        return false
+    end
 end
 
 
@@ -175,8 +186,12 @@ end
 
 local function hasBuildQueue(unitID)
     local buildqueue = spGetFullBuildQueue(unitID) -- => nil | buildOrders = { [1] = { [number unitDefID] = number count }, ... } }
-    Spring.Echo("build queue size: "..(buildqueue and #buildqueue or "N/A"))
-    return buildqueue and #buildqueue > 0 or false
+    if isCom(unitID) then Spring.Echo("build queue size: "..(buildqueue and #buildqueue or "N/A")) end
+    if buildqueue then
+        return #buildqueue > 0
+    else
+        return false
+    end
 end
 
 function widget:PlayerChanged()
@@ -225,7 +240,7 @@ function widget:UnitFinished(unitID, unitDefID, unitTeam)
             WIPmobileUnits[unitID] = false
         end
         if canrepair[unitDef.name] or canresurrect[unitDef.name] then
-            Spring.Echo("Registering unit "..unitID.." as automatable: "..unitDef.name)
+            if isCom(unitID) then Spring.Echo("Registering unit "..unitID.." as automatable: "..unitDef.name) end
             widget:UnitIdle(unitID, unitDefID, unitTeam)
         end
     end
@@ -236,7 +251,7 @@ function widget:UnitIdle(unitID, unitDefID, unitTeam)
     -- If the unit has a build queue, it can't be set to idle - even if Spring says so.
     if not automatableUnits[unitID] or hasCommandQueue(unitID) or hasBuildQueue(unitID) then
         return end
-    Spring.Echo("Unit ".. unitID.." is idle.") --UnitDefs[unitDefID].name)
+    if isCom(unitID) then Spring.Echo("Unit ".. unitID.." is idle.") end --UnitDefs[unitDefID].name)
     if myTeamID == spGetUnitTeam(unitID) then -- and not unitsToAutomate[unitID] then		--check if unit is mine
         automatedState[unitID] = "idle"
         unitsToAutomate[unitID] = spGetGameFrame() + idlingDelay
@@ -250,7 +265,7 @@ local function DeautomateUnit(unitID)
     spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
 
     --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
-    if localDebug then Spring.Echo("Deautomating Unit: "..unitID) end
+    if localDebug and isCom(unitID) then Spring.Echo("Deautomating Unit: "..unitID) end
     setAutomate(unitID, nil, "DeautomateUnit")
 end
 
@@ -506,10 +521,10 @@ function widget:GameFrame(f)
     end
     if f % automatedRecheckRate < 0.001 then
         for unitID in pairs(automatableUnits) do
-            if IsValidUnit(unitID) and not unitIsBeingBuilt(unitID) --and not automatedState[unitID]
+            if IsValidUnit(unitID) and not unitIsBeingBuilt(unitID) and automatedState[unitID] ~= "deautomated"
                     and not unitsToAutomate[unitID] then -- then
                 local unitDef = UnitDefs[spGetUnitDefID(unitID)]    --TODO: Cache this within automatedUnits
-                if localDebug then Spring.Echo("Rechecking automation of unitID: "..unitID) end
+                if localDebug and isCom(unitID) then Spring.Echo("Rechecking automation of unitID: "..unitID) end
                 automateCheck(unitID, unitDef, "automatedCheckRate")
             end
         end

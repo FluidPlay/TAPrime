@@ -24,7 +24,7 @@ local CanvasX,CanvasY = vsx,vsy --resolution in which the widget was made (for 1
 local widgetScale = (1 + (vsx*vsy / 7500000))
 
 local maxSx = CanvasX*0.275
-local maxSy = CanvasY*0.23
+local maxSy = CanvasY*0.2 --*0.23
 
 local Config = {
 	minimap = {
