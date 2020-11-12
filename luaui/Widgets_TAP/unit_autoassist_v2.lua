@@ -12,7 +12,7 @@ function widget:GetInfo()
         date = "Oct 14, 2020",
         license = "GPLv3",
         layer = 0,
-        enabled = true,
+        enabled = false,
     }
 end
 
@@ -21,7 +21,7 @@ end
 
 VFS.Include("gamedata/taptools.lua")
 
-local localDebug = true
+local localDebug = false --true
 
 local spGetAllUnits = Spring.GetAllUnits
 local spGetUnitDefID = Spring.GetUnitDefID
