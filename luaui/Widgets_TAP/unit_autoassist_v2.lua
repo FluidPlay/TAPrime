@@ -12,7 +12,7 @@ function widget:GetInfo()
         date = "Oct 14, 2020",
         license = "GPLv3",
         layer = 0,
-        enabled = false,
+        enabled = true,
     }
 end
 
@@ -21,7 +21,7 @@ end
 
 VFS.Include("gamedata/taptools.lua")
 
-local localDebug = false --true
+local localDebug = true
 
 local spGetAllUnits = Spring.GetAllUnits
 local spGetUnitDefID = Spring.GetUnitDefID
@@ -66,13 +66,16 @@ local GL_ONE_MINUS_SRC_ALPHA	= GL.ONE_MINUS_SRC_ALPHA
 local glBlending          		= gl.Blending
 local glScale          			= gl.Scale
 
-local idlingDelay = 10   -- How many frames after 'idle' the unit is actually considered idle (required to not break scripts)
 local myTeamID, myAllyTeamID = -1, -1
-local idleCheckUpdateRate = 40  -- How long it'll take for an idled unit to check things around it
-local automatedRecheckRate = 60 -- How long it'll take for an automated unit to see if it shouldn't be doing something else
-local basicBuilderAssistRadius = 250
 
-local automatableUnits = {}
+local updateRate = 30 --10            -- update "tick rate"
+local recheckUpdateRate = 80 --40     -- How long it'll take (after an action) for an idled unit to check if it's idle
+local automatedRecheckDelay = 60 -- Additional frames (past checkUpdateRate) until an automated unit sees if it shouldn't be doing something else
+
+local automatableUnits = {} -- Units which can be automated, but aren't at the moment (set on idle)
+local unitsToAutomate = {}  -- These will be automated, but aren't there yet (on grace time)
+local automatedUnits = {}   -- Post automation, removed when set to idle
+local automatedState = {}   -- This is the automated state. It's always there for automatableUnits
 local guardingUnits = {}    -- TODO: Commanders guarding factories, we('ll) use it to stop guarding when we're out of resources
 local orderRemovalDelay = 10    -- 10 frames of delay before removing commands, to prevent the engine from removing just given orders
 local internalCommandUIDs = {}
@@ -83,8 +86,6 @@ local widgetScale = (0.50 + (vsx*vsy / 5000000))
 
 -- We use this to identify units that can't be build-assisted by basic builders
 local WIPmobileUnits = {}     -- { unitID = true, ... }
-local unitsToAutomate = {}
-local automatedState = {}
 
 local mapsizehalfwidth = Game.mapSizeX/2
 local mapsizehalfheight = Game.mapSizeZ/2
@@ -230,7 +231,19 @@ function widget:UnitCreated(unitID, unitDefID, teamID, builderID)
     end
     local unitDef = UnitDefs[unitDefID]
     if canrepair[unitDef.name] or canresurrect[unitDef.name] then
-        automatableUnits[unitID] = true
+        automatableUnits[unitID] = spGetGameFrame() + recheckUpdateRate --that's the frame it'll start to check automation
+    end
+end
+
+
+--- Spring's UnitIdle is just too weird, it fires up when units are transitioning between commands..
+--function widget:UnitIdle(unitID, unitDefID, unitTeam)
+local function customUnitIdle(unitID)
+    if not automatableUnits[unitID] then
+        return end
+    if isCom(unitID) then Spring.Echo("Unit ".. unitID.." is idle.") end --UnitDefs[unitDefID].name)
+    if myTeamID == spGetUnitTeam(unitID) then --check if unit is mine
+        unitsToAutomate[unitID] = spGetGameFrame() + recheckUpdateRate
     end
 end
 
@@ -242,21 +255,8 @@ function widget:UnitFinished(unitID, unitDefID, unitTeam)
         end
         if canrepair[unitDef.name] or canresurrect[unitDef.name] then
             if isCom(unitID) then Spring.Echo("Registering unit "..unitID.." as automatable: "..unitDef.name) end
-            widget:UnitIdle(unitID, unitDefID, unitTeam)
+            customUnitIdle(unitID)
         end
-    end
-end
-
-----Add builder to the register
-function widget:UnitIdle(unitID)
-    -- If the unit has a build queue, it can't be set to idle - even if Spring says so.
-    if not automatableUnits[unitID] then
-        return end
-    if (hasCommandQueue(unitID) and not guardingUnits[unitID]) or hasBuildQueue(unitID) then
-        return end
-    if isCom(unitID) then Spring.Echo("Unit ".. unitID.." is idle.") end --UnitDefs[unitDefID].name)
-    if myTeamID == spGetUnitTeam(unitID) then -- and not unitsToAutomate[unitID] then		--check if unit is mine
-        unitsToAutomate[unitID] = spGetGameFrame() + idlingDelay
     end
 end
 
@@ -481,7 +481,11 @@ local function automateCheck(unitID, unitDef, caller)
             local x,y,z = Spring.GetFeaturePosition(nearestFeatureID)
             spGiveOrderToUnit(unitID, CMD_INSERT, {-1, CMD_RECLAIM, CMD_OPT_INTERNAL+1,x,y,z,40}, {"alt"})
             setAutomate(unitID, "reclaim", caller.."> automateCheck")
+            _orderIssued = true
         end
+    end
+    if _orderIssued then
+        automatableUnits[unitID] = spGetGameFrame() + recheckUpdateRate
     end
 end
 
@@ -501,41 +505,65 @@ end
 
 ----Give idle builders an assist command every n frames
 function widget:GameFrame(f)
-    --local commandQueueSize = spGetCommandQueue(unitID, 0) --use 20 to limit this
+    if f % updateRate > 0.001 then
+        return
+    end
 
-    if f % idleCheckUpdateRate < 0.001 then
-        for unitID, automateFrame in pairs(unitsToAutomate) do
-            if f >= automateFrame and IsValidUnit(unitID) --and automatedState[unitID]=="idle"
-                then
-                local unitDef = UnitDefs[spGetUnitDefID(unitID)]
-                --Spring.Echo("Trying to automate unitID: "..unitID)
-                --- We only un-set unitsToAutomate[unitID] down the pipe, if automation is successful
-                automatedState[unitID] = "idle"
-                automateCheck(unitID, unitDef, "idleCheckUpdateRate")
+    -- Initialize the just-created units, and post-idle automation
+    for unitID, automateFrame in pairs(unitsToAutomate) do
+        if IsValidUnit(unitID) and f >= automateFrame --and automatedState[unitID]=="idle"
+            then
+            local unitDef = UnitDefs[spGetUnitDefID(unitID)]
+            --Spring.Echo("Trying to automate unitID: "..unitID)
+            --- We only un-set unitsToAutomate[unitID] down the pipe, if automation is successful
+            automatedState[unitID] = "idle"
+            automateCheck(unitID, unitDef, "idleCheckUpdateRate")
+        end
+    end
+
+    local function isReallyIdle(unitID)
+        local result = true
+        -- commandqueue with guard => not idle
+        if hasBuildQueue(unitID) or (hasCommandQueue(unitID) and guardingUnits[unitID]) then
+            result = false
+        end
+        return result
+    end
+
+    -- Re-idle check (let's dodge spring's idle, it's too unreliable)
+    for unitID, recheckFrame in pairs(automatableUnits) do
+        if IsValidUnit(unitID) and recheckFrame > f then
+            if isReallyIdle(unitID) then
+                --    -- builders assisting have a commandqueue (guard)
+                --    if hasBuildQueue(unitID) or (hasCommandQueue(unitID) and not guardingUnits[unitID]) then
+                customUnitIdle(unitID)
             end
         end
     end
-    if f % automatedRecheckRate < 0.001 then
-        for unitID in pairs(automatableUnits) do
-            if localDebug and isCom(unitID) then
-                Spring.Echo("Trying to recheck: "..unitID.."; automatedState: "..(automatedState[unitID] or "nil")
-                            .." unitsToAutomate: "..(unitsToAutomate[unitID] or "nil"))
-            end
 
-            if IsValidUnit(unitID) and not unitIsBeingBuilt(unitID) and automatedState[unitID] ~= "deautomated" then -- then
-                --and (unitsToAutomate[unitID] and unitsToAutomate[unitID] > f)
-                local unitDef = UnitDefs[spGetUnitDefID(unitID)]    --TODO: Cache this within automatedUnits
-                if localDebug and isCom(unitID) then Spring.Echo("Rechecking automation of unitID: "..unitID) end
-                automateCheck(unitID, unitDef, "automatedCheckRate")
-            end
+    for unitID, recheckFrame in pairs(automatableUnits) do
+        if localDebug and isCom(unitID) then
+            Spring.Echo("Trying to recheck: "..unitID.."; automatedState: "..(automatedState[unitID] or "nil")
+                        .." unitsToAutomate: "..(unitsToAutomate[unitID] or "nil"))
         end
-        ---If unit is on "assist" state and its guarded unit has no buildqueue, set it to idle.
+        local recheckFrame = recheckFrame + automatedRecheckDelay
+        if IsValidUnit(unitID) and recheckFrame > f and not unitIsBeingBuilt(unitID)
+                and automatedState[unitID] ~= "deautomated" then
 
-        for unitID, guardedUnit in pairs(guardingUnits) do
-            if IsValidUnit(unitID) and IsValidUnit(guardedUnit) then
-                if not hasBuildQueue(guardedUnit) then
-                    widget:UnitIdle(unitID)
-                end
+            local unitDef = UnitDefs[spGetUnitDefID(unitID)]    --TODO: Cache this within automatedUnits
+            if localDebug and isCom(unitID) then Spring.Echo("Rechecking automation of unitID: "..unitID) end
+            automateCheck(unitID, unitDef, "automatedCheckRate")
+        end
+    end
+    ---If unit is on "assist" state and its guarded unit has no buildqueue, set it to idle.
+
+    for unitID, guardedUnit in pairs(guardingUnits) do
+        if IsValidUnit(unitID) and IsValidUnit(guardedUnit) then
+            if not hasBuildQueue(guardedUnit) then
+                --    -- builders assisting have a commandqueue (guard)
+                --    if hasBuildQueue(unitID) or (hasCommandQueue(unitID) and not guardingUnits[unitID]) then
+                --        return end
+                customUnitIdle(unitID)
             end
         end
     end
