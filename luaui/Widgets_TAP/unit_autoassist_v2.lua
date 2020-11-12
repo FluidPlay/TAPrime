@@ -250,11 +250,12 @@ end
 ----Add builder to the register
 function widget:UnitIdle(unitID)
     -- If the unit has a build queue, it can't be set to idle - even if Spring says so.
-    if not automatableUnits[unitID] or hasBuildQueue(unitID) then --or hasCommandQueue(unitID) or
+    if not automatableUnits[unitID] then
+        return end
+    if (hasCommandQueue(unitID) and not guardingUnits[unitID]) or hasBuildQueue(unitID) then
         return end
     if isCom(unitID) then Spring.Echo("Unit ".. unitID.." is idle.") end --UnitDefs[unitDefID].name)
     if myTeamID == spGetUnitTeam(unitID) then -- and not unitsToAutomate[unitID] then		--check if unit is mine
-        automatedState[unitID] = "idle"
         unitsToAutomate[unitID] = spGetGameFrame() + idlingDelay
     end
 end
@@ -504,11 +505,12 @@ function widget:GameFrame(f)
 
     if f % idleCheckUpdateRate < 0.001 then
         for unitID, automateFrame in pairs(unitsToAutomate) do
-            if f >= automateFrame and IsValidUnit(unitID)
-                    and automatedState[unitID]=="idle" then
+            if f >= automateFrame and IsValidUnit(unitID) --and automatedState[unitID]=="idle"
+                then
                 local unitDef = UnitDefs[spGetUnitDefID(unitID)]
                 --Spring.Echo("Trying to automate unitID: "..unitID)
                 --- We only un-set unitsToAutomate[unitID] down the pipe, if automation is successful
+                automatedState[unitID] = "idle"
                 automateCheck(unitID, unitDef, "idleCheckUpdateRate")
             end
         end
