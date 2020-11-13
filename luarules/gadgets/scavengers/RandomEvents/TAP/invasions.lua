@@ -1,8 +1,8 @@
 
 function RandomEventInvasion(CurrentFrame)
 ScavSendNotification("scav_eventswarm")
-local invasionUnitsLand = {"armbeaver_scav", "cormuskrat_scav",}
-local invasionUnitsSea = {"armbeaver_scav","cormuskrat_scav",}
+local invasionUnitsLand = {"cormuskrat_scav","cormuskrat_scav",} --\"armbeaver_scav\",
+local invasionUnitsSea = {"corch_scav","corch_scav",} --hover FARK
 local groupsize = (globalScore / unitSpawnerModuleConfig.globalscoreperoneunit)*spawnmultiplier
 local groupsize = groupsize*((unitSpawnerModuleConfig.landmultiplier*unitSpawnerModuleConfig.seamultiplier*unitSpawnerModuleConfig.airmultiplier)*0.33)*unitSpawnerModuleConfig.t0multiplier*4
 local groupsize = math.ceil(groupsize*(teamcount/2))
