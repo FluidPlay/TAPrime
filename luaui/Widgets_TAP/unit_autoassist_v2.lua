@@ -72,9 +72,10 @@ local updateRate = 30 --10            -- update "tick rate"
 local recheckUpdateRate = 80 --40     -- How long it'll take (after an action) for an idled unit to check if it's idle
 local automatedRecheckDelay = 60 -- Additional frames (past checkUpdateRate) until an automated unit sees if it shouldn't be doing something else
 
-local automatableUnits = {} -- Units which can be automated, but aren't at the moment (set on idle)
 local unitsToAutomate = {}  -- These will be automated, but aren't there yet (on grace time)
+local automatableUnits = {} -- Units which can be automated -- { [unitID] = delay (eg: spGetGameFrame() + recheckUpdateRate), ... }
 local automatedUnits = {}   -- Post automation, removed when set to idle
+
 local automatedState = {}   -- This is the automated state. It's always there for automatableUnits
 local guardingUnits = {}    -- TODO: Commanders guarding factories, we('ll) use it to stop guarding when we're out of resources
 local orderRemovalDelay = 10    -- 10 frames of delay before removing commands, to prevent the engine from removing just given orders
@@ -234,7 +235,6 @@ function widget:UnitCreated(unitID, unitDefID, teamID, builderID)
         automatableUnits[unitID] = spGetGameFrame() + recheckUpdateRate --that's the frame it'll start to check automation
     end
 end
-
 
 --- Spring's UnitIdle is just too weird, it fires up when units are transitioning between commands..
 --function widget:UnitIdle(unitID, unitDefID, unitTeam)
