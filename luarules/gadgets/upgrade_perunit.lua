@@ -192,8 +192,8 @@ local function finishUpgrade(unitID, unitUpg)
         local weaponDefID = UnitDefs[Spring.GetUnitDefID(unitID)].weapons[1].weaponDef
         local origRange = WeaponDefs[weaponDefID].range
         --Spring.Echo("Restored range to: "..origRange)
-        Spring.SetUnitWeaponState(unitID, 1, "range", origRange)
         Spring.CallCOBScript(unitID, "ShowWeapon", 0)
+        Spring.SetUnitWeaponState(unitID, 1, "range", origRange)
     end
 
     -- Disable upgrade button on this unit

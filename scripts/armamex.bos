@@ -120,12 +120,15 @@ Create()
 	hide flare;
 	dont-cache flare;
 	hide turret; //dont-cache
+	dont-cache turret;
 	hide sleeve;
+	dont-cache sleeve;
 	hide barrel;
+	dont-cache barrel;
 	dont-shade flare;
-	dont-shade turret;
-	dont-shade sleeve;
-	dont-shade barrel;	
+	//dont-shade turret;
+	//dont-shade sleeve;
+	//dont-shade barrel;	
 	
 	call-script InitState();
 	start-script SmokeUnit();

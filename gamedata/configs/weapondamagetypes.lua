@@ -26,7 +26,7 @@ local weaponDamageTypes = {
 	armthund = { ["Bombs"] = "explosive", },
 	corcrw = { ["HighEnergyLaser"] = "neutron", ["PlasmaBeam"] = "plasma", },
 	--armflea = { ["Laser"] = "laser", },
-	armfig = { ["GuidedMissiles"] = "homing", ["GuidedMissilesA2G"] = "homing",},
+	armfig = { ["GuidedMissiles"] = "homing", ["GuidedMissilesA2G"] = "rocket",},
 	armllt = { ["LightLaser"] = "hflaser", },
 	corfgate = { ["NavalPlasmaRepulsor"] = "none", },
 	corssub = { ["advTorpedo"] = "rocket", },
