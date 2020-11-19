@@ -116,16 +116,23 @@ Create()
 	Static_Var_3 = 182;
 	dont-shade arms;
 	dont-cache arms;
-	
-	hide flare;
-	dont-cache flare;
-	hide turret; //dont-cache
-	dont-cache turret;
-	hide sleeve;
-	dont-cache sleeve;
-	hide barrel;
-	dont-cache barrel;
+
 	dont-shade flare;
+	dont-cache flare;	
+	hide flare;
+
+	dont-shade turret;
+	dont-cache turret;
+	hide turret; //dont-cache
+
+	dont-shade sleeve;
+	dont-cache sleeve;
+	hide sleeve;
+
+	dont-shade barrel;
+	dont-cache barrel;
+	hide barrel;
+
 	//dont-shade turret;
 	//dont-shade sleeve;
 	//dont-shade barrel;	
@@ -191,7 +198,7 @@ HitByWeapon(Func_Var_1, Func_Var_2)
 	set ACTIVATION to 100;
 }
 
-ShowWeapon()
+showweapon()
 {
 	show turret; //dont-cache
 	show sleeve;

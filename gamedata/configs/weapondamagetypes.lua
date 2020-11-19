@@ -185,7 +185,7 @@ local weaponDamageTypes = {
 	armcarry = { ["Rocket"] = "omni", },
 	armjeth = { ["Missiles"] = "rocket", },
 	corkrog = { ["KrogCrush"] = "omni", ["HeavyRockets"] = "rocket", ["GaussCannon"] = "plasma", ["KrogHeatRay"] = "thermo", },
-	corgator = { ["Laser"] = "laser", },
+	corgator = { ["Laser"] = "laser", ["LaserAA"] = "laser",},
 	corint = { ["IntimidatorCannon"] = "siege", },
 	armbanth = { ["HeavyRockets"] = "explosive", ["ImpulsionBlaster"] = "plasma", ["DEEEEEEWWWMMM"] = "neutron", },
 	corcat = { ["RavenCatapultRockets"] = "rocket", },
