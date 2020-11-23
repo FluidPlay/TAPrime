@@ -17,7 +17,7 @@ function widget:GetInfo()
 end
 
 ---TODO: Check repair being issued to furthest unit, instead of nearest
----TODO: Once a unit is set to assist, it won't resume automation check; deautomated > idle is also failing.
+---TODO: FARKs don't resume autoassist after assist-idling
     -- Probably idled units should be immediately set to deautomated, with the delay (vs idle)
 
 VFS.Include("gamedata/taptools.lua")
@@ -82,7 +82,7 @@ local deautomatedUnits = {} -- Post deautomation (direct order) // { [unitID] = 
         -- { [unitID] = frameToAutomate (eg: spGetGameFrame() + recheckUpdateRate), ... }
 
 local automatedState = {}   -- This is the automated state. It's always there for automatableUnits, after the initial latency period
-local guardingUnits = {}    -- TODO: Commanders guarding factories, we use it to stop guarding when we're out of resources
+local assistingUnits = {}    -- TODO: Commanders guarding factories, we use it to stop guarding when we're out of resources
 --local orderRemovalDelay = 10    -- 10 frames of delay before removing commands, to prevent the engine from removing just given orders
 --local internalCommandUIDs = {}
 --local autoassistEnableDelay = 60
@@ -155,6 +155,20 @@ local function unitIsBeingBuilt(unitID)
     return select(5, spGetUnitHealth(unitID)) < 1
 end
 
+local function removeCommands(unitID)
+    spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
+    spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
+    spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_FIGHT }, { "alt"})
+    spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
+end
+
+local function deassistCheck(unitID)
+    if assistingUnits[unitID] then
+        removeCommands(unitID)
+        assistingUnits[unitID] = nil
+    end
+end
+
 local function setAutomateState(unitID, state, caller)
     if state == "deautomated" then --or state == "idle" then
         automatedUnits[unitID] = nil
@@ -167,14 +181,14 @@ local function setAutomateState(unitID, state, caller)
         automatedUnits[unitID] = spGetGameFrame() + repurposeLatency
     end
     if state ~= "assist" then       -- If unit is not assisting (guarding), remove it from the related table
-        guardingUnits[unitID] = nil end
+        assistingUnits[unitID] = nil end
     automatedState[unitID] = state
     if localDebug and isCom(unitID) and state ~= "deautomated" then Spring.Echo("New automateState: "..state.." for: "..unitID.." set by function: "..caller) end
 end
 
 local function hasCommandQueue(unitID)
     local commandQueue = spGetCommandQueue(unitID, 0)
-    --if isCom(unitID) then Spring.Echo("command queue size: "..(commandQueue or "N/A")) end
+    if isCom(unitID) then Spring.Echo("command queue size: "..(commandQueue or "N/A")) end
     if commandQueue then
         return commandQueue > 0
     else
@@ -200,13 +214,36 @@ end
 
 local function hasBuildQueue(unitID)
     local buildqueue = spGetFullBuildQueue(unitID) -- => nil | buildOrders = { [1] = { [number unitDefID] = number count }, ... } }
-    --if isCom(unitID) then
-        --Spring.Echo("build queue size: "..(buildqueue and #buildqueue or "N/A")) --end
+    if isCom(unitID) then
+        Spring.Echo("build queue size: "..(buildqueue and #buildqueue or "N/A")) end
     if buildqueue then
         return #buildqueue > 0
     else
         return false
     end
+end
+
+--- Spring's UnitIdle is just too weird, it fires up when units are transitioning between commands..
+--function widget:UnitIdle(unitID, unitDefID, unitTeam)
+local function customUnitIdle(unitID, delay)
+    if not automatableUnits[unitID] then
+        return end
+    if localDebug and isCom(unitID) then Spring.Echo("Unit ".. unitID.." is idle.") end --UnitDefs[unitDefID].name)
+    --if myTeamID == spGetUnitTeam(unitID) then --check if unit is mine
+    setAutomateState(unitID, "deautomated", "customUnitIdle")
+    --automatedState[unitID] = "idle"
+    --automatedUnits[unitID] = nil
+    --unitsToAutomate[unitID] = spGetGameFrame() + delay
+    --if localDebug then Spring.Echo("To automate in: "..spGetGameFrame() + delay) end
+    --end
+end
+
+local function DeautomateUnit(unitID)
+    removeCommands(unitID)  -- removes Guard, Patrol, Fight and Repair commands
+
+    --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
+    if localDebug and isCom(unitID) then Spring.Echo("Deautomating Unit: "..unitID) end
+    setAutomateState(unitID, "deautomated", "DeautomateUnit")
 end
 
 function widget:PlayerChanged()
@@ -238,22 +275,6 @@ function widget:Initialize()
     end
 end
 
---- Spring's UnitIdle is just too weird, it fires up when units are transitioning between commands..
---function widget:UnitIdle(unitID, unitDefID, unitTeam)
-local function customUnitIdle(unitID, delay)
-    if not automatableUnits[unitID] then
-        return end
-    if localDebug and isCom(unitID) then Spring.Echo("Unit ".. unitID.." is idle.") end --UnitDefs[unitDefID].name)
-    --if myTeamID == spGetUnitTeam(unitID) then --check if unit is mine
-    setAutomateState(unitID, "deautomated", "customUnitIdle")
-    --TODO: Remove GUARD commands
-    --automatedState[unitID] = "idle"
-    --automatedUnits[unitID] = nil
-    --unitsToAutomate[unitID] = spGetGameFrame() + delay
-    --if localDebug then Spring.Echo("To automate in: "..spGetGameFrame() + delay) end
-    --end
-end
-
 function widget:UnitCreated(unitID, unitDefID, teamID, builderID)
     -- If unit just created is a mobile unit, add it to array
     local uDef = UnitDefs[unitDefID]
@@ -280,24 +301,13 @@ function widget:UnitFinished(unitID, unitDefID, unitTeam)
     end
 end
 
-local function DeautomateUnit(unitID)
-    spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_GUARD }, { "alt"})
-    spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_PATROL }, { "alt"})
-    spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_FIGHT }, { "alt"})
-    spGiveOrderToUnit(unitID, CMD_REMOVE, { CMD_REPAIR }, { "alt"})
-
-    --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
-    if localDebug and isCom(unitID) then Spring.Echo("Deautomating Unit: "..unitID) end
-    setAutomateState(unitID, "deautomated", "DeautomateUnit")
-end
-
 function widget:UnitDestroyed(unitID)
     automatableUnits[unitID] = nil
     unitsToAutomate[unitID] = nil
     automatedUnits[unitID] = nil
     deautomatedUnits[unitID] = nil
     automatedState[unitID] = nil
-    guardingUnits[unitID] = nil
+    assistingUnits[unitID] = nil
 end
 
 ---- Initialize the unit when received (shared)
@@ -434,7 +444,7 @@ local function automateCheck(unitID, unitDef, caller)
         if nearestFactoryUnitID and enoughEconomy() then
             --Spring.Echo ("Autoassisting factory: "..(nearestFactoryUnitID or "nil").." has eco: "..tostring(enoughEconomy()))
             spGiveOrderToUnit(unitID, CMD_GUARD, { nearestFactoryUnitID }, {} )
-            guardingUnits[unitID] = nearestFactoryUnitID    -- guardedUnit
+            assistingUnits[unitID] = nearestFactoryUnitID    -- guardedUnit
             setAutomateState(unitID, "assist", caller.."> automateCheck")
             _orderIssued = true
         end
@@ -494,10 +504,11 @@ function widget:CommandNotify(cmdID, params, options)
     local selUnits = spGetSelectedUnits()  --() -> { [1] = unitID, ... }
     for _, unitID in ipairs(selUnits) do
         if automatableUnits[unitID] and IsValidUnit(unitID) then
-            if automatedState[unitID] ~= "deautomated" or -- if it's working, don't touch it
-               guardingUnits[unitID] then --options.shift and
+            if automatedState[unitID] ~= "deautomated" then -- if it's working, don't touch it
+               --guardingUnits[unitID] then --options.shift and
                 DeautomateUnit(unitID)
             end
+            --deassistCheck(unitID) --- We need to remove Guard commands, otherwise the unit will keep guarding
         end
     end
 end
@@ -506,7 +517,7 @@ end
 local function isReallyIdle(unitID)
     local result = true
     -- commandqueue with guard => not idle
-    if hasBuildQueue(unitID) or (hasCommandQueue(unitID) and not guardingUnits[unitID]) then
+    if hasBuildQueue(unitID) or (hasCommandQueue(unitID) and not assistingUnits[unitID]) then
         result = false
     end
     --if localDebug and isCom(unitID) then Spring.Echo("IsReallyIdle: "..tostring(result)) end
@@ -523,15 +534,20 @@ function widget:GameFrame(f)
 
     ----- Deautomated units check || Done by unitsToAutomate / idle above
     for unitID, recheckFrame in pairs(deautomatedUnits) do
-        --TODO: Continue from here
-        if localDebug then Spring.Echo("0") end
         if IsValidUnit(unitID) and f >= recheckFrame then --and not unitsToAutomate[unitID] then
+            if localDebug then Spring.Echo("0") end
             if isReallyIdle(unitID) then
                 if automatedState[unitID] ~= "deautomated" then
                    customUnitIdle(unitID, 0)
                 elseif not unitsToAutomate[unitID] then
                    unitsToAutomate[unitID] = spGetGameFrame() + automationLatency -- deautomatedRecheckLatency
                 end
+                --TODO: Test GUARD commands removal
+                deassistCheck(unitID)
+                --if not hasBuildQueue(guardedUnit) then -- builders assisting *do* have a commandqueue (guard)
+                --    deassistCheck(unitID) end --- We need to remove Guard commands, otherwise the unit will keep guarding
+            else
+                unitsToAutomate[unitID] = nil
             end
         end
     end
@@ -576,9 +592,10 @@ function widget:GameFrame(f)
     end
 
     ---If unit is on "assist" state and its guarded unit has no buildqueue, set it to idle.
-    for unitID, guardedUnit in pairs(guardingUnits) do
-        if IsValidUnit(unitID) and IsValidUnit(guardedUnit) then
-            if not hasBuildQueue(guardedUnit) then -- builders assisting *do* have a commandqueue (guard)
+    for unitID, assistedUnit in pairs(assistingUnits) do
+        if IsValidUnit(unitID) and IsValidUnit(assistedUnit) then
+            if not hasBuildQueue(assistedUnit) then -- builders assisting *do* have a commandqueue (guard)
+                deassistCheck(unitID) --- We need to remove Guard commands, otherwise the unit will keep guarding
                 customUnitIdle(unitID, automationLatency)
             end
         end

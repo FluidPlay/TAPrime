@@ -67,7 +67,7 @@ local tips = {
     "corgol.dds ".."Tanks can crush lighter enemy kbots, like rifle and missile kbots. Tier 2 tanks can crush dragon teeth, and the Tier 3 Goliath can even crush Tier 2 Tanks.",
     "armmine3.dds ".."Pokers, Arm's basic assault vehicle, can build land mines, great vs kbots, and bar mines, excellent vs vehicles.",
 	"armrad.dds ".."Radars are cheap and their detection range is much larger than their vision range. In the early game, Commanders and Outposts are your best options for true vision range.",
-    "corape.dds ".."The Rapier is Core's gunship. It holds plenty of missile ammo and excels against vehicles. Like all gunships, it flies low, meaning it can be hit by all mobile units and defenses.",
+    "corape.dds ".."The Rapier is Core's gunship. It holds plenty of missile ammo and excels against most vehicles. Like all gunships, it's specially vulnerable to missile trucks.",
     "armbrawl.dds ".."Arm's gunship is the Brawler. It fires unlimited laser rounds, making it a great anti-kbot unit. Even with its low-altitude, more vulnerable flight mode, the brawler is faster than the Core's Rapier.",
     "armgeo.dds ".."Abandoned/Neutral Geothermals might be scattered around the map and provide plenty of energy. You can capture them with commanders or with builders, after you research the 'capture' upgrade in the Tech Center.",
     "cormort.dds ".."Powerful artillery units are available after you upgrade your Tech Center to Level 1. Core's Morty is built from the kbot lab, Arm Luger from the Vehicle Plant.",
