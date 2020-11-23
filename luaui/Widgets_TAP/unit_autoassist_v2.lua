@@ -17,7 +17,8 @@ function widget:GetInfo()
 end
 
 ---TODO: Check repair being issued to furthest unit, instead of nearest
----TODO: Once a unit is set to assist, it won't resume automation check
+---TODO: Once a unit is set to assist, it won't resume automation check; deautomated > idle is also failing.
+    -- Probably idled units should be immediately set to deautomated, with the delay (vs idle)
 
 VFS.Include("gamedata/taptools.lua")
 
@@ -155,7 +156,7 @@ local function unitIsBeingBuilt(unitID)
 end
 
 local function setAutomateState(unitID, state, caller)
-    if state == "deautomated" or state == "idle" then
+    if state == "deautomated" then --or state == "idle" then
         automatedUnits[unitID] = nil
         --- It'll only get out of deautomated if it's idle, that's only the delay to recheck idle
         if not deautomatedUnits[unitID] then
@@ -244,7 +245,7 @@ local function customUnitIdle(unitID, delay)
         return end
     if localDebug and isCom(unitID) then Spring.Echo("Unit ".. unitID.." is idle.") end --UnitDefs[unitDefID].name)
     --if myTeamID == spGetUnitTeam(unitID) then --check if unit is mine
-    setAutomateState(unitID, "idle", "customUnitIdle")
+    setAutomateState(unitID, "deautomated", "customUnitIdle")
     --TODO: Remove GUARD commands
     --automatedState[unitID] = "idle"
     --automatedUnits[unitID] = nil
@@ -524,12 +525,11 @@ function widget:GameFrame(f)
     for unitID, recheckFrame in pairs(deautomatedUnits) do
         --TODO: Continue from here
         if localDebug then Spring.Echo("0") end
-        if IsValidUnit(unitID) and f >= recheckFrame and not unitsToAutomate[unitID] then
+        if IsValidUnit(unitID) and f >= recheckFrame then --and not unitsToAutomate[unitID] then
             if isReallyIdle(unitID) then
-                if automatedState[unitID] ~= "idle" and automatedState[unitID] ~= "deautomated" then
+                if automatedState[unitID] ~= "deautomated" then
                    customUnitIdle(unitID, 0)
-                end
-                if automatedState[unitID] == "idle" and not unitsToAutomate[unitID] then
+                elseif not unitsToAutomate[unitID] then
                    unitsToAutomate[unitID] = spGetGameFrame() + automationLatency -- deautomatedRecheckLatency
                 end
             end
