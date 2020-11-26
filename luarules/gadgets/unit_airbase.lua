@@ -416,6 +416,8 @@ if (gadgetHandler:IsSyncedCode()) then
             local health, maxHealth = Spring.GetUnitHealth(unitID)
             health = tonumber(health)
             maxHealth = tonumber(maxHealth)
+            ammo = tonumber(ammo)
+            maxAmmo = tonumber(maxAmmo)
             if not health or not maxHealth then
                 return true end
             -- Scouts, transports:
