@@ -17,12 +17,10 @@ function widget:GetInfo()
 end
 
 ---TODO: Check repair being issued to furthest unit, instead of nearest
----TODO: FARKs don't resume autoassist after assist-idling
-    -- Probably idled units should be immediately set to deautomated, with the delay (vs idle)
 
 VFS.Include("gamedata/taptools.lua")
 
-local localDebug = true
+local localDebug = false --true || Enables text and UI state debug messages
 
 local spGetAllUnits = Spring.GetAllUnits
 local spGetUnitDefID = Spring.GetUnitDefID
@@ -69,10 +67,10 @@ local glScale          			= gl.Scale
 
 local myTeamID, myAllyTeamID = -1, -1
 
-local updateRate = 30               -- Global update "tick rate"
-local automationLatency = 80        -- How long it'll take for an idled/just created unit to check for automation
-local repurposeLatency = 160        -- Delay before checking if an automated unit should be doing something else
-local deautomatedRecheckLatency = 70 -- Delay until a de-automated unit checks for automation again
+local updateRate = 15               -- Global update "tick rate"
+local automationLatency = 60        -- Delay before automation kicks in, or the unit is set to idle
+--local repurposeLatency = 160        -- Delay before checking if an automated unit should be doing something else
+local deautomatedRecheckLatency = 30 -- Delay until a de-automated unit checks for automation again
 -- TODO: Another possible approach, check if the same deautomation order was completed yet. Somewhat involved option.
 
 local automatableUnits = {} -- All units which can be automated // { [unitID] = true|false, ... }
@@ -178,7 +176,7 @@ local function setAutomateState(unitID, state, caller)
         if localDebug then Spring.Echo("To automate in: "..spGetGameFrame() + deautomatedRecheckLatency) end
     else
         deautomatedUnits[unitID] = nil
-        automatedUnits[unitID] = spGetGameFrame() + repurposeLatency
+        automatedUnits[unitID] = spGetGameFrame() + automationLatency
     end
     if state ~= "assist" then       -- If unit is not assisting (guarding), remove it from the related table
         assistingUnits[unitID] = nil end
@@ -188,7 +186,7 @@ end
 
 local function hasCommandQueue(unitID)
     local commandQueue = spGetCommandQueue(unitID, 0)
-    if isCom(unitID) then Spring.Echo("command queue size: "..(commandQueue or "N/A")) end
+    if localDebug and isCom(unitID) then Spring.Echo("command queue size: "..(commandQueue or "N/A")) end
     if commandQueue then
         return commandQueue > 0
     else
@@ -214,7 +212,7 @@ end
 
 local function hasBuildQueue(unitID)
     local buildqueue = spGetFullBuildQueue(unitID) -- => nil | buildOrders = { [1] = { [number unitDefID] = number count }, ... } }
-    if isCom(unitID) then
+    if localDebug and isCom(unitID) then
         Spring.Echo("build queue size: "..(buildqueue and #buildqueue or "N/A")) end
     if buildqueue then
         return #buildqueue > 0
@@ -295,7 +293,8 @@ function widget:UnitFinished(unitID, unitDefID, unitTeam)
             WIPmobileUnits[unitID] = false
         end
         if canrepair[unitDef.name] or canresurrect[unitDef.name] then
-            unitsToAutomate[unitID] = spGetGameFrame() + automationLatency --that's the frame it'll try automation
+            setAutomateState(unitID, "deautomated", "DeautomateUnit")
+            --unitsToAutomate[unitID] = spGetGameFrame() + automationLatency --that's the frame it'll try automation
             --customUnitIdle(unitID)
         end
     end
@@ -540,7 +539,7 @@ function widget:GameFrame(f)
                 if automatedState[unitID] ~= "deautomated" then
                    customUnitIdle(unitID, 0)
                 elseif not unitsToAutomate[unitID] then
-                   unitsToAutomate[unitID] = spGetGameFrame() + automationLatency -- deautomatedRecheckLatency
+                   unitsToAutomate[unitID] = spGetGameFrame() + deautomatedRecheckLatency
                 end
                 --TODO: Test GUARD commands removal
                 deassistCheck(unitID)
@@ -561,10 +560,10 @@ function widget:GameFrame(f)
                 --Spring.Echo("1.5")
                 --- We only un-set unitsToAutomate[unitID] down the pipe, if automation is successful
                 local orderIssued = automateCheck(unitID, unitDef, "unitsToAutomate")
-                if not orderIssued then
+                if not orderIssued and not automatedState[unitID] then
                     --automatedState[unitID] = "scanning" -- While it doesn't find a chance to be automated, it'll be "automating"
                     --unitsToAutomate[unitID] = spGetGameFrame() + automationLatency
-                    setAutomateState(unitID, "scanning", "DeautomateUnit")
+                    setAutomateState(unitID, "deautomated", "DeautomateUnit")
                 end
             --end
         end
@@ -581,8 +580,6 @@ function widget:GameFrame(f)
                 automatedUnits[unitID] = spGetGameFrame() + automationLatency
             end
         end
-        ---- [ AN: Not sure that's a good idea or even useful. Assist is already the highest priority.. ]
-        ---- [ We'd probably need to save which unit was ordered to be built, or not allow 'deautomated' to switch to 'repair' when building
         --- Rechecking if a repairing/building unit has better things to do (like assist or ressurect)
         if IsValidUnit(unitID) and f >= recheckFrame and automatedState[unitID] ~= "deautomated" then
             local unitDef = UnitDefs[spGetUnitDefID(unitID)]    --TODO: Optimization - cache this within automatableUnits
