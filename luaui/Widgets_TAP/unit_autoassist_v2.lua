@@ -20,7 +20,7 @@ end
 
 VFS.Include("gamedata/taptools.lua")
 
-local localDebug = false --true || Enables text and UI state debug messages
+local localDebug = true --|| Enables text and UI state debug messages
 
 local spGetAllUnits = Spring.GetAllUnits
 local spGetUnitDefID = Spring.GetUnitDefID
@@ -67,6 +67,7 @@ local glScale          			= gl.Scale
 
 local myTeamID, myAllyTeamID = -1, -1
 
+local startupGracetime = 300        -- Widget won't work at all before those many frames (10s)
 local updateRate = 15               -- Global update "tick rate"
 local automationLatency = 60        -- Delay before automation kicks in, or the unit is set to idle
 --local repurposeLatency = 160        -- Delay before checking if an automated unit should be doing something else
@@ -142,6 +143,11 @@ local canresurrect = {
 
 -----
 
+local function spEcho(string)
+    --if localDebug and isCom(unitID) and state ~= "deautomated" then
+    --if localDebug then Spring.Echo(string) end
+end
+
 local function isCom(unitID,unitDefID)
     if unitID and not unitDefID then
         unitDefID = spGetUnitDefID(unitID)
@@ -161,10 +167,15 @@ local function removeCommands(unitID)
 end
 
 local function deassistCheck(unitID)
-    if assistingUnits[unitID] then
+    Spring.Echo("2")
+    ---TODO: RemoveCommands is not working here..
+    --deautomated (while guarding) => assisting || no chg state
+    --assisting => deautomated || doesnt remove guard
+    
+    --if assistingUnits[unitID] then
         removeCommands(unitID)
         assistingUnits[unitID] = nil
-    end
+    --end
 end
 
 local function setAutomateState(unitID, state, caller)
@@ -173,7 +184,7 @@ local function setAutomateState(unitID, state, caller)
         --- It'll only get out of deautomated if it's idle, that's only the delay to recheck idle
         if not deautomatedUnits[unitID] then
             deautomatedUnits[unitID] = spGetGameFrame() + deautomatedRecheckLatency end
-        if localDebug then Spring.Echo("To automate in: "..spGetGameFrame() + deautomatedRecheckLatency) end
+        spEcho("To automate in: "..spGetGameFrame() + deautomatedRecheckLatency)
     else
         deautomatedUnits[unitID] = nil
         automatedUnits[unitID] = spGetGameFrame() + automationLatency
@@ -181,12 +192,12 @@ local function setAutomateState(unitID, state, caller)
     if state ~= "assist" then       -- If unit is not assisting (guarding), remove it from the related table
         assistingUnits[unitID] = nil end
     automatedState[unitID] = state
-    if localDebug and isCom(unitID) and state ~= "deautomated" then Spring.Echo("New automateState: "..state.." for: "..unitID.." set by function: "..caller) end
+    spEcho("New automateState: "..state.." for: "..unitID.." set by function: "..caller)
 end
 
 local function hasCommandQueue(unitID)
     local commandQueue = spGetCommandQueue(unitID, 0)
-    if localDebug and isCom(unitID) then Spring.Echo("command queue size: "..(commandQueue or "N/A")) end
+    spEcho("command queue size: "..(commandQueue or "N/A"))
     if commandQueue then
         return commandQueue > 0
     else
@@ -212,8 +223,7 @@ end
 
 local function hasBuildQueue(unitID)
     local buildqueue = spGetFullBuildQueue(unitID) -- => nil | buildOrders = { [1] = { [number unitDefID] = number count }, ... } }
-    if localDebug and isCom(unitID) then
-        Spring.Echo("build queue size: "..(buildqueue and #buildqueue or "N/A")) end
+    spEcho("build queue size: "..(buildqueue and #buildqueue or "N/A"))
     if buildqueue then
         return #buildqueue > 0
     else
@@ -226,13 +236,22 @@ end
 local function customUnitIdle(unitID, delay)
     if not automatableUnits[unitID] then
         return end
-    if localDebug and isCom(unitID) then Spring.Echo("Unit ".. unitID.." is idle.") end --UnitDefs[unitDefID].name)
+    spEcho("Unit ".. unitID.." is idle.") --UnitDefs[unitDefID].name)
     --if myTeamID == spGetUnitTeam(unitID) then --check if unit is mine
+    ---If unit is on "assist" state and its guarded unit has no buildqueue, remove its guard command.
+    if assistingUnits[unitID] then
+        local assistedUnit = assistingUnits[unitID]
+        if IsValidUnit(unitID) and IsValidUnit(assistedUnit) and not hasBuildQueue(assistedUnit) then
+            Spring.Echo("Removing guard")
+            deassistCheck(unitID) --- We need to remove Guard commands, otherwise the unit will keep guarding
+        end
+    end
+
     setAutomateState(unitID, "deautomated", "customUnitIdle")
     --automatedState[unitID] = "idle"
     --automatedUnits[unitID] = nil
     --unitsToAutomate[unitID] = spGetGameFrame() + delay
-    --if localDebug then Spring.Echo("To automate in: "..spGetGameFrame() + delay) end
+    --spEcho("To automate in: "..spGetGameFrame() + delay)
     --end
 end
 
@@ -240,7 +259,7 @@ local function DeautomateUnit(unitID)
     removeCommands(unitID)  -- removes Guard, Patrol, Fight and Repair commands
 
     --spGiveOrderToUnit(unitID, CMD_STOP, {}, {} )
-    if localDebug and isCom(unitID) then Spring.Echo("Deautomating Unit: "..unitID) end
+    spEcho("Deautomating Unit: "..unitID)
     setAutomateState(unitID, "deautomated", "DeautomateUnit")
 end
 
@@ -281,7 +300,7 @@ function widget:UnitCreated(unitID, unitDefID, teamID, builderID)
     end
     local unitDef = UnitDefs[unitDefID]
     if canrepair[unitDef.name] or canresurrect[unitDef.name] then
-        if localDebug then Spring.Echo("Registering unit "..unitID.." as automatable: "..unitDef.name) end --and isCom(unitID)
+        spEcho("Registering unit "..unitID.." as automatable: "..unitDef.name)--and isCom(unitID)
         automatableUnits[unitID] = true
     end
 end
@@ -327,9 +346,9 @@ local function enoughEconomy()
     if not isnumber(currentM) or not isnumber(currentE) then
         return false end
     --if currentM > currentMstorage * 0.3 and currentE > currentEstorage * 0.3 then
-    --    Spring.Echo("Enough Eco!")
+    --    spEcho("Enough Eco!")
     --else
-    --    Spring.Echo("NOPS eco!")
+    --    spEcho("NOPS eco!")
     --end
     return currentM > currentMstorage * 0.1 and currentE > currentEstorage * 0.1 --0.3
 end
@@ -409,7 +428,7 @@ local function automateCheck(unitID, unitDef, caller)
     local hasWeapon = unitDef.weapons[1]
     if not hasWeapon
         and automatedState[unitID] ~= "enemy reclaim" then
-        --if localDebug then Spring.Echo("[1] Enemy-reclaim check") end
+        --spEcho("[1] Enemy-reclaim check")
         --TODO: Fix, not really working yet
         local nearestEnemy = spGetUnitNearestEnemy(unitID, radius, false) -- useLOS = false ; => nil | unitID
         if nearestEnemy and automatedState[unitID] ~= "enemy reclaim" then
@@ -423,7 +442,7 @@ local function automateCheck(unitID, unitDef, caller)
     --- 2. If can resurrect, resurrect nearest feature (check for economy? might want to reclaim instead)
     if canresurrect[unitDef.name] and not _orderIssued
         and automatedState[unitID] ~= "enemy reclaim" and automatedState[unitID] ~= "ressurect" then
-        --if localDebug then Spring.Echo("[2] Resurrect check") end
+        --spEcho("[2] Resurrect check")
         local nearestFeatureID = nearestItemAround(unitID, pos, unitDef, radius, nil, nil, true)
         if nearestFeatureID and automatedState[unitID] ~= "ressurect" then
             local x,y,z = spGetFeaturePosition(nearestFeatureID)
@@ -435,13 +454,13 @@ local function automateCheck(unitID, unitDef, caller)
     --- 3. If can assist, guard nearest factory
     if canassist[unitDef.name] and not _orderIssued
         and automatedState[unitID] ~= "enemy reclaim" and automatedState[unitID] ~= "ressurect" and automatedState[unitID] ~= "assist" then
-        --if localDebug then Spring.Echo("[3] Factory-assist check") end
+        --spEcho("[3] Factory-assist check")
         --TODO: If during 'automation' it's guarding a factory but factory stopped production, remove it
         local nearestFactoryUnitID = nearestItemAround(unitID, pos, unitDef, radius,
                 function(x) return x.isFactory end,     --We're only interested in factories currently producing
                 function(x) return hasBuildQueue(x) end)
         if nearestFactoryUnitID and enoughEconomy() then
-            --Spring.Echo ("Autoassisting factory: "..(nearestFactoryUnitID or "nil").." has eco: "..tostring(enoughEconomy()))
+            --spEcho ("Autoassisting factory: "..(nearestFactoryUnitID or "nil").." has eco: "..tostring(enoughEconomy()))
             spGiveOrderToUnit(unitID, CMD_GUARD, { nearestFactoryUnitID }, {} )
             assistingUnits[unitID] = nearestFactoryUnitID    -- guardedUnit
             setAutomateState(unitID, "assist", caller.."> automateCheck")
@@ -452,7 +471,7 @@ local function automateCheck(unitID, unitDef, caller)
     if canrepair[unitDef.name] and not _orderIssued
         and automatedState[unitID] ~= "enemy reclaim" and automatedState[unitID] ~= "ressurect"
             and automatedState[unitID] ~= "assist" and automatedState[unitID] ~= "repair" then
-        --if localDebug then Spring.Echo("[4] Repair check") end
+        --spEcho("[4] Repair check")
         local nearestUnitID
         if canassist[unitID] then
             --TODO: Must check if the unit can assist or not (to assist building WIPmobileUnits)
@@ -479,7 +498,7 @@ local function automateCheck(unitID, unitDef, caller)
     if canreclaim[unitDef.name] and not _orderIssued
         and automatedState[unitID] ~= "enemy reclaim" and automatedState[unitID] ~= "ressurect"
             and automatedState[unitID] ~= "assist" and automatedState[unitID] ~= "repair" and automatedState[unitID] ~= "reclaim" then
-        --if localDebug then Spring.Echo("[5] Reclaim check") end
+        --spEcho("[5] Reclaim check")
         --TODO: This seems to be wrong (furthest feature instead of closest)
         local nearestFeatureID = nearestItemAround(unitID, pos, unitDef, radius, nil, nil, true)
         if nearestFeatureID and automatedState[unitID] ~= "reclaim" then
@@ -490,14 +509,14 @@ local function automateCheck(unitID, unitDef, caller)
         end
     end
     if _orderIssued then
-        if localDebug and isCom(unitID) then Spring.Echo ("New order Issued") end
+        spEcho ("New order Issued")
         unitsToAutomate[unitID] = nil
     end
     return _orderIssued
 end
 
 function widget:CommandNotify(cmdID, params, options)
-    --Spring.Echo("CommandID registered: "..(cmdID or "nil"))
+    -- spEcho("CommandID registered: "..(cmdID or "nil"))
     ---TODO: If guarding, interrupt what's doing, otherwise don't
     -- User commands are tracked here, check what unit(s) is/are selected and remove it from automatedUnits
     local selUnits = spGetSelectedUnits()  --() -> { [1] = unitID, ... }
@@ -519,22 +538,22 @@ local function isReallyIdle(unitID)
     if hasBuildQueue(unitID) or (hasCommandQueue(unitID) and not assistingUnits[unitID]) then
         result = false
     end
-    --if localDebug and isCom(unitID) then Spring.Echo("IsReallyIdle: "..tostring(result)) end
+    -- spEcho("IsReallyIdle: "..tostring(result))
     return result
 end
 
 --- Frame-based Update
 function widget:GameFrame(f)
-    if f % updateRate > 0.001 then
+    if f < startupGracetime or f % updateRate > 0.001 then
         return
     end
 
-    if localDebug then Spring.Echo("This frame: "..f.." deauto'ed unit #: "..(pairs_len(deautomatedUnits) or "nil").." toAutomate #: "..(pairs_len(unitsToAutomate) or "nil")) end
+    spEcho("This frame: "..f.." deauto'ed unit #: "..(pairs_len(deautomatedUnits) or "nil").." toAutomate #: "..(pairs_len(unitsToAutomate) or "nil"))
 
     ----- Deautomated units check || Done by unitsToAutomate / idle above
     for unitID, recheckFrame in pairs(deautomatedUnits) do
         if IsValidUnit(unitID) and f >= recheckFrame then --and not unitsToAutomate[unitID] then
-            if localDebug then Spring.Echo("0") end
+            spEcho("0")
             if isReallyIdle(unitID) then
                 if automatedState[unitID] ~= "deautomated" then
                    customUnitIdle(unitID, 0)
@@ -552,12 +571,12 @@ function widget:GameFrame(f)
     end
 
     -- Check if it's time to actually try to automate an unit (after idle or creation)
-    --Spring.Echo(pairs_len(unitsToAutomate).." unit(s) to automate")
+    --spEcho(pairs_len(unitsToAutomate).." unit(s) to automate")
     for unitID, automateFrame in pairs(unitsToAutomate) do
         if IsValidUnit(unitID) and f >= automateFrame then
-            if localDebug then Spring.Echo("1") end
+            spEcho("1")
             local unitDef = UnitDefs[spGetUnitDefID(unitID)]
-                --Spring.Echo("1.5")
+                --spEcho("1.5")
                 --- We only un-set unitsToAutomate[unitID] down the pipe, if automation is successful
                 local orderIssued = automateCheck(unitID, unitDef, "unitsToAutomate")
                 if not orderIssued and not automatedState[unitID] then
@@ -570,33 +589,36 @@ function widget:GameFrame(f)
     end
 
     for unitID, recheckFrame in pairs(automatedUnits) do
-        if localDebug then Spring.Echo("2") end
+        spEcho("2")
+        if not (IsValidUnit(unitID) and f >= recheckFrame) then
+            return end
+
         --- Checking for Idle (let's dodge spring's default idle, its event fires in unwanted situations)
-        if IsValidUnit(unitID) and f >= recheckFrame then
-            if localDebug and isCom(unitID) then Spring.Echo("[automated] Checking "..unitID.." for idle; automatedState: "..(automatedState[unitID] or "nil")) end
-            if isReallyIdle(unitID) then
-                customUnitIdle(unitID, automationLatency)
-            else
-                automatedUnits[unitID] = spGetGameFrame() + automationLatency
-            end
+        spEcho("[automated] Checking "..unitID.." for idle; automatedState: "..(automatedState[unitID] or "nil"))
+        if isReallyIdle(unitID) then
+            customUnitIdle(unitID, automationLatency)
+        else
+            automatedUnits[unitID] = spGetGameFrame() + automationLatency
         end
+
         --- Rechecking if a repairing/building unit has better things to do (like assist or ressurect)
-        if IsValidUnit(unitID) and f >= recheckFrame and automatedState[unitID] ~= "deautomated" then
+        if automatedState[unitID] ~= "deautomated" then
             local unitDef = UnitDefs[spGetUnitDefID(unitID)]    --TODO: Optimization - cache this within automatableUnits
-            if localDebug and isCom(unitID) then Spring.Echo("[automated] Rechecking automation of unitID: "..unitID) end
+            spEcho("[automated] Rechecking automation of unitID: "..unitID)
             automateCheck(unitID, unitDef, "repurposeCheck")
         end
     end
 
-    ---If unit is on "assist" state and its guarded unit has no buildqueue, set it to idle.
-    for unitID, assistedUnit in pairs(assistingUnits) do
-        if IsValidUnit(unitID) and IsValidUnit(assistedUnit) then
-            if not hasBuildQueue(assistedUnit) then -- builders assisting *do* have a commandqueue (guard)
-                deassistCheck(unitID) --- We need to remove Guard commands, otherwise the unit will keep guarding
-                customUnitIdle(unitID, automationLatency)
-            end
-        end
-    end
+    -----If unit is on "assist" state and its guarded unit has no buildqueue, set it to idle.
+    --for unitID, assistedUnit in pairs(assistingUnits) do
+    --    if IsValidUnit(unitID) and IsValidUnit(assistedUnit) then
+    --        if not hasBuildQueue(assistedUnit) then -- builders assisting *do* have a commandqueue (guard)
+    --            Spring.Echo("Deassist Check fired")
+    --            deassistCheck(unitID) --- We need to remove Guard commands, otherwise the unit will keep guarding
+    --            customUnitIdle(unitID, automationLatency)
+    --        end
+    --    end
+    --end
 end
 
 function widget:ViewResize(n_vsx,n_vsy)
@@ -641,7 +663,7 @@ end
 --    gl.PushMatrix()
 --    for unitID, state in pairs(automatedUnits) do
 --        if spIsUnitInView(unitID) then
---            Spring.Echo("unitid/state: "..unitID..", "..state)
+--            spEcho("unitid/state: "..unitID..", "..state)
 --
 --            --local x, y, z = spGetUnitViewPosition(unitID)
 --            local x, y, z = spGetUnitPosition(unitID)
