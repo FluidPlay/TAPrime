@@ -40,7 +40,7 @@ return {
 		metalmake = 1.5,
 		mincloakdistance = 50,
 		movementclass = "AKBOT2",
-		name = "Boss Commander Lvl4",
+		name = "Scavengers Final Boss",
 		nochasecategory = "ALL",
 		objectname = "CORCOM",
 		pushresistant = true,
