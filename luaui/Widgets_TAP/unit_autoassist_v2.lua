@@ -16,7 +16,7 @@ function widget:GetInfo()
     }
 end
 
----TODO: Check repair being issued to furthest unit, instead of nearest
+--TODO: Reclaim resource only if in need of its higher resource (energy or metal)
 
 VFS.Include("gamedata/taptools.lua")
 
@@ -212,12 +212,12 @@ end
 --    return { x = x, y = y, z = z }
 --end
 
-local function sqrDistance (pos1, pos2)
-    if not istable(pos1) or not istable(pos2) or not pos1.x or not pos1.z or not pos2.x or not pos2.z then
-        return 999999   -- keeping this huge so it won't affect valid nearest-distance calculations
-    end
-    return (pos2.x - pos1.x)^2 + (pos2.z - pos1.z)^2
-end
+--local function sqrDistance (pos1, pos2)
+--    if not istable(pos1) or not istable(pos2) or not pos1.x or not pos1.z or not pos2.x or not pos2.z then
+--        return 999999   -- keeping this huge so it won't affect valid nearest-distance calculations
+--    end
+--    return (pos2.x - pos1.x)^2 + (pos2.z - pos1.z)^2
+--end
 
 local function hasBuildQueue(unitID)
     local buildqueue = spGetFullBuildQueue(unitID) -- => nil | buildOrders = { [1] = { [number unitDefID] = number count }, ... } }
@@ -235,13 +235,13 @@ local function customUnitIdle(unitID, delay)
     if not automatableUnits[unitID] then
         return end
     spEcho("Unit ".. unitID.." is idle.") --UnitDefs[unitDefID].name)
-    Spring.Echo("Unit ".. unitID.." is idle.") --UnitDefs[unitDefID].name)
+    --Spring.Echo("Unit ".. unitID.." is idle.") --UnitDefs[unitDefID].name)
     --if myTeamID == spGetUnitTeam(unitID) then --check if unit is mine
     ---If unit is on "assist" state and its guarded unit has no buildqueue, remove its guard command.
     if assistingUnits[unitID] then
         local assistedUnit = assistingUnits[unitID]
         if IsValidUnit(unitID) and IsValidUnit(assistedUnit) and not hasBuildQueue(assistedUnit) then
-            Spring.Echo("Removing guard")
+            --Spring.Echo("Removing guard")
             stopAssisting(unitID) --- We need to remove Guard commands, otherwise the unit will keep guarding
         end
     end
@@ -365,11 +365,11 @@ local function getNearest (originUID, targets, isFeature)
         else
             x,y,z = spGetUnitPosition(targetID) end
         local target = { x = x, y = y, z = z }
-        local thisSqrDist = sqrDistance(origin, target)
+        local thisSqrDist = sqrDistance(origin.x, origin.z, target.x, target.z)
         if isnumber(thisSqrDist) and isnumber(nearestSqrDistance)
                 and (thisSqrDist < nearestSqrDistance) then
             nearestItemID = targetID
-            nearestSqrDistance = sqrDistance
+            nearestSqrDistance = thisSqrDist
         end
     end
     return nearestItemID
@@ -418,7 +418,7 @@ local function automateCheck(unitID, unitDef, caller)
     local pos = { x = x, y = y, z = z }
 
     local _orderIssued = false
-    local radius = unitDef.buildDistance * 1.1 --- TEST: this seems to break reclaim commands for whatever reason
+    local radius = unitDef.buildDistance * 1.8
     if unitDef.canFly then               -- Air units need that extra oomph
         radius = radius * 1.3
     end
@@ -549,7 +549,7 @@ local function isReallyIdle(unitID)
         result = false
         --end
     end
-    Spring.Echo("IsReallyIdle: "..tostring(result))
+    --Spring.Echo("IsReallyIdle: "..tostring(result))
     return result
 end
 
@@ -565,7 +565,7 @@ function widget:GameFrame(f)
     for unitID, recheckFrame in pairs(deautomatedUnits) do
         if IsValidUnit(unitID) and f >= recheckFrame then --and not unitsToAutomate[unitID] then
             spEcho("0")
-            Spring.Echo("0")
+            --Spring.Echo("0")
             if isReallyIdle(unitID) then
                 stopAssisting(unitID)
                 if automatedState[unitID] ~= "deautomated" then
@@ -586,7 +586,7 @@ function widget:GameFrame(f)
     for unitID, automateFrame in pairs(unitsToAutomate) do
         if IsValidUnit(unitID) and f >= automateFrame then
             spEcho("1")
-            Spring.Echo("1")
+            --Spring.Echo("1")
             local unitDef = UnitDefs[spGetUnitDefID(unitID)]
             --- We only un-set unitsToAutomate[unitID] down the pipe, if automation is successful
             local orderIssued = automateCheck(unitID, unitDef, "unitsToAutomate")
@@ -601,7 +601,7 @@ function widget:GameFrame(f)
 
     for unitID, recheckFrame in pairs(automatedUnits) do
         spEcho("2")
-        Spring.Echo("2")
+        --Spring.Echo("2")
         if IsValidUnit(unitID) and f >= recheckFrame then
             --- Checking for Idle (let's dodge spring's default idle, its event fires in unwanted situations)
             spEcho("[automated] Checking "..unitID.." for idle; automatedState: "..(automatedState[unitID] or "nil"))
