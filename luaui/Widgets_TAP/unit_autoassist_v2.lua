@@ -18,7 +18,7 @@ end
 
 VFS.Include("gamedata/taptools.lua")
 
-local localDebug = true --|| Enables text and UI state debug messages
+local localDebug = false --true --|| Enables text and UI state debug messages
 
 local spGetAllUnits = Spring.GetAllUnits
 local spGetUnitDefID = Spring.GetUnitDefID
