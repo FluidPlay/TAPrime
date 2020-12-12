@@ -1,6 +1,12 @@
 T0SeaUnits = {
 	"armpt",
 	"corpt",
+	--constructors
+	-- "armbeaver",
+	-- "armch",
+	-- "armcs",
+	-- "cormuskrat",
+	-- "corcs",
 }
 
 T1SeaUnits = {
@@ -26,6 +32,11 @@ T1SeaUnits = {
 	"corah",
 	"corsnap",
 	--constructors
+	"armbeaver",
+	"armch",
+	"armcs",
+	"cormuskrat",
+	"corcs",
 }
 
 T2SeaUnits = {
@@ -36,7 +47,6 @@ T2SeaUnits = {
 	"armaas",
 	"armcrus",
 	--"armcarry",
-	"armserp",
 	"armmship",
 	"armcroc",
 	"corroy",
@@ -62,14 +72,24 @@ T2SeaUnits = {
 T3SeaUnits = {
 	"armbats",
 	"armepoch",
+	"armserp",
 	"corbats",
 	"corblackhy",
 	--hovercraft
 	"armlun",
 	"corsok",
+	--constructors
+	"armbeaver",
+	"armch",
+	"armcs",
+	"cormuskrat",
+	"corcs",
 }
 
 T4SeaUnits = {
-	"corcrwboss",
-	"armvaderboss",
+	"armepoch",
+	"corblackhy",
+	"armvadert4",
+	"corkorg",
+	"armbanth",
 }
