@@ -36,7 +36,7 @@ local yoff = 2
 -- maximum fraction of screen size,
 -- set one value to 1 to calibrate the other
 local xmax = 0.262
-local ymax = 0.310
+local ymax = 0.25 --0.310
 
 
 --------------------------------------------------------------------------------
