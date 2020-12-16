@@ -10,52 +10,69 @@ function gadget:GetInfo()
     }
 end
 
-if not gadgetHandler:IsSyncedCode() then      -- SYNCED-ONLY
-    return end
+if gadgetHandler:IsSyncedCode() then
+    --- SYNCED
 
-VFS.Include("gamedata/taptools.lua")
+    VFS.Include("gamedata/taptools.lua")
 
-local trackedUnits = {}             -- unitID = true, ... }
-local heightDiffPercentage = 0.2    -- Percentage of build range which validates vertical captures
+    local trackedUnits = {}             -- unitID = true, ... }
+    local heightDiffPercentage = 0.2    -- Percentage of build range which validates vertical captures
 
-local CMD_CAPTURE = CMD.CAPTURE -- icon unit or area
-local spGetUnitDefID = Spring.GetUnitDefID
-local spGetUnitPosition = Spring.GetUnitPosition
+    local math_abs = math.abs
+    local CMD_CAPTURE = CMD.CAPTURE -- icon unit or area
+    local spGetUnitDefID = Spring.GetUnitDefID
+    local spGetUnitPosition = Spring.GetUnitPosition
 
---local function iscommander(uDefID)
---    local cParms = UnitDefs[uDefID].customParams
---    if cParms and cParms.iscommander then
---        return true
---    end
---    return false
---end
+    --local function iscommander(uDefID)
+    --    local cParms = UnitDefs[uDefID].customParams
+    --    if cParms and cParms.iscommander then
+    --        return true
+    --    endz
+    --    return false
+    --end
 
-function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions, cmdTag, synced)
-    if not IsValidUnit(unitID) then
-        return end
-    if trackedUnits[unitID] and cmdID and cmdID == CMD_CAPTURE then
-        local unitPosY = select(2, spGetUnitPosition(unitID))
-        local targetUID = cmdParams[1]
-        local targetPosY = select(2, spGetUnitPosition(targetUID))
-        local heightDiff = Math.abs(targetPosY - unitPosY)
-        local buildDistance = UnitDefs[unitDefID].buildDistance or 100  -- fallback build distance in case of stats error
-        if heightDiff > (heightDiffPercentage * buildDistance) then
-            return false
+    function gadget:AllowCommand(unitID, unitDefID, unitTeam, cmdID, cmdParams, cmdOptions, cmdTag, synced)
+        if not IsValidUnit(unitID) then
+            return end
+        if trackedUnits[unitID] and cmdID and cmdID == CMD_CAPTURE then
+            local unitPosY = select(2, spGetUnitPosition(unitID))
+            local targetUID = cmdParams[1]
+            local targetPosY = select(2, spGetUnitPosition(targetUID))
+            local heightDiff = math_abs(targetPosY - unitPosY)
+            local buildDistance = UnitDefs[unitDefID].buildDistance or 100  -- fallback build distance in case of stats error
+            if heightDiff > (heightDiffPercentage * buildDistance) then
+                SendToUnsynced("CaptureBlockedEvent", unitTeam)
+                return false
+            end
+        end
+        return true
+    end
+
+    function gadget:UnitCreated(unitID, unitDefID)
+        local uDef = UnitDefs[unitDefID]
+        if uDef.canCapture and not uDef.canFly then
+            trackedUnits[unitID] = true
         end
     end
-    return true
-end
 
-function gadget:UnitCreated(unitID, unitDefID)
-    local uDef = UnitDefs[unitDefID]
-    if uDef.canCapture and not uDef.canFly then
-        trackedUnits[unitID] = true
+    function gadget:Initialize()
+        for _, unitID in ipairs(Spring.GetAllUnits()) do
+            local unitDefID = spGetUnitDefID(unitID)
+            gadget:UnitCreated(unitID, unitDefID)
+        end
     end
-end
 
-function gadget:Initialize()
-    for _, unitID in ipairs(Spring.GetAllUnits()) do
-        local unitDefID = spGetUnitDefID(unitID)
-        gadget:UnitCreated(unitID, unitDefID)
+else
+    function HandleCaptureBlockedEvent(cmd, unitTeam)
+        if Script.LuaUI("CaptureBlockedUIEvent") then
+            Script.LuaUI.CaptureBlockedUIEvent(unitTeam)
+        end
+    end
+
+    function gadget:Initialize()
+        gadgetHandler:AddSyncAction("CaptureBlockedEvent", HandleCaptureBlockedEvent)
+    end
+    function gadget:Shutdown()
+        gadgetHandler:RemoveSyncAction("CaptureBlockedEvent")
     end
 end
