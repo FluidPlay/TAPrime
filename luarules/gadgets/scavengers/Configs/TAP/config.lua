@@ -45,22 +45,22 @@ scavconfig = {
 		T1top								= 1800,
 		-- On function UpdateTierChances() you have tier chances for every timer and then it's RNG
 		-- Eg: T2start has 20% chance for T2 and 80% chance for T1; It's transition so it doesn't switch instantly from.pure T1 to pure T2
-		T2start								= 3200, --2250, 2925
-		T2low								= 3900, --3900
-		T2med								= 4875,
-		T2high								= 5850,
+		T2start								= 4200, --2250, 2925
+		T2low								= 4900, --3900
+		T2med								= 5875,
+		T2high								= 6850,
 		T2top								= 7800,
 		T3start								= 8500, -- 7500
 		T3low								= 9500, -- 9000
 		T3med								= 10500,
 		T3high								= 12000,
 		T3top								= 13500,
-		T4start								= 15000,
-		T4low								= 18000,
-		T4med								= 21000,
-		T4high								= 24000,
-		T4top								= 28000,
-		BossFight							= 32000,
+		T4start								= 14000, --15000
+		T4low								= 16000, --18000
+		T4med								= 19000, --21000
+		T4high								= 22000, --24000
+		T4top								= 24000, --28000
+		BossFight							= 26000, --32000
 		-- don't delete
 		NoRadar								= 7500,
 	},
@@ -79,8 +79,8 @@ buildingSpawnerModuleConfig = {
 unitSpawnerModuleConfig = {
 	bossFightEnabled					= true,
 	FinalBossUnit						= true,
-		FinalBossHealth						= 140000, --250000, 180000 -- this*teamcount*difficulty
-		FinalBossMinionsPassive				= 5000, --3000, -- this/(teamcount*difficulty), how often does boss spawn minions passively, frames.
+		FinalBossHealth						= 80000, --140000, --250000, 180000 -- this*teamcount*difficulty
+		FinalBossMinionsPassive				= 3000, -- this/(teamcount*difficulty), how often does boss spawn minions passively, frames.
 		FinalBossMinionsActive				= 750, --150, -- this/(teamcount*difficulty), how often does boss spawn minions when taking damage, frames.
 	BossWaveTimeLeft					= 180, --900,
 	aircraftchance 						= 8, --6,9 [M] -- higher number = lower chance
@@ -96,9 +96,9 @@ unitSpawnerModuleConfig = {
 	chanceforaircraftonsea				= 6, --2, -- higher number = lower chance
 
 	t0multiplier						= 3.5, --3,    ---Higher number bigger wave
-	t1multiplier						= 2.15, --2.5, 2 [M]
+	t1multiplier						= 2.2, --2.5, 2 [M]
 	t2multiplier						= 1.1,  -- 0.8, 1 [M]
-	t3multiplier						= 0.165, -- 0.1, 0.175 [M]
+	t3multiplier						= 0.175, -- 0.1, 0.165 [M]
 	t4multiplier						= 0.025, -- 0.05, 0.03 [M]
 }
 

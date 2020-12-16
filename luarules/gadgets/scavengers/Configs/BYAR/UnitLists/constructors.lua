@@ -5,8 +5,8 @@ ConstructorsList = {
 
 -- put ALL commander units from your game here
 CommandersList = {
-    "armcom",
-    "corcom",
+"armcom",
+"corcom",
 }
 
 ConstructorsCounter = {
@@ -15,23 +15,14 @@ ConstructorsCounter = {
 }
 
 AssistUnits = {
-	"armoutpost",
-    "coroutpost",
-    "armoutpost2",
-    "coroutpost2",
-    "armoutpost3",
-    "coroutpost3",
-    "armoutpost4",
-    "coroutpost4",
-    "armfark",
-    "armconsul",
-    "cormuskrat",
-    "corfast",
+	"armnanotc",
+	"cornanotc",
+	"armnanotcplat",
+	"cornanotcplat",
 }
 
 Resurrectors = {
 	"armrectr",
-    "corvrad",
 	"cornecro",
 }
 
@@ -41,22 +32,30 @@ ResurrectorsSea = {
 }
 
 Collectors = {
-    "armfark",
 	"armck",
 	"armack",
+	"armdecom",
 	"armcv",
+	"armbeaver",
 	"armacv",
 	"armca",
+	"armcsa",
 	"armaca",
 	"armcs",
 	"armacsub",
+	"armch",
 	"corck",
 	"corack",
+	"cordecom",
 	"corcv",
 	"cormuskrat",
 	"coracv",
 	"corca",
+	"corcsa",
 	"coraca",
 	"corcs",
 	"coracsub",
+	"corch",
+	"corfast",
+	"armrectrt4",
 }

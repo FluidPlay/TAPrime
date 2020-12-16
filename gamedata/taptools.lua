@@ -466,6 +466,8 @@ function UnblockCmdID(unitID, cmdID, orgTooltip)
 end
 
 function IsValidUnit(unitID)
+    if not isnumber(unitID) then
+        return false end
 	local unitDefID = spGetUnitDefID(unitID)
 	if unitDefID and spValidUnitID(unitID) then
 		return true

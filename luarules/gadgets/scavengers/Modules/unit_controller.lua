@@ -58,59 +58,93 @@ function SelfDestructionControls(n, scav, scavDef)
 	Constructing[scav] = nil
 end
 
-function BossDGun(n)
-	if FinalBossUnitID then
-		local NearestBossEnemy = Spring.GetUnitNearestEnemy(FinalBossUnitID, 20000, false)
-		NearestBossEnemyUnitDefID = Spring.GetUnitDefID(NearestBossEnemy)
-		if UnitDefs[NearestBossEnemyUnitDefID].canFly ~= true then
-			local x,y,z = Spring.GetUnitPosition(NearestBossEnemy)
-			--Spring.GiveOrderToUnit(FinalBossUnitID, CMD.DGUN,{x,y,z}, {0})
-			Spring.GiveOrderToUnit(FinalBossUnitID, CMD.DGUN, NearestBossEnemy, {0})
-		end
-	end
-end
-
 function ArmyMoveOrders(n, scav, scavDef)
 	UnitRange = {}
-	if UnitDefs[scavDef].maxWeaponRange and UnitDefs[scavDef].maxWeaponRange > 10 then
+	if UnitDefs[scavDef].maxWeaponRange and UnitDefs[scavDef].maxWeaponRange > 100 then
 		UnitRange[scav] = UnitDefs[scavDef].maxWeaponRange
 	else
-		UnitRange[scav] = 10
+		UnitRange[scav] = 100
 	end
-	if not BossWaveStarted or BossWaveStarted == false then
+	if not FinalBossUnitID then
 		attackTarget = Spring.GetUnitNearestEnemy(scav, 200000, false)
-	else
-		if AliveEnemyCommanders and AliveEnemyCommandersCount > 0 then
-			if AliveEnemyCommandersCount > 1 then
-				for i = 1,AliveEnemyCommandersCount do
-					-- let's get nearest commander
-					local separation = Spring.GetUnitSeparation(scav,AliveEnemyCommanders[i])
-					if not lowestSeparation then
-						lowestSeparation = separation
-						attackTarget = AliveEnemyCommanders[i]
-					end
-					if separation < lowestSeparation then
-						lowestSeparation = separation
-						attackTarget = AliveEnemyCommanders[i]
-					end
-				end
-				lowestSeparation = nil
-			elseif AliveEnemyCommandersCount == 1 then
-				attackTarget = AliveEnemyCommanders[1]
-			end
-		end
+	elseif FinalBossUnitID and scav == FinalBossUnitID then
+		attackTarget = Spring.GetUnitNearestEnemy(scav, 200000, false)
+		-- if AliveEnemyCommanders and AliveEnemyCommandersCount > 0 then
+			-- if AliveEnemyCommandersCount > 1 then
+				-- for i = 1,AliveEnemyCommandersCount do
+					-- -- let's get nearest commander
+					-- local separation = Spring.GetUnitSeparation(scav,AliveEnemyCommanders[i])
+					-- if not lowestSeparation then
+						-- lowestSeparation = separation
+						-- attackTarget = AliveEnemyCommanders[i]
+					-- end
+					-- if separation < lowestSeparation then
+						-- lowestSeparation = separation
+						-- attackTarget = AliveEnemyCommanders[i]
+					-- end
+				-- end
+				-- lowestSeparation = nil
+			-- elseif AliveEnemyCommandersCount == 1 then
+				-- attackTarget = AliveEnemyCommanders[1]
+			-- end
+		-- end
+	elseif FinalBossUnitID and scav ~= FinalBossUnitID then
+		attackTarget = FinalBossUnitID
 	end
+	
+	-- if not BossWaveStarted or BossWaveStarted == false then
+		-- attackTarget = Spring.GetUnitNearestEnemy(scav, 200000, false)
+	-- else
+		-- if AliveEnemyCommanders and AliveEnemyCommandersCount > 0 then
+			-- if AliveEnemyCommandersCount > 1 then
+				-- for i = 1,AliveEnemyCommandersCount do
+					-- -- let's get nearest commander
+					-- local separation = Spring.GetUnitSeparation(scav,AliveEnemyCommanders[i])
+					-- if not lowestSeparation then
+						-- lowestSeparation = separation
+						-- attackTarget = AliveEnemyCommanders[i]
+					-- end
+					-- if separation < lowestSeparation then
+						-- lowestSeparation = separation
+						-- attackTarget = AliveEnemyCommanders[i]
+					-- end
+				-- end
+				-- lowestSeparation = nil
+			-- elseif AliveEnemyCommandersCount == 1 then
+				-- attackTarget = AliveEnemyCommanders[1]
+			-- end
+		-- end
+	-- end
 	if attackTarget == nil then
 		attackTarget = Spring.GetUnitNearestEnemy(scav, 200000, false)
 	end
 	local x,y,z = Spring.GetUnitPosition(attackTarget)
-	local range = UnitRange[scav]
-	local x = x + math_random(-range*3,range*3)
-	local z = z + math_random(-range*3,range*3)
-	if (not BossWaveStarted) and (UnitDefs[scavDef].canFly or (UnitRange[scav] > unitControllerModuleConfig.minimumrangeforfight)) then
-		Spring.GiveOrderToUnit(scav, CMD.FIGHT,{x,y,z}, {"shift", "alt", "ctrl"})
-	else
-		Spring.GiveOrderToUnit(scav, CMD.MOVE,{x,y,z}, {"shift", "alt", "ctrl"})
-	end	
-	attackTarget = nil
+	local y = Spring.GetGroundHeight(x, z)
+	if (-(UnitDefs[scavDef].minWaterDepth) > y) and (-(UnitDefs[scavDef].maxWaterDepth) < y) or UnitDefs[scavDef].canFly then
+		local range = UnitRange[scav]
+		if range < 500 then 
+			range = 500 
+		end
+		local x = x + math_random(-range*0.5,range*0.5)
+		local z = z + math_random(-range*0.5,range*0.5)
+		local transporting = Spring.GetUnitIsTransporting(scav)
+		if transporting and #transporting > 0 then
+			Spring.GiveOrderToUnit(scav, CMD.UNLOAD_UNIT,{x+math_random(-5000,5000),y,z+math_random(-5000,5000)}, {"shift", "alt", "ctrl"})
+		elseif FinalBossUnitID and (scav ~= FinalBossUnitID) then
+			Spring.GiveOrderToUnit(scav, CMD.FIGHT,{x,y,z}, {"shift", "alt", "ctrl"})
+		elseif FinalBossUnitID and (scav == FinalBossUnitID) then
+			Spring.GiveOrderToUnit(scav, CMD.MOVE,{x,y,z}, {"shift", "alt", "ctrl"})
+		elseif not FinalBossUnitID then
+			if UnitDefs[scavDef].canFly then
+				Spring.GiveOrderToUnit(scav, CMD.FIGHT,{x,y,z}, {"shift", "alt", "ctrl"})
+			elseif UnitRange[scav] > unitControllerModuleConfig.minimumrangeforfight then
+				Spring.GiveOrderToUnit(scav, CMD.FIGHT,{x,y,z}, {"shift", "alt", "ctrl"})
+			else
+				Spring.GiveOrderToUnit(scav, CMD.MOVE,{x,y,z}, {"shift", "alt", "ctrl"})
+			end
+		else
+			Spring.GiveOrderToUnit(scav, CMD.MOVE,{x,y,z}, {"shift", "alt", "ctrl"})
+		end	
+		attackTarget = nil
+	end
 end

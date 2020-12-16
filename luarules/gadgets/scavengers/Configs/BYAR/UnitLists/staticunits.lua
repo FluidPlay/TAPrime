@@ -7,6 +7,8 @@ NoSelfdList = {
 	"lootboxplatinum",
 	"lootboxsilver",
 	"lootboxbronze",
+	"chickend1",
+	"roost",
 
 	-- These operate through other modules
 	--"cornanotc",
@@ -17,6 +19,15 @@ NoSelfdList = {
 	--"corcom",
 	--"armrectr",
 	--"cornecro",
+}
+
+WallUnitNames = {
+	"armdrag",
+	"armfdrag",
+	"cordrag",
+	"corfdrag",
+	"armfort",
+	"corfort",
 }
 
 StockpilingUnitNames = {
@@ -92,7 +103,7 @@ BeaconDefenceStructuresT2 = {
 	"armbeamer",
 	"cormaw",
 	"armclaw",
-	"armpacko",
+	"armferret",
 	"armbeamer",
 	"armhlt",
 	"armhlt",
@@ -116,7 +127,7 @@ BeaconDefenceStructuresT3 = {
 	"armbeamer",
 	"cormaw",
 	"armclaw",
-	"armpacko",
+	"armferret",
 	"armbeamer",
 	"armhlt",
 	"armhlt",
@@ -140,13 +151,7 @@ BeaconDefenceStructuresT3 = {
 
 StartboxDefenceStructuresT0 = {
 	"corllt",
-	"corhllt",
 	"armllt",
-	"cormaw",
-	"corhllt",
-	"armclaw",
-	"armbeamer",
-	"armpacko",
 }
 
 StartboxDefenceStructuresT1 = {
@@ -154,7 +159,13 @@ StartboxDefenceStructuresT1 = {
 	"corhllt",
 	"armclaw",
 	"armbeamer",
-	"armpacko",
+	"armferret",
+	"cormadsam",
+	"corerad",
+	"corhllt",
+	"corhlt",
+	"armhlt",
+	"armmine3",
 }
 
 StartboxDefenceStructuresT2 = {
@@ -169,6 +180,21 @@ StartboxDefenceStructuresT2 = {
 	"corpun",
 	"armamd",
 	"corfmd",
+	"corvipe",
+	"armpb",
+	"armpb",
+	"armflak",
+	"corflak",
+	"armamd",
+	"corfmd",
+	"armemp",
+	"corflak",
+	"armflak",
+	"corflak",
+	"armmine3",
+	"armamd",
+	"corfmd",
+	"armemp",
 }
 
 StartboxDefenceStructuresT3 = {
@@ -184,6 +210,21 @@ StartboxDefenceStructuresT3 = {
 	"armamd",
 	"corfmd",
 	"armemp",
+	"cortron",
+	"corflak",
+	"armanni",
+	"cordoom",
+	"armanni",
+	"cordoom",
+	"armflak",
+	"corflak",
+	"armanni",
+	"cordoom",
+	"armmine3",
+	"armamd",
+	"corfmd",
+	"armemp",
+	"cortron",
 }
 
 StartboxDefenceStructuresT4 = {
@@ -200,6 +241,7 @@ StartboxDefenceStructuresT4 = {
 	"armamd",
 	"corfmd",
 	"armemp",
+	"cortron",
 }
 
 
@@ -211,6 +253,24 @@ StartboxDefenceStructuresT0Sea = {
 	"armfrt",
 	"corfrt",
 	"corfdrag",
+	"cortl",
+	"armtl",
+	"armfrt",
+	"corfrt",
+	"cortl",
+	"armtl",
+	"armfrt",
+	"corfrt",
+	"coratl",
+	"armatl",
+	"corfhlt",
+	"armfhlt",
+	"coratl",
+	"armatl",
+	"corfhlt",
+	"armfhlt",
+	"coratl",
+	"armatl",
 }
 
 StartboxDefenceStructuresT1Sea = {
@@ -218,6 +278,20 @@ StartboxDefenceStructuresT1Sea = {
 	"armtl",
 	"armfrt",
 	"corfrt",
+	"cortl",
+	"armtl",
+	"armfrt",
+	"corfrt",
+	"coratl",
+	"armatl",
+	"corfhlt",
+	"armfhlt",
+	"coratl",
+	"armatl",
+	"corfhlt",
+	"armfhlt",
+	"coratl",
+	"armatl",
 }
 
 StartboxDefenceStructuresT2Sea = {
@@ -229,6 +303,12 @@ StartboxDefenceStructuresT2Sea = {
 	"armatl",
 	"corfhlt",
 	"armfhlt",
+	"coratl",
+	"armatl",
+	"corfhlt",
+	"armfhlt",
+	"coratl",
+	"armatl",
 }
 
 StartboxDefenceStructuresT3Sea = {
@@ -236,6 +316,8 @@ StartboxDefenceStructuresT3Sea = {
 	"armatl",
 	"corfhlt",
 	"armfhlt",
+	"coratl",
+	"armatl",
 	--"corfflak",
 	--"armfflak",
 }
