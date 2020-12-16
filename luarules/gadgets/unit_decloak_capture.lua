@@ -6,7 +6,7 @@ function gadget:GetInfo()
         date      = "Mar 24, 2020",
         license   = "GNU GPL, v2 or later",
         layer     = 0,
-        enabled   = true  --  loaded by default?
+        enabled   = false --true  --  Currently disabled in favor of the new unit_capture_blocker.lua
     }
 end
 
@@ -26,6 +26,8 @@ function gadget:AllowCommand(unitID, uDefID, unitTeam, cmdID, cmdParams, cmdOpti
     if cmdID and cmdID == CMD_CAPTURE then
         if spGetUnitIsCloaked(unitID) then --iscommander(uDefID)
             spSetUnitCloak(unitID, false) end
+        --TODO: Requires merge with unit_decloak_logic.
+        --spSetUnitRulesParam(unitID, "cannotcloak", 1, alliedIsTrueTable)
     end
     return true
 end
