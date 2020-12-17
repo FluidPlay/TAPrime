@@ -179,10 +179,7 @@ spawnProtectionConfig = {
 randomEventsConfig = {
 	randomEventMinimumDelay = 9000*ScavRandomEventsAmountModoption, -- frames
 	randomEventChance = 200*ScavRandomEventsAmountModoption, -- higher = lower chance
-	
 }
-
-
 
 -- Functions which you can configure
 function CountScavConstructors()
