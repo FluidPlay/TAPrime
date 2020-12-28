@@ -6,9 +6,11 @@
 
 -- Settings + Button options (as shown in a given unit's command list)
 -- Value is used as key of PUU (Per-unit upgrade table)
+---TODO: Refactor so that this table is auto-generated from the upgradableDefIDs
+---      entry in each upgrade.
 UnitResearchers = {
-    [UnitDefNames["corcom"].id] = "dgun",
-    [UnitDefNames["armcom"].id] = "dgun",
+    --[UnitDefNames["corcom"].id] = "dgun",
+    --[UnitDefNames["armcom"].id] = "dgun",
     [UnitDefNames["armamex"].id] = "unlockweapon",
     [UnitDefNames["corexp"].id] = "unlockweapon",
     [UnitDefNames["armpw"].id] = "grenade",
@@ -17,6 +19,14 @@ UnitResearchers = {
     [UnitDefNames["corvrad"].id] = "neutronstrike",
     [UnitDefNames["armmark"].id] = "smokebomb",
     [UnitDefNames["cormist"].id] = "smokebomb",
+    [UnitDefNames["armstump"].id] = "hover",
+    [UnitDefNames["corraid"].id] = "hover",
+    [UnitDefNames["armbull"].id] = "hover",
+    [UnitDefNames["correap"].id] = "hover",
+    [UnitDefNames["armsam"].id] = "hover",
+    [UnitDefNames["cormist"].id] = "hover",
+    [UnitDefNames["armmerl"].id] = "hover",
+    [UnitDefNames["corban"].id] = "hover",
 }
 
 local CMD_CAPTURE = CMD.CAPTURE
@@ -47,32 +57,36 @@ CMD_UPG_UNLOCKWEAPON = CMD.UPG_UNLOCKWEAPON
 CMD.UPG_SMOKEBOMB = 41993
 CMD_UPG_SMOKEBOMB = CMD.UPG_SMOKEBOMB
 
+CMD.UPG_HOVER = 41992
+CMD_UPG_HOVER = CMD.UPG_HOVER
+
 -- Unit Upgrades (as shown in a certain unit's command list)
-UnitUpg = {
-    dgun = {
-        id = "dgun",
-        UpgradeCmdDesc = {
-            id      = CMD_UPG_DGUN,
-            name    = '^ D-Gun',
-            action  = 'dgunupgrade',
-            cursor  = 'Morph',
-            type    = CMDTYPE.ICON,
-            tooltip = 'D-Gun Upgrade: Enables D-gun weapon [per unit]\n'..
-                    GreenStr..'time:n/a\n'..CyanStr..'metal: n/a\n'..YellowStr..'energy: n/a',
-            texture = 'luaui/images/upgrades/cmd_upgdgun.png',
-            onlyTexture = true,
-            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
-            --params = { '1', ' Fly ', 'Land'}
-        },
-        prereq = "T1 Commander",
-        metalCost = 200,
-        energyCost = 1200,
-        upgradeTime = 10 * 30, --5 seconds, in frames
-        type = "tech",          -- TODO: Currently unused. Should indicate special types (auras, debuffs, etc)
-        alertWhenDone = true, -- [Optional] if true, fires an alert once completed
-        buttonToUnlock = CMD_MANUALFIRE,
-        buttonToUnlockTooltip = "", --automatically fed when button is locked (@ unit create)
-    },
+UnitUpgrades = {
+    --dgun = {
+    --    id = "dgun",
+    --    UpgradeCmdDesc = {
+    --        id      = CMD_UPG_DGUN,
+    --        name    = '^ D-Gun',
+    --        action  = 'dgunupgrade',
+    --        cursor  = 'Morph',
+    --        type    = CMDTYPE.ICON,
+    --        tooltip = 'D-Gun Upgrade: Enables D-gun weapon [per unit]\n'..
+    --                GreenStr..'time:n/a\n'..CyanStr..'metal: n/a\n'..YellowStr..'energy: n/a',
+    --        texture = 'luaui/images/upgrades/cmd_upgdgun.png',
+    --        onlyTexture = true,
+    --        showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
+    --        --params = { '1', ' Fly ', 'Land'}
+    --    },
+    --    prereq = "T1 Commander",
+    --    metalCost = 200,
+    --    energyCost = 1200,
+    --    upgradeTime = 10 * 30, --5 seconds, in frames
+    --    type = "tech",          -- TODO: Currently unused. Should indicate special types (auras, debuffs, etc)
+    --    alertWhenDone = true, -- [Optional] if true, fires an alert once completed
+    --    buttonToUnlock = CMD_MANUALFIRE,
+    --    buttonToUnlockTooltip = "", --automatically fed when button is locked (@ unit create)
+    --    upgradableDefIDs = {},
+    --},
     unlockweapon = {
         id = "unlockweapon",
         UpgradeCmdDesc = {
@@ -96,6 +110,7 @@ UnitUpg = {
         alertWhenDone = false, -- [Optional] if true, fires an alert once completed
         buttonToUnlock = CMD_ATTACK,
         buttonToUnlockTooltip = "", --automatically fed when button is locked (@ unit create)
+        upgradableDefIDs = {},
     },
     grenade = {     -- >> Peewee's Laser Grenade (Per Unit)
         id = "grenade",
@@ -118,6 +133,7 @@ UnitUpg = {
         type = "perunit",
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "",
+        upgradableDefIDs = {},
     },
     smokebomb = {     -- >> Peewee's Laser Grenade (Per Unit)
         id = "smokebomb",
@@ -140,6 +156,7 @@ UnitUpg = {
         type = "perunit",
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "",
+        upgradableDefIDs = {},
     },
     firerain = {     -- >> Arm Samson's Missile Shower (Per Unit)
         id = "firerain",
@@ -162,6 +179,7 @@ UnitUpg = {
         type = "perunit", --CMDTYPE.ICON_MAP
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "",
+        upgradableDefIDs = {},
     },
     neutronstrike = {     -- >> Cor Vrad Neutron Hailstorm (Per Unit)
         id = "neutronstrike",
@@ -184,6 +202,7 @@ UnitUpg = {
         type = "perunit", --CMDTYPE.ICON_MAP
         buttonToUnlock = CMD_MANUALFIRE,
         buttonToUnlockTooltip = "",
+        upgradableDefIDs = {},
     },
     resurrect = {     -- >> Core Informer Resurrect (Per Unit)
         id = "resurrect",
@@ -206,6 +225,38 @@ UnitUpg = {
         type = "perunit",
         buttonToUnlock = CMD_RESURRECT,
         buttonToUnlockTooltip = "",
+        upgradableDefIDs = {},
+    },
+    hover = {     -- >> Core Informer Resurrect (Per Unit)
+        id = "hover",
+        UpgradeCmdDesc = {
+            id      = CMD_UPG_HOVER,
+            name    = 'Upg Hover',
+            action  = 'hoverupgrade',
+            cursor  = 'Morph',
+            type    = CMDTYPE.ICON,
+            tooltip = 'Hover upgrade: Adds on-the-water mobility [per unit]\n'..
+                    GreenStr..'time:4\n'..CyanStr..'metal: 80\n'..YellowStr..'energy: 450',
+            texture = 'luaui/images/upgrades/techhover.dds',
+            onlyTexture = true,
+            showUnique = true, --required by gui_chili_buildordermenu to show button as 'upgrading'
+        },
+        prereq = "Tech1",
+        metalCost = 80,
+        energyCost = 450,
+        upgradeTime = 1 * 30,--4 * 30, --10 seconds, in frames
+        type = "perunit",
+        buttonToUnlock = nil,
+        buttonToUnlockTooltip = "",
+        upgradableDefIDs = { [UnitDefNames["armstump"].id] = true,  -- tanks (T1 & T2), missile trucks, T3 artillery
+                             [UnitDefNames["corraid"].id] = true,
+                             [UnitDefNames["armbull"].id] = true,
+                             [UnitDefNames["correap"].id] = true,
+                             [UnitDefNames["armsam"].id] = true,
+                             [UnitDefNames["cormist"].id] = true,
+                             [UnitDefNames["armmerl"].id] = true,
+                             [UnitDefNames["corban"].id] = true,
+        },
     },
 }
 

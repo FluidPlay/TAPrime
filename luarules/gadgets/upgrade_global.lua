@@ -28,7 +28,7 @@ GlobalUpgrades [made by techcenter]
 PerUnitUpgrades [made by unit]
 	=> One upgrade per unit (max)
 	=> May require a team tech
-	=> UnitUpgrade Handlers: <rely on the global UnitUpg table>
+	=> UnitUpgrade Handlers: <rely on the global UnitUpgrades table>
 		* Button-unlock
 		* Healing Pulse (Aura, increases health)
 		* Overclock Pulse (Aura, increases speed + firerate)

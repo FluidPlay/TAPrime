@@ -11,7 +11,7 @@ function widget:GetInfo()
     date      = "november 2014",
     license   = "GNU GPL, v2 or later",
     layer     = 1000,
-    enabled   = false, --true --TODO: Move to settings, enable it on high quality +
+    enabled   = true,
   }
 end
 
@@ -28,7 +28,7 @@ local noiseTex = ":l:LuaUI/Images/rgbnoise.png"
 local mapcfg = {
 	custom = {
 		clouds = {
-		speed = 0.4, --0.5, -- multiplier for speed of scrolling with wind
+		speed = 0.7, --0.5, -- multiplier for speed of scrolling with wind
 		--color    = {0.46, 0.32, 0.2}, -- diffuse color of the fog
 		color    = {0.6,0.7,0.8}, -- diffuse color of the fog
 
@@ -36,7 +36,7 @@ local mapcfg = {
 		height   = 3000, -- opacity of fog above and at this altitude will be zero
 		bottom = 2000, -- no fog below this altitude
 		fade_alt = 2500, -- fog will linearly fade away between this and "height", should be between height and bottom
-		scale = 270, --600, -- how large will the clouds be
+		scale = 450, --270, --600, -- how large will the clouds be
 		opacity = 0, --0.65, -- what it says
 		clamp_to_map = false, -- whether fog volume is sliced to fit map, or spreads to horizon
 		sun_penetration = 20, -- how much does the sun penetrate the fog
@@ -275,6 +275,12 @@ function widget:Initialize()
 		enabled = false
 	end
 
+    local _,_,_,windStrength = spGetWind()
+    if windStrength < 3 then
+        enabled = false
+    end
+
+
 	if enabled then
 		depthShader = glCreateShader({
 			vertex = vertSrc,
@@ -358,10 +364,13 @@ end
 --------------------------------------------------------------------------------
 
 function widget:GameFrame()
-	local dx,dy,dz = spGetWind()
-	offsetX = offsetX-dx*speed
-	offsetY = offsetY-0.25-dy*0.25*speed
-	offsetZ = offsetZ-dz*speed
+	--local dx,dy,dz = spGetWind()
+	--offsetX = offsetX-dx*speed
+	--offsetY = offsetY-0.25-dy*0.25*speed
+	--offsetZ = offsetZ-dz*speed
+    offsetX = 0.75*speed
+    offsetY = 0.2*speed
+    offsetZ = 0.75*speed
 
 	sunDir = {gl.GetSun('pos')}
 	sunCol = {gl.GetSun('specular')}

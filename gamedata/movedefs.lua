@@ -78,6 +78,25 @@ local moveDatas = {
 			maxValue = 0.7,
 		}
 	},
+    TANK2HOVER = {	--HOVER version of TANK2
+        allowRawMovement = true,
+        crushstrength = 275,	-- plasma kbots crushresistance = 400
+        footprintx = 3,
+        footprintz = 3,
+        maxslope = 18,
+        badslope = 22,
+        badwaterslope = 255,
+        maxwaterslope = 255,
+        maxWaterDepth = 255,
+        minwaterdepth = 15,
+        speedModClass = 2, -- 0 = tank, 1 = kbot, 2 = hover, 3 = ship
+
+        depthModParams = {
+            minHeight = 4,
+            linearCoeff = 0.03,
+            maxValue = 0.7,
+        }
+    },
 	TANK3 = {	-- Poker, Samson, Seer, Merl -- (Can't crush except for rifle bots)
         allowRawMovement = true,
 		crushstrength = 5, --15, (missile kbots crushresistance = 5)
@@ -104,6 +123,24 @@ local moveDatas = {
 			maxValue = 0.7,
 		}
 	},
+    HTANK3HOVER = {	--HOVER version of HTANK3 above
+        allowRawMovement = true,
+        crushstrength = 900,
+        footprintx = 4,
+        footprintz = 4,
+        maxslope = 18,
+        badslope = 22,
+        badwaterslope = 255,
+        maxwaterslope = 255,
+        maxWaterDepth = 255,
+        minwaterdepth = 15,
+        speedModClass = 2, -- 0 = tank, 1 = kbot, 2 = hover, 3 = ship
+        depthModParams = {
+            minHeight = 4,
+            linearCoeff = 0.03,
+            maxValue = 0.7,
+        }
+    },
 	ATANK3 = {	-- Triton (lvl3), Croc
         allowRawMovement = true,
 		crushstrength = 3000,

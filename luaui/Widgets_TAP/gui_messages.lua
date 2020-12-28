@@ -20,6 +20,8 @@ end
 --------------------------------------------------------------------------------
 --------------------------------------------------------------------------------
 
+VFS.Include("gamedata/taptools.lua")
+
 local vsx,vsy = Spring.GetViewGeometry()
 
 local posY = 0.16
@@ -185,7 +187,9 @@ function widget:ViewResize()
     widgetScale = (((vsx+vsy) / 2000) * 0.55) * (0.95+(ui_scale-1)/1.5)
     lineMaxWidth = lineMaxWidth * widgetScale
 
-    font = WG['fonts'].getFont(nil, 1, 0.2, 1.3)
+    --font = WG['fonts'].getFont(nil, 1, 0.2, 1.3)
+    local loadedFontSize = 32
+    font = gl.LoadFont(FontPath, loadedFontSize, 24, 1.25) --"LuaUI/Fonts/FreeSansBold.otf"
 
     for i, _ in ipairs(messageLines) do
         if messageLines[i][6] then
@@ -296,7 +300,7 @@ function widget:Update(dt)
     end
 
     local x,y,b = Spring.GetMouseState()
-    if WG['topbar'] and WG['topbar'].showingQuit() then
+    if WG['topbar'] and WG['topbar'].showingRejoining then --WG['topbar'].showingQuit() then --TODO: update topbar
         scrolling = false
     elseif IsOnRect(x, y, activationArea[1], activationArea[2], activationArea[3], activationArea[4]) then
         local alt, ctrl, meta, shift = Spring.GetModKeyState()

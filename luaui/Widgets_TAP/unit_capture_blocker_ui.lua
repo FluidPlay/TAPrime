@@ -10,14 +10,19 @@ function widget:GetInfo()
     }
 end
 
+local spGetMyTeamID = Spring.GetMyTeamID
+local myTeamID = -1
+
 --- Receives an event from unit_capture_blocker gadget and plays a feedback sound
 
 local function CaptureBlocked(unitTeam)
-    -- TODO: if unitTeam == myTeam
-    Spring.PlaySoundFile("errorbleep", 0.2, 'ui')
+    if unitTeam == myTeamID then
+        Spring.PlaySoundFile("errorbleep", 0.2, 'ui')
+    end
 end
 
 function widget:Initialize()
+    local myTeamID = spGetMyTeamID
     widgetHandler:RegisterGlobal("CaptureBlockedUIEvent", CaptureBlocked)
 end
 

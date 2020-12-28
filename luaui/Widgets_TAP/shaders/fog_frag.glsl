@@ -11,7 +11,7 @@ const float opacity = float(%f);
 
 const float sunPenetrationDepth = float(%f);
 
-const float shadowOpacity = 0.33; //0.4;
+const float shadowOpacity = 0.3; //0.33; //0.4;
 const float sunDiffuseStrength = float(6.0);
 const float noiseTexSizeInv = 1.0 / 256.0;
 const float noiseCloudness = float(0.7) * 0.075; //0.5; // TODO: configurable

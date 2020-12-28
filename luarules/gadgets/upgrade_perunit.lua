@@ -32,15 +32,14 @@ PerUnitUpgrades [made by unit]
 		* Button-unlock
 		* Healing Pulse (Aura, increases health)
 		* Overclock Pulse (Aura, increases speed + firerate)
-		* Motor Hack (Weapon - reduces speed by 40%)
+		* Motor Hack (Weapon - reduces enemy move speed by 40%)
 		* Weapon Switcher (disables primary, enables secondary weapon)
+		* Locomotor Switcher (switches into whatever is defined into the targetLocomotor table)
 ]]
 
 include("LuaRules/colors.h.lua")
 VFS.Include("gamedata/taptools.lua")
-VFS.Include("LuaRules/configs/upgradedata_perunit.lua")
-
-UnitUpgrades = {} -- Auto-completed from UnitUpg table @ Initialize
+VFS.Include("LuaRules/Configs/upgradedata_perunit.lua")
 
 --local spGetUnitDefID        = Spring.GetUnitDefID
 --local spInsertUnitCmdDesc   = Spring.InsertUnitCmdDesc
@@ -59,6 +58,7 @@ local spUseUnitResource     = Spring.UseUnitResource
 local spGetUnitHealth       = Spring.GetUnitHealth
 
 local unitRulesParamName = "upgrade"
+local unitRulesCompletedParamName = "upgraded"
 local oldFrame = 0
 
 --local tooltipRequirement = "\n"..RedStr.."Requires ".. prereq,
@@ -92,8 +92,12 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID, cmdParams, cmdOpti
     if not upgrade then
         return true
     end
-    local unitUpg = UnitUpg[upgrade]
-    local cmdDesc = unitUpg.UpgradeCmdDesc
+    local unitUpgrade = UnitUpgrades[upgrade]
+    if unitUpgrade == nil then
+        Spring.Echo("Upgrade not defined: "..upgrade)
+        return true
+    end
+    local cmdDesc = unitUpgrade.UpgradeCmdDesc
 
     if cmdID == cmdDesc.id and (not upgradedUnits[unitID]) then
         local isUpgrading = upgradingUnits[unitID]
@@ -105,8 +109,8 @@ function gadget:AllowCommand(unitID,unitDefID,unitTeam,cmdID, cmdParams, cmdOpti
                 return true
             end
         else                --- Otherwise, check for requirements
-            if HasTech(unitUpg.prereq, unitTeam) then
-                startUpgrade(unitID, unitUpg, cmdParams) end
+            if HasTech(unitUpgrade.prereq, unitTeam) then
+                startUpgrade(unitID, unitUpgrade, cmdParams) end
             --BlockCmdID(unitID, cmdID, cmdDesc.tooltip, "Upgrading")
             --cmdDesc.texture = cmdDesc.texture:gsub(".dds", "_wip.dds") -- "Upgrade in progress" texture
             --cmdDesc.params.refresh = "true"
@@ -121,7 +125,7 @@ end
 function gadget:Initialize()
     -- Sets the dgun cursor to the FireRain ability
     Spring.AssignMouseCursor("firerain", "cursordgun", false)
-    for _,upgrade in pairs(UnitUpg) do
+    for _,upgrade in pairs(UnitUpgrades) do
         UnitUpgrades[upgrade] = true
     end
     --GG.UnitUpgrades = UnitUpgrades
@@ -140,21 +144,21 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
         return end
     --Spring.Echo("Found locally available upgrade: "..upgrade)
 
-    local unitUpg = UnitUpg[upgrade]
+    local unitUpg = UnitUpgrades[upgrade]
     if unitUpg then
-        -- Store original buttonToUnlock tooltip for later usage (add suffix / restore)
-        local cmdIdx = spFindUnitCmdDesc(unitID, unitUpg.buttonToUnlock)
-        local cmdDesc = spGetUnitCmdDescs(unitID, cmdIdx, cmdIdx)[1]
-        if cmdDesc then
-            unitUpg.buttonToUnlockTooltip = cmdDesc.tooltip end
+        local cmdIdx
+        local cmdDesc
+        if unitUpg.buttonToUnlock then
+            -- Store original buttonToUnlock tooltip for later usage (add suffix / restore)
+            cmdIdx = spFindUnitCmdDesc(unitID, unitUpg.buttonToUnlock)
+            cmdDesc = spGetUnitCmdDescs(unitID, cmdIdx, cmdIdx)[1]
+            if cmdDesc then
+                unitUpg.buttonToUnlockTooltip = cmdDesc.tooltip end
+        end
 
         -- If it should block the attack command, must also block its weapon to prevent auto-fire
         if unitUpg.buttonToUnlock == CMD_ATTACK then
-            Spring.SetUnitWeaponState(unitID, 1, "range", 0)
-            --for weaponID, _ in pairs(UnitDefs[Spring.GetUnitDefID(unitID)].weapons) do
-            --    Spring.SetUnitWeaponState(unitID, weaponID, "range", 0)
-            --    --Spring.UnitWeaponHoldFire(unitID, weaponID)
-            --end
+            Spring.SetUnitWeaponState(unitID, 1, "range", 0)    --- Hardcoded to Weapon 1
         end
 
         -- Add upgrade Cmd, block & add it to watch list, if tech not yet available
@@ -207,6 +211,9 @@ local function finishUpgrade(unitID, unitUpg)
     upgradedUnits[unitID] = true
 
     spSetUnitRulesParam(unitID, unitRulesParamName, nil)
+
+    -- This is to be consumed by upghandlerpuus (like upghandlerpuu_hover.lua)
+    spSetUnitRulesParam(unitID, unitRulesCompletedParamName, 1)
 
     --- Below is alerting all players about upgrade finished. Looks like an engine bug.
     --if unitUpg.alertWhenDone then

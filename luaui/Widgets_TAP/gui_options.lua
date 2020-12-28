@@ -145,6 +145,7 @@ local presets = {
 		grounddetail = 60,
 		darkenmap_darkenfeatures = false,
 		enemyspotter_highlight = false,
+        cloudshadows=false,
 	},
 	low = {
 		bloom = false,
@@ -175,12 +176,13 @@ local presets = {
 		grounddetail = 90,
 		darkenmap_darkenfeatures = false,
 		enemyspotter_highlight = false,
+        cloudshadows=false,
 	},
 	medium = {
 		bloom = true,
 		bloomhighlights = false,
 		water = 4,
-		mapedgeextension = true,
+		mapedgeextension = false, --true
 		lighteffects = true,
 		lighteffects_deferred = true,
 		lighteffects_heatdistortion = true,
@@ -205,6 +207,7 @@ local presets = {
 		grounddetail = 140,
 		darkenmap_darkenfeatures = false,
 		enemyspotter_highlight = false,
+        cloudshadows=false,
 	},
 	high = {
 		bloom = true,
@@ -235,11 +238,12 @@ local presets = {
 		grounddetail = 180,
 		darkenmap_darkenfeatures = false,
 		enemyspotter_highlight = false,
+        cloudshadows=true,
 	},
 	ultra = {
 		bloom = true,
 		bloomhighlights = true,
-		water = 5,
+		water = 5, --TODO: Check why bumpmapped is breaking Hourglass water's reflection
 		mapedgeextension = true,
 		lighteffects = true,
 		lighteffects_deferred = true,
@@ -265,6 +269,7 @@ local presets = {
 		grounddetail = 200,
 		darkenmap_darkenfeatures = true,
 		enemyspotter_highlight = true,
+        cloudshadows=true,
 	},
 }
 local customPresets = {}
@@ -2031,6 +2036,7 @@ function init()
 
 		{id="resurrectionhalos", group="gfx", widget="Resurrection Halos", name="Resurrected unit halos", type="bool", value=GetWidgetToggleValue("Resurrection Halos"), description='Gives units have have been resurrected a little halo above it.'},
         {id="tombstones", group="gfx", widget="Tombstones", name="Tombstones", type="bool", value=GetWidgetToggleValue("Tombstones"), description='Displays tombstones where commanders died'},
+        {id="cloudshadows", group="gfx", widget="Volumetric Clouds", name="Cloud Shadows", type="bool", value=GetWidgetToggleValue("Volumetric Clouds"), description='Shows Cloud Shadows'},
 
 		-- SND
 		{id="sndvolmaster", group="snd", name="Master volume", type="slider", min=0, max=200, step=2, value=tonumber(Spring.GetConfigInt("snd_volmaster",1) or 100)},
