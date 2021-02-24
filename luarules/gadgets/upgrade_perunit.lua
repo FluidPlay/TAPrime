@@ -61,6 +61,8 @@ local unitRulesParamName = "upgrade"
 local unitRulesCompletedParamName = "upgraded"
 local oldFrame = 0
 
+local CMD_ATTACK = CMD.ATTACK
+
 --local tooltipRequirement = "\n"..RedStr.."Requires ".. prereq,
 --local UpgradeTooltip = 'Enables D-gun ability / command'
 --local tooltipRequirement = "\n"..RedStr.."Requires ".. PUU.dgun.prereq
@@ -71,6 +73,10 @@ local frameRate = 4
 
 if not gadgetHandler:IsSyncedCode() then
     return end
+
+for _,upgrade in pairs(UnitUpgrades) do
+    UnitUpgrades[upgrade] = true
+end
 
 local function startUpgrade(unitID, unitUpg, cmdParams)
     --Spring.Echo("Added "..unitID..", count: "..#upgradingUnits)
@@ -125,9 +131,6 @@ end
 function gadget:Initialize()
     -- Sets the dgun cursor to the FireRain ability
     Spring.AssignMouseCursor("firerain", "cursordgun", false)
-    for _,upgrade in pairs(UnitUpgrades) do
-        UnitUpgrades[upgrade] = true
-    end
     --GG.UnitUpgrades = UnitUpgrades
     local allUnits = spGetAllUnits()
     for i = 1, #allUnits do
@@ -154,18 +157,17 @@ function gadget:UnitCreated(unitID, unitDefID, unitTeam)
             cmdDesc = spGetUnitCmdDescs(unitID, cmdIdx, cmdIdx)[1]
             if cmdDesc then
                 unitUpg.buttonToUnlockTooltip = cmdDesc.tooltip end
-        end
-
-        -- If it should block the attack command, must also block its weapon to prevent auto-fire
-        if unitUpg.buttonToUnlock == CMD_ATTACK then
-            Spring.SetUnitWeaponState(unitID, 1, "range", 0)    --- Hardcoded to Weapon 1
+            -- If it should block the attack command, must also block its weapon to prevent auto-fire
+            if unitUpg.buttonToUnlock == CMD_ATTACK then
+                Spring.SetUnitWeaponState(unitID, 1, "range", 0)    --- Hardcoded to Weapon 1
+            end
+            -- Disable upgrade-locked button (since it's per-unit, it always starts locked)
+            BlockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip, "Requires: "..upgrade.." upgrade [per-unit]")
         end
 
         -- Add upgrade Cmd, block & add it to watch list, if tech not yet available
         local block = not HasTech(unitUpg.prereq, unitTeam)
         AddUpdateCommand(unitID, unitUpg.UpgradeCmdDesc, block)
-        -- Disable upgrade-locked button (since it's per-unit, it always starts locked)
-        BlockCmdID(unitID, unitUpg.buttonToUnlock, unitUpg.buttonToUnlockTooltip, "Requires: "..upgrade.." upgrade [per-unit]")
 
         if block then
             upgradeLockedUnits[unitID] = { prereq = unitUpg.prereq, upgradeButton = unitUpg.UpgradeCmdDesc.id,

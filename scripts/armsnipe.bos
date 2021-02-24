@@ -3,9 +3,9 @@
 #include "sfxtype.h"
 #include "exptype.h"
 
-piece  flash, torso, head, hip, rupleg, rleg, lleg, lupleg,
-       ruparm, luparm, larm, lhand, rarm, gun, leftshoulder, sleave,
-       barrel, scope;
+piece  firepoint, torso, head, hip, rupleg, rleg, lleg, lupleg,
+       ruparm, luparm, larm, lhand, rarm, gun, leftshoulder, weapsleave, //sleave
+       weaptip; //barrel, scope
 
 static-var  Static_Var_1, bMoving, Static_Var_3, Static_Var_4, restore_delay,
             statechg_DesiredState, statechg_StateChanging, moveSpeed, currentSpeed;
@@ -23,9 +23,9 @@ walk()
 		move rleg to y-axis [0.319995] speed [3.816808] *  currentSpeed / 100;
 		move lleg to y-axis [0.650000] speed [7.753012] *  currentSpeed / 100;
 		move head to y-axis [0.000000] now;
-		move flash to x-axis [0.000000] now;
-		move flash to y-axis [-0.900000] speed [10.734940] *  currentSpeed / 100;
-		move flash to z-axis [-0.200000] speed [2.385542] *  currentSpeed / 100;
+		//move flash to x-axis [0.000000] now;
+		//move flash to y-axis [-0.900000] speed [10.734940] *  currentSpeed / 100;
+		//move flash to z-axis [-0.200000] speed [2.385542] *  currentSpeed / 100;
 		turn hip to x-axis <2.098901> speed <25.035084> *  currentSpeed / 100;
 		turn torso to y-axis <4.736264> speed <56.492787> *  currentSpeed / 100;
 		turn lupleg to x-axis <-3.505495> speed <41.812531> *  currentSpeed / 100;
@@ -481,9 +481,9 @@ walklegs()
 		move rleg to y-axis [0.319995] speed [1.908481] *  currentSpeed / 100;
 		move lleg to y-axis [0.150000] speed [3.816808] *  currentSpeed / 100;
 		move head to y-axis [0.000000] now;
-		move flash to x-axis [0.000000] now;
-		move flash to y-axis [-0.900000] now;
-		move flash to z-axis [-0.200000] now;
+		//move flash to x-axis [0.000000] now;
+		//move flash to y-axis [-0.900000] now;
+		//move flash to z-axis [-0.200000] now;
 		turn hip to x-axis <2.098901> speed <12.648622> *  currentSpeed / 100;
 		turn lupleg to x-axis <-3.505495> speed <75.301869> *  currentSpeed / 100;
 		turn rupleg to x-axis <24.434066> speed <179.308883> *  currentSpeed / 100;
@@ -764,7 +764,7 @@ OpenGun()
 {
 	move head to y-axis [0.000000] now;
 	move larm to y-axis [0.000000] now;
-	move flash to z-axis [-0.100000] speed [0.352313];
+	//move flash to z-axis [-0.100000] speed [0.352313];
 	turn torso to x-axis <0.000000> now;
 	turn torso to x-axis <-3.000000> speed <13.000000>;
 	turn ruparm to x-axis <0.000000> now;
@@ -810,17 +810,17 @@ OpenGun()
 	turn larm to z-axis <35.005495> speed <7.000000>;
 	turn lhand to z-axis <43.005495> speed <161.000000>;
 	sleep 98;
-	turn sleave to x-axis <45.010989> speed <416.000000>;
+	turn weapsleave to x-axis <45.010989> speed <416.000000>;
 	sleep 108;
-	turn sleave to x-axis <180.043956> speed <2813.000000>;
+	turn weapsleave to x-axis <180.043956> speed <2813.000000>;
 	sleep 48;
-	move barrel to z-axis [3.639996] speed [46.000000];
+	move weaptip to z-axis [3.639996] speed [46.000000];
 	sleep 78;
-	move scope to y-axis [-0.650000] speed [4.000000];
-	turn scope to x-axis <-19.000000> speed <140.000000>;
+	//move scope to y-axis [-0.650000] speed [4.000000];
+	//turn scope to x-axis <-19.000000> speed <140.000000>;
 	sleep 138;
-	move scope to y-axis [-1.139996] speed [3.000000];
-	turn scope to x-axis <0.000000> speed <130.000000>;
+	//move scope to y-axis [-1.139996] speed [3.000000];
+	//turn scope to x-axis <0.000000> speed <130.000000>;
 	sleep 148;
 	sleep 18;
 }
@@ -834,10 +834,10 @@ FoldGun()
 	move larm to y-axis [-0.450000] now;
 	move gun to y-axis [-1.139996] now;
 	move gun to z-axis [0.750000] now;
-	move scope to y-axis [-1.139996] now;
-	move scope to y-axis [-0.650000] speed [2.000000];
-	move barrel to z-axis [3.639996] now;
-	move barrel to z-axis [0.000000] speed [18.000000];
+	//move scope to y-axis [-1.139996] now;
+	//move scope to y-axis [-0.650000] speed [2.000000];
+	move weaptip to z-axis [3.639996] now;
+	move weaptip to z-axis [0.000000] speed [18.000000];
 	turn torso to x-axis <-1.049451> speed <4.189341>;
 	turn ruparm to x-axis <-66.802198> now;
 	turn ruparm to x-axis <-40.005495> speed <130.000000>;
@@ -852,19 +852,19 @@ FoldGun()
 	turn lhand to z-axis <26.005495> speed <84.000000>;
 	turn rarm to x-axis <-23.203297> speed <92.626065>;
 	turn gun to x-axis <-90.021978> speed <389.849789>;
-	turn scope to x-axis <0.000000> now;
-	turn scope to x-axis <-18.000000> speed <91.000000>;
-	turn sleave to x-axis <180.043956> speed <718.723857>;
+	//turn scope to x-axis <0.000000> now;
+	//turn scope to x-axis <-18.000000> speed <91.000000>;
+	turn weapsleave to x-axis <180.043956> speed <718.723857>;
 	sleep 200;
 	move leftshoulder to z-axis [0.000000] speed [5.000000];
 	move larm to y-axis [0.000000] speed [2.000000];
-	move scope to y-axis [0.000000] speed [3.000000];
+	//move scope to y-axis [0.000000] speed [3.000000];
 	turn ruparm to x-axis <-29.005495> speed <54.000000>;
 	turn leftshoulder to y-axis <0.000000> speed <31.000000>;
 	turn luparm to x-axis <-40.005495> speed <93.000000>;
 	turn larm to z-axis <10.000000> speed <45.000000>;
 	turn lhand to z-axis <13.000000> speed <66.000000>;
-	turn scope to x-axis <0.000000> speed <91.000000>;
+	//turn scope to x-axis <0.000000> speed <91.000000>;
 	sleep 200;
 	move luparm to y-axis [0.000000] speed [2.000000];
 	move larm to y-axis [0.000000] speed [0.000000];
@@ -872,12 +872,12 @@ FoldGun()
 	turn luparm to x-axis <-25.005495> speed <75.000000>;
 	turn larm to z-axis <0.000000> speed <50.000000>;
 	turn lhand to z-axis <0.000000> speed <65.000000>;
-	turn sleave to x-axis <90.021978> speed <450.000000>;
+	turn weapsleave to x-axis <90.021978> speed <450.000000>;
 	sleep 200;
 	turn ruparm to x-axis <-13.000000> speed <175.000000>;
 	turn luparm to x-axis <-1.000000> speed <123.000000>;
 	turn larm to x-axis <-24.005495> speed <121.000000>;
-	turn sleave to x-axis <0.000000> speed <450.000000>;
+	turn weapsleave to x-axis <0.000000> speed <450.000000>;
 	sleep 200;
 	move gun to y-axis [0.000000] speed [5.000000];
 	turn ruparm to x-axis <0.000000> speed <68.000000>;
@@ -1035,7 +1035,7 @@ Create()
 	Static_Var_3 = 0;
 	Static_Var_4 = 1;
 	Static_Var_1 = 0;
-	hide flash;
+	//hide flash;
 	restore_delay = 2000;
 	statechg_DesiredState = TRUE;
 	statechg_StateChanging = FALSE;
@@ -1086,10 +1086,10 @@ AimPrimary(heading, pitch)
 
 FirePrimary()
 {
-	show flash;
+	//show flash;
 	turn rarm to x-axis <-45.010989> speed <200.000000>;
 	sleep 150;
-	hide flash;
+	//hide flash;
 	turn rarm to x-axis <-23.005495> speed <50.000000>;
 	sleep 1000;
 	turn rarm to x-axis <-68.016484> speed <50.000000>;
@@ -1104,7 +1104,7 @@ AimFromPrimary(piecenum)
 
 QueryPrimary(piecenum)
 {
-	piecenum = flash;
+	piecenum = firepoint;
 }
 
 SweetSpot(piecenum)
@@ -1117,7 +1117,7 @@ Killed(severity, corpsetype)
 	if( severity <= 25 )
 	{
 		corpsetype = 1;
-		explode barrel type BITMAPONLY | BITMAP1;
+		explode weaptip type BITMAPONLY | BITMAP1;
 		explode gun type BITMAPONLY | BITMAP2;
 		explode head type BITMAPONLY | BITMAP3;
 		explode hip type BITMAPONLY | BITMAP4;
@@ -1130,15 +1130,15 @@ Killed(severity, corpsetype)
 		explode rleg type BITMAPONLY | BITMAP1;
 		explode ruparm type BITMAPONLY | BITMAP2;
 		explode rupleg type BITMAPONLY | BITMAP3;
-		explode scope type BITMAPONLY | BITMAP4;
-		explode sleave type BITMAPONLY | BITMAP5;
+		//explode scope type BITMAPONLY | BITMAP4;
+		explode weapsleave type BITMAPONLY | BITMAP5;
 		explode torso type BITMAPONLY | BITMAP5;
 		return (corpsetype);
 	}
 	if( severity <= 50 )
 	{
 		corpsetype = 2;
-		explode barrel type FALL | BITMAP1;
+		explode weaptip type FALL | BITMAP1;
 		explode gun type FALL | BITMAP2;
 		explode head type FALL | BITMAP3;
 		explode hip type FALL | BITMAP4;
@@ -1151,15 +1151,15 @@ Killed(severity, corpsetype)
 		explode rleg type FALL | BITMAP1;
 		explode ruparm type FALL | BITMAP2;
 		explode rupleg type FALL | BITMAP3;
-		explode scope type FALL | BITMAP4;
-		explode sleave type FALL | BITMAP5;
+		//explode scope type FALL | BITMAP4;
+		explode weapsleave type FALL | BITMAP5;
 		explode torso type SHATTER | BITMAP5;
 		return (corpsetype);
 	}
 	if( severity <= 99 )
 	{
 		corpsetype = 3;
-		explode barrel type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+		explode weaptip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 		explode gun type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 		explode head type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
 		explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
@@ -1172,13 +1172,13 @@ Killed(severity, corpsetype)
 		explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 		explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 		explode rupleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
-		explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
-		explode sleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+		//explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+		explode weapsleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
 		explode torso type SHATTER | BITMAP5;
 		return (corpsetype);
 	}
 	corpsetype = 3;
-	explode barrel type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+	explode weaptip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 	explode gun type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 	explode head type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
 	explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
@@ -1191,8 +1191,8 @@ Killed(severity, corpsetype)
 	explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 	explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 	explode rupleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
-	explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
-	explode sleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+	//explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+	explode weapsleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
 	explode torso type SHATTER | EXPLODE_ON_HIT | BITMAP5;
 	return (corpsetype);
 	explode luparm type FALL | BITMAP3;
@@ -1201,14 +1201,14 @@ Killed(severity, corpsetype)
 	explode rleg type FALL | BITMAP1;
 	explode ruparm type FALL | BITMAP2;
 	explode rupleg type FALL | BITMAP3;
-	explode scope type FALL | BITMAP4;
-	explode sleave type FALL | BITMAP5;
+	//explode scope type FALL | BITMAP4;
+	explode weapsleave type FALL | BITMAP5;
 	explode torso type SHATTER | BITMAP5;
 	return (corpsetype);
 	if( severity <= 99 )
 	{
 		corpsetype = 3;
-		explode barrel type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+		explode weaptip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 		explode gun type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 		explode head type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
 		explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
@@ -1221,13 +1221,13 @@ Killed(severity, corpsetype)
 		explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 		explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 		explode rupleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
-		explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
-		explode sleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+		//explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+		explode weapsleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
 		explode torso type SHATTER | BITMAP5;
 		return (corpsetype);
 	}
 	corpsetype = 3;
-	explode barrel type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+	explode weaptip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 	explode gun type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 	explode head type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
 	explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
@@ -1240,21 +1240,21 @@ Killed(severity, corpsetype)
 	explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 	explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 	explode rupleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
-	explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
-	explode sleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+	//explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+	explode weapsleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
 	explode torso type SHATTER | EXPLODE_ON_HIT | BITMAP5;
 	return (corpsetype);
 	explode rleg type FALL | BITMAP1;
 	explode ruparm type FALL | BITMAP2;
 	explode rupleg type FALL | BITMAP3;
-	explode scope type FALL | BITMAP4;
-	explode sleave type FALL | BITMAP5;
+	//explode scope type FALL | BITMAP4;
+	explode weapsleave type FALL | BITMAP5;
 	explode torso type SHATTER | BITMAP5;
 	return (corpsetype);
 	if( severity <= 99 )
 	{
 		corpsetype = 3;
-		explode barrel type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+		explode weaptip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 		explode gun type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 		explode head type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
 		explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
@@ -1267,13 +1267,13 @@ Killed(severity, corpsetype)
 		explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 		explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 		explode rupleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
-		explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
-		explode sleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+		//explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+		explode weapsleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
 		explode torso type SHATTER | BITMAP5;
 		return (corpsetype);
 	}
 	corpsetype = 3;
-	explode barrel type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+	explode weaptip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 	explode gun type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 	explode head type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
 	explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
@@ -1286,8 +1286,8 @@ Killed(severity, corpsetype)
 	explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 	explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 	explode rupleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
-	explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
-	explode sleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+	//explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+	explode weapsleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
 	explode torso type SHATTER | EXPLODE_ON_HIT | BITMAP5;
 	return (corpsetype);
 	explode lupleg type FALL | BITMAP4;
@@ -1295,14 +1295,14 @@ Killed(severity, corpsetype)
 	explode rleg type FALL | BITMAP1;
 	explode ruparm type FALL | BITMAP2;
 	explode rupleg type FALL | BITMAP3;
-	explode scope type FALL | BITMAP4;
-	explode sleave type FALL | BITMAP5;
+	//explode scope type FALL | BITMAP4;
+	explode weapsleave type FALL | BITMAP5;
 	explode torso type SHATTER | BITMAP5;
 	return (corpsetype);
 	if( severity <= 99 )
 	{
 		corpsetype = 3;
-		explode barrel type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+		explode weaptip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 		explode gun type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 		explode head type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
 		explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
@@ -1315,13 +1315,13 @@ Killed(severity, corpsetype)
 		explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 		explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 		explode rupleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
-		explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
-		explode sleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+		//explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+		explode weapsleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
 		explode torso type SHATTER | BITMAP5;
 		return (corpsetype);
 	}
 	corpsetype = 3;
-	explode barrel type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+	explode weaptip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 	explode gun type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 	explode head type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
 	explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
@@ -1334,8 +1334,8 @@ Killed(severity, corpsetype)
 	explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 	explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 	explode rupleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
-	explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
-	explode sleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+	//explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+	explode weapsleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
 	explode torso type SHATTER | EXPLODE_ON_HIT | BITMAP5;
 	return (corpsetype);
 	explode luparm type FALL | BITMAP3;
@@ -1344,14 +1344,14 @@ Killed(severity, corpsetype)
 	explode rleg type FALL | BITMAP1;
 	explode ruparm type FALL | BITMAP2;
 	explode rupleg type FALL | BITMAP3;
-	explode scope type FALL | BITMAP4;
-	explode sleave type FALL | BITMAP5;
+	//explode scope type FALL | BITMAP4;
+	explode weapsleave type FALL | BITMAP5;
 	explode torso type SHATTER | BITMAP5;
 	return (corpsetype);
 	if( severity <= 99 )
 	{
 		corpsetype = 3;
-		explode barrel type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+		explode weaptip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 		explode gun type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 		explode head type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
 		explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
@@ -1364,13 +1364,13 @@ Killed(severity, corpsetype)
 		explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 		explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 		explode rupleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
-		explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
-		explode sleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+		//explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+		explode weapsleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
 		explode torso type SHATTER | BITMAP5;
 		return (corpsetype);
 	}
 	corpsetype = 3;
-	explode barrel type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
+	explode weaptip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 	explode gun type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 	explode head type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
 	explode hip type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
@@ -1383,7 +1383,7 @@ Killed(severity, corpsetype)
 	explode rleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP1;
 	explode ruparm type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP2;
 	explode rupleg type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP3;
-	explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
-	explode sleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
+	//explode scope type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP4;
+	explode weapsleave type FALL | FIRE | SMOKE | EXPLODE_ON_HIT | BITMAP5;
 	explode torso type SHATTER | EXPLODE_ON_HIT | BITMAP5;
 }

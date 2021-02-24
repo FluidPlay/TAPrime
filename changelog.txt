@@ -1,4 +1,15 @@
-﻿v1.03 changelog:
+﻿v1.05 changelog:
+* Fixed Arm Stumpy per-unit Hover upgrade
+* Bladewings (laser/EMP drone) aiming is now independent of the main body direction, making them more effective
+* Metal Icon fixed, now has a proper square background
+
+v1.04 changelog:
+* Final "Total Annihilation Prime" release, new features to be added only for the new "Total Atomization Prime" (v2)
+* Critical fixes might still be back-ported
+* More info and full changelog in our Discord:
+    * https://discord.gg/XhhBaZZ
+
+v1.03 changelog:
 * Improved auto-assist logic for just-built builders & FARKs
 * Added "P" shortcut to build Air Pads and Adv. Air Pads
 * Core Leveler weapon damage now 72 (was 100)

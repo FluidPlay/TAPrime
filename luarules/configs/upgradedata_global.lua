@@ -83,6 +83,9 @@ GlobalUpgrades = {
                              [UnitDefNames["corlevlr"].id] = true,
                              [UnitDefNames["armflash"].id] = true,
                              [UnitDefNames["corgator"].id] = true,
+
+                             [UnitDefNames["armkam"].id] = true,
+                             [UnitDefNames["corbw"].id] = true,
         },
         techToGrant = "throttle",
     },

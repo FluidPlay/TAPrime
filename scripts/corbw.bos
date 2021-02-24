@@ -3,7 +3,7 @@
 #include "sfxtype.h"
 #include "exptype.h"
 
-piece  base, flare;
+piece  base, flare, shotspawner;
 
 static-var  Static_Var_4; //Aiming Dgun
 
@@ -59,20 +59,20 @@ AimPrimary(heading, pitch)
 	//{
 	//	return (0);
 	//}
-    signal SIG_AIM;
-	set-signal-mask SIG_AIM;
-	 	while( 255 > heading )
-		{
-			set UNKNOWN_UNIT_VALUE(82) to 0 - 1500 + get UNKNOWN_UNIT_VALUE(82);
-			heading = heading + 1500;
-			sleep 1;
-		}
-		while( heading > 255 )
-		{
-			set UNKNOWN_UNIT_VALUE(82) to 1500 + get UNKNOWN_UNIT_VALUE(82);
-			heading = heading - 1500;
-			sleep 1;
-		}	
+//    signal SIG_AIM;
+//	set-signal-mask SIG_AIM;
+//	 	while( 255 > heading )
+//		{
+//			set UNKNOWN_UNIT_VALUE(82) to 0 - 1500 + get UNKNOWN_UNIT_VALUE(82);
+//			heading = heading + 1500;
+//			sleep 1;
+//		}
+//		while( heading > 255 )
+//		{
+//			set UNKNOWN_UNIT_VALUE(82) to 1500 + get UNKNOWN_UNIT_VALUE(82);
+//			heading = heading - 1500;
+//			sleep 1;
+//		}	
 	return (1);
 }
 
@@ -98,21 +98,21 @@ AimFromSecondary(piecenum)
 
 AimSecondary(heading, pitch)
 {
-    signal SIG_AIM;
-	set-signal-mask SIG_AIM;
+//    signal SIG_AIM;
+//	set-signal-mask SIG_AIM;
 	//Static_Var_4 = 1;	
-	 	while( 255 > heading )
-		{
-			set UNKNOWN_UNIT_VALUE(82) to 0 - 1500 + get UNKNOWN_UNIT_VALUE(82);
-			heading = heading + 1500;
-			sleep 1;
-		}
-		while( heading > 255 )
-		{
-			set UNKNOWN_UNIT_VALUE(82) to 1500 + get UNKNOWN_UNIT_VALUE(82);
-			heading = heading - 1500;
-			sleep 1;
-		}	
+//	 	while( 255 > heading )
+//		{
+//			set UNKNOWN_UNIT_VALUE(82) to 0 - 1500 + get UNKNOWN_UNIT_VALUE(82);
+//			heading = heading + 1500;
+//			sleep 1;
+//		}
+//		while( heading > 255 )
+//		{
+//			set UNKNOWN_UNIT_VALUE(82) to 1500 + get UNKNOWN_UNIT_VALUE(82);
+//			heading = heading - 1500;
+//			sleep 1;
+//		}	
 	return (1);
 }
 
