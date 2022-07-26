@@ -397,8 +397,14 @@ assert(type(key) == "number","Argument key is of invalid type - expected number"
 return  numberMock
  end
 
-function Spring.GetKeyBindings   (  keyset)
+function Spring.GetScanSymbol   (  key)
+assert(type(key) == "number","Argument key is of invalid type - expected number");
+return  numberMock
+ end
+
+function Spring.GetKeyBindings   (  keyset, scanset)
 assert(type(keyset) == "string","Argument keyset is of invalid type - expected string");
+assert(type(scanset) == "string" or type(scanset) == "nil","Argument scanset is of invalid type - expected string or nil");
 return  tableMock
  end
 

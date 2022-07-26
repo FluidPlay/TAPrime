@@ -6,8 +6,8 @@ for name,uDef in pairs(UnitDefs) do
 end
 
 local rana = math.random(3,1000)
-local ranb = math.random(2,a)
-local ranc = math.random(1,b)
+-- local ranb = math.random(2,a)
+-- local ranc = math.random(1,b)
 
 local maxdamagemult = 1 --0.5
 local maxvelocitymult = 1 --0.9
